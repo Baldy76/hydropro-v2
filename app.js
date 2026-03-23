@@ -65,7 +65,6 @@ window.renderAll = function() {
     renderWeeks();
 };
 
-// WEEKLY JOB CARDS (Debt History hidden from front)
 window.renderWeeks = function() {
     for(let i=1; i<=4; i++) {
         const div = document.getElementById('week' + i);
@@ -74,25 +73,12 @@ window.renderWeeks = function() {
             const debt = calculateTrueDebt(c);
             let card = document.createElement('div');
             card.className = `customer-card ${debt > 0 ? 'has-debt' : ''}`;
-            card.innerHTML = `
-                <div onclick="openCustomerModal('${c.id}')">
-                    <div style="display:flex; justify-content:space-between"><strong>${c.name}</strong><strong>£${n(c.price).toFixed(2)}</strong></div>
-                    <small style="opacity:0.6">${c.address}</small>
-                </div>
-                <div class="card-action-grid">
-                    <button class="icon-btn-small" onclick="window.open('http://maps.apple.com/?q=${encodeURIComponent(c.address)}')">📍 Map</button>
-                    <button class="icon-btn-small" onclick="editCustomer('${c.id}')">⚙️ Edit</button>
-                    <button class="icon-btn-small ${c.cleaned?'wa-btn':''}" onclick="markJobAsCleaned('${c.id}')">${c.cleaned?'Done ✅':'Clean'}</button>
-                    <button class="btn-main" onclick="processPayment('${c.id}')">£${debt.toFixed(2)} Pay</button>
-                    <button class="icon-btn-small wa-btn" onclick="sendReminder('${c.id}','whatsapp')">💬 WA</button>
-                    <button class="icon-btn-small sms-btn" onclick="sendReminder('${c.id}','sms')">📱 SMS</button>
-                </div>`;
+            card.innerHTML = `<div onclick="openCustomerModal('${c.id}')"><div style="display:flex; justify-content:space-between"><strong>${c.name}</strong><strong>£${n(c.price).toFixed(2)}</strong></div><small style="opacity:0.6">${c.address}</small></div><div class="card-action-grid"><button class="icon-btn-small" onclick="window.open('http://maps.apple.com/?q=${encodeURIComponent(c.address)}')">📍 Map</button><button class="icon-btn-small" onclick="editCustomer('${c.id}')">⚙️ Edit</button><button class="icon-btn-small ${c.cleaned?'wa-btn':''}" onclick="markJobAsCleaned('${c.id}')">${c.cleaned?'Done ✅':'Clean'}</button><button class="btn-main" onclick="processPayment('${c.id}')">£${debt.toFixed(2)} Pay</button><button class="icon-btn-small wa-btn" onclick="sendReminder('${c.id}','whatsapp')">💬 WA</button><button class="icon-btn-small sms-btn" onclick="sendReminder('${c.id}','sms')">📱 SMS</button></div>`;
             div.appendChild(card);
         });
     }
 };
 
-// MASTER LIST (Debt History hidden from front)
 window.renderMasterTable = function() {
     const body = document.getElementById('masterTableBody');
     if(!body) return; body.innerHTML = '';
@@ -102,13 +88,7 @@ window.renderMasterTable = function() {
             const debt = calculateTrueDebt(c);
             const tr = document.createElement('tr');
             tr.onclick = () => openCustomerModal(c.id);
-            tr.innerHTML = `
-                <td style="padding:15px; border-bottom:1px solid rgba(0,0,0,0.03);">
-                    <strong>${c.name}</strong><br><small style="opacity:0.6;">${c.address}</small>
-                </td>
-                <td style="padding:15px; text-align:right; font-weight:900; color:${debt > 0 ? 'var(--danger)' : 'var(--accent)'}">
-                    £${debt.toFixed(2)}
-                </td>`;
+            tr.innerHTML = `<td style="padding:15px; border-bottom:1px solid rgba(0,0,0,0.03);"><strong>${c.name}</strong><br><small style="opacity:0.6;">${c.address}</small></td><td style="padding:15px; text-align:right; font-weight:900; color:${debt > 0 ? 'var(--danger)' : 'var(--accent)'}">£${debt.toFixed(2)}</td>`;
             body.appendChild(tr);
         }
     });
@@ -131,46 +111,14 @@ window.renderStats = function() {
     }
 };
 
-window.saveCustomer = function() {
-    const id = document.getElementById('editId').value || Date.now();
-    const name = document.getElementById('cName').value; if(!name) return;
-    const entry = { id: id, name: name, address: document.getElementById('cAddr').value, postcode: document.getElementById('cPostcode').value, phone: document.getElementById('cPhone').value, price: n(document.getElementById('cPrice').value), week: document.getElementById('cWeek').value, day: document.getElementById('cDay').value, notes: document.getElementById('cNotes').value, cleaned: false, paidThisMonth: 0, debtHistory: [] };
-    const idx = db.customers.findIndex(x => String(x.id) === String(id));
-    if(idx > -1) { const old = db.customers[idx]; entry.cleaned = old.cleaned; entry.paidThisMonth = old.paidThisMonth; entry.debtHistory = old.debtHistory || []; db.customers[idx] = entry; } 
-    else { db.customers.push(entry); }
-    clearForm(); saveData(); openTab(null, 'master');
-};
-
-window.editCustomer = function(id) { 
-    const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return; 
-    document.getElementById('editId').value = c.id; 
-    document.getElementById('cName').value = c.name; document.getElementById('cAddr').value = c.address; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPhone').value = c.phone; document.getElementById('cPrice').value = c.price; document.getElementById('cWeek').value = c.week; document.getElementById('cDay').value = c.day; document.getElementById('cNotes').value = c.notes; 
-    document.getElementById('editActions').classList.remove('hidden'); document.getElementById('formTitle').innerText = "Edit Customer"; 
-    window.openTab(null, 'admin'); 
-};
-
-window.clearForm = function() { ['editId','cName','cAddr','cPostcode','cPhone','cPrice','cNotes'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; }); document.getElementById('editActions').classList.add('hidden'); document.getElementById('formTitle').innerText = "Customer Entry"; };
-
-window.handleBankAction = function() {
-    const isLocked = document.getElementById('bName').disabled;
-    if (isLocked) {
-        ['bName','bSort','bAcc'].forEach(id => document.getElementById(id).disabled = false);
-        document.getElementById('btnBankAction').innerText = "🔒 Save & Lock Details";
-        document.getElementById('btnBankAction').classList.add('btn-save-state');
-    } else {
-        db.bank = { name: document.getElementById('bName').value, sort: document.getElementById('bSort').value, acc: document.getElementById('bAcc').value };
-        ['bName','bSort','bAcc'].forEach(id => document.getElementById(id).disabled = true);
-        document.getElementById('btnBankAction').innerText = "🔓 Edit Bank Details";
-        document.getElementById('btnBankAction').classList.remove('btn-save-state');
-        saveData();
-    }
-};
-
 window.completeCycle = function() {
-    if(!confirm("Start New Month? Debt carries forward.")) return;
+    if(!confirm("Start New Month? Unpaid moved to Debt, Paid moved to History.")) return;
     const label = new Date().toLocaleDateString('en-GB', {month:'short', year:'2-digit'});
     db.incomeHistory.push({ month: label, amount: db.customers.reduce((s,c) => s + n(c.paidThisMonth), 0) });
     db.customers.forEach(c => {
+        if(!c.paymentHistory) c.paymentHistory = [];
+        if(n(c.paidThisMonth) > 0) c.paymentHistory.push({ month: label, amount: n(c.paidThisMonth) });
+        
         const o = calculateTrueDebt(c);
         if(o > 0) {
             c.debtHistory = c.debtHistory || [];
@@ -201,6 +149,74 @@ window.processPayment = function(id) {
     saveData();
 };
 
+window.openCustomerModal = function(id) {
+    const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return;
+    document.getElementById('modName').innerText = c.name;
+    document.getElementById('modAddr').innerText = (c.address || "") + " " + (c.postcode || "");
+    const totalDebt = calculateTrueDebt(c);
+    document.getElementById('modOwed').innerText = '£' + totalDebt.toFixed(2);
+    document.getElementById('modOwed').style.color = totalDebt > 0 ? 'var(--danger)' : 'var(--stat-collected)';
+    
+    let ledgerHtml = "";
+    const months = [...new Set([...(c.debtHistory||[]).map(d=>d.month), ...(c.paymentHistory||[]).map(p=>p.month)])];
+    
+    if(months.length > 0) {
+        months.forEach(m => {
+            const debt = (c.debtHistory||[]).find(d => d.month === m);
+            const paid = (c.paymentHistory||[]).find(p => p.month === m);
+            
+            if (debt) {
+                ledgerHtml += `<div class="ledger-row text-debt"><span>${m}: OWED</span><span>£${n(debt.amount).toFixed(2)}</span></div>`;
+            } else if (paid) {
+                ledgerHtml += `<div class="ledger-row text-paid"><span>${m}: PAID ✅</span><span>£${n(paid.amount).toFixed(2)}</span></div>`;
+            }
+        });
+    } else {
+        ledgerHtml = "<div style='opacity:0.5; text-align:center; padding:20px;'>New customer. No history recorded yet.</div>";
+    }
+
+    document.getElementById('ledgerBox').innerHTML = ledgerHtml;
+    document.getElementById('customerModal').style.display = 'flex';
+};
+
+window.saveCustomer = function() {
+    const id = document.getElementById('editId').value || Date.now();
+    const name = document.getElementById('cName').value; if(!name) return;
+    const entry = { id: id, name: name, address: document.getElementById('cAddr').value, postcode: document.getElementById('cPostcode').value, phone: document.getElementById('cPhone').value, price: n(document.getElementById('cPrice').value), week: document.getElementById('cWeek').value, day: document.getElementById('cDay').value, notes: document.getElementById('cNotes').value, cleaned: false, paidThisMonth: 0, debtHistory: [], paymentHistory: [] };
+    const idx = db.customers.findIndex(x => String(x.id) === String(id));
+    if(idx > -1) { 
+        const old = db.customers[idx];
+        entry.cleaned = old.cleaned; entry.paidThisMonth = old.paidThisMonth; 
+        entry.debtHistory = old.debtHistory || []; entry.paymentHistory = old.paymentHistory || [];
+        db.customers[idx] = entry; 
+    } else { db.customers.push(entry); }
+    clearForm(); saveData(); openTab(null, 'master');
+};
+
+window.editCustomer = function(id) { 
+    const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return; 
+    document.getElementById('editId').value = c.id; 
+    document.getElementById('cName').value = c.name; document.getElementById('cAddr').value = c.address; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPhone').value = c.phone; document.getElementById('cPrice').value = c.price; document.getElementById('cWeek').value = c.week; document.getElementById('cDay').value = c.day; document.getElementById('cNotes').value = c.notes; 
+    document.getElementById('editActions').classList.remove('hidden'); document.getElementById('formTitle').innerText = "Edit Customer"; 
+    window.openTab(null, 'admin'); 
+};
+
+window.clearForm = function() { ['editId','cName','cAddr','cPostcode','cPhone','cPrice','cNotes'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; }); document.getElementById('editActions').classList.add('hidden'); document.getElementById('formTitle').innerText = "Customer Entry"; };
+window.handleBankAction = function() {
+    const isLocked = document.getElementById('bName').disabled;
+    if (isLocked) {
+        ['bName','bSort','bAcc'].forEach(id => document.getElementById(id).disabled = false);
+        document.getElementById('btnBankAction').innerText = "🔒 Save & Lock Details";
+        document.getElementById('btnBankAction').classList.add('btn-save-state');
+    } else {
+        db.bank = { name: document.getElementById('bName').value, sort: document.getElementById('bSort').value, acc: document.getElementById('bAcc').value };
+        ['bName','bSort','bAcc'].forEach(id => document.getElementById(id).disabled = true);
+        document.getElementById('btnBankAction').innerText = "🔓 Edit Bank Details";
+        document.getElementById('btnBankAction').classList.remove('btn-save-state');
+        saveData();
+    }
+};
+window.deleteCustomer = function() { const id = document.getElementById('editId').value; if(id && confirm("Delete permanently?")) { db.customers = db.customers.filter(c => String(c.id) !== String(id)); clearForm(); saveData(); openTab(null, 'master'); } };
 window.sendReminder = function(id, type) {
     const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return;
     const b = db.bank || {name:'', sort:'', acc:''};
@@ -210,48 +226,22 @@ window.sendReminder = function(id, type) {
     if (type === 'whatsapp') { window.location.href = `https://wa.me/${phone}?text=${encoded}`; }
     else { window.location.href = `sms:${phone}${/iPhone/i.test(navigator.userAgent)?'&':'?'}body=${encoded}`; }
 };
-
 window.importCSV = function(e) {
     const r = new FileReader(); r.onload = (ev) => {
         const l = ev.target.result.split('\n'); if(l.length <= 1) return;
         if(!confirm("Append to current list?")) db.customers = [];
         l.slice(1).forEach(line => {
             const cols = line.split(',').map(c => c.replace(/"/g, '').trim());
-            if(cols.length >= 5) db.customers.push({ id: Date.now()+Math.random(), name: cols[0], address: cols[1], postcode: cols[2], phone: cols[3], price: n(cols[4]), week: cols[5]||'1', day: cols[6]||'Monday', notes: cols[7]||'', cleaned: false, paidThisMonth: 0, debtHistory: [] });
+            if(cols.length >= 5) db.customers.push({ id: Date.now()+Math.random(), name: cols[0], address: cols[1], postcode: cols[2], phone: cols[3], price: n(cols[4]), week: cols[5]||'1', day: cols[6]||'Monday', notes: cols[7]||'', cleaned: false, paidThisMonth: 0, debtHistory: [], paymentHistory: [] });
         });
         saveData(); location.reload();
     };
     r.readAsText(e.target.files[0]);
 };
-
-// MODAL LOGIC (Where the debt is now displayed)
-window.openCustomerModal = function(id) {
-    const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return;
-    document.getElementById('modName').innerText = c.name;
-    document.getElementById('modAddr').innerText = (c.address || "") + " " + (c.postcode || "");
-    document.getElementById('modOwed').innerText = '£' + calculateTrueDebt(c).toFixed(2);
-    
-    let histHtml = "";
-    if(c.debtHistory && c.debtHistory.length > 0) {
-        c.debtHistory.forEach(h => {
-            histHtml += `<div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid rgba(0,0,0,0.05);">
-                            <span>${h.month} Balance:</span>
-                            <strong>£${n(h.amount).toFixed(2)}</strong>
-                         </div>`;
-        });
-    } else {
-        histHtml = "<div style='opacity:0.5;'>No previous debt history.</div>";
-    }
-    
-    document.getElementById('debtDetailsBox').innerHTML = histHtml;
-    document.getElementById('customerModal').style.display = 'flex';
-};
-
 window.markJobAsCleaned = function(id) { const c = db.customers.find(x => String(x.id) === String(id)); if(c) { c.cleaned = true; saveData(); } };
 window.closeCustomerModal = function() { document.getElementById('customerModal').style.display = 'none'; };
 window.runUATClear = function() { if(confirm("WIPE EVERYTHING?")) { localStorage.clear(); location.reload(); } };
 window.handleSearch = function() { renderMasterTable(); };
-window.deleteCustomer = function() { const id = document.getElementById('editId').value; if(id && confirm("Delete permanently?")) { db.customers = db.customers.filter(c => String(c.id) !== String(id)); clearForm(); saveData(); openTab(null, 'master'); } };
 window.toggleDarkMode = function() { const isDark = document.getElementById('darkModeToggle').checked; document.body.className = isDark ? 'dark-mode' : 'light-mode'; localStorage.setItem('Hydro_Dark_Pref', isDark); };
 window.exportCSV = function() { let csv = "Name,Address,Postcode,Phone,Price,Week,Day,Notes\n"; db.customers.forEach(c => { csv += `"${c.name}","${c.address}","${c.postcode}","${c.phone}",${n(c.price)},"${c.week}","${c.day}","${c.notes}"\n`; }); const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); link.download = "Hydro_Backup.csv"; link.click(); };
 function editFromModal() { 
