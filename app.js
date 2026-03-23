@@ -6,7 +6,7 @@ const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 
 // --- BOOT ENGINE ---
 window.onload = () => {
-    // 1. PRIORITY: Render Date
+    // 1. Render Date Immediately
     const dateElement = document.getElementById('headerDate');
     if (dateElement) {
         const now = new Date();
@@ -24,7 +24,7 @@ window.onload = () => {
     if (!db.incomeHistory) db.incomeHistory = [];
     if (!db.expenses) db.expenses = [];
     
-    // 3. Dark Mode
+    // 3. Handle Dark Mode
     const isDark = localStorage.getItem('Hydro_Dark_Pref') === 'true';
     document.body.className = isDark ? 'dark-mode' : 'light-mode';
     if (document.getElementById('darkModeToggle')) document.getElementById('darkModeToggle').checked = isDark;
@@ -129,10 +129,9 @@ window.renderStats = function() {
     if(document.getElementById('statGross')) document.getElementById('statGross').innerText = '£' + collM.toFixed(2);
     if(document.getElementById('statExp')) document.getElementById('statExp').innerText = '£' + totalExp.toFixed(2);
     if(document.getElementById('statNet')) document.getElementById('statNet').innerText = '£' + (collM - totalExp).toFixed(2);
-    updatePieChart(collM, owedM, pendM);
 };
 
-// --- LOGIC ---
+// --- CORE LOGIC ---
 window.saveData = function() { localStorage.setItem(MASTER_KEY, JSON.stringify(db)); renderAll(); };
 
 window.calculateTrueDebt = function(c) {
@@ -240,19 +239,3 @@ window.openCustomerModal = function(id) {
     document.getElementById('customerModal').style.display = 'flex';
 };
 window.closeCustomerModal = function() { document.getElementById('customerModal').style.display = 'none'; };
-function updatePieChart(coll, owed, pend) {
-    const total = coll + owed + pend;
-    const elColl = document.getElementById('pieCollected');
-    const elOwed = document.getElementById('pieOwed');
-    const elPend = document.getElementById('piePending');
-    if(!elColl || total === 0) return;
-    const pColl = (coll / total) * 100;
-    const pOwed = (owed / total) * 100;
-    const pPend = (pend / total) * 100;
-    elColl.setAttribute('stroke-dasharray', `${pColl} 100`);
-    elColl.setAttribute('stroke-dashoffset', `0`);
-    elOwed.setAttribute('stroke-dasharray', `${pOwed} 100`);
-    elOwed.setAttribute('stroke-dashoffset', `-${pColl}`);
-    elPend.setAttribute('stroke-dasharray', `${pPend} 100`);
-    elPend.setAttribute('stroke-dashoffset', `-${pColl + pOwed}`);
-}
