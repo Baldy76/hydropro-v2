@@ -9,7 +9,7 @@ window.onload = () => {
     const saved = localStorage.getItem(MASTER_KEY);
     if (saved) db = JSON.parse(saved);
     
-    // Integrity Checks from v13.3 baseline
+    // Baseline Integrity
     if (!db.customers) db.customers = [];
     if (!db.expenses) db.expenses = [];
     if (!db.history) db.history = [];
@@ -25,13 +25,23 @@ window.onload = () => {
     renderAll();
 };
 
+// REPAIRED NAVIGATION
 window.openTab = (name) => {
-    document.querySelectorAll(".tab-content").forEach(c => c.style.display = "none");
+    document.querySelectorAll(".tab-content").forEach(c => {
+        c.classList.remove("active");
+        c.style.display = "none";
+    });
+    
     const target = document.getElementById(name);
-    if (target) target.style.display = "block";
+    if (target) {
+        target.classList.add("active");
+        target.style.display = "block";
+    }
     
     const hubPages = ['home', 'weeksHub'];
     const navBar = document.getElementById('globalNav');
+    const mainHeader = document.getElementById('mainHeader');
+    
     if (navBar) {
         navBar.style.display = hubPages.includes(name) ? "none" : "block";
     }
@@ -41,11 +51,30 @@ window.openTab = (name) => {
 };
 
 window.handleBackNavigation = () => {
-    const activeWeek = Array.from(document.querySelectorAll('.tab-content'))
-        .find(c => c.id.startsWith('week') && c.id !== 'weeksHub' && c.style.display === 'block');
-    
-    if (activeWeek) openTab('weeksHub');
-    else openTab('home');
+    const activeContent = document.querySelector('.tab-content.active');
+    if (activeContent && activeContent.id.startsWith('week') && activeContent.id !== 'weeksHub') {
+        openTab('weeksHub');
+    } else {
+        openTab('home');
+    }
+};
+
+window.renderWeekLists = () => {
+    for (let i = 1; i <= 5; i++) {
+        const container = document.getElementById(`week${i}`);
+        if (!container) continue;
+        container.innerHTML = `<button class="back-pill" onclick="openTab('weeksHub')">⬅️ Back to Weeks</button>`;
+        const weekCusts = db.customers.filter(c => c.week == i);
+        if (weekCusts.length === 0) {
+            container.innerHTML += `<div class="card" style="text-align:center; opacity:0.5; padding:40px;">Week ${i} is empty</div>`;
+            continue;
+        }
+        weekCusts.forEach(c => {
+            const card = document.createElement('div'); card.className = 'card';
+            card.innerHTML = `<div onclick="showCustDetails('${c.id}')"><strong style="color:var(--accent); font-size:19px;">${c.name}</strong><br><small>${c.address}</small></div>`;
+            container.appendChild(card);
+        });
+    }
 };
 
 window.saveCustomer = () => {
@@ -72,37 +101,8 @@ window.saveCustomer = () => {
     saveData(); location.reload(); 
 };
 
-window.renderWeekLists = () => {
-    for (let i = 1; i <= 5; i++) {
-        const container = document.getElementById(`week${i}`);
-        if (!container) continue;
-        container.innerHTML = `<button class="back-pill" onclick="openTab('weeksHub')">⬅️ Back to Weeks</button>`;
-        
-        const weekCusts = db.customers.filter(c => c.week == i);
-        if (weekCusts.length === 0) {
-            container.innerHTML += `<div class="card" style="text-align:center; opacity:0.5; padding:40px;">Week ${i} is empty</div>`;
-            continue;
-        }
-
-        weekCusts.forEach(c => {
-            const isPaid = n(c.paidThisMonth) >= n(c.price);
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <div onclick="showCustDetails('${c.id}')"><strong style="font-size:19px; color:var(--accent);">${c.name}</strong><br><small>${c.address}</small></div>
-                <div class="workflow-grid">
-                    <div class="status-row">
-                        <button class="action-btn-main ${c.cleaned ? 'btn-cleaned-active' : ''}" onclick="toggleCleaned('${c.id}')">${c.cleaned ? 'Done' : 'Clean'}</button>
-                        <button class="action-btn-main ${isPaid ? 'btn-paid-active' : ''}" onclick="markAsPaid('${c.id}')">${isPaid ? 'Paid' : 'Pay'}</button>
-                    </div>
-                </div>`;
-            container.appendChild(card);
-        });
-    }
-};
-
-window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); renderLedger(); };
 window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
+window.renderAll = () => { renderWeekLists(); renderStats(); renderMasterTable(); };
 window.toggleDarkMode = () => { const d = document.getElementById('darkModeToggle').checked; document.body.className = d ? 'dark-mode' : 'light-mode'; localStorage.setItem('Hydro_Dark_Pref', d); };
 window.updateGreeting = () => {
     const hr = new Date().getHours();
