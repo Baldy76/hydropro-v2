@@ -1,4 +1,4 @@
-// 1. DATE FORMATTING
+// 1. DATE ENGINE
 function getFullDate() {
     const d = new Date();
     const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -18,14 +18,23 @@ function getFullDate() {
     return `${dayName} ${date}${suffix} ${monthName} ${year}`;
 }
 
-// 2. NAVIGATION
+// 2. NAVIGATION ENGINE
 window.openTab = function(evt, name) {
     const contents = document.getElementsByClassName("tab-content");
-    for (let i = 0; i < contents.length; i++) contents[i].classList.remove("active");
+    for (let i = 0; i < contents.length; i++) {
+        contents[i].classList.remove("active");
+    }
     const tabs = document.getElementsByClassName("tab");
-    for (let i = 0; i < tabs.length; i++) tabs[i].classList.remove("active");
+    for (let i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove("active");
+    }
     document.getElementById(name).classList.add("active");
     if (evt) evt.currentTarget.classList.add("active");
+    
+    // Safety Render
+    if (name === 'master') window.renderMasterTable();
+    if (name === 'stats') window.renderStats();
+    
     window.scrollTo(0,0);
 };
 
@@ -74,7 +83,6 @@ window.renderMasterTable = function() {
     const body = document.getElementById('masterTableBody');
     if(!body) return; 
     body.innerHTML = '';
-    
     const sorted = [...db.customers].sort((a,b) => a.name.localeCompare(b.name));
     sorted.forEach(c => {
         if(searchTerm === "" || c.name.toLowerCase().includes(searchTerm) || (c.address||"").toLowerCase().includes(searchTerm)) {
@@ -88,24 +96,14 @@ window.renderMasterTable = function() {
 };
 
 window.renderStats = function() {
-    // 1. Current Stats
     let collM = 0, owedM = 0, projM = 0;
-    db.customers.forEach(c => { 
-        projM += n(c.price); 
-        collM += n(c.paidThisMonth); 
-        if(c.cleaned) owedM += Math.max(0, n(c.price)-n(c.paidThisMonth)); 
-    });
-    
+    db.customers.forEach(c => { projM += n(c.price); collM += n(c.paidThisMonth); if(c.cleaned) owedM += Math.max(0, n(c.price)-n(c.paidThisMonth)); });
     document.getElementById('statCollMonth').innerText = '£' + collM.toFixed(2);
     document.getElementById('statOwedMonth').innerText = '£' + owedM.toFixed(2);
     document.getElementById('statPendingMonth').innerText = '£' + Math.max(0, projM - collM - owedM).toFixed(2);
-
-    // 2. Lifetime Stats
     if (!db.incomeHistory) db.incomeHistory = [];
     const historyTotal = db.incomeHistory.reduce((s, h) => s + n(h.amount), 0);
-    const overallTotal = historyTotal + collM;
-    document.getElementById('statFYTotal').innerText = '£' + overallTotal.toFixed(2);
-
+    document.getElementById('statFYTotal').innerText = '£' + (historyTotal + collM).toFixed(2);
     const histBody = document.getElementById('overallHistoryBody');
     if(histBody) {
         histBody.innerHTML = '';
@@ -117,25 +115,22 @@ window.renderStats = function() {
     }
 };
 
-// 5. SMART BANK TOGGLE
 window.handleBankAction = function() {
     const btn = document.getElementById('btnBankAction');
-    const fields = ['bName', 'bSort', 'bAcc'];
     const isLocked = document.getElementById('bName').disabled;
     if (isLocked) {
-        fields.forEach(id => document.getElementById(id).disabled = false);
+        ['bName','bSort','bAcc'].forEach(id => document.getElementById(id).disabled = false);
         btn.innerText = "🔒 Save & Lock Details";
         btn.classList.replace('btn-alt', 'btn-save-state');
     } else {
         db.bank = { name: document.getElementById('bName').value, sort: document.getElementById('bSort').value, acc: document.getElementById('bAcc').value };
-        fields.forEach(id => document.getElementById(id).disabled = true);
+        ['bName','bSort','bAcc'].forEach(id => document.getElementById(id).disabled = true);
         btn.innerText = "🔓 Edit Bank Details";
         btn.classList.replace('btn-save-state', 'btn-alt');
         window.saveData();
     }
 };
 
-// 6. CORE ACTIONS
 window.saveCustomer = function() {
     const id = document.getElementById('editId').value || Date.now();
     const name = document.getElementById('cName').value; if(!name) return;
@@ -148,8 +143,7 @@ window.saveCustomer = function() {
 
 window.editCustomer = function(id) { 
     const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return; 
-    document.getElementById('editId').value = c.id; 
-    document.getElementById('cName').value = c.name; document.getElementById('cAddr').value = c.address; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPhone').value = c.phone; document.getElementById('cPrice').value = c.price; document.getElementById('cWeek').value = c.week; document.getElementById('cDay').value = c.day; document.getElementById('cNotes').value = c.notes; 
+    document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cAddr').value = c.address; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPhone').value = c.phone; document.getElementById('cPrice').value = c.price; document.getElementById('cWeek').value = c.week; document.getElementById('cDay').value = c.day; document.getElementById('cNotes').value = c.notes; 
     document.getElementById('editActions').classList.remove('hidden'); document.getElementById('formTitle').innerText = "Edit Customer"; 
     window.openTab(null, 'admin'); 
 };
@@ -167,7 +161,7 @@ window.onload = () => {
 };
 
 window.completeCycle = function() {
-    if(!confirm("Start New Month?")) return;
+    if(!confirm("Start New Month? Debt carries forward.")) return;
     const label = new Date().toLocaleDateString('en-GB', {month:'short', year:'2-digit'});
     const monthlyTotal = db.customers.reduce((s,c) => s + n(c.paidThisMonth), 0);
     if (!db.incomeHistory) db.incomeHistory = [];
