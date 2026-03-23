@@ -74,7 +74,7 @@ window.exportQBIncome = () => {
     db.customers.forEach(c => {
         (c.paymentLogs || []).forEach((log, idx) => {
             const dateStr = log.date.split(',')[0].replace(/\//g, '-');
-            csv += `"${c.name}",${dateStr},INV-${c.id}-${idx},"Window Cleaning",${n(log.amount).toFixed(2)},0\n`;
+            csv += `"${c.name}",${dateStr},INV-${c.id}-${idx},"Window Clean",${n(log.amount).toFixed(2)},0\n`;
         });
     });
     downloadCSV(csv, "QB_Income.csv");
@@ -157,7 +157,7 @@ window.markAsPaid = (id) => {
 window.handleDebtCollection = (id) => {
     const c = db.customers.find(x => x.id === id); if (!c) return;
     const totalOwed = (c.debtHistory || []).reduce((s,d)=>s+n(d.amount),0);
-    const input = prompt(`Debt Collection: £${totalOwed.toFixed(2)}`, totalOwed.toFixed(2));
+    const input = prompt(`Collection for ${c.name}: £${totalOwed.toFixed(2)}`, totalOwed.toFixed(2));
     if (input === null) return;
     const amt = n(input); if (amt <= 0) return;
     if(!c.paymentLogs) c.paymentLogs = [];
@@ -173,20 +173,27 @@ window.handleDebtCollection = (id) => {
 
 const calculateDebt = (c) => (c.debtHistory || []).reduce((sum, d) => sum + n(d.amount), 0);
 
-// --- RENDER HISTORY ---
+// --- REDESIGNED RENDER HISTORY (v13.1 Scoped) ---
 window.renderHistory = () => {
     const hist = document.getElementById('monthlyHistoryContainer');
     if (!hist) return;
-    hist.innerHTML = '<h3 class="section-title" style="margin-top:35px; border-bottom: 2px solid rgba(0,0,0,0.05); padding-bottom:10px;">🏆 Business Hall of Fame</h3>';
-    if(db.history.length === 0) { hist.innerHTML += '<div class="card" style="text-align:center; opacity:0.5;">Month-end snapshots will appear here.</div>'; return; }
+    hist.innerHTML = '<h3 class="section-title" style="margin-top:35px; color: var(--qb-green); font-weight:800;">🏆 The Hall of Fame Timeline</h3>';
+    if(db.history.length === 0) { hist.innerHTML += '<div class="card" style="text-align:center; opacity:0.5; padding:40px;">SNAPSHOTS APPEAR HERE AT MONTH-END.</div>'; return; }
     db.history.forEach(h => {
         const net = n(h.income) - n(h.spend);
-        const d = document.createElement('div'); d.className = 'history-item-card';
-        d.innerHTML = `<div class="history-top-row"><span class="history-month-name">${h.month}</span><span style="font-size:18px;">🔥</span></div>
-            <div class="history-badge-grid"><div class="h-badge"><small>Collected</small><strong>£${n(h.income).toFixed(2)}</strong></div>
-            <div class="h-badge"><small>Spent</small><strong>£${n(h.spend).toFixed(2)}</strong></div>
-            <div class="h-badge"><small>Net Profit</small><strong class="h-profit">£${net.toFixed(2)}</strong></div>
-            <div class="h-badge"><small>Arrears Added</small><strong class="h-debt">£${n(h.debtCreated).toFixed(2)}</strong></div></div>`; 
+        const d = document.createElement('div'); 
+        d.className = 'history-item-card';
+        d.innerHTML = `
+            <div class="history-header-row"><span class="history-title-txt">${h.month}</span><span style="font-size:18px;">🔥</span></div>
+            <div class="history-metrics-grid">
+                <div class="metric-bubble b-profit"><small>Net Monthly Profit</small><strong>£${net.toFixed(2)}</strong><div class="metric-icon-row"><span>Net Take-home</span><span>💎</span></div></div>
+                
+                <div class="metric-bubble b-collected"><small>Cash Collected</small><strong>£${n(h.income).toFixed(2)}</strong><div class="metric-icon-row"><span>Inflow</span><span>💰</span></div></div>
+                
+                <div class="metric-bubble b-spent"><small>Supplies/Costs</small><strong>£${n(h.spend).toFixed(2)}</strong><div class="metric-icon-row"><span>Outflow</span><span>🚚</span></div></div>
+                
+                <div class="metric-bubble b-arrears"><small>Arrears Rolled Over</small><strong>£${n(h.debtCreated).toFixed(2)}</strong><div class="metric-icon-row"><span>Debt Added</span><span>⚠️</span></div></div>
+            </div>`; 
         hist.appendChild(d);
     });
 };
