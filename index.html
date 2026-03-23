@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v17.8</title>
-    <link rel="stylesheet" href="styles.css?v=178">
+    <title>Hydro Pro v18.0</title>
+    <link rel="stylesheet" href="styles.css?v=180">
 </head>
 <body class="light-mode">
 
@@ -50,6 +50,19 @@
             <button class="back-pill bounce-on-tap" onclick="handleBackNavigation()">🏠 Back to Home</button>
         </div>
 
+        <div id="stats" class="tab-content">
+            <div class="dashboard-hero">
+                <div class="hero-label">LIVE MONTHLY PROFIT</div>
+                <div class="hero-amount" id="currProfit">£0.00</div>
+                <div class="hero-sub">Calculated from paid jobs minus expenses</div>
+            </div>
+            
+            <div class="card" style="padding:15px; background:transparent; box-shadow:none;">
+                <h3 class="section-title" style="margin-bottom:10px;">📜 Business History</h3>
+                <div id="monthlyHistoryContainer"></div>
+            </div>
+        </div>
+
         <div id="admin" class="tab-content">
             <div class="card creative-form-card">
                 <input type="hidden" id="editId">
@@ -73,33 +86,11 @@
                     <div class="fun-icon">💰</div>
                     <div class="fun-field-stack"><label>Price £</label><input type="number" id="cPrice" class="creative-input" placeholder="0.00"></div>
                 </div>
-                <div class="fun-input-group">
-                    <div class="fun-icon">📅</div>
-                    <div class="fun-field-stack">
-                        <label>Week</label>
-                        <select id="cWeek" class="creative-select">
-                            <option value="1">Week 1</option><option value="2">Week 2</option>
-                            <option value="3">Week 3</option><option value="4">Week 4</option>
-                            <option value="5">Week 5</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="fun-input-group">
-                    <div class="fun-icon">☀️</div>
-                    <div class="fun-field-stack">
-                        <label>Day</label>
-                        <select id="cDay" class="creative-select">
-                            <option value="Monday">Monday</option><option value="Tuesday">Tuesday</option>
-                            <option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option>
-                            <option value="Friday">Friday</option>
-                        </select>
-                    </div>
-                </div>
                 <div class="fun-input-group" style="border: none;">
                     <div class="fun-icon">📝</div>
                     <div class="fun-field-stack">
                         <label>Private Notes</label>
-                        <textarea id="cNotes" placeholder="Access codes, dog info..." class="creative-textarea"></textarea>
+                        <textarea id="cNotes" placeholder="Codes, dogs, etc..." class="creative-textarea"></textarea>
                     </div>
                 </div>
                 <button class="btn-main full-width-btn creative-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
@@ -107,33 +98,23 @@
         </div>
 
         <div id="master" class="tab-content">
-            <div class="search-container-full">
-                <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()">
-            </div>
+            <div class="search-container-full"><input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search..." oninput="renderMasterTable()"></div>
             <div id="masterTableBody"></div>
-            <div class="card action-card-green">
-                <button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button>
-            </div>
+            <div class="card action-card-green"><button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
         </div>
 
         <div id="spend" class="tab-content">
             <div class="card">
                 <h3 class="section-title">💸 Log Expense</h3>
-                <input type="text" id="expDesc" placeholder="Description" class="creative-input" style="background:var(--input-bg); border-radius:10px; padding:10px; margin-bottom:10px;">
-                <input type="number" id="expAmt" placeholder="0.00" class="creative-input" style="background:var(--input-bg); border-radius:10px; padding:10px;">
-                <button class="btn-main full-width-btn" onclick="addExpense()" style="margin-top:15px;">Add Expense</button>
+                <input type="text" id="expDesc" placeholder="Fuel, Tools..." class="creative-input" style="background:var(--input-bg); border-radius:10px; padding:10px; margin-bottom:10px;"><input type="number" id="expAmt" placeholder="0.00" class="creative-input" style="background:var(--input-bg); border-radius:10px; padding:10px;"><button class="btn-main full-width-btn" onclick="addExpense()" style="margin-top:15px;">Add Expense</button>
             </div>
             <div id="expenseList"></div>
         </div>
 
-        <div id="stats" class="tab-content"><div id="currProfit" class="hero-amount">£0.00</div><div id="monthlyHistoryContainer"></div></div>
-
-        <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div>
-        <div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div>
-        <div id="week5" class="tab-content"></div>
+        <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
     </div>
 
-    <div class="page-version-footer">v17.8 - Wallsend Build</div>
-    <script src="app.js?v=178"></script>
+    <div class="page-version-footer">v18.0 - Dashboard Restore</div>
+    <script src="app.js?v=180"></script>
 </body>
 </html>
