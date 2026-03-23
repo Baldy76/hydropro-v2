@@ -30,6 +30,13 @@ window.openTab = (name) => {
     renderAll();
 };
 
+window.updateGreeting = () => {
+    const hr = new Date().getHours();
+    const g = (hr < 12) ? "Good Morning" : (hr < 18) ? "Good Afternoon" : "Good Evening";
+    const el = document.getElementById('greetingMsg');
+    if (el) el.innerText = `${g}, Partner! ☕`;
+};
+
 window.saveCustomer = () => {
     const name = document.getElementById('cName').value; if(!name) return;
     const id = document.getElementById('editId').value || Date.now().toString();
@@ -37,10 +44,14 @@ window.saveCustomer = () => {
     const existing = idx > -1 ? db.customers[idx] : null;
 
     const entry = {
-        id, name, houseNum: document.getElementById('cHouseNum').value, street: document.getElementById('cStreet').value,
-        postcode: document.getElementById('cPostcode').value.toUpperCase(), price: n(document.getElementById('cPrice').value),
-        notes: document.getElementById('cNotes').value, week: existing ? existing.week : "1", 
-        cleaned: existing ? existing.cleaned : false, paidThisMonth: existing ? existing.paidThisMonth : 0
+        id, name, houseNum: document.getElementById('cHouseNum').value, 
+        street: document.getElementById('cStreet').value,
+        postcode: document.getElementById('cPostcode').value.toUpperCase(), 
+        price: n(document.getElementById('cPrice').value),
+        notes: document.getElementById('cNotes').value, 
+        week: existing ? existing.week : "1", 
+        cleaned: existing ? existing.cleaned : false, 
+        paidThisMonth: existing ? existing.paidThisMonth : 0
     };
 
     if(idx > -1) db.customers[idx] = entry; else db.customers.push(entry);
@@ -74,13 +85,28 @@ window.renderWeekLists = () => {
 };
 
 window.renderStats = () => {
+    const monthYearEl = document.getElementById('currentMonthYear');
+    if (monthYearEl) monthYearEl.innerText = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) + " Summary";
     let target = 0, paid = 0, arrears = 0, spend = 0;
-    db.customers.forEach(c => { target += n(c.price); paid += n(c.paidThisMonth); if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth)); });
+    db.customers.forEach(c => {
+        target += n(c.price); paid += n(c.paidThisMonth);
+        if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth));
+    });
     db.expenses.forEach(e => spend += n(e.amt));
-    const profit = paid - spend; const progress = target > 0 ? (paid / target) * 100 : 0;
-    const map = { 'currProfit': `£${profit.toFixed(2)}`, 'statsIncome': `£${paid.toFixed(2)}`, 'statsSpend': `£${spend.toFixed(2)}`, 'statsArrears': `£${arrears.toFixed(2)}`, 'statsTarget': `£${target.toFixed(2)}`, 'statsRemaining': `£${(target - paid).toFixed(2)}`, 'progressPercent': `${Math.round(progress)}%` };
+    const progress = target > 0 ? (paid / target) * 100 : 0;
+    const map = { 'currProfit': `£${(paid - spend).toFixed(2)}`, 'statsIncome': `£${paid.toFixed(2)}`, 'statsSpend': `£${spend.toFixed(2)}`, 'statsArrears': `£${arrears.toFixed(2)}`, 'statsTarget': `£${target.toFixed(2)}`, 'statsRemaining': `£${(target - paid).toFixed(2)}`, 'progressPercent': `${Math.round(progress)}%` };
     for (let [id, val] of Object.entries(map)) { const el = document.getElementById(id); if(el) el.innerText = val; }
     const bar = document.getElementById('progressBarFill'); if(bar) bar.style.width = `${progress}%`;
+    const histBox = document.getElementById('monthlyHistoryContainer');
+    if(histBox) {
+        histBox.innerHTML = '';
+        if (db.history.length === 0) histBox.innerHTML = '<div class="empty-history-msg">Month-end snapshots appear here.</div>';
+        else [...db.history].reverse().forEach(h => {
+            const div = document.createElement('div'); div.className = 'customer-pill-bubble';
+            div.innerHTML = `<div><strong>${h.month} ${h.year}</strong><small>SNAPSHOT</small></div><div style="font-weight:900; color:var(--success)">£${n(h.profit).toFixed(2)}</div>`;
+            histBox.appendChild(div);
+        });
+    }
 };
 
 window.renderMasterTable = () => {
@@ -94,12 +120,6 @@ window.renderMasterTable = () => {
             body.appendChild(tile);
         }
     });
-};
-
-window.updateGreeting = () => {
-    const hr = new Date().getHours();
-    const g = (hr < 12) ? "Good Morning" : (hr < 18) ? "Good Afternoon" : "Good Evening";
-    document.getElementById('greetingMsg').innerText = `${g}, Partner! ☕`;
 };
 
 window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
