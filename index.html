@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro v12.2</title>
-    <link rel="stylesheet" href="styles.css?v=122">
+    <title>Hydro Pro v12.3</title>
+    <link rel="stylesheet" href="styles.css?v=123">
 </head>
 <body class="light-mode">
 
@@ -87,7 +87,7 @@
                     <button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL DATA</button>
                 </div>
             </div>
-            <div class="version-tag">v12.2 - Debt Logic Enabled</div>
+            <div class="version-tag">v12.3 - Pro Debt Logic</div>
         </div>
 
         <div id="master" class="tab-content"><div id="masterTableBody"></div></div>
@@ -105,7 +105,10 @@
         <div id="spend" class="tab-content">
             <div class="card">
                 <h3 class="section-title">Log Expense</h3>
-                <div class="force-stack"><input type="text" id="expDesc" placeholder="Description" class="large-select" style="margin-bottom:10px;"><input type="number" id="expAmt" placeholder="Amount £" class="large-select" style="margin-bottom:10px;"></div>
+                <div class="force-stack">
+                    <input type="text" id="expDesc" placeholder="Description" class="large-select" style="margin-bottom:10px;">
+                    <input type="number" id="expAmt" placeholder="Amount £" class="large-select" style="margin-bottom:10px;">
+                </div>
                 <button class="btn-main full-width-btn" onclick="addExpense()">Add Expense</button>
             </div>
             <div id="expenseList"></div>
@@ -117,6 +120,6 @@
         <div class="modal-content"><button class="close-btn" onclick="closeCustModal()">✕</button><div id="modalBody"></div></div>
     </div>
 
-    <script src="app.js?v=122"></script>
+    <script src="app.js?v=123"></script>
 </body>
 </html>
