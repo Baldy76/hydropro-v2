@@ -30,6 +30,12 @@ window.openTab = (name) => {
     renderAll();
 };
 
+window.handleBackNavigation = () => {
+    const active = document.querySelector('.tab-content.active').id;
+    if (active.startsWith('week') && active !== 'weeksHub') openTab('weeksHub');
+    else openTab('home');
+};
+
 window.saveCustomer = () => {
     const name = document.getElementById('cName').value; if(!name) return;
     const id = document.getElementById('editId').value || Date.now().toString();
@@ -52,7 +58,7 @@ window.saveCustomer = () => {
     saveData();
     alert("Customer Saved Successfully! ✨");
     
-    // Reset Form
+    // Clear Form
     ['editId', 'cName', 'cHouseNum', 'cStreet', 'cPostcode', 'cPrice', 'cNotes'].forEach(id => {
         const el = document.getElementById(id);
         if(el) el.value = "";
@@ -113,7 +119,7 @@ window.renderWeekLists = () => {
             card.innerHTML = `<div onclick="editCust('${c.id}')"><strong style="color:var(--accent)">${c.name} ${c.cleaned ? '✅' : ''}</strong><br><small>${c.houseNum} ${c.street} ${isPaid ? '💰' : ''}</small></div>
                 <div style="display:flex; gap:10px;">
                     <button class="tile" style="height:44px; padding:0 15px; font-weight:800; ${c.cleaned ? 'background:var(--success); color:white;' : ''}" onclick="toggleCleaned('${c.id}')">Clean</button>
-                    <button class="tile" style="height:44px; padding:0 15px; font-weight:800; ${isPaid ? 'background:var(--accent); color:white;' : ''}" onclick="markAsPaid('${c.id}')">Pay</button>
+                    <button class="tile" style="height:44px; padding:0 15px; ${isPaid ? 'background:var(--accent); color:white;' : ''}" onclick="markAsPaid('${c.id}')">Pay</button>
                 </div>`;
             container.appendChild(card);
         });
