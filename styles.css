@@ -7,35 +7,61 @@ body.dark-mode { --bg: #000000; --card-bg: #1c1c1e; --input-bg: #2c2c2e; --text:
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; }
 
-/* REGRESSION PROTECTION: Tab Logic */
-.tab-content { display: none; width: 100%; }
+.tab-content { display: none; }
 .tab-content.active { display: block !important; }
 .hidden { display: none !important; }
 
-/* BRANDING LOCKDOWN */
-.mode-switch-wrapper { position: fixed; right: 20px; top: 20px; z-index: 10000; }
-.ios-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
-.ios-switch input { opacity: 0; width: 0; height: 0; }
-.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .3s; border-radius: 34px; }
-.slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 2px; bottom: 2px; background-color: white; transition: .3s; border-radius: 50%; }
-input:checked + .slider { background-color: var(--success); }
-
+/* HEADER & BRANDING */
 .app-header { display: flex; flex-direction: column; align-items: center; padding: 25px 0 10px 0; }
-.logo-img { height: 120px !important; width: auto; max-width: 80%; object-fit: contain; margin-bottom: 10px; }
+.logo-img { height: 120px !important; width: auto; max-width: 80%; object-fit: contain; }
+.home-greeting { text-align: center; font-size: 11px; font-weight: 900; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 10px; }
+.home-date { text-align: center; font-size: 20px; font-weight: 900; color: var(--accent); text-transform: uppercase; }
 
-/* UI COMPONENTS */
+/* HOME GRID TILES */
 .home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
 .tile { height: 100px; border-radius: 28px; border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; background: var(--card-bg); color: var(--text); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
 .tile span { font-size: 32px; margin-bottom: 4px; }
 .tile small { font-size: 13px; font-weight: 800; text-transform: uppercase; }
 .tile-weekly-hub { background: var(--accent); color: white; grid-column: 1 / -1; height: 110px; }
 
-.subpage-nav { padding: 0 15px 15px 15px; }
-.back-pill { width: 100%; height: 50px; border-radius: 25px; border: none; background: var(--card-bg); color: var(--accent); font-weight: 800; }
+/* CUSTOMER MASTER UPGRADE (Tile-style Cards) */
+.customer-tile {
+    background: var(--card-bg);
+    margin: 0 15px 12px 15px;
+    padding: 20px;
+    border-radius: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+    border: 1px solid rgba(0,122,255,0.05);
+}
+.cust-info strong { font-size: 18px; color: var(--text); display: block; margin-bottom: 2px; }
+.cust-info small { font-size: 12px; color: var(--accent); font-weight: 700; text-transform: uppercase; opacity: 0.8; }
+.cust-price-pill {
+    background: var(--input-bg);
+    padding: 8px 15px;
+    border-radius: 14px;
+    font-weight: 900;
+    font-size: 14px;
+    color: var(--success);
+}
 
-.creative-form-card { background: var(--card-bg); border-radius: 30px; padding: 20px; margin: 0 15px; }
+/* SEARCH PILL */
+.search-container-full { padding: 0 15px 15px 15px; }
+.search-input-pill { 
+    width: 100%; 
+    height: 60px; 
+    padding: 0 25px; 
+    border-radius: 30px; 
+    border: none; 
+    background: var(--card-bg); 
+    color: var(--text); 
+    font-size: 16px; 
+    font-weight: 600;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06); 
+}
+
+/* FORM LOCKDOWN */
 .fun-input-group { display: flex; align-items: center; gap: 15px; padding: 15px 0; border-bottom: 2px solid rgba(0,0,0,0.1); }
-.creative-input { width: 100%; border: none; background: transparent; color: var(--text); font-size: 16px; font-weight: 600; outline: none; }
-.postcode-input { text-transform: uppercase; }
-
-.page-version-footer { text-align: center; padding: 20px; font-size: 8px; opacity: 0.2; font-weight: 800; margin-top: auto; }
+.creative-textarea { width: 100%; border: none; background: transparent; color: var(--text); font-size: 15px; font-weight: 600; min-height: 100px; padding-top: 10px; outline: none; }
