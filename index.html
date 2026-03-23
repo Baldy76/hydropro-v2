@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v13.5</title>
-    <link rel="stylesheet" href="styles.css?v=135">
+    <title>Hydro Pro v13.8 Restore</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body class="light-mode">
 
     <div class="sticky-header">
         <div class="header-top">
-            <img src="Logo.png" class="logo-img" alt="Hydro Pro Logo">
+            <img src="Logo.png" class="logo-img" alt="Logo">
             <div class="mode-switch-wrapper">
                 <label class="ios-switch">
                     <input type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()">
@@ -18,10 +18,12 @@
                 </label>
             </div>
         </div>
+        
         <div class="date-container">
-            <div id="greetingMsg" class="greeting-txt">Hello, Jonathan!</div>
+            <div id="greetingMsg" class="greeting-txt">Hey there!</div>
             <div id="headerDate" class="date-txt"></div>
         </div>
+
         <div class="tabs">
             <button class="tab active" onclick="openTab(event, 'admin')">Setup</button>
             <button class="tab" onclick="openTab(event, 'master')">Custs</button>
@@ -31,7 +33,6 @@
             <button class="tab" onclick="openTab(event, 'week2')">W2</button>
             <button class="tab" onclick="openTab(event, 'week3')">W3</button>
             <button class="tab" onclick="openTab(event, 'week4')">W4</button>
-            <button class="tab" onclick="openTab(event, 'week5')">W5</button>
         </div>
     </div>
 
@@ -42,23 +43,21 @@
 
         <div id="admin" class="tab-content active">
             <div class="card">
-                <h3 class="section-title">✨ Add New Client</h3>
+                <h3 class="section-title">✨ Add Client</h3>
                 <input type="hidden" id="editId">
                 <div class="input-stack force-stack">
                     <input type="text" id="cName" placeholder="Full Name">
                     <input type="text" id="cAddr" placeholder="Address">
-                    <input type="text" id="cPostcode" placeholder="Postcode">
                     <input type="tel" id="cPhone" placeholder="Mobile Number">
                     <input type="number" id="cPrice" placeholder="Price £">
                 </div>
                 <div class="grid-1x2">
-                    <select id="cWeek" class="large-select"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option><option value="5">Week 5</option></select>
+                    <select id="cWeek" class="large-select"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option></select>
                     <select id="cDay" class="large-select"><option value="Monday">Monday</option><option value="Tuesday">Tuesday</option><option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option><option value="Friday">Friday</option></select>
                 </div>
                 <button class="btn-main full-width-btn bounce-on-tap" onclick="saveCustomer()">💾 Save Customer</button>
             </div>
             <div class="card action-card-green"><button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
-            <div class="card action-card-red"><button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL DATA</button></div>
         </div>
 
         <div id="master" class="tab-content"><div id="masterTableBody"></div></div>
@@ -66,8 +65,8 @@
         <div id="stats" class="tab-content">
             <div class="dashboard-hero"><div class="hero-label">Net Profit</div><div class="hero-amount" id="currProfit">£0.00</div></div>
             <div class="grid-1x2" style="margin-top:15px;">
-                <div class="card mini-card clickable-stat bounce-on-tap" onclick="showIncomeModal()"><small>Revenue</small><strong id="currRevenue" style="color:var(--success)">£0.00</strong></div>
-                <div class="card mini-card clickable-stat bounce-on-tap" onclick="showExpenseModal()"><small>Spend</small><strong id="currSpend" style="color:var(--danger)">£0.00</strong></div>
+                <div class="card mini-card"><small>Revenue</small><strong id="currRevenue" style="color:var(--success)">£0.00</strong></div>
+                <div class="card mini-card"><small>Spend</small><strong id="currSpend" style="color:var(--danger)">£0.00</strong></div>
             </div>
         </div>
 
@@ -76,11 +75,9 @@
             <div id="expenseList"></div>
         </div>
 
-        <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
+        <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div>
     </div>
 
-    <div id="globalModal" class="modal-overlay" onclick="if(event.target === this) closeModal()"><div class="modal-content"><button class="close-btn" onclick="closeModal()">✕</button><div id="modalContentBody"></div></div></div>
-    
-    <script src="app.js?v=135"></script>
+    <script src="app.js"></script>
 </body>
 </html>
