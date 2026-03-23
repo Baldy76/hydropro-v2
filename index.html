@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro v11.1</title>
-    <link rel="stylesheet" href="styles.css?v=111">
+    <title>Hydro Pro v11.2</title>
+    <link rel="stylesheet" href="styles.css?v=112">
 </head>
 <body class="light-mode">
 
@@ -19,11 +18,7 @@
                 </label>
             </div>
         </div>
-
-        <div class="date-container">
-            <div id="headerDate" class="date-txt"></div>
-        </div>
-        
+        <div class="date-container"><div id="headerDate" class="date-txt"></div></div>
         <div class="tabs">
             <button class="tab active" onclick="openTab(event, 'admin')">Setup</button>
             <button class="tab" onclick="openTab(event, 'master')">Custs</button>
@@ -38,23 +33,13 @@
 
     <div class="main-container">
         <div id="globalSearchContainer" class="search-outer hidden">
-            <input type="text" id="mainSearch" class="search-input-sleek" placeholder="🔍 Search customers..." oninput="handleSearch()">
-        </div>
-
-        <div id="dayFilterBar" class="day-filter-container hidden">
-            <button class="day-pill active" onclick="setDayFilter('All')">All</button>
-            <button class="day-pill" onclick="setDayFilter('Monday')">M</button>
-            <button class="day-pill" onclick="setDayFilter('Tuesday')">T</button>
-            <button class="day-pill" onclick="setDayFilter('Wednesday')">W</button>
-            <button class="day-pill" onclick="setDayFilter('Thursday')">T</button>
-            <button class="day-pill" onclick="setDayFilter('Friday')">F</button>
+            <input type="text" id="mainSearch" class="search-input-sleek" placeholder="🔍 Search customers..." oninput="renderMasterTable()">
         </div>
 
         <div id="admin" class="tab-content active">
             <div class="card">
                 <h3 class="section-title">New Customer</h3>
                 <input type="hidden" id="editId">
-                
                 <div class="input-stack force-stack">
                     <input type="text" id="cName" placeholder="Full Name">
                     <input type="text" id="cAddr" placeholder="Address">
@@ -62,8 +47,6 @@
                     <input type="tel" id="cPhone" placeholder="Mobile Number">
                     <input type="number" id="cPrice" placeholder="Price £">
                 </div>
-                
-                <div class="label-heading">Schedule</div>
                 <div class="grid-1x2">
                     <select id="cWeek" class="large-select">
                         <option value="1">Week 1</option><option value="2">Week 2</option>
@@ -91,21 +74,37 @@
             <div class="card action-card-red">
                 <button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL DATA</button>
             </div>
-            
-            <div class="version-tag">v11.1 - UI Rescue Build</div>
+            <div class="version-tag">v11.2 - Full Visibility</div>
         </div>
 
         <div id="master" class="tab-content"><div id="masterTableBody"></div></div>
         
+        <div id="stats" class="tab-content">
+            <div class="card">
+                <h3 class="section-title">Financial Summary</h3>
+                <div class="stat-row"><span>Total Revenue:</span> <strong id="statRevenue">£0.00</strong></div>
+                <div class="stat-row"><span>Total Expenses:</span> <strong id="statSpend">£0.00</strong></div>
+                <hr>
+                <div class="stat-row"><span>Net Profit:</span> <strong id="statProfit" style="color:var(--success)">£0.00</strong></div>
+            </div>
+        </div>
+
+        <div id="spend" class="tab-content">
+            <div class="card">
+                <h3 class="section-title">Log Expense</h3>
+                <input type="text" id="expDesc" placeholder="Item/Description" class="large-select" style="margin-bottom:10px; width:100%;">
+                <input type="number" id="expAmt" placeholder="Amount £" class="large-select" style="margin-bottom:10px; width:100%;">
+                <button class="btn-main full-width-btn" onclick="addExpense()">Add Expense</button>
+            </div>
+            <div id="expenseList"></div>
+        </div>
+
         <div id="week1" class="tab-content"></div>
         <div id="week2" class="tab-content"></div>
         <div id="week3" class="tab-content"></div>
         <div id="week4" class="tab-content"></div>
-        
-        <div id="stats" class="tab-content"></div>
-        <div id="spend" class="tab-content"></div>
     </div>
 
-    <script src="app.js?v=111"></script>
+    <script src="app.js?v=112"></script>
 </body>
 </html>
