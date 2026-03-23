@@ -10,10 +10,11 @@ window.onload = () => {
     if (saved) db = JSON.parse(saved);
     if (!db.customers) db.customers = [];
     if (!db.expenses) db.expenses = [];
-    db.customers.forEach(c => { 
-        if(!c.paymentLogs) c.paymentLogs = []; 
-        if(!c.debtHistory) c.debtHistory = [];
-    });
+    
+    const isDark = localStorage.getItem('Hydro_Dark_Pref') === 'true';
+    document.body.className = isDark ? 'dark-mode' : 'light-mode';
+    if(document.getElementById('darkModeToggle')) document.getElementById('darkModeToggle').checked = isDark;
+    
     renderAll();
 };
 
@@ -49,62 +50,95 @@ window.saveCustomer = () => {
         houseNum: document.getElementById('cHouseNum').value,
         street: document.getElementById('cStreet').value,
         postcode: document.getElementById('cPostcode').value,
-        phone: document.getElementById('cPhone').value,
         price: n(document.getElementById('cPrice').value),
         week: document.getElementById('cWeek').value,
         day: document.getElementById('cDay').value,
         notes: document.getElementById('cNotes').value,
         cleaned: ex ? ex.cleaned : false,
-        paidThisMonth: ex ? ex.paidThisMonth : 0,
-        debtHistory: ex ? ex.debtHistory : [],
-        paymentLogs: ex ? ex.paymentLogs : []
+        paidThisMonth: ex ? ex.paidThisMonth : 0
     };
 
-    if(idx > -1) db.customers[idx] = entry;
-    else db.customers.push(entry);
-    
-    saveData();
-    openTab('home');
+    if(idx > -1) db.customers[idx] = entry; else db.customers.push(entry);
+    saveData(); openTab('home');
 };
 
-// QUICKBOOKS EXPORTS (Baseline Recovery)
 window.exportQBIncome = () => {
     let csv = "Customer,Invoice Date,Invoice No,Service,Amount,Tax Amount\n";
     db.customers.forEach(c => { (c.paymentLogs || []).forEach((log, idx) => {
-        const dateStr = log.date.split(',')[0].replace(/\//g, '-');
-        csv += `"${c.name}",${dateStr},INV-${c.id}-${idx},"Window Clean",${n(log.amount).toFixed(2)},0\n`;
+        csv += `"${c.name}",${log.date.replace(/\//g, '-')},INV-${c.id}-${idx},"Window Clean",${n(log.amount).toFixed(2)},0\n`;
     }); });
     const b = new Blob([csv], { type: 'text/csv' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `QB_Income.csv`; a.click();
 };
 
 window.exportQBExpenses = () => {
     let csv = "Vendor,Date,Description,Amount,Account\n";
-    db.expenses.forEach(e => {
-        const dateStr = e.date.replace(/\//g, '-');
-        csv += `"Vendor",${dateStr},"${e.desc}",${n(e.amt).toFixed(2)},"Expenses"\n`;
-    });
+    db.expenses.forEach(e => { csv += `"Vendor",${e.date.replace(/\//g, '-')},"${e.desc}",${n(e.amt).toFixed(2)},"Expenses"\n`; });
     const b = new Blob([csv], { type: 'text/csv' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `QB_Expenses.csv`; a.click();
 };
 
-window.addExpense = () => { 
-    const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value); 
-    if(!d || a<=0) return; 
-    db.expenses.push({desc:d, amt:a, date:new Date().toLocaleDateString('en-GB')}); 
-    saveData(); renderLedger();
+window.addExpense = () => {
+    const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value);
+    if(!d || a<=0) return;
+    db.expenses.push({desc:d, amt:a, date:new Date().toLocaleDateString('en-GB')});
+    saveData(); renderAll();
 };
 
+window.renderWeekLists = () => {
+    for (let i = 1; i <= 5; i++) {
+        const container = document.getElementById(`week${i}`); if (!container) continue;
+        container.innerHTML = `<button class="back-pill" onclick="openTab('weeksHub')">⬅️ Back to Weeks Hub</button>`;
+        db.customers.filter(c => c.week == i).forEach(c => {
+            const card = document.createElement('div'); card.className = 'card';
+            card.innerHTML = `<div onclick="editCust('${c.id}')"><strong style="color:var(--accent); font-size:18px;">${c.name}</strong><br><small>${c.houseNum} ${c.street}</small></div>`;
+            container.appendChild(card);
+        });
+    }
+};
+
+window.renderMasterTable = () => {
+    const body = document.getElementById('masterTableBody'); if(!body) return;
+    body.innerHTML = '';
+    const search = (document.getElementById('mainSearch').value || "").toLowerCase();
+    db.customers.forEach(c => {
+        if(c.name.toLowerCase().includes(search)) {
+            const div = document.createElement('div'); div.className = 'card'; div.style.display = 'flex'; div.style.justifyContent = 'space-between';
+            div.innerHTML = `<div onclick="editCust('${c.id}')"><strong>${c.name}</strong><br><small>${c.houseNum} ${c.street}</small></div><div>£${n(c.price).toFixed(2)}</div>`;
+            body.appendChild(div);
+        }
+    });
+};
+
+window.editCust = (id) => {
+    const c = db.customers.find(x => x.id === id); if(!c) return;
+    openTab('admin');
+    document.getElementById('editId').value = c.id;
+    document.getElementById('cName').value = c.name;
+    document.getElementById('cHouseNum').value = c.houseNum;
+    document.getElementById('cStreet').value = c.street;
+    document.getElementById('cPostcode').value = c.postcode;
+    document.getElementById('cPrice').value = c.price;
+    document.getElementById('cWeek').value = c.week;
+    document.getElementById('cDay').value = c.day;
+    document.getElementById('cNotes').value = c.notes;
+};
+
+window.completeCycle = () => {
+    if(!confirm("Start New Month?")) return;
+    db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; });
+    saveData(); location.reload();
+};
+
+window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
+window.renderAll = () => { renderWeekLists(); renderMasterTable(); renderLedger(); };
 window.renderLedger = () => {
     const list = document.getElementById('expenseList'); if(!list) return;
     list.innerHTML = '<h3 class="section-title">💸 Spend History</h3>';
     db.expenses.forEach(e => {
-        const div = document.createElement('div'); div.className = 'card'; div.style.padding = '18px'; div.style.marginBottom = '10px';
-        div.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><div><strong>${e.desc}</strong><br><small>${e.date}</small></div><div style="font-weight:900; color:var(--danger);">£${n(e.amt).toFixed(2)}</div></div>`;
+        const div = document.createElement('div'); div.className = 'card';
+        div.innerHTML = `<div style="display:flex; justify-content:space-between"><div><strong>${e.desc}</strong><br><small>${e.date}</small></div><div style="color:var(--danger)">-£${n(e.amt).toFixed(2)}</div></div>`;
         list.appendChild(div);
     });
 };
-
-window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
-window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderLedger(); };
 window.updateGreeting = () => {
     const hr = new Date().getHours();
     document.getElementById('greetingMsg').innerText = (hr < 12) ? "Good Morning! ☕" : (hr < 18) ? "Good Afternoon! ☀️" : "Good Evening! 🌙";
