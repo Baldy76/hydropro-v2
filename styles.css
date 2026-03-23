@@ -16,56 +16,43 @@ body { font-family: -apple-system, sans-serif; background: var(--bg); color: var
 input:checked + .slider { background-color: var(--success); }
 input:checked + .slider:before { transform: translateX(22px); }
 
+/* HEADER */
 .app-header { display: flex; flex-direction: column; align-items: center; padding: 25px 0 10px 0; }
 .logo-img { height: 120px !important; width: auto; max-width: 80%; object-fit: contain; }
 .home-greeting { font-size: 12px !important; font-weight: 900; opacity: 0.6; text-transform: uppercase; margin-top: 10px; text-align: center; }
 .home-date { font-size: 22px !important; font-weight: 900; color: var(--accent); text-align: center; }
 
-/* 📊 STATS PAGE RESTORATION CSS (Matches Screenshot) */
-.stats-hero-card {
-    background: var(--card-bg);
-    margin: 15px;
-    padding: 35px 20px;
-    border-radius: 40px;
-    text-align: center;
-    border: 2px solid var(--accent);
-    box-shadow: 0 10px 25px rgba(0,122,255,0.1);
-}
-.stats-summary-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: var(--text); }
-.stats-main-amount { font-size: 60px; font-weight: 900; margin-bottom: 8px; color: var(--text); }
-.stats-hero-sub { font-size: 14px; font-weight: 700; color: var(--text); }
-
-.stats-card { background: var(--card-bg); margin: 0 15px 15px; padding: 22px; border-radius: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
-.progress-header { display: flex; justify-content: space-between; font-weight: 800; margin-bottom: 10px; font-size: 16px; }
-.progress-bar-bg { background: #f2f2f7; height: 12px; border-radius: 6px; overflow: hidden; margin-bottom: 12px; }
-.progress-bar-fill { background: var(--accent); height: 100%; transition: 0.8s ease; width: 0%; }
-.progress-footer { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: #8e8e93; }
-
-.stats-grid-2x1 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 15px 15px; }
-.stats-mini-card { background: var(--card-bg); padding: 25px 10px; border-radius: 25px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
-.stats-mini-card small { font-size: 10px; font-weight: 800; color: #8e8e93; display: block; margin-bottom: 8px; }
-.amt-green { color: var(--success); font-size: 24px; font-weight: 900; }
-.amt-red { color: var(--danger); font-size: 24px; font-weight: 900; }
-
-.arrears-pill { 
-    background: #ff453a; color: white; 
-    margin: 0 15px 25px; padding: 22px; 
-    border-radius: 25px; text-align: center; 
-    font-weight: 800; font-size: 20px; 
-    box-shadow: 0 8px 20px rgba(255,69,58,0.3);
-}
-
-.hall-of-fame-title { color: #32d74b; margin: 0 15px 15px; font-size: 24px; font-weight: 900; }
-
-/* 📏 ENTRY SCREEN EXPANSION (Locked) */
+/* CUSTOMER ENTRY RESTORATION */
 .creative-form-card { background: var(--card-bg); border-radius: 30px; padding: 20px; margin: 0 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
 .fun-input-group { display: flex; align-items: center; gap: 15px; padding: 16px 0; border-bottom: 2px solid rgba(0,0,0,0.05); width: 100%; }
 .fun-icon { width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
-.fun-field-stack { flex-grow: 1; display: flex; flex-direction: column; }
+.fun-field-stack { flex-grow: 1; }
+.fun-field-stack label { display: block; font-size: 10px; font-weight: 800; text-transform: uppercase; color: #8e8e93; margin-bottom: 2px; }
 .creative-input { width: 100% !important; border: none; background: transparent; color: var(--text); font-size: 18px; font-weight: 600; outline: none; }
 .creative-textarea { width: 100%; border: none; background: transparent; color: var(--text); font-size: 17px; font-weight: 600; min-height: 150px; outline: none; resize: none; }
 
-/* FULL WIDTH MASTER LIST COMP */
+.creative-save-btn { 
+    margin-top: 30px; 
+    background: linear-gradient(135deg, var(--accent), #5856d6) !important; 
+    height: 64px; 
+    color: white !important; 
+    font-weight: 900; 
+    border-radius: 20px; 
+    width: 100%; 
+    border: none; 
+    font-size: 18px; 
+    box-shadow: 0 8px 20px rgba(0,122,255,0.3);
+    cursor: pointer;
+}
+
+/* STATS PAGE */
+.stats-hero-card { background: var(--card-bg); margin: 15px; padding: 35px 20px; border-radius: 40px; text-align: center; border: 2px solid var(--accent); }
+.stats-main-amount { font-size: 60px; font-weight: 900; }
+.progress-bar-bg { background: #f2f2f7; height: 12px; border-radius: 6px; overflow: hidden; margin-bottom: 12px; }
+.progress-bar-fill { background: var(--accent); height: 100%; transition: 0.8s ease; width: 0%; }
+.arrears-pill { background: #ff453a; color: white; margin: 0 15px 25px; padding: 22px; border-radius: 25px; text-align: center; font-weight: 800; font-size: 20px; }
+
+/* MASTER LIST UI */
 .search-container-full { width: 100%; padding: 0 15px 15px; }
 .search-input-pill { width: 100%; height: 64px; padding: 0 25px; border-radius: 32px; background: var(--card-bg); color: var(--text); font-size: 17px; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border: none; }
 .full-width-action-area { width: 100%; padding: 15px; }
@@ -78,15 +65,11 @@ input:checked + .slider:before { transform: translateX(22px); }
 .tile small { font-size: 15px !important; font-weight: 900 !important; text-transform: uppercase; }
 .tile-weekly-hub { background: var(--accent); color: white !important; grid-column: 1 / -1; height: 120px; }
 
-/* VERSION FOOTER (Micro) */
+/* FOOTER */
 .page-version-footer { width: 100%; text-align: center; padding: 30px 0 10px; font-size: 7px; opacity: 0.15; font-weight: 900; text-transform: uppercase; }
 
 .tab-content { display: none; }
 .tab-content.active { display: block !important; }
 .hidden { display: none !important; }
 .customer-pill-bubble { background: var(--card-bg); margin: 0 15px 15px; padding: 22px; border-radius: 35px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
-.tile-week-blue { height: 100px; border-radius: 28px; border: none; background: #e1f5fe; color: #000; font-size: 18px; font-weight: 900; display: flex; align-items: center; justify-content: center; width: 100%; }
-body.dark-mode .tile-week-blue { background: #01579b; color: #fff; }
-.weeks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
-.tile-week-5 { grid-column: 1 / -1; }
 .back-pill { width: 100%; height: 52px; border-radius: 26px; border: none; background: var(--card-bg); color: var(--accent); font-weight: 900; font-size: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 15px; }
