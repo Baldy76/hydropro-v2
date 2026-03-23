@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro - Production v5.5</title>
+    <title>Hydro Pro - Production v5.6</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="light-mode">
@@ -91,7 +91,7 @@
                 <button type="button" class="btn-uat full-width-btn" onclick="runUATClear()">🛠️ RESET ALL DATA</button>
             </div>
             
-            <div class="version-tag">v5.5 - Stable Production</div>
+            <div class="version-tag">v5.6 - Stable Production</div>
         </div>
 
         <div id="master" class="tab-content">
@@ -108,7 +108,7 @@
 
         <div id="stats" class="tab-content">
             <div class="card">
-                <h3 style="text-align:center;">This Month's Cycle</h3>
+                <h3 style="text-align:center;">This Month</h3>
                 <div class="stats-grid">
                     <div class="metric-tile tile-collected">Collected<br><strong id="statCollMonth">£0</strong></div>
                     <div class="metric-tile tile-owed">Owed<br><strong id="statOwedMonth">£0</strong></div>
@@ -117,16 +117,14 @@
             </div>
 
             <div class="card">
-                <h3 style="text-align:center;">Lifetime Performance</h3>
-                <div class="fy-box" style="background: var(--primary); color: white; padding: 20px; border-radius: 15px; text-align: center;">
-                    <small style="opacity:0.8; text-transform: uppercase; letter-spacing: 1px;">Total Revenue Collected</small><br>
+                <h3 style="text-align:center;">Overall Revenue</h3>
+                <div id="lifetimeBox" style="background: var(--primary); color: white; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px;">
+                    <small style="opacity:0.8; text-transform: uppercase;">Total Collected to Date</small><br>
                     <span id="statFYTotal" style="font-size: 32px; font-weight: 900;">£0</span>
                 </div>
-                <div style="margin-top: 20px;">
-                    <table style="width:100%; border-collapse: collapse;">
-                        <tbody id="overallHistoryBody"></tbody>
-                    </table>
-                </div>
+                <table style="width:100%; border-collapse: collapse;">
+                    <tbody id="overallHistoryBody"></tbody>
+                </table>
             </div>
         </div>
 
@@ -140,8 +138,10 @@
             <div id="expenseList"></div>
         </div>
 
-        <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div>
-        <div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div>
+        <div id="week1" class="tab-content"></div>
+        <div id="week2" class="tab-content"></div>
+        <div id="week3" class="tab-content"></div>
+        <div id="week4" class="tab-content"></div>
     </div>
 
     <div id="customerModal" class="modal-overlay" onclick="if(event.target === this) closeCustomerModal()">
