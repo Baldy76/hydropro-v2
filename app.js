@@ -1,6 +1,7 @@
 const MASTER_KEY = 'HydroPro_App_Production';
 const BANK_DETAILS = "Bank: Monzo\nAcc: 12345678\nSort: 00-00-00"; 
 let db = { customers: [], expenses: [], history: [] }; 
+let currentCoords = { lat: null, lon: null };
 const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 
 // --- STARTUP ---
@@ -13,24 +14,21 @@ window.onload = () => {
     if (!db.customers) db.customers = [];
     if (!db.expenses) db.expenses = [];
     if (!db.history) db.history = [];
-    
-    db.customers.forEach(c => { 
-        if(!c.paymentLogs) c.paymentLogs = []; 
-        if(!c.debtHistory) c.debtHistory = [];
-    });
-
+    db.customers.forEach(c => { if(!c.paymentLogs) c.paymentLogs = []; if(!c.debtHistory) c.debtHistory = []; });
     const isDark = localStorage.getItem('Hydro_Dark_Pref') === 'true';
     document.body.className = isDark ? 'dark-mode' : 'light-mode';
     if(document.getElementById('darkModeToggle')) document.getElementById('darkModeToggle').checked = isDark;
     
-    // Trigger Weather/GPS
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
-            (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
-            (err) => console.log("Weather Location access denied")
+            (pos) => {
+                currentCoords.lat = pos.coords.latitude;
+                currentCoords.lon = pos.coords.longitude;
+                fetchWeather(currentCoords.lat, currentCoords.lon);
+            },
+            (err) => console.log("Location denied")
         );
     }
-    
     renderAll();
 };
 
@@ -43,6 +41,7 @@ const updateGreeting = () => {
     document.getElementById('greetingMsg').innerText = g;
 };
 
+// --- WEATHER LOGIC ---
 const fetchWeather = async (lat, lon) => {
     try {
         const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
@@ -60,9 +59,19 @@ const fetchWeather = async (lat, lon) => {
         else if (code <= 67) { icon.innerText = "🌧️"; desc.innerText = "Rainy"; }
         else if (code <= 77) { icon.innerText = "❄️"; desc.innerText = "Snowy"; }
         else { icon.innerText = "⛈️"; desc.innerText = "Stormy"; }
-    } catch (e) { console.log("Weather service error"); }
+    } catch (e) { console.log("Weather error"); }
 };
 
+window.openWeatherApp = () => {
+    if (!currentCoords.lat) return;
+    const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const url = isiOS 
+        ? `weather://` 
+        : `https://www.google.com/search?q=weather+at+my+location`;
+    window.open(url, '_blank');
+};
+
+// --- REST OF APP LOGIC ---
 window.openTab = (evt, name) => {
     document.querySelectorAll(".tab-content").forEach(c => c.style.display = "none");
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
@@ -73,7 +82,6 @@ window.openTab = (evt, name) => {
     const target = document.getElementById(name);
     if (target) { target.style.display = "block"; if (evt) evt.currentTarget.classList.add("active"); }
     renderAll();
-    window.scrollTo(0,0);
 };
 
 window.saveCustomer = () => {
@@ -91,14 +99,14 @@ window.saveCustomer = () => {
         debtHistory: ex ? ex.debtHistory : [], paymentLogs: ex ? ex.paymentLogs : []
     };
     if(idx > -1) db.customers[idx] = entry; else db.customers.push(entry);
-    saveData(); alert("Saved!"); location.reload(); 
+    saveData(); location.reload(); 
 };
 
 window.exportQBIncome = () => {
     let csv = "Customer,Invoice Date,Invoice No,Service,Amount,Tax Amount\n";
     db.customers.forEach(c => { (c.paymentLogs || []).forEach((log, idx) => {
         const dateStr = log.date.split(',')[0].replace(/\//g, '-');
-        csv += `"${c.name}",${dateStr},INV-${c.id}-${idx},"Window Clean",${n(log.amount).toFixed(2)},0\n`;
+        csv += `"${c.name}",${dateStr},INV-${c.id}-${idx},"Cleaning",${n(log.amount).toFixed(2)},0\n`;
     }); });
     downloadCSV(csv, "QB_Income.csv");
 };
@@ -175,7 +183,7 @@ window.markAsPaid = (id) => {
 window.handleDebtCollection = (id) => {
     const c = db.customers.find(x => x.id === id); if (!c) return;
     const totalOwed = (c.debtHistory || []).reduce((s,d)=>s+n(d.amount),0);
-    const input = prompt(`Debt Recovery for ${c.name}: £${totalOwed.toFixed(2)}\nEnter amount paid:`, totalOwed.toFixed(2));
+    const input = prompt(`Collection for ${c.name}: £${totalOwed.toFixed(2)}`, totalOwed.toFixed(2));
     if (input === null) return;
     const amt = n(input); if (amt <= 0) return;
     let context = ""; if(c.debtHistory.length > 0) context = `${c.debtHistory[0].month || ''} Clean: ${c.debtHistory[0].date}`;
@@ -195,29 +203,28 @@ window.renderStats = () => {
     if(document.getElementById('statsMonthTitle')) document.getElementById('statsMonthTitle').innerText = `${curMonth} Summary`;
     let totalIn = 0; db.customers.forEach(c => { (c.paymentLogs||[]).forEach(l => totalIn += n(l.amount)); });
     let totalOut = db.expenses.reduce((sum, e) => sum + n(e.amt), 0);
-    let potentialVal = db.customers.reduce((sum, c) => sum + n(c.price), 0);
-    let jobCollected = db.customers.reduce((sum, c) => sum + n(c.paidThisMonth), 0);
-    let overdueVal = db.customers.reduce((sum, c) => sum + (c.debtHistory||[]).reduce((s,d)=>s+n(d.amount),0), 0);
-    let progress = potentialVal > 0 ? (jobCollected / potentialVal) * 100 : 0;
+    let potVal = db.customers.reduce((sum, c) => sum + n(c.price), 0);
+    let jobCol = db.customers.reduce((sum, c) => sum + n(c.paidThisMonth), 0);
+    let progress = potVal > 0 ? (jobCol / potVal) * 100 : 0;
     document.getElementById('currProfit').innerText = `£${(totalIn - totalOut).toFixed(2)}`;
     document.getElementById('currRevenue').innerText = `£${totalIn.toFixed(2)}`;
     document.getElementById('currSpend').innerText = `£${totalOut.toFixed(2)}`;
     document.getElementById('progressBar').style.width = `${progress}%`;
     document.getElementById('collectionPercent').innerText = `${Math.round(progress)}%`;
-    document.getElementById('targetWork').innerText = `£${potentialVal.toFixed(2)}`;
-    document.getElementById('stillToCollect').innerText = `£${Math.max(0, potentialVal - jobCollected).toFixed(2)}`;
-    document.getElementById('totalOldDebt').innerText = `£${overdueVal.toFixed(2)}`;
+    document.getElementById('targetWork').innerText = `£${potVal.toFixed(2)}`;
+    document.getElementById('stillToCollect').innerText = `£${Math.max(0, potVal - jobCol).toFixed(2)}`;
+    document.getElementById('totalOldDebt').innerText = `£${db.customers.reduce((s,c)=>s+(c.debtHistory||[]).reduce((ss,d)=>ss+n(d.amount),0),0).toFixed(2)}`;
     renderHistory();
 };
 
 window.renderHistory = () => {
     const hist = document.getElementById('monthlyHistoryContainer'); if (!hist) return;
-    hist.innerHTML = '<h3 class="section-title" style="margin-top:35px; color: var(--qb-green); font-weight:800;">🏆 The Hall of Fame</h3>';
-    if(db.history.length === 0) { hist.innerHTML += '<div class="card" style="text-align:center; opacity:0.5;">Month-end snapshots will appear here.</div>'; return; }
+    hist.innerHTML = '<h3 class="section-title" style="margin-top:35px; color: var(--qb-green);">🏆 The Hall of Fame</h3>';
+    if(db.history.length === 0) { hist.innerHTML += '<div class="card" style="text-align:center; opacity:0.5;">No snapshots.</div>'; return; }
     db.history.forEach(h => {
         const net = n(h.income) - n(h.spend);
         const d = document.createElement('div'); d.className = 'history-item-card';
-        d.innerHTML = `<div class="history-metrics-grid"><div class="metric-bubble b-profit"><small>${h.month}</small><strong>Net Profit £${net.toFixed(2)}</strong></div>
+        d.innerHTML = `<div class="history-metrics-grid"><div class="metric-bubble b-profit"><small>${h.month}</small><strong>Net £${net.toFixed(2)}</strong></div>
             <div class="metric-bubble b-collected"><small>Collected</small><strong>£${n(h.income).toFixed(2)}</strong></div>
             <div class="metric-bubble b-spent"><small>Spent</small><strong>£${n(h.spend).toFixed(2)}</strong></div>
             <div class="metric-bubble b-arrears"><small>Arrears Added</small><strong>£${n(h.debtCreated).toFixed(2)}</strong></div></div>`; 
@@ -246,7 +253,7 @@ window.renderMasterTable = () => {
             const row = document.createElement('div'); row.className = 'master-row';
             row.onclick = () => showCustDetails(c.id);
             const d = (c.debtHistory||[]).reduce((s,x)=>s+n(x.amount),0);
-            row.innerHTML = `<div><strong>${c.name}</strong><br><small>${c.address || 'No Address'}</small></div><div style="text-align:right">£${n(c.price).toFixed(2)}${d > 0 ? '<br><small style="color:var(--danger); font-weight:800;">ARREARS: £' + d.toFixed(2) + '</small>' : ''}</div>`;
+            row.innerHTML = `<div><strong>${c.name}</strong><br><small>${c.address || 'No Address'}</small></div><div style="text-align:right">£${n(c.price).toFixed(2)}${d > 0 ? '<br><small style="color:var(--danger); font-weight:800;">Debt: £' + d.toFixed(2) + '</small>' : ''}</div>`;
             container.appendChild(row);
         }
     });
@@ -264,7 +271,7 @@ window.renderWeekLists = () => {
             const card = document.createElement('div'); card.className = 'card';
             card.innerHTML = `<div onclick="showCustDetails('${c.id}')"><strong style="font-size:19px; color:var(--accent);">${c.name}</strong><br><small style="opacity:0.6;">${c.address || 'No Address'}</small></div>
                 <div class="workflow-grid"><div class="comms-row"><button class="icon-btn-large bounce-on-tap" style="color:#25D366" onclick="handleWhatsApp('${c.id}')">💬</button><button class="icon-btn-large bounce-on-tap" style="color:#007AFF" onclick="handleSMS('${c.id}')">📱</button><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((c.address||'') + ' ' + (c.postcode||''))}" target="_blank" class="icon-btn-large bounce-on-tap" style="color:#ea4335">📍</a></div>
-                <div class="status-row" style="${d > 0 ? 'grid-template-columns:repeat(3,1fr)' : 'grid-template-columns:1fr 1fr'}"><button class="action-btn-main bounce-on-tap ${c.cleaned ? 'btn-cleaned-active' : ''}" onclick="toggleCleaned('${c.id}')">${c.cleaned ? 'Done ✅' : 'Cleaned'}</button><button class="action-btn-main bounce-on-tap ${isPaid ? 'btn-paid-active' : 'btn-pay-pending'}" onclick="markAsPaid('${c.id}')">${isPaid ? 'Paid 💰' : 'Pay £' + n(c.price).toFixed(2)}</button>${d > 0 ? `<button class="action-btn-main bounce-on-tap btn-debt-pending" onclick="handleDebtCollection('${c.id}')">Debt £${d.toFixed(2)}</button>` : ''}</div></div>`;
+                <div class="status-row" style="${d > 0 ? 'grid-template-columns:repeat(3,1fr)' : 'grid-template-columns:1fr 1fr'}"><button class="action-btn-main bounce-on-tap ${c.cleaned ? 'btn-cleaned-active' : ''}" onclick="toggleCleaned('${c.id}')">${c.cleaned ? 'Done ✅' : 'Cleaned'}</button><button class="action-btn-main bounce-on-tap ${isPaid ? 'btn-paid-active' : 'btn-pay-pending'}" onclick="markAsPaid('${c.id}')">${isPaid ? 'Paid 💰' : 'Pay £' + n(c.price).toFixed(2)}</button>${d > 0 ? `<button class="action-btn-main bounce-on-tap btn-debt-pending" onclick="handleDebtCollection('${c.id}')">Arrears £${d.toFixed(2)}</button>` : ''}</div></div>`;
             container.appendChild(card);
         });
     }
@@ -274,7 +281,7 @@ window.showCustDetails = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
     const body = document.getElementById('modalContentBody');
     const d = (c.debtHistory||[]).reduce((s,x)=>s+n(x.amount),0);
-    body.innerHTML = `<h2 style="margin-top:0; color:var(--accent);">${c.name}</h2><p>📍 ${c.address || 'N/A'} ${c.postcode || ''}</p><p>📞 ${c.phone || 'N/A'}</p><p>💰 Price: £${n(c.price).toFixed(2)}</p>${d > 0 ? `<p style="color:var(--danger); font-weight:bold; background:rgba(255,59,48,0.1); padding:10px; border-radius:10px;">Arrears: £${d.toFixed(2)}</p>` : ''}<p>📝 Notes: ${c.notes || 'No notes.'}</p><button class="btn-main full-width-btn" onclick="editCust('${c.id}')">⚙️ Edit</button>`;
+    body.innerHTML = `<h2 style="margin-top:0; color:var(--accent);">${c.name}</h2><p>📍 ${c.address || 'N/A'}</p><p>📞 ${c.phone || 'N/A'}</p><p>💰 £${n(c.price).toFixed(2)}</p>${d > 0 ? `<p style="color:var(--danger); font-weight:bold; background:rgba(255,59,48,0.1); padding:10px; border-radius:10px;">Arrears: £${d.toFixed(2)}</p>` : ''}<p>📝 Notes: ${c.notes || 'No notes.'}</p><button class="btn-main full-width-btn" onclick="editCust('${c.id}')">⚙️ Edit</button>`;
     document.getElementById('globalModal').style.display = 'flex';
 };
 
@@ -296,7 +303,7 @@ window.addExpense = () => {
 };
 
 window.completeCycle = () => {
-    if(!confirm("Archive Month? Cleaned/Unpaid jobs move to Arrears.")) return;
+    if(!confirm("Archive Month?")) return;
     const curLabel = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
     let mInc = 0; db.customers.forEach(c => { (c.paymentLogs||[]).forEach(l => mInc += n(l.amount)); });
     let mExp = db.expenses.reduce((sum, e) => sum + n(e.amt), 0);
@@ -313,11 +320,6 @@ window.completeCycle = () => {
     db.history.unshift({ month: curLabel, income: mInc, spend: mExp, debtCreated: nDebt });
     db.expenses = []; saveData(); location.reload();
 };
-window.exportFullCSV = () => {
-    let c = "ID,Name,Address,Postcode,Phone,Price,Week,Day,Notes\n";
-    db.customers.forEach(x => { c += `${x.id},"${x.name}","${x.address}","${x.postcode}","${x.phone}",${x.price},${x.week},"${x.day}","${x.notes}"\n`; });
-    const b = new Blob([c], { type: 'text/csv' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `HydroBackup.csv`; a.click();
-};
 window.importFullCSV = (e) => {
     const f = e.target.files[0], r = new FileReader();
     r.onload = (ev) => {
@@ -332,4 +334,9 @@ window.importFullCSV = (e) => {
         db.customers = imp; saveData(); location.reload();
     };
     r.readAsText(f);
+};
+window.exportFullCSV = () => {
+    let c = "ID,Name,Address,Postcode,Phone,Price,Week,Day,Notes\n";
+    db.customers.forEach(x => { c += `${x.id},"${x.name}","${x.address}","${x.postcode}","${x.phone}",${x.price},${x.week},"${x.day}","${x.notes}"\n`; });
+    const b = new Blob([c], { type: 'text/csv' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `HydroBackup.csv`; a.click();
 };
