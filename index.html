@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro v9.3</title>
-    <link rel="stylesheet" href="styles.css?v=93">
+    <title>Hydro Pro v9.4</title>
+    <link rel="stylesheet" href="styles.css?v=94">
 </head>
 <body class="light-mode">
 
@@ -35,6 +34,10 @@
 
     <div class="main-container">
         <div id="headerDate" class="date-txt"></div>
+
+        <div id="globalSearchContainer" class="search-outer hidden">
+            <input type="text" id="mainSearch" class="search-input-sleek" placeholder="🔍 Search by name or address..." oninput="handleSearch()">
+        </div>
 
         <div id="dayFilterBar" class="day-filter-container hidden">
             <button class="day-pill active" onclick="setDayFilter('All')">All</button>
@@ -78,11 +81,9 @@
                     <button class="btn-neutral full-width-btn" style="margin-top:10px;" onclick="clearForm()">Cancel</button>
                 </div>
             </div>
-
             <div class="card action-card-green">
                 <button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button>
             </div>
-
             <div class="card">
                 <h3 class="section-title">Database</h3>
                 <div class="grid-2">
@@ -97,10 +98,7 @@
         </div>
 
         <div id="master" class="tab-content">
-            <div class="card no-padding overflow-hidden">
-                <div class="search-container"><input type="text" id="mainSearch" placeholder="🔍 Search..." oninput="handleSearch()"></div>
-                <div id="masterTableBody"></div>
-            </div>
+            <div id="masterTableBody"></div>
         </div>
 
         <div id="stats" class="tab-content">
@@ -108,11 +106,10 @@
                 <div class="profit-card">
                     <div class="profit-stat"><small>Revenue</small><strong id="statGross">£0</strong></div>
                     <div class="profit-stat"><small>Spent</small><strong id="statExp" class="text-owed">£0</strong></div>
-                    <div class="profit-stat"><small>Net</small><strong id="statNet" class="text-paid">£0</strong></div>
+                    <div class="profit-stat"><small>Net Profit</small><strong id="statNet" class="text-paid">£0</strong></div>
                 </div>
             </div>
         </div>
-
         <div id="spend" class="tab-content">
             <div class="card">
                 <h3 class="section-title">Log Expense</h3>
@@ -122,7 +119,6 @@
             </div>
             <div id="expenseList"></div>
         </div>
-
         <div id="week1" class="tab-content"></div>
         <div id="week2" class="tab-content"></div>
         <div id="week3" class="tab-content"></div>
@@ -137,10 +133,20 @@
                 <button class="btn-main full-width-btn" onclick="confirmQuickPay('full')">Pay Full</button>
                 <button class="btn-ghost full-width-btn" onclick="confirmQuickPay('custom')">Custom</button>
             </div>
-            <button class="btn-neutral full-width-btn" style="margin-top:10px;" onclick="document.getElementById('payModal').style.display='none'">Cancel</button>
         </div>
     </div>
 
-    <script src="app.js?v=93"></script>
+    <div id="customerModal" class="modal-overlay" onclick="if(event.target === this) closeCustomerModal()">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeCustomerModal()">✖</button>
+            <div id="modName" style="font-size:22px; font-weight:900; color:var(--accent);"></div>
+            <p id="modAddr" style="opacity:0.6; font-size:14px; margin-bottom:10px;"></p>
+            <div id="ledgerBox"></div>
+            <div class="total-owed-display"><small>TOTAL OWED:</small><br><span id="modOwed"></span></div>
+            <button class="btn-alt full-width-btn" onclick="editFromModal()">⚙️ Edit Details</button>
+        </div>
+    </div>
+
+    <script src="app.js?v=94"></script>
 </body>
 </html>
