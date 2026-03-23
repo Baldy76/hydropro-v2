@@ -25,25 +25,17 @@ body { font-family: -apple-system, sans-serif; background: var(--bg); color: var
 .tab-content.active { display: block !important; position: relative; top: 0; visibility: visible; }
 
 /* BUTTONS */
-button { cursor: pointer; -webkit-appearance: none !important; border: none; font-weight: 800; border-radius: 12px; height: 52px; }
+button { cursor: pointer; -webkit-appearance: none !important; border: none; font-weight: 800; border-radius: 12px; height: 52px; transition: 0.2s; }
 .full-width-btn { width: 100% !important; display: flex !important; justify-content: center; align-items: center; }
 .btn-main { background: var(--accent); color: white; }
 .btn-danger { background: var(--danger); color: white; }
 .btn-alt { background: var(--primary); color: white; }
 .btn-neutral { background: #ddd; color: #333; }
-.btn-save-state { background-color: var(--stat-collected) !important; color: white !important; }
-.btn-uat { background: #555 !important; color: #fff !important; font-size: 11px; opacity: 0.6; height: 40px; }
 
-/* DATA MGMT */
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.grid-2-spaced { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 15px !important; width: 100% !important; }
-.btn-export-custom { background-color: #add8e6 !important; color: #000 !important; }
-.btn-import-custom { background-color: #fff9c4 !important; color: #d32f2f !important; }
-
-/* LEDGER */
-.ledger-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-weight: 700; }
+/* LEDGER ROWS */
+.ledger-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-weight: 700; }
 .text-paid { color: var(--stat-collected); }
-.text-debt { color: var(--stat-owed); }
+.text-owed { color: var(--stat-owed); }
 
 /* UI */
 .card { background: var(--card-bg); padding: 22px; border-radius: 24px; box-shadow: var(--shadow); margin-bottom: 15px; }
