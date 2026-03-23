@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro v9.2</title>
-    <link rel="stylesheet" href="styles.css?v=92">
+    <title>Hydro Pro v9.3</title>
+    <link rel="stylesheet" href="styles.css?v=93">
 </head>
 <body class="light-mode">
 
@@ -36,11 +36,19 @@
     <div class="main-container">
         <div id="headerDate" class="date-txt"></div>
 
+        <div id="dayFilterBar" class="day-filter-container hidden">
+            <button class="day-pill active" onclick="setDayFilter('All')">All</button>
+            <button class="day-pill" onclick="setDayFilter('Monday')">M</button>
+            <button class="day-pill" onclick="setDayFilter('Tuesday')">T</button>
+            <button class="day-pill" onclick="setDayFilter('Wednesday')">W</button>
+            <button class="day-pill" onclick="setDayFilter('Thursday')">T</button>
+            <button class="day-pill" onclick="setDayFilter('Friday')">F</button>
+        </div>
+
         <div id="admin" class="tab-content active">
             <div class="card fade-in">
                 <h3 class="section-title">New Customer</h3>
                 <input type="hidden" id="editId">
-                
                 <div class="input-stack">
                     <input type="text" id="cName" placeholder="Full Name">
                     <input type="text" id="cAddr" placeholder="Address">
@@ -48,24 +56,26 @@
                     <input type="tel" id="cPhone" placeholder="Mobile Number">
                     <input type="number" id="cPrice" placeholder="Price £">
                 </div>
-                
                 <div class="label-heading">Schedule</div>
                 <div class="grid-2">
                     <select id="cWeek">
                         <option value="1">Week 1</option><option value="2">Week 2</option>
                         <option value="3">Week 3</option><option value="4">Week 4</option>
                     </select>
-                    <select id="cFreq">
-                        <option value="4">4 Weeks</option><option value="8">8 Weeks</option>
-                        <option value="12">12 Weeks</option>
+                    <select id="cDay">
+                        <option value="Monday">Monday</option><option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
                     </select>
                 </div>
-                
+                <select id="cFreq" style="margin-top:10px;">
+                    <option value="4">4 Weeks</option><option value="8">8 Weeks</option>
+                    <option value="12">12 Weeks</option>
+                </select>
                 <button class="btn-main full-width-btn" onclick="saveCustomer()">💾 Save Customer</button>
-                
                 <div id="editActions" class="hidden" style="margin-top:15px; border-top:1px solid rgba(0,0,0,0.05); padding-top:15px;">
-                    <button class="btn-danger full-width-btn" onclick="deleteCustomer()">🗑 Delete Customer</button>
-                    <button class="btn-neutral full-width-btn" style="margin-top:10px;" onclick="clearForm()">Cancel Changes</button>
+                    <button class="btn-danger full-width-btn" onclick="deleteCustomer()">🗑 Delete</button>
+                    <button class="btn-neutral full-width-btn" style="margin-top:10px;" onclick="clearForm()">Cancel</button>
                 </div>
             </div>
 
@@ -79,40 +89,26 @@
                     <button class="btn-export-blue full-width-btn" onclick="exportFullCSV()">💾 Export</button>
                     <button class="btn-import-yellow full-width-btn" onclick="document.getElementById('csvFile').click()">📂 Import</button>
                 </div>
-                <input type="file" id="csvFile" accept=".csv" onchange="importFullCSV(event)" style="display:none;">
+                <input type="file" id="csvFile" style="display:none;" onchange="importFullCSV(event)">
             </div>
-
             <div class="card action-card-red">
-                <button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL APP DATA</button>
+                <button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL DATA</button>
             </div>
-            
-            <div class="version-tag">v9.2 - Full Audit Build</div>
         </div>
 
         <div id="master" class="tab-content">
             <div class="card no-padding overflow-hidden">
-                <div class="search-container">
-                    <input type="text" id="mainSearch" placeholder="🔍 Search customers..." oninput="handleSearch()">
-                </div>
+                <div class="search-container"><input type="text" id="mainSearch" placeholder="🔍 Search..." oninput="handleSearch()"></div>
                 <div id="masterTableBody"></div>
             </div>
         </div>
 
         <div id="stats" class="tab-content">
             <div class="card fade-in">
-                <h3 class="section-title" style="text-align:center;">Financial Performance</h3>
                 <div class="profit-card">
                     <div class="profit-stat"><small>Revenue</small><strong id="statGross">£0</strong></div>
                     <div class="profit-stat"><small>Spent</small><strong id="statExp" class="text-owed">£0</strong></div>
-                    <div class="profit-stat"><small>Net Profit</small><strong id="statNet" class="text-paid">£0</strong></div>
-                </div>
-                <div class="chart-container" style="display:flex; justify-content:center; padding:20px 0;">
-                    <svg width="150" height="150" viewBox="0 0 42 42" id="statPieSvg" style="transform: rotate(-90deg); border-radius: 50%;">
-                        <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#eee" stroke-width="5"></circle>
-                        <circle id="pieCollected" cx="21" cy="21" r="15.915" fill="transparent" stroke="var(--success)" stroke-width="5" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
-                        <circle id="pieOwed" cx="21" cy="21" r="15.915" fill="transparent" stroke="var(--danger)" stroke-width="5" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
-                        <circle id="piePending" cx="21" cy="21" r="15.915" fill="transparent" stroke="var(--accent)" stroke-width="5" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
-                    </svg>
+                    <div class="profit-stat"><small>Net</small><strong id="statNet" class="text-paid">£0</strong></div>
                 </div>
             </div>
         </div>
@@ -121,8 +117,8 @@
             <div class="card">
                 <h3 class="section-title">Log Expense</h3>
                 <input type="text" id="expName" placeholder="Item">
-                <input type="number" id="expAmount" placeholder="Amount £">
-                <button class="btn-main full-width-btn" onclick="addExpense()">Add Expense</button>
+                <input type="number" id="expAmount" placeholder="£">
+                <button class="btn-main full-width-btn" onclick="addExpense()">Log</button>
             </div>
             <div id="expenseList"></div>
         </div>
@@ -133,28 +129,18 @@
         <div id="week4" class="tab-content"></div>
     </div>
 
-    <div id="customerModal" class="modal-overlay" onclick="if(event.target === this) closeCustomerModal()">
+    <div id="payModal" class="modal-overlay" onclick="if(event.target === this) this.style.display='none'">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeCustomerModal()">✖</button>
-            <div id="modName" style="font-size:22px; font-weight:900; color:var(--accent);"></div>
-            <p id="modAddr" style="opacity:0.6; font-size:14px; margin-bottom:10px;"></p>
-            <div class="ledger-container"><div id="ledgerBox"></div></div>
-            <div class="total-owed-display"><small>TOTAL OWED:</small><br><span id="modOwed"></span></div>
-            <div class="modal-action-footer">
-                <button class="btn-alt full-width-btn" onclick="editFromModal()">⚙️ Edit Details</button>
-                <button class="btn-neutral full-width-btn" onclick="closeCustomerModal()">Close</button>
+            <h3 class="section-title">Log Payment</h3>
+            <p id="payCustName" style="font-weight:700; color:var(--accent);"></p>
+            <div class="grid-2">
+                <button class="btn-main full-width-btn" onclick="confirmQuickPay('full')">Pay Full</button>
+                <button class="btn-ghost full-width-btn" onclick="confirmQuickPay('custom')">Custom</button>
             </div>
+            <button class="btn-neutral full-width-btn" style="margin-top:10px;" onclick="document.getElementById('payModal').style.display='none'">Cancel</button>
         </div>
     </div>
 
-    <div id="msgModal" class="modal-overlay" style="z-index:11000;" onclick="if(event.target === this) this.style.display='none'">
-        <div class="modal-content">
-            <h3 class="section-title">Message Templates</h3>
-            <button class="btn-alt full-width-btn" style="margin-bottom:12px;" onclick="executeMessage('coming')">🗓 Coming Tomorrow</button>
-            <button class="btn-main full-width-btn" onclick="executeMessage('done')">✅ Job Done / Bank Info</button>
-        </div>
-    </div>
-
-    <script src="app.js?v=92"></script>
+    <script src="app.js?v=93"></script>
 </body>
 </html>
