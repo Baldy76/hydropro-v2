@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro v10.0</title>
-    <link rel="stylesheet" href="styles.css?v=100">
+    <title>Hydro Pro v10.1</title>
+    <link rel="stylesheet" href="styles.css?v=101">
 </head>
 <body class="light-mode">
 
@@ -54,7 +54,8 @@
                 <div class="input-stack">
                     <input type="text" id="cName" placeholder="Full Name">
                     <input type="text" id="cAddr" placeholder="Address">
-                    <input type="tel" id="cPhone" placeholder="Mobile (for WhatsApp)">
+                    <input type="text" id="cPostcode" placeholder="Postcode">
+                    <input type="tel" id="cPhone" placeholder="Mobile Number">
                     <input type="number" id="cPrice" placeholder="Price £">
                 </div>
                 <div class="label-heading">Schedule</div>
@@ -81,32 +82,33 @@
                 <button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button>
             </div>
 
+            <div class="card">
+                <h3 class="section-title">Database</h3>
+                <div class="grid-2">
+                    <button class="btn-export-blue full-width-btn" onclick="exportFullCSV()">💾 Export</button>
+                    <button class="btn-import-yellow full-width-btn" onclick="document.getElementById('csvFile').click()">📂 Import</button>
+                </div>
+                <input type="file" id="csvFile" style="display:none;" onchange="importFullCSV(event)">
+            </div>
+
             <div class="card action-card-red">
                 <button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL DATA</button>
             </div>
-            <div class="version-tag">v10.0 - Hybrid Hybrid Card</div>
+
+            <div class="version-tag">v10.1 - Structural Rescue</div>
         </div>
 
         <div id="master" class="tab-content">
             <div id="masterTableBody"></div>
         </div>
+        <div id="stats" class="tab-content"></div>
+        <div id="spend" class="tab-content"></div>
         <div id="week1" class="tab-content"></div>
         <div id="week2" class="tab-content"></div>
         <div id="week3" class="tab-content"></div>
         <div id="week4" class="tab-content"></div>
     </div>
 
-    <div id="payModal" class="modal-overlay" onclick="if(event.target === this) this.style.display='none'">
-        <div class="modal-content">
-            <h3 class="section-title">Quick Pay</h3>
-            <p id="payCustName" style="font-weight:bold;"></p>
-            <div class="grid-2">
-                <button class="btn-main full-width-btn" onclick="confirmQuickPay('full')">Full Pay</button>
-                <button class="btn-ghost full-width-btn" onclick="confirmQuickPay('custom')">Custom</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="app.js?v=100"></script>
+    <script src="app.js?v=101"></script>
 </body>
 </html>
