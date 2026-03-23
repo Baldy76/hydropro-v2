@@ -42,10 +42,20 @@ window.saveCustomer = () => {
         cleaned: false, paidThisMonth: 0, debtHistory: []
     };
     const idx = db.customers.findIndex(x => x.id === id);
-    if(idx > -1) db.customers[idx] = entry; else db.customers.push(entry);
+    if(idx > -1) {
+        // Keep debt history if editing
+        const existing = db.customers[idx];
+        entry.debtHistory = existing.debtHistory || [];
+        entry.paidThisMonth = existing.paidThisMonth || 0;
+        entry.cleaned = existing.cleaned || false;
+        db.customers[idx] = entry;
+    } else {
+        db.customers.push(entry);
+    }
     saveData(); alert("Saved!"); location.reload(); 
 };
 
+// --- WORKFLOW HANDLERS ---
 window.toggleCleaned = (id) => {
     const c = db.customers.find(x => x.id === id);
     if (!c) return;
@@ -62,9 +72,29 @@ window.markAsPaid = (id) => {
     renderWeekLists();
 };
 
+window.clearDebt = (id) => {
+    const c = db.customers.find(x => x.id === id);
+    if (!c) return;
+    if(confirm(`Clear all debt (£${calculateDebt(c)}) for ${c.name}?`)) {
+        c.debtHistory = [];
+        saveData();
+        renderWeekLists();
+    }
+};
+
+const calculateDebt = (c) => {
+    if(!c.debtHistory) return 0;
+    return c.debtHistory.reduce((sum, d) => sum + n(d.amount), 0);
+};
+
 window.generateMessage = (customer) => {
     const date = new Date().toLocaleDateString('en-GB');
-    return `Hey ${customer.name}, just to let you know that your windows were cleaned today ${date} at ${customer.address}. Please find my bank details below if you wish to pay via bank transfer: £${n(customer.price).toFixed(2)}.\n\nThank you for your business\nJonathan\n\n${BANK_DETAILS}`;
+    const debt = calculateDebt(customer);
+    const total = n(customer.price) + debt;
+    let msg = `Hey ${customer.name}, just to let you know that your windows were cleaned today ${date} at ${customer.address}.`;
+    if(debt > 0) msg += ` Total including previous balance is £${total.toFixed(2)}.`;
+    else msg += ` Balance is £${n(customer.price).toFixed(2)}.`;
+    return `${msg}\n\nPlease find my bank details below:\n\nJonathan\n${BANK_DETAILS}`;
 };
 
 window.handleWhatsApp = (id) => {
@@ -95,7 +125,8 @@ window.renderMasterTable = () => {
             const row = document.createElement('div');
             row.className = 'master-row';
             row.onclick = () => showCustDetails(c.id);
-            row.innerHTML = `<div><strong>${c.name}</strong><br><small>${c.address}</small></div><div style="text-align:right">£${n(c.price).toFixed(2)}<br><small>${c.day}</small></div>`;
+            const debt = calculateDebt(c);
+            row.innerHTML = `<div><strong>${c.name}</strong><br><small>${c.address}</small></div><div style="text-align:right">£${n(c.price).toFixed(2)}${debt > 0 ? '<br><small style="color:var(--danger)">Debt: £' + debt.toFixed(2) + '</small>' : ''}<br><small>${c.day}</small></div>`;
             container.appendChild(row);
         }
     });
@@ -107,10 +138,17 @@ window.renderWeekLists = () => {
         if (!container) continue; container.innerHTML = '';
         const weekCusts = db.customers.filter(c => c.week == i);
         if (weekCusts.length === 0) { container.innerHTML = '<div class="card" style="text-align:center; opacity:0.5;">No jobs.</div>'; continue; }
+        
         weekCusts.forEach(c => {
             const isPaid = n(c.paidThisMonth) >= n(c.price);
+            const debt = calculateDebt(c);
+            const hasDebt = debt > 0;
             const card = document.createElement('div');
             card.className = 'card';
+            
+            // Layout Row 2 Grid depends on Debt presence
+            const gridStyle = hasDebt ? 'grid-template-columns: repeat(3, 1fr);' : 'grid-template-columns: 1fr 1fr;';
+
             card.innerHTML = `
                 <div onclick="showCustDetails('${c.id}')">
                     <strong style="font-size:18px;">${c.name}</strong><br>
@@ -118,18 +156,22 @@ window.renderWeekLists = () => {
                 </div>
                 <div class="workflow-grid">
                     <div class="comms-row">
-                        <button class="icon-btn-large" style="color:#25D366" onclick="handleWhatsApp('${c.id}')">💬</button>
-                        <button class="icon-btn-large" style="color:#007AFF" onclick="handleSMS('${c.id}')">📱</button>
+                        <button class="icon-btn-large wa-color" onclick="handleWhatsApp('${c.id}')">💬</button>
+                        <button class="icon-btn-large sms-color" onclick="handleSMS('${c.id}')">📱</button>
                         <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.address + ' ' + c.postcode)}" 
-                           target="_blank" class="icon-btn-large" style="color:#ea4335">📍</a>
+                           target="_blank" class="icon-btn-large maps-color">📍</a>
                     </div>
-                    <div class="status-row">
+                    <div class="status-row" style="${gridStyle}">
                         <button class="action-btn-main ${c.cleaned ? 'btn-cleaned-active' : ''}" onclick="toggleCleaned('${c.id}')">
                             ${c.cleaned ? 'Cleaned ✅' : 'Cleaned'}
                         </button>
                         <button class="action-btn-main ${isPaid ? 'btn-paid-active' : 'btn-pay-pending'}" onclick="markAsPaid('${c.id}')">
                             ${isPaid ? 'Paid ✅' : 'Pay £' + n(c.price).toFixed(2)}
                         </button>
+                        ${hasDebt ? `
+                        <button class="action-btn-main btn-debt-pending" onclick="clearDebt('${c.id}')">
+                            Debt £${debt.toFixed(2)}
+                        </button>` : ''}
                     </div>
                 </div>`;
             container.appendChild(card);
@@ -142,7 +184,15 @@ window.showCustDetails = (id) => {
     if(!c) return;
     const modal = document.getElementById('custModal');
     const body = document.getElementById('modalBody');
-    body.innerHTML = `<h2 style="margin-top:0; color:var(--accent);">${c.name}</h2><p>📍 ${c.address} ${c.postcode}</p><p>📞 ${c.phone || 'N/A'}</p><p>💰 Price: £${n(c.price).toFixed(2)}</p><p>📝 Notes: ${c.notes || 'No notes.'}</p><button class="btn-main full-width-btn" onclick="editCust('${c.id}')">⚙️ Edit</button>`;
+    const debt = calculateDebt(c);
+    body.innerHTML = `
+        <h2 style="margin-top:0; color:var(--accent);">${c.name}</h2>
+        <p>📍 ${c.address} ${c.postcode}</p>
+        <p>📞 ${c.phone || 'N/A'}</p>
+        <p>💰 Price: £${n(c.price).toFixed(2)}</p>
+        ${debt > 0 ? `<p style="color:var(--danger); font-weight:bold;">⚠️ Total Owed Debt: £${debt.toFixed(2)}</p>` : ''}
+        <p>📝 Notes: ${c.notes || 'No notes.'}</p>
+        <button class="btn-main full-width-btn" onclick="editCust('${c.id}')">⚙️ Edit Customer</button>`;
     modal.style.display = 'flex';
 };
 
@@ -176,8 +226,8 @@ window.renderStats = () => {
     if (!hist) return; hist.innerHTML = '<h3 class="section-title" style="margin-top:25px;">History</h3>';
     db.history.forEach(h => {
         const d = document.createElement('div'); d.className = 'history-card';
-        d.innerHTML = `<div class="history-grid">
-            <div class="history-item"><small>${h.month}</small><strong>Inc: £${n(h.income).toFixed(2)}</strong></div>
+        d.innerHTML = `<div class="history-header"><span>${h.month}</span></div><div class="history-grid">
+            <div class="history-item"><small>Inc</small><strong>£${n(h.income).toFixed(2)}</strong></div>
             <div class="history-item"><small>Debt</small><strong style="color:var(--danger)">£${n(h.debtCreated).toFixed(2)}</strong></div>
         </div>`; hist.appendChild(d);
     });
