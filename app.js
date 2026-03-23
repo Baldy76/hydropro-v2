@@ -2,6 +2,7 @@ const MASTER_KEY = 'HydroPro_App_Production';
 let db = { customers: [], incomeHistory: [], expenses: [], bank: {name:'', sort:'', acc:''} };
 const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 
+// 1. DATE ENGINE
 function getFullDate() {
     const d = new Date();
     const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -65,6 +66,60 @@ window.renderAll = function() {
     renderWeeks();
 };
 
+// 2. PIE CHART ENGINE
+function updatePieChart(coll, owed, pend) {
+    const total = coll + owed + pend;
+    if (total === 0) return;
+
+    const pColl = (coll / total) * 100;
+    const pOwed = (owed / total) * 100;
+    const pPend = (pend / total) * 100;
+
+    const elColl = document.getElementById('pieCollected');
+    const elOwed = document.getElementById('pieOwed');
+    const elPend = document.getElementById('piePending');
+
+    // Collected starts at 0
+    elColl.setAttribute('stroke-dasharray', `${pColl} 100`);
+    elColl.setAttribute('stroke-dashoffset', `0`);
+
+    // Owed starts after Collected
+    elOwed.setAttribute('stroke-dasharray', `${pOwed} 100`);
+    elOwed.setAttribute('stroke-dashoffset', `-${pColl}`);
+
+    // Pending starts after Collected + Owed
+    elPend.setAttribute('stroke-dasharray', `${pPend} 100`);
+    elPend.setAttribute('stroke-dashoffset', `-${pColl + pOwed}`);
+}
+
+window.renderStats = function() {
+    let collM = 0, owedM = 0, projM = 0;
+    db.customers.forEach(c => { 
+        projM += n(c.price); 
+        collM += n(c.paidThisMonth); 
+        if(c.cleaned) owedM += Math.max(0, n(c.price)-n(c.paidThisMonth)); 
+    });
+    
+    let pendM = Math.max(0, projM - collM - owedM);
+
+    if(document.getElementById('statCollMonth')) document.getElementById('statCollMonth').innerText = '£' + collM.toFixed(2);
+    if(document.getElementById('statOwedMonth')) document.getElementById('statOwedMonth').innerText = '£' + owedM.toFixed(2);
+    if(document.getElementById('statPendingMonth')) document.getElementById('statPendingMonth').innerText = '£' + pendM.toFixed(2);
+    
+    updatePieChart(collM, owedM, pendM);
+
+    const historyTotal = db.incomeHistory.reduce((s, h) => s + n(h.amount), 0);
+    if(document.getElementById('statFYTotal')) document.getElementById('statFYTotal').innerText = '£' + (historyTotal + collM).toFixed(2);
+    
+    const histBody = document.getElementById('overallHistoryBody');
+    if(histBody) {
+        histBody.innerHTML = '';
+        [...db.incomeHistory].reverse().forEach(h => {
+            histBody.innerHTML += `<tr><td style="padding:10px 0; border-bottom:1px solid rgba(0,0,0,0.05); font-weight:600;">${h.month}</td><td style="padding:10px 0; text-align:right; font-weight:800; color:var(--stat-collected);">£${n(h.amount).toFixed(2)}</td></tr>`;
+        });
+    }
+};
+
 window.renderWeeks = function() {
     for(let i=1; i<=4; i++) {
         const div = document.getElementById('week' + i);
@@ -94,28 +149,10 @@ window.renderMasterTable = function() {
     });
 };
 
-window.renderStats = function() {
-    let collM = 0, owedM = 0, projM = 0;
-    db.customers.forEach(c => { projM += n(c.price); collM += n(c.paidThisMonth); if(c.cleaned) owedM += Math.max(0, n(c.price)-n(c.paidThisMonth)); });
-    if(document.getElementById('statCollMonth')) document.getElementById('statCollMonth').innerText = '£' + collM.toFixed(2);
-    if(document.getElementById('statOwedMonth')) document.getElementById('statOwedMonth').innerText = '£' + owedM.toFixed(2);
-    if(document.getElementById('statPendingMonth')) document.getElementById('statPendingMonth').innerText = '£' + Math.max(0, projM - collM - owedM).toFixed(2);
-    const historyTotal = db.incomeHistory.reduce((s, h) => s + n(h.amount), 0);
-    if(document.getElementById('statFYTotal')) document.getElementById('statFYTotal').innerText = '£' + (historyTotal + collM).toFixed(2);
-    const histBody = document.getElementById('overallHistoryBody');
-    if(histBody) {
-        histBody.innerHTML = '';
-        [...db.incomeHistory].reverse().forEach(h => {
-            histBody.innerHTML += `<tr><td style="padding:10px 0; border-bottom:1px solid rgba(0,0,0,0.05);">${h.month}</td><td style="padding:10px 0; text-align:right; font-weight:700;">£${n(h.amount).toFixed(2)}</td></tr>`;
-        });
-    }
-};
-
 window.openCustomerModal = function(id) {
     const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return;
     document.getElementById('modName').innerText = c.name;
     document.getElementById('modAddr').innerText = (c.address || "") + " " + (c.postcode || "");
-    
     const totalOwed = calculateTrueDebt(c);
     document.getElementById('modOwed').innerText = '£' + totalOwed.toFixed(2);
     document.getElementById('modOwed').style.color = totalOwed > 0 ? 'var(--danger)' : 'var(--stat-collected)';
@@ -130,7 +167,7 @@ window.openCustomerModal = function(id) {
             if(d) ledgerHtml += `<div class="ledger-row text-owed"><span>${m}</span><span>£${n(d.amount).toFixed(2)}</span></div>`;
             else if(p) ledgerHtml += `<div class="ledger-row text-paid"><span>${m} PAID ✅</span><span>£${n(p.amount).toFixed(2)}</span></div>`;
         });
-    } else { ledgerHtml = "<div style='opacity:0.5; text-align:center; padding:10px;'>No payment history yet.</div>"; }
+    } else { ledgerHtml = "<div style='opacity:0.5; text-align:center; padding:10px;'>No history yet.</div>"; }
     document.getElementById('ledgerBox').innerHTML = ledgerHtml;
 
     const statusBox = document.getElementById('modCurrentStatus');
@@ -143,6 +180,7 @@ window.openCustomerModal = function(id) {
 window.completeCycle = function() {
     if(!confirm("Start New Month? Unpaid current moves to debt.")) return;
     const label = new Date().toLocaleDateString('en-GB', {month:'short', year:'2-digit'});
+    if (!db.incomeHistory) db.incomeHistory = [];
     db.incomeHistory.push({ month: label, amount: db.customers.reduce((s,c) => s + n(c.paidThisMonth), 0) });
     db.customers.forEach(c => {
         if(!c.paymentHistory) c.paymentHistory = [];
@@ -159,17 +197,31 @@ window.completeCycle = function() {
     saveData();
 };
 
+window.processPayment = function(id) {
+    const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return;
+    const amt = prompt("Payment amount?", calculateTrueDebt(c).toFixed(2));
+    if(amt === null) return;
+    let pay = n(amt);
+    if(c.debtHistory && c.debtHistory.length > 0) {
+        for(let i=0; i<c.debtHistory.length; i++) {
+            if(pay <= 0) break;
+            let owe = n(c.debtHistory[i].amount);
+            if(pay >= owe) { pay -= owe; c.debtHistory[i].amount = 0; }
+            else { c.debtHistory[i].amount = owe - pay; pay = 0; }
+        }
+        c.debtHistory = c.debtHistory.filter(h => n(h.amount) > 0);
+    }
+    c.paidThisMonth += pay;
+    saveData();
+};
+
 window.saveCustomer = function() {
     const id = document.getElementById('editId').value || Date.now();
     const name = document.getElementById('cName').value; if(!name) return;
     const entry = { id: id, name: name, address: document.getElementById('cAddr').value, postcode: document.getElementById('cPostcode').value, phone: document.getElementById('cPhone').value, price: n(document.getElementById('cPrice').value), week: document.getElementById('cWeek').value, day: document.getElementById('cDay').value, notes: document.getElementById('cNotes').value, cleaned: false, paidThisMonth: 0, debtHistory: [], paymentHistory: [] };
     const idx = db.customers.findIndex(x => String(x.id) === String(id));
-    if(idx > -1) { 
-        const old = db.customers[idx];
-        entry.cleaned = old.cleaned; entry.paidThisMonth = old.paidThisMonth; 
-        entry.debtHistory = old.debtHistory || []; entry.paymentHistory = old.paymentHistory || [];
-        db.customers[idx] = entry; 
-    } else { db.customers.push(entry); }
+    if(idx > -1) { const old = db.customers[idx]; entry.cleaned = old.cleaned; entry.paidThisMonth = old.paidThisMonth; entry.debtHistory = old.debtHistory || []; entry.paymentHistory = old.paymentHistory || []; db.customers[idx] = entry; } 
+    else { db.customers.push(entry); }
     clearForm(); saveData(); openTab(null, 'master');
 };
 
@@ -188,27 +240,11 @@ window.handleBankAction = function() {
     else { db.bank = { name: document.getElementById('bName').value, sort: document.getElementById('bSort').value, acc: document.getElementById('bAcc').value }; ['bName','bSort','bAcc'].forEach(id => document.getElementById(id).disabled = true); document.getElementById('btnBankAction').innerText = "🔓 Edit Bank Details"; saveData(); }
 };
 window.deleteCustomer = function() { const id = document.getElementById('editId').value; if(id && confirm("Delete permanently?")) { db.customers = db.customers.filter(c => String(c.id) !== String(id)); clearForm(); saveData(); openTab(null, 'master'); } };
-window.processPayment = function(id) {
-    const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return;
-    const amt = prompt("Payment amount?", calculateTrueDebt(c).toFixed(2));
-    if(amt === null) return;
-    let pay = n(amt);
-    if(c.debtHistory && c.debtHistory.length > 0) {
-        for(let i=0; i<c.debtHistory.length; i++) {
-            if(pay <= 0) break;
-            let owe = n(c.debtHistory[i].amount);
-            if(pay >= owe) { pay -= owe; c.debtHistory[i].amount = 0; }
-            else { c.debtHistory[i].amount = owe - pay; pay = 0; }
-        }
-        c.debtHistory = c.debtHistory.filter(h => n(h.amount) > 0);
-    }
-    c.paidThisMonth += pay;
-    saveData();
-};
 window.sendReminder = function(id, type) {
     const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return;
     const b = db.bank || {name:'', sort:'', acc:''};
-    const msg = `Hey ${c.name}, windows washed at ${c.address}. Total: £${calculateTrueDebt(c).toFixed(2)}. Jonathan@Hydro\nBank: ${b.name}\nSort: ${b.sort}\nAcc: ${b.acc}`;
+    const bankStr = b.name ? `\n\nBank: ${b.name}\nSort: ${b.sort}\nAcc: ${b.acc}` : "";
+    const msg = `Hey ${c.name}, windows washed at ${c.address}. Total: £${calculateTrueDebt(c).toFixed(2)}. Jonathan@Hydro${bankStr}`;
     const encoded = encodeURIComponent(msg), phone = c.phone.replace(/\s+/g, '');
     if (type === 'whatsapp') window.location.href = `https://wa.me/${phone}?text=${encoded}`;
     else window.location.href = `sms:${phone}${/iPhone/i.test(navigator.userAgent)?'&':'?'}body=${encoded}`;
