@@ -1,81 +1,171 @@
-:root { 
-    --primary: #1c1c1e; --accent: #007aff; --danger: #ff3b30; --success: #34c759;
-    --bg: #f2f2f7; --card-bg: #ffffff; --input-bg: #f2f2f7; --text: #000000;
-    --export-blue: #add8e6; --import-yellow: #fff9c4; --qb-green: #2ca01c;
-}
-body.dark-mode { --bg: #000000; --card-bg: #1c1c1e; --input-bg: #2c2c2e; --text: #ffffff; }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Hydro Pro v14.2</title>
+    <link rel="stylesheet" href="styles.css?v=142">
+</head>
+<body class="light-mode">
 
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; transition: background 0.3s ease; }
+    <div class="sticky-header">
+        <div class="header-top">
+            <img src="Logo.png" class="logo-img" alt="Hydro Pro Logo">
+            <div class="mode-switch-wrapper">
+                <label class="ios-switch">
+                    <input type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+        <div class="date-container">
+            <div id="greetingMsg" class="greeting-txt">Hey there!</div>
+            <div id="weatherWrap" class="weather-pill hidden bounce-on-tap" onclick="openWeatherApp()">
+                <span id="wIcon"></span> <span id="wTemp">--°C</span> | <small id="wDesc">Loading...</small>
+            </div>
+            <div id="headerDate" class="date-txt"></div>
+        </div>
 
-/* HEADER FIX (RESTORED TO 13.8 STYLE) */
-.sticky-header { position: sticky; top: 0; background: var(--bg); z-index: 9999; padding-bottom: 12px; border-bottom: 1px solid rgba(0,0,0,0.08); }
-.header-top { position: relative; display: flex; justify-content: center; align-items: center; height: 120px; }
-.logo-img { max-height: 100px; width: auto; object-fit: contain; }
+        <nav class="dual-row-nav">
+            <div class="nav-row top-row">
+                <button class="tab active" onclick="openTab(event, 'admin')">Set up</button>
+                <button class="tab" onclick="openTab(event, 'master')">Custs</button>
+                <button class="tab" onclick="openTab(event, 'plan')">Plan</button>
+                <button class="tab" onclick="openTab(event, 'stats')">Stats</button>
+                <button class="tab" onclick="openTab(event, 'spend')">Ledger</button>
+            </div>
+            <div class="nav-row bottom-row">
+                <button class="tab" onclick="openTab(event, 'week1')">W1</button>
+                <button class="tab" onclick="openTab(event, 'week2')">W2</button>
+                <button class="tab" onclick="openTab(event, 'week3')">W3</button>
+                <button class="tab" onclick="openTab(event, 'week4')">W4</button>
+                <button class="tab" onclick="openTab(event, 'week5')">W5</button>
+            </div>
+        </nav>
+    </div>
 
-.mode-switch-wrapper { position: absolute; right: 15px; top: 20px; }
-.ios-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
-.ios-switch input { opacity: 0; width: 0; height: 0; }
-.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #d1d1d6; transition: .3s; border-radius: 34px; }
-.slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 2px; bottom: 2px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-input:checked + .slider { background-color: var(--success); }
+    <div class="main-container">
+        <div id="globalSearchContainer" class="search-outer hidden">
+            <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Find a customer..." oninput="renderMasterTable()">
+        </div>
 
-.greeting-txt { font-size: 11px; font-weight: 800; color: var(--text); opacity: 0.6; text-transform: uppercase; margin-bottom: 2px; text-align: center; }
-.date-container { width: 100%; text-align: center; margin-bottom: 12px; display: flex; flex-direction: column; align-items: center; }
-.weather-pill { display: inline-flex; align-items: center; background: rgba(0, 122, 255, 0.1); color: var(--accent); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; margin-bottom: 8px; border: 1px solid rgba(0, 122, 255, 0.1); cursor: pointer; }
-.date-txt { font-weight: 900; color: var(--accent); text-transform: uppercase; font-size: 14px; letter-spacing: 0.5px; }
+        <div id="admin" class="tab-content active">
+            <div id="setup-form-wrapper">
+                <div class="card">
+                    <h3 class="section-title">✨ Add New Client</h3>
+                    <input type="hidden" id="editId">
+                    <div class="input-stack force-stack">
+                        <input type="text" id="cName" placeholder="Full Name">
+                        <input type="text" id="cAddr" placeholder="Address">
+                        <input type="text" id="cPostcode" placeholder="Postcode">
+                        <input type="tel" id="cPhone" placeholder="Mobile Number">
+                        <input type="number" id="cPrice" placeholder="Price £">
+                    </div>
+                    <div class="grid-1x2">
+                        <select id="cWeek" class="large-select">
+                            <option value="1">Week 1</option><option value="2">Week 2</option>
+                            <option value="3">Week 3</option><option value="4">Week 4</option>
+                            <option value="5">Week 5</option>
+                        </select>
+                        <select id="cDay" class="large-select">
+                            <option value="Monday">Monday</option><option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                        </select>
+                    </div>
+                    <textarea id="cNotes" placeholder="Notes..." class="premium-textarea"></textarea>
+                    <button class="btn-main full-width-btn bounce-on-tap" onclick="saveCustomer()">💾 Save Customer</button>
+                </div>
+                <div class="card action-card-green"><button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
+                <div class="card">
+                    <h3 class="section-title">📦 Database</h3>
+                    <div class="grid-1x2">
+                        <button id="exportBtn" class="pill-btn" onclick="exportFullCSV()">💾 Export</button>
+                        <button id="importBtn" class="pill-btn" onclick="document.getElementById('csvFile').click()">📂 Import</button>
+                    </div>
+                    <input type="file" id="csvFile" style="display:none;" onchange="importFullCSV(event)">
+                </div>
+                <div class="card action-card-red"><button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL DATA</button></div>
+            </div>
+        </div>
 
-/* 13.8 STYLE SCROLLING TABS */
-.tabs { display: flex; overflow-x: auto; gap: 8px; padding: 0 15px; scrollbar-width: none; }
-.tabs::-webkit-scrollbar { display: none; }
-.tab { background: rgba(0,0,0,0.06); border: none; height: 40px; min-width: 60px; border-radius: 12px; font-size: 11px; font-weight: 700; color: #8e8e93; transition: 0.2s; white-space: nowrap; padding: 0 15px; }
-.tab.active { background: var(--accent); color: white; transform: scale(1.05); }
+        <div id="plan" class="tab-content">
+            <div class="card">
+                <h3 class="section-title">🛰️ Smart Routing</h3>
+                <div class="grid-1x2">
+                    <select id="planWeekSelect" class="large-select">
+                        <option value="1">Week 1</option><option value="2">Week 2</option>
+                        <option value="3">Week 3</option><option value="4">Week 4</option>
+                        <option value="5">Week 5</option>
+                    </select>
+                    <button class="btn-main bounce-on-tap" style="margin-top:0;" onclick="optimizeDay(document.getElementById('planWeekSelect').value)">🚀 Sort Week</button>
+                </div>
+                <button class="btn-main full-width-btn bounce-on-tap" style="background:var(--success); margin-top:10px;" onclick="mapTheDay(document.getElementById('planWeekSelect').value)">🗺️ Open Driving Map</button>
+            </div>
+            <div class="card">
+                <h3 class="section-title">📢 Weekly Broadcaster</h3>
+                <div class="grid-1x2">
+                    <button class="btn-main bounce-on-tap" style="margin-top:0; background:#25D366" onclick="broadcastWeek(document.getElementById('planWeekSelect').value, 'wa')">💬 WhatsApp All</button>
+                    <button class="btn-main bounce-on-tap" style="margin-top:0; background:var(--accent)" onclick="broadcastWeek(document.getElementById('planWeekSelect').value, 'sms')">📱 SMS All</button>
+                </div>
+            </div>
+        </div>
 
-.main-container { max-width: 500px; margin: 0 auto; padding: 15px; flex-grow: 1; width: 100%; }
-.card { background: var(--card-bg); padding: 22px; border-radius: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.02); }
+        <div id="master" class="tab-content"><div id="masterTableBody"></div></div>
 
-/* STAT BUBBLES */
-.mini-card { padding: 15px !important; min-height: 95px; display: flex; align-items: center; justify-content: center; text-align: center; }
-.mini-card small { display: block; font-size: 10px; font-weight: 800; text-transform: uppercase; opacity: 0.5; margin-bottom: 5px; }
-.mini-card strong { font-size: 19px; font-weight: 900; }
+        <div id="stats" class="tab-content">
+            <div class="dashboard-hero">
+                <div class="hero-label" id="statsMonthTitle">Summary</div>
+                <div class="hero-amount" id="currProfit">£0.00</div>
+                <div class="hero-subtext">💰 Total Profit in Pocket</div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-header"><span>Monthly Progress</span><span id="collectionPercent">0%</span></div>
+                <div class="progress-container"><div id="progressBar" class="progress-fill"></div></div>
+                <div class="stat-line-item">
+                    <span>Target: <strong id="targetWork">£0.00</strong></span>
+                    <span>Remaining: <strong id="stillToCollect">£0.00</strong></span>
+                </div>
+            </div>
+            <div class="grid-1x2" style="margin-top:15px;">
+                <div class="card mini-card clickable-stat" onclick="showIncomeModal()"><div class="mini-card-content"><small>Revenue 🔍</small><strong id="currRevenue" style="color:var(--success)">£0.00</strong></div></div>
+                <div class="card mini-card clickable-stat" onclick="showExpenseModal()"><div class="mini-card-content"><small>Spend 🔍</small><strong id="currSpend" style="color:var(--danger)">£0.00</strong></div></div>
+            </div>
+            <div class="card debt-highlight-card clickable-stat" onclick="showArrearsModal()">
+                <div class="stat-row"><span>Arrears 🔍</span><strong id="totalOldDebt">£0.00</strong></div>
+            </div>
+            <div id="monthlyHistoryContainer"></div>
+        </div>
 
-/* FORM & BUTTONS */
-.force-stack input { width: 100%; height: 50px; margin-bottom: 12px; padding: 0 15px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); font-size: 16px; background: var(--input-bg); color: var(--text); }
-.grid-1x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
-.large-select { height: 54px; width: 100%; border-radius: 14px; border: 1px solid rgba(0,0,0,0.1); font-size: 16px; font-weight: 600; padding: 0 15px; background: var(--input-bg); color: var(--text); -webkit-appearance: none; }
-.premium-textarea { width: 100%; border-radius: 14px; padding: 15px; border: 1px solid rgba(0,0,0,0.1); background: var(--input-bg); color: var(--text); min-height: 80px; font-size: 15px; margin-top: 10px; }
-.full-width-btn { width: 100% !important; height: 56px !important; border-radius: 16px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 15px; }
-.btn-main { background: var(--accent); color: white; margin-top: 15px; }
-.pill-btn { height: 54px; border-radius: 30px !important; border: none; font-weight: 800; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-#exportBtn { background-color: var(--export-blue) !important; color: #000 !important; }
-#importBtn { background-color: var(--import-yellow) !important; color: #000 !important; }
-.qb-btn { background-color: var(--qb-green) !important; color: white !important; }
+        <div id="spend" class="tab-content">
+            <div class="card">
+                <h3 class="section-title">💸 Log Expense</h3>
+                <div class="force-stack"><input type="text" id="expDesc" placeholder="Description" class="large-select" style="margin-bottom:10px;"><input type="number" id="expAmt" placeholder="Amount £" class="large-select" style="margin-bottom:10px;"></div>
+                <button class="btn-main full-width-btn bounce-on-tap" onclick="addExpense()">Add Expense</button>
+            </div>
+            <div class="card">
+                <h3 class="section-title">📊 QuickBooks Exports</h3>
+                <div class="grid-1x2">
+                    <button class="pill-btn qb-btn" onclick="exportQBIncome()">💹 QB Income</button>
+                    <button class="pill-btn qb-btn" onclick="exportQBExpenses()">🧾 QB Spend</button>
+                </div>
+            </div>
+            <div id="expenseList"></div>
+        </div>
 
-/* LIST VIEW WORKFLOW */
-.workflow-grid { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0,0,0,0.05); }
-.comms-row, .status-row { display: grid; gap: 8px; }
-.comms-row { grid-template-columns: repeat(3, 1fr); }
-.icon-btn-large { background: var(--input-bg); border: none; border-radius: 16px; height: 52px; display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; color: var(--text); text-decoration: none; }
-.action-btn-main { height: 50px; border: none; border-radius: 16px; font-weight: 800; font-size: 11px; cursor: pointer; background: #e8e8e8; color: var(--text); text-transform: uppercase; }
-.btn-cleaned-active, .btn-paid-active { background: var(--success) !important; color: white !important; }
-.btn-pay-pending { background: var(--accent); color: white; }
-.btn-debt-pending { background: var(--danger); color: white; }
+        <div id="week1" class="tab-content"></div>
+        <div id="week2" class="tab-content"></div>
+        <div id="week3" class="tab-content"></div>
+        <div id="week4" class="tab-content"></div>
+        <div id="week5" class="tab-content"></div>
+    </div>
 
-/* HEROES */
-.dashboard-hero { text-align: center; padding: 35px 15px; background: var(--card-bg); border-radius: 28px; margin-bottom: 15px; border: 2px solid var(--accent); }
-.hero-amount { font-size: 48px; font-weight: 900; margin: 5px 0; color: var(--text); letter-spacing: -1px; }
-.progress-container { width: 100%; height: 14px; background: rgba(0,0,0,0.05); border-radius: 10px; overflow: hidden; margin: 10px 0 15px 0; }
-.progress-fill { height: 100%; background: linear-gradient(90deg, var(--success), #a8e063); transition: width 1s ease; }
-.debt-highlight-card { background: var(--danger); color: white; border: none; padding: 20px; }
+    <div class="global-footer">v14.2 - Dual Row Release</div>
 
-/* MODALS */
-.modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index:10000; align-items:center; justify-content:center; padding: 20px; }
-.modal-content { background: var(--card-bg); width: 100%; max-width: 420px; padding: 30px; border-radius: 35px; position: relative; max-height: 85vh; overflow-y: auto; color: var(--text); }
-.close-btn { position: absolute; top: 15px; right: 15px; border: none; background: rgba(0,0,0,0.05); border-radius: 50%; width: 30px; height: 30px; font-weight: bold; cursor: pointer; }
+    <div id="globalModal" class="modal-overlay" onclick="if(event.target === this) closeModal()">
+        <div class="modal-content"><button class="close-btn" onclick="closeModal()">✕</button><div id="modalContentBody"></div></div>
+    </div>
 
-/* UTILS */
-.hidden { display: none !important; }
-.tab-content { display: none; }
-.tab-content.active { display: block !important; }
-.bounce-on-tap:active { transform: scale(0.95); transition: 0.1s; }
-.global-footer { text-align: center; font-size: 10px; opacity: 0.3; padding: 30px 20px; font-weight: 700; text-transform: uppercase; }
+    <script src="app.js?v=142"></script>
+</body>
+</html>
