@@ -5,18 +5,14 @@ const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 window.onload = () => {
     updateGreeting();
     const dateEl = document.getElementById('headerDate');
-    if (dateEl) dateEl.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    if (dateEl) dateEl.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' });
     const saved = localStorage.getItem(MASTER_KEY);
     if (saved) db = JSON.parse(saved);
     
     // Baseline Integrity
     if (!db.customers) db.customers = [];
     if (!db.expenses) db.expenses = [];
-    if (!db.history) db.history = [];
-    db.customers.forEach(c => { 
-        if(!c.paymentLogs) c.paymentLogs = []; 
-        if(!c.debtHistory) c.debtHistory = [];
-    });
+    db.customers.forEach(c => { if(!c.paymentLogs) c.paymentLogs = []; if(!c.debtHistory) c.debtHistory = []; });
 
     const isDark = localStorage.getItem('Hydro_Dark_Pref') === 'true';
     document.body.className = isDark ? 'dark-mode' : 'light-mode';
@@ -25,38 +21,36 @@ window.onload = () => {
     renderAll();
 };
 
-// REPAIRED NAVIGATION
+// FRESH PAGE NAVIGATION ENGINE
 window.openTab = (name) => {
+    // Hide everything
     document.querySelectorAll(".tab-content").forEach(c => {
         c.classList.remove("active");
         c.style.display = "none";
     });
     
+    // Show fresh target
     const target = document.getElementById(name);
     if (target) {
         target.classList.add("active");
         target.style.display = "block";
     }
     
+    // UI logic
     const hubPages = ['home', 'weeksHub'];
     const navBar = document.getElementById('globalNav');
-    const mainHeader = document.getElementById('mainHeader');
-    
-    if (navBar) {
-        navBar.style.display = hubPages.includes(name) ? "none" : "block";
-    }
+    if (navBar) navBar.style.display = hubPages.includes(name) ? "none" : "block";
+
+    // REGRESSION: Scroll to top of fresh page
+    window.scrollTo({ top: 0, behavior: 'instant' });
 
     renderAll();
-    window.scrollTo(0,0);
 };
 
 window.handleBackNavigation = () => {
-    const activeContent = document.querySelector('.tab-content.active');
-    if (activeContent && activeContent.id.startsWith('week') && activeContent.id !== 'weeksHub') {
-        openTab('weeksHub');
-    } else {
-        openTab('home');
-    }
+    const active = document.querySelector('.tab-content.active');
+    if (active && active.id.startsWith('week') && active.id !== 'weeksHub') openTab('weeksHub');
+    else openTab('home');
 };
 
 window.renderWeekLists = () => {
@@ -66,7 +60,7 @@ window.renderWeekLists = () => {
         container.innerHTML = `<button class="back-pill" onclick="openTab('weeksHub')">⬅️ Back to Weeks</button>`;
         const weekCusts = db.customers.filter(c => c.week == i);
         if (weekCusts.length === 0) {
-            container.innerHTML += `<div class="card" style="text-align:center; opacity:0.5; padding:40px;">Week ${i} is empty</div>`;
+            container.innerHTML += `<div class="card" style="text-align:center; opacity:0.5; padding:60px;">🍹 Week ${i} complete!</div>`;
             continue;
         }
         weekCusts.forEach(c => {
@@ -95,9 +89,7 @@ window.saveCustomer = () => {
         paymentLogs: ex ? ex.paymentLogs : []
     };
 
-    if(idx > -1) db.customers[idx] = entry; 
-    else db.customers.push(entry);
-    
+    if(idx > -1) db.customers[idx] = entry; else db.customers.push(entry);
     saveData(); location.reload(); 
 };
 
@@ -106,6 +98,5 @@ window.renderAll = () => { renderWeekLists(); renderStats(); renderMasterTable()
 window.toggleDarkMode = () => { const d = document.getElementById('darkModeToggle').checked; document.body.className = d ? 'dark-mode' : 'light-mode'; localStorage.setItem('Hydro_Dark_Pref', d); };
 window.updateGreeting = () => {
     const hr = new Date().getHours();
-    let g = (hr < 12) ? "Good Morning, Jonathan! ☕" : (hr < 18) ? "Good Afternoon, Jonathan! ☀️" : "Good Evening, Jonathan! 🌙";
-    document.getElementById('greetingMsg').innerText = g;
+    document.getElementById('greetingMsg').innerText = (hr < 12) ? "Good Morning, Jonathan! ☕" : (hr < 18) ? "Good Afternoon, Jonathan! ☀️" : "Good Evening, Jonathan! 🌙";
 };
