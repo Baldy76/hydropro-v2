@@ -3,7 +3,6 @@ const BANK_DETAILS = "Bank: Monzo\nAcc: 12345678\nSort: 00-00-00";
 let db = { customers: [], expenses: [], history: [] }; 
 const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 
-// --- STARTUP ---
 window.onload = () => {
     const dateEl = document.getElementById('headerDate');
     if (dateEl) dateEl.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
@@ -13,7 +12,6 @@ window.onload = () => {
     if (!db.expenses) db.expenses = [];
     if (!db.history) db.history = [];
     
-    // Ensure payment timestamps exist for drill-down
     db.customers.forEach(c => { if(!c.paymentLogs) c.paymentLogs = []; });
 
     const isDark = localStorage.getItem('Hydro_Dark_Pref') === 'true';
@@ -61,7 +59,7 @@ window.saveCustomer = () => {
 // --- DRILL-DOWN MODALS ---
 window.showIncomeModal = () => {
     const body = document.getElementById('modalContentBody');
-    let html = '<h3 class="section-title">Income Breakdown</h3>';
+    let html = '<h3 class="section-title">Collected Payments</h3>';
     let total = 0;
 
     db.customers.forEach(c => {
@@ -76,14 +74,14 @@ window.showIncomeModal = () => {
         });
     });
 
-    html += `<div class="drilldown-total"><span>Total Collected</span><span>£${total.toFixed(2)}</span></div>`;
+    html += `<div class="drilldown-total"><span>Net Income</span><span>£${total.toFixed(2)}</span></div>`;
     body.innerHTML = html;
     document.getElementById('globalModal').style.display = 'flex';
 };
 
 window.showExpenseModal = () => {
     const body = document.getElementById('modalContentBody');
-    let html = '<h3 class="section-title">Expense Breakdown</h3>';
+    let html = '<h3 class="section-title">Expense Log</h3>';
     let total = 0;
 
     db.expenses.forEach(e => {
@@ -94,14 +92,14 @@ window.showExpenseModal = () => {
         total += n(e.amt);
     });
 
-    html += `<div class="drilldown-total"><span>Total Spent</span><span>£${total.toFixed(2)}</span></div>`;
+    html += `<div class="drilldown-total"><span>Total Expenses</span><span>£${total.toFixed(2)}</span></div>`;
     body.innerHTML = html;
     document.getElementById('globalModal').style.display = 'flex';
 };
 
 window.closeModal = () => document.getElementById('globalModal').style.display = 'none';
 
-// --- WORKFLOW HANDLERS ---
+// --- WORKFLOW ---
 window.toggleCleaned = (id) => {
     const c = db.customers.find(x => x.id === id);
     if (!c) return;
@@ -123,7 +121,7 @@ window.handleDebtCollection = (id) => {
     const c = db.customers.find(x => x.id === id);
     if (!c) return;
     const currentTotal = calculateDebt(c);
-    const input = prompt(`Debt Collection: £${currentTotal.toFixed(2)}`, currentTotal.toFixed(2));
+    const input = prompt(`Old Debt Collection: £${currentTotal.toFixed(2)}`, currentTotal.toFixed(2));
     if (input === null) return;
     const amountPaid = n(input);
     if (amountPaid <= 0) return;
@@ -145,7 +143,6 @@ window.handleDebtCollection = (id) => {
 
 const calculateDebt = (c) => (c.debtHistory || []).reduce((sum, d) => sum + n(d.amount), 0);
 
-// --- RENDERING ---
 window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); };
 
 window.renderStats = () => {
@@ -155,20 +152,25 @@ window.renderStats = () => {
     let totalIncome = 0;
     db.customers.forEach(c => { (c.paymentLogs || []).forEach(log => totalIncome += n(log.amount)); });
     
-    let exp = db.expenses.reduce((sum, e) => sum + n(e.amt), 0);
-    let targetWorkVal = db.customers.reduce((sum, c) => sum + n(c.price), 0);
-    let pendingCollection = db.customers.reduce((sum, c) => sum + Math.max(0, n(c.price) - n(c.paidThisMonth)), 0);
+    let monthExpenses = db.expenses.reduce((sum, e) => sum + n(e.amt), 0);
+    let potentialWorkValue = db.customers.reduce((sum, c) => sum + n(c.price), 0);
+    
+    // Corrected Progress: Current Month Payments only vs Potential
+    let currentMonthCollections = db.customers.reduce((sum, c) => sum + n(c.paidThisMonth), 0);
+    let remainingWorkValue = potentialWorkValue - currentMonthCollections;
+    
     let totalOwedDebt = db.customers.reduce((sum, c) => sum + calculateDebt(c), 0);
-    const netProfit = totalIncome - exp;
-    const progress = targetWorkVal > 0 ? ( (db.customers.reduce((s,c)=>s+n(c.paidThisMonth),0)) / targetWorkVal) * 100 : 0;
+    let netPosition = totalIncome - monthExpenses;
+    
+    let progress = potentialWorkValue > 0 ? (currentMonthCollections / potentialWorkValue) * 100 : 0;
 
-    if(document.getElementById('currProfit')) document.getElementById('currProfit').innerText = `£${netProfit.toFixed(2)}`;
+    if(document.getElementById('currProfit')) document.getElementById('currProfit').innerText = `£${netPosition.toFixed(2)}`;
     if(document.getElementById('progressBar')) document.getElementById('progressBar').style.width = `${progress}%`;
     if(document.getElementById('collectionPercent')) document.getElementById('collectionPercent').innerText = `${Math.round(progress)}%`;
-    if(document.getElementById('targetWork')) document.getElementById('targetWork').innerText = `£${targetWorkVal.toFixed(2)}`;
-    if(document.getElementById('stillToCollect')) document.getElementById('stillToCollect').innerText = `£${pendingCollection.toFixed(2)}`;
+    if(document.getElementById('targetWork')) document.getElementById('targetWork').innerText = `£${potentialWorkValue.toFixed(2)}`;
+    if(document.getElementById('stillToCollect')) document.getElementById('stillToCollect').innerText = `£${Math.max(0, remainingWorkValue).toFixed(2)}`;
     if(document.getElementById('currRevenue')) document.getElementById('currRevenue').innerText = `£${totalIncome.toFixed(2)}`;
-    if(document.getElementById('currSpend')) document.getElementById('currSpend').innerText = `£${exp.toFixed(2)}`;
+    if(document.getElementById('currSpend')) document.getElementById('currSpend').innerText = `£${monthExpenses.toFixed(2)}`;
     if(document.getElementById('totalOldDebt')) document.getElementById('totalOldDebt').innerText = `£${totalOwedDebt.toFixed(2)}`;
 
     const hist = document.getElementById('monthlyHistoryContainer');
@@ -251,7 +253,7 @@ window.editCust = (id) => {
 
 window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
 window.toggleDarkMode = () => { const d = document.getElementById('darkModeToggle').checked; document.body.className = d ? 'dark-mode' : 'light-mode'; localStorage.setItem('Hydro_Dark_Pref', d); };
-window.runUATClear = () => { if(confirm("Wipe all data?")) { localStorage.clear(); location.reload(); } };
+window.runUATClear = () => { if(confirm("Wipe?")) { localStorage.clear(); location.reload(); } };
 window.addExpense = () => { 
     const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value); 
     if(!d || a<=0) return; 
@@ -259,7 +261,7 @@ window.addExpense = () => {
     saveData(); location.reload(); 
 };
 window.completeCycle = () => {
-    if(!confirm("Archive Month & Reset?")) return;
+    if(!confirm("Archive Month?")) return;
     let mInc = 0; db.customers.forEach(c => { (c.paymentLogs||[]).forEach(l => mInc += n(l.amount)); });
     let mExp = db.expenses.reduce((sum, e) => sum + n(e.amt), 0);
     let nDebt = db.customers.reduce((sum, c) => sum + (c.cleaned ? Math.max(0, n(c.price) - n(c.paidThisMonth)) : 0), 0);
