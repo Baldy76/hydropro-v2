@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v12.4</title>
-    <link rel="stylesheet" href="styles.css?v=124">
+    <title>Hydro Pro v12.5</title>
+    <link rel="stylesheet" href="styles.css?v=125">
 </head>
 <body class="light-mode">
 
@@ -62,67 +62,48 @@
                     <textarea id="cNotes" placeholder="Notes..." class="premium-textarea"></textarea>
                     <button class="btn-main full-width-btn" onclick="saveCustomer()">💾 Save Customer</button>
                 </div>
-                <div class="card action-card-green"><button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
+
+                <div class="card action-card-green">
+                    <button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button>
+                </div>
+
                 <div class="card">
-                    <h3 class="section-title">Database</h3>
+                    <h3 class="section-title">Database Management</h3>
                     <div class="grid-1x2">
-                        <button class="btn-export-blue full-width-btn" onclick="exportFullCSV()">💾 Export</button>
-                        <button class="btn-import-yellow full-width-btn" onclick="document.getElementById('csvFile').click()">📂 Import</button>
+                        <button id="exportBtn" class="pill-btn" onclick="exportFullCSV()">💾 Export</button>
+                        <button id="importBtn" class="pill-btn" onclick="document.getElementById('csvFile').click()">📂 Import</button>
                     </div>
                     <input type="file" id="csvFile" style="display:none;" onchange="importFullCSV(event)">
                 </div>
-                <div class="card action-card-red"><button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL DATA</button></div>
+
+                <div class="card action-card-red">
+                    <button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL DATA</button>
+                </div>
             </div>
-            <div class="version-tag">v12.4 - Intuitive Stats</div>
+            <div class="version-tag">v12.5 - Iron-Clad Lockdown</div>
         </div>
 
         <div id="master" class="tab-content"><div id="masterTableBody"></div></div>
 
         <div id="stats" class="tab-content">
             <div class="dashboard-hero">
-                <div class="hero-label" id="statsMonthTitle">March 2026 Summary</div>
+                <div class="hero-label" id="statsMonthTitle">Summary</div>
                 <div class="hero-amount" id="currProfit">£0.00</div>
                 <div class="hero-subtext">Total Cash in Hand (Net)</div>
             </div>
-
             <div class="card stat-card">
-                <div class="stat-header">
-                    <span>Collection Progress</span>
-                    <span id="collectionPercent">0%</span>
-                </div>
-                <div class="progress-container">
-                    <div id="progressBar" class="progress-fill" style="width: 0%"></div>
-                </div>
+                <div class="stat-header"><span>Collection Progress</span><span id="collectionPercent">0%</span></div>
+                <div class="progress-container"><div id="progressBar" class="progress-fill"></div></div>
                 <div class="stat-row-new">
-                    <div class="stat-block">
-                        <small>Target Work</small>
-                        <strong id="targetWork">£0.00</strong>
-                    </div>
-                    <div class="stat-block" style="text-align:right;">
-                        <small>Still to Collect</small>
-                        <strong id="stillToCollect">£0.00</strong>
-                    </div>
+                    <div class="stat-block"><small>Target Work</small><strong id="targetWork">£0.00</strong></div>
+                    <div class="stat-block" style="text-align:right;"><small>Remaining</small><strong id="stillToCollect">£0.00</strong></div>
                 </div>
             </div>
-
             <div class="grid-1x2" style="margin-top:15px;">
-                <div class="card mini-card">
-                    <small>Month Income</small>
-                    <strong id="currRevenue" style="color:var(--success)">£0.00</strong>
-                </div>
-                <div class="card mini-card">
-                    <small>Month Expenses</small>
-                    <strong id="currSpend" style="color:var(--danger)">£0.00</strong>
-                </div>
+                <div class="card mini-card"><small>Month Income</small><strong id="currRevenue" style="color:var(--success)">£0.00</strong></div>
+                <div class="card mini-card"><small>Month Expenses</small><strong id="currSpend" style="color:var(--danger)">£0.00</strong></div>
             </div>
-
-            <div class="card debt-highlight-card">
-                <div class="stat-row">
-                    <span>Outstanding Old Debt</span>
-                    <strong id="totalOldDebt" style="color:white">£0.00</strong>
-                </div>
-            </div>
-
+            <div class="card debt-highlight-card"><div class="stat-row"><span>Outstanding Old Debt</span><strong id="totalOldDebt">£0.00</strong></div></div>
             <div id="monthlyHistoryContainer"></div>
         </div>
 
@@ -142,6 +123,6 @@
         <div class="modal-content"><button class="close-btn" onclick="closeCustModal()">✕</button><div id="modalBody"></div></div>
     </div>
 
-    <script src="app.js?v=124"></script>
+    <script src="app.js?v=125"></script>
 </body>
 </html>
