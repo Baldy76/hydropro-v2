@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v13.1</title>
-    <link rel="stylesheet" href="styles.css?v=131">
+    <title>Hydro Pro v13.3</title>
+    <link rel="stylesheet" href="styles.css?v=133">
 </head>
 <body class="light-mode">
 
@@ -96,13 +96,22 @@
                 </div>
             </div>
             <div class="grid-1x2" style="margin-top:15px;">
-                <div class="card mini-card clickable-stat" onclick="showIncomeModal()"><small>Revenue 🔍</small><strong id="currRevenue" style="color:var(--success)">£0.00</strong></div>
-                <div class="card mini-card clickable-stat" onclick="showExpenseModal()"><small>Spend 🔍</small><strong id="currSpend" style="color:var(--danger)">£0.00</strong></div>
+                <div class="card mini-card clickable-stat" onclick="showIncomeModal()">
+                    <div class="mini-card-content">
+                        <small>Month Income 🔍</small>
+                        <strong id="currRevenue" style="color:var(--success)">£0.00</strong>
+                    </div>
+                </div>
+                <div class="card mini-card clickable-stat" onclick="showExpenseModal()">
+                    <div class="mini-card-content">
+                        <small>Month Spend 🔍</small>
+                        <strong id="currSpend" style="color:var(--danger)">£0.00</strong>
+                    </div>
+                </div>
             </div>
             <div class="card debt-highlight-card clickable-stat" onclick="showArrearsModal()">
                 <div class="stat-row"><span>Arrears 🔍</span><strong id="totalOldDebt">£0.00</strong></div>
             </div>
-            
             <div id="monthlyHistoryContainer"></div>
         </div>
 
@@ -124,12 +133,12 @@
         <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div>
     </div>
 
-    <div class="global-footer">v13.1 - hall of fame edition</div>
+    <div class="global-footer">v13.3 - Production Verified</div>
 
     <div id="globalModal" class="modal-overlay" onclick="if(event.target === this) closeModal()">
         <div class="modal-content"><button class="close-btn" onclick="closeModal()">✕</button><div id="modalContentBody"></div></div>
     </div>
 
-    <script src="app.js?v=131"></script>
+    <script src="app.js?v=133"></script>
 </body>
 </html>
