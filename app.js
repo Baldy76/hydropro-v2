@@ -23,36 +23,11 @@ window.openTab = (name) => {
     document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
     const target = document.getElementById(name);
     if(target) target.classList.add("active");
-    
     const globalNav = document.getElementById('globalNav');
     if (name === 'home') globalNav.classList.add('hidden');
     else globalNav.classList.remove('hidden');
-
     window.scrollTo({ top: 0, behavior: 'instant' });
     renderAll();
-};
-
-window.renderWeekLists = () => {
-    for (let i = 1; i <= 5; i++) {
-        const container = document.getElementById(`week${i}`); if (!container) continue;
-        // SECONDARY NAV: Added back to Weekly Hub button
-        container.innerHTML = `
-            <div class="nav-split-row">
-                <button class="btn-back-secondary bounce-on-tap" onclick="openTab('weeksHub')">⬅️ Weekly View</button>
-                <button class="btn-back-secondary bounce-on-tap" onclick="openTab('home')">🏠 Home</button>
-            </div>`;
-        
-        db.customers.filter(c => c.week == i).forEach(c => {
-            const isPaid = n(c.paidThisMonth) >= n(c.price);
-            const card = document.createElement('div'); card.className = 'customer-pill-bubble';
-            card.innerHTML = `<div onclick="editCust('${c.id}')"><strong style="color:var(--accent)">${c.name} ${c.cleaned ? '✅' : ''}</strong><br><small>${c.houseNum} ${c.street} ${isPaid ? '💰' : ''}</small></div>
-                <div style="display:flex; gap:10px;">
-                    <button class="tile" style="height:44px; padding:0 12px; font-weight:800; ${c.cleaned ? 'background:var(--success); color:white;' : ''}" onclick="toggleCleaned('${c.id}')">Clean</button>
-                    <button class="tile" style="height:44px; padding:0 12px; font-weight:800; ${isPaid ? 'background:var(--accent); color:white;' : ''}" onclick="markAsPaid('${c.id}')">Pay</button>
-                </div>`;
-            container.appendChild(card);
-        });
-    }
 };
 
 window.saveCustomer = () => {
@@ -71,35 +46,49 @@ window.saveCustomer = () => {
     if(idx > -1) db.customers[idx] = entry; else db.customers.push(entry);
     saveData();
     alert("Customer Saved Successfully! ✨");
-    
-    // Clear Form
     ['editId', 'cName', 'cHouseNum', 'cStreet', 'cPostcode', 'cPrice', 'cNotes'].forEach(f => {
         const el = document.getElementById(f); if(el) el.value = "";
     });
     openTab('home');
 };
 
-// --- CORE LOGIC (LOCKED) ---
+window.renderWeekLists = () => {
+    for (let i = 1; i <= 5; i++) {
+        const container = document.getElementById(`week${i}`); if (!container) continue;
+        container.innerHTML = `
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 15px 15px;">
+                <button class="tile" style="height:44px; font-size:13px; font-weight:800; background:#e5e5ea; border:none; border-radius:20px;" onclick="openTab('weeksHub')">⬅️ Weekly Hub</button>
+                <button class="tile" style="height:44px; font-size:13px; font-weight:800; background:#e5e5ea; border:none; border-radius:20px;" onclick="openTab('home')">🏠 Home Hub</button>
+            </div>`;
+        db.customers.filter(c => c.week == i).forEach(c => {
+            const isPaid = n(c.paidThisMonth) >= n(c.price);
+            const card = document.createElement('div'); card.className = 'customer-pill-bubble';
+            card.innerHTML = `<div onclick="editCust('${c.id}')"><strong style="color:var(--accent)">${c.name} ${c.cleaned ? '✅' : ''}</strong><br><small>${c.houseNum} ${c.street}</small></div>
+                <div style="display:flex; gap:10px;">
+                    <button class="tile" style="height:44px; padding:0 12px; font-weight:800; background:var(--input-bg); border:none; border-radius:15px; ${c.cleaned ? 'background:var(--success); color:white;' : ''}" onclick="toggleCleaned('${c.id}')">Clean</button>
+                    <button class="tile" style="height:44px; padding:0 12px; font-weight:800; background:var(--input-bg); border:none; border-radius:15px; ${isPaid ? 'background:var(--accent); color:white;' : ''}" onclick="markAsPaid('${c.id}')">Pay</button>
+                </div>`;
+            container.appendChild(card);
+        });
+    }
+};
+
 window.renderStats = () => {
     let target = 0, paid = 0, arrears = 0, spend = 0;
-    db.customers.forEach(c => {
-        target += n(c.price); paid += n(c.paidThisMonth);
-        if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth));
-    });
+    db.customers.forEach(c => { target += n(c.price); paid += n(c.paidThisMonth); if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth)); });
     db.expenses.forEach(e => spend += n(e.amt));
     const profit = paid - spend; const progress = target > 0 ? (paid / target) * 100 : 0;
-    const map = { 'currProfit': `£${profit.toFixed(2)}`, 'statsIncome': `£${paid.toFixed(2)}`, 'statsSpend': `£${spend.toFixed(2)}`, 'statsArrears': `£${totalArrears || arrears.toFixed(2)}`, 'statsTarget': `£${target.toFixed(2)}`, 'statsRemaining': `£${(target - paid).toFixed(2)}`, 'progressPercent': `${Math.round(progress)}%` };
+    const map = { 'currProfit': `£${profit.toFixed(2)}`, 'statsIncome': `£${paid.toFixed(2)}`, 'statsSpend': `£${spend.toFixed(2)}`, 'statsArrears': `£${arrears.toFixed(2)}`, 'statsTarget': `£${target.toFixed(2)}`, 'statsRemaining': `£${(target - paid).toFixed(2)}`, 'progressPercent': `${Math.round(progress)}%` };
     for (let [id, val] of Object.entries(map)) { const el = document.getElementById(id); if(el) el.innerText = val; }
     const bar = document.getElementById('progressBarFill'); if(bar) bar.style.width = `${progress}%`;
 };
 
 window.renderMasterTable = () => {
-    const body = document.getElementById('masterTableBody'); if(!body) return;
-    body.innerHTML = '';
+    const body = document.getElementById('masterTableBody'); if(!body) return; body.innerHTML = '';
     const search = (document.getElementById('mainSearch').value || "").toLowerCase();
     db.customers.forEach(c => {
         if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
-            const tile = document.createElement('div'); tile.className = 'customer-pill-bubble bounce-on-tap';
+            const tile = document.createElement('div'); tile.className = 'customer-pill-bubble';
             tile.onclick = () => editCust(c.id);
             tile.innerHTML = `<div><strong>${c.name}</strong><small>${c.houseNum} ${c.street}</small></div><div style="font-weight:900; color:var(--success)">£${n(c.price).toFixed(2)}</div>`;
             body.appendChild(tile);
@@ -107,10 +96,18 @@ window.renderMasterTable = () => {
     });
 };
 
+window.updateGreeting = () => {
+    const hr = new Date().getHours();
+    const g = (hr < 12) ? "Good Morning" : (hr < 18) ? "Good Afternoon" : "Good Evening";
+    document.getElementById('greetingMsg').innerText = `${g}, Partner! ☕`;
+};
+
 window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
-window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); };
+window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); renderLedger(); };
 window.editCust = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; openTab('admin'); document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cHouseNum').value = c.houseNum; document.getElementById('cStreet').value = c.street; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPrice').value = c.price; document.getElementById('cNotes').value = c.notes; };
 window.toggleCleaned = (id) => { const c = db.customers.find(x => x.id === id); if (c) { c.cleaned = !c.cleaned; saveData(); renderAll(); } };
 window.markAsPaid = (id) => { const c = db.customers.find(x => x.id === id); if (!c) return; const isPaid = n(c.paidThisMonth) >= n(c.price); c.paidThisMonth = isPaid ? 0 : c.price; saveData(); renderAll(); };
-window.updateGreeting = () => { const hr = new Date().getHours(); const g = (hr < 12) ? "Good Morning" : (hr < 18) ? "Good Afternoon" : "Good Evening"; document.getElementById('greetingMsg').innerText = `${g}, Partner! ☕`; };
+window.renderLedger = () => { const l = document.getElementById('expenseList'); if(!l) return; l.innerHTML = '<h3 class="hall-of-fame-title">💸 Spend History</h3>'; db.expenses.forEach(e => { const d = document.createElement('div'); d.className = 'customer-pill-bubble'; d.innerHTML = `<div style="display:flex; justify-content:space-between; width:100%"><div><strong>${e.desc}</strong><small>${e.date}</small></div><div style="color:var(--danger); font-weight:900">-£${n(e.amt).toFixed(2)}</div></div>`; l.appendChild(d); }); };
+window.addExpense = () => { const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value); if(!d || a<=0) return; db.expenses.push({desc:d, amt:a, date:new Date().toLocaleDateString('en-GB')}); saveData(); renderAll(); document.getElementById('expDesc').value = ""; document.getElementById('expAmt').value = ""; };
+window.completeCycle = () => { if(!confirm("Start New Month?")) return; let inc = 0, exp = 0; db.customers.forEach(c => inc += n(c.paidThisMonth)); db.expenses.forEach(e => exp += n(e.amt)); db.history.push({ month: new Date().toLocaleDateString('en-GB', {month:'long'}), year: new Date().getFullYear(), profit: (inc - exp) }); db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload(); };
 window.toggleDarkMode = () => { const isDark = document.getElementById('darkModeToggle').checked; document.body.className = isDark ? 'dark-mode' : 'light-mode'; localStorage.setItem('Hydro_Dark_Pref', isDark); };
