@@ -10,6 +10,7 @@ window.onload = () => {
     if (saved) db = JSON.parse(saved);
     if (!db.customers) db.customers = [];
     if (!db.expenses) db.expenses = [];
+    if (!db.history) db.history = [];
     
     const isDark = localStorage.getItem('Hydro_Dark_Pref') === 'true';
     document.body.className = isDark ? 'dark-mode' : 'light-mode';
@@ -22,11 +23,9 @@ window.openTab = (name) => {
     document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
     const target = document.getElementById(name);
     if(target) target.classList.add("active");
-    
     const globalNav = document.getElementById('globalNav');
     if (name === 'home') globalNav.classList.add('hidden');
     else globalNav.classList.remove('hidden');
-
     window.scrollTo({ top: 0, behavior: 'instant' });
     renderAll();
 };
@@ -37,12 +36,69 @@ window.handleBackNavigation = () => {
     else openTab('home');
 };
 
+// --- STATS RESTORATION ENGINE ---
+window.renderStats = () => {
+    const monthYearEl = document.getElementById('currentMonthYear');
+    if (monthYearEl) monthYearEl.innerText = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) + " Summary";
+
+    let totalTarget = 0, totalPaid = 0, totalArrears = 0, totalSpend = 0;
+    
+    db.customers.forEach(c => {
+        totalTarget += n(c.price);
+        totalPaid += n(c.paidThisMonth);
+        if (c.cleaned && n(c.paidThisMonth) < n(c.price)) {
+            totalArrears += (n(c.price) - n(c.paidThisMonth));
+        }
+    });
+    
+    db.expenses.forEach(e => totalSpend += n(e.amt));
+
+    const profit = totalPaid - totalSpend;
+    const progress = totalTarget > 0 ? (totalPaid / totalTarget) * 100 : 0;
+
+    document.getElementById('currProfit').innerText = `£${profit.toFixed(2)}`;
+    document.getElementById('statsIncome').innerText = `£${totalPaid.toFixed(2)}`;
+    document.getElementById('statsSpend').innerText = `£${totalSpend.toFixed(2)}`;
+    document.getElementById('statsArrears').innerText = `£${totalArrears.toFixed(2)}`;
+    document.getElementById('statsTarget').innerText = `£${totalTarget.toFixed(2)}`;
+    document.getElementById('statsRemaining').innerText = `£${(totalTarget - totalPaid).toFixed(2)}`;
+    document.getElementById('progressPercent').innerText = `${Math.round(progress)}%`;
+    document.getElementById('progressBarFill').style.width = `${progress}%`;
+
+    const histBox = document.getElementById('monthlyHistoryContainer');
+    histBox.innerHTML = '';
+    if (db.history.length === 0) {
+        histBox.innerHTML = '<div class="empty-history-msg">Month-end snapshots appear here.</div>';
+    } else {
+        [...db.history].reverse().forEach(h => {
+            const div = document.createElement('div');
+            div.className = 'customer-tile';
+            div.innerHTML = `<div><strong>${h.month} ${h.year}</strong><small>SNAPSHOT</small></div><div class="cust-price-pill">£${n(h.profit).toFixed(2)}</div>`;
+            histBox.appendChild(div);
+        });
+    }
+};
+
+window.saveCustomer = () => {
+    const name = document.getElementById('cName').value; if(!name) return;
+    const id = document.getElementById('editId').value || Date.now().toString();
+    const idx = db.customers.findIndex(x => x.id === id);
+    let ex = idx > -1 ? db.customers[idx] : null;
+    db.customers.push({
+        id, name, houseNum: document.getElementById('cHouseNum').value, street: document.getElementById('cStreet').value,
+        postcode: document.getElementById('cPostcode').value.toUpperCase(), price: n(document.getElementById('cPrice').value),
+        notes: document.getElementById('cNotes').value, week: ex ? ex.week : "1", cleaned: ex ? ex.cleaned : false, paidThisMonth: ex ? ex.paidThisMonth : 0
+    });
+    if(idx > -1) db.customers.splice(idx, 1);
+    saveData(); openTab('home');
+};
+
 window.renderMasterTable = () => {
     const body = document.getElementById('masterTableBody'); if(!body) return;
     body.innerHTML = '';
     const search = (document.getElementById('mainSearch').value || "").toLowerCase();
     db.customers.forEach(c => {
-        if(c.name.toLowerCase().includes(search) || (c.street || "").toLowerCase().includes(search)) {
+        if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
             const tile = document.createElement('div'); tile.className = 'customer-tile bounce-on-tap';
             tile.onclick = () => editCust(c.id);
             tile.innerHTML = `<div class="cust-info"><strong>${c.name}</strong><small>${c.houseNum} ${c.street}</small></div><div class="cust-price-pill">£${n(c.price).toFixed(2)}</div>`;
@@ -51,36 +107,10 @@ window.renderMasterTable = () => {
     });
 };
 
-window.saveCustomer = () => {
-    const name = document.getElementById('cName').value; if(!name) return;
-    const id = document.getElementById('editId').value || Date.now().toString();
-    const idx = db.customers.findIndex(x => x.id === id);
-    let ex = idx > -1 ? db.customers[idx] : null;
-
-    const entry = {
-        id, name,
-        houseNum: document.getElementById('cHouseNum').value, street: document.getElementById('cStreet').value,
-        postcode: document.getElementById('cPostcode').value.toUpperCase(), price: n(document.getElementById('cPrice').value),
-        notes: document.getElementById('cNotes').value,
-        week: ex ? ex.week : "1", cleaned: ex ? ex.cleaned : false, paidThisMonth: ex ? ex.paidThisMonth : 0
-    };
-
-    if(idx > -1) db.customers[idx] = entry; else db.customers.push(entry);
-    saveData();
-    document.getElementById('editId').value = ""; document.getElementById('cName').value = "";
-    document.getElementById('cHouseNum').value = ""; document.getElementById('cStreet').value = "";
-    document.getElementById('cPostcode').value = ""; document.getElementById('cPrice').value = "";
-    document.getElementById('cNotes').value = "";
-    openTab('home');
-};
-
-window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
-window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); renderLedger(); };
-
 window.renderWeekLists = () => {
     for (let i = 1; i <= 5; i++) {
         const container = document.getElementById(`week${i}`); if (!container) continue;
-        container.innerHTML = '';
+        container.innerHTML = `<button class="back-pill" onclick="openTab('home')">🏠 Back to Home</button>`;
         db.customers.filter(c => c.week == i).forEach(c => {
             const isPaid = n(c.paidThisMonth) >= n(c.price);
             const card = document.createElement('div'); card.className = 'card';
@@ -94,12 +124,44 @@ window.renderWeekLists = () => {
     }
 };
 
+window.completeCycle = () => {
+    if(!confirm("Start New Month? History will be archived.")) return;
+    let inc = 0, exp = 0;
+    db.customers.forEach(c => inc += n(c.paidThisMonth));
+    db.expenses.forEach(e => exp += n(e.amt));
+    db.history.push({ month: new Date().toLocaleDateString('en-GB', {month:'long'}), year: new Date().getFullYear(), profit: (inc - exp) });
+    db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; });
+    db.expenses = [];
+    saveData(); location.reload();
+};
+
 window.toggleCleaned = (id) => { const c = db.customers.find(x => x.id === id); if (c) { c.cleaned = !c.cleaned; saveData(); renderAll(); } };
 window.markAsPaid = (id) => { const c = db.customers.find(x => x.id === id); if (!c) return; const isPaid = n(c.paidThisMonth) >= n(c.price); c.paidThisMonth = isPaid ? 0 : c.price; saveData(); renderAll(); };
 window.editCust = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; openTab('admin'); document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cHouseNum').value = c.houseNum; document.getElementById('cStreet').value = c.street; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPrice').value = c.price; document.getElementById('cNotes').value = c.notes; };
-window.renderStats = () => { const p = document.getElementById('currProfit'); if (!p) return; let inc = 0, exp = 0; db.customers.forEach(c => inc += n(c.paidThisMonth)); db.expenses.forEach(e => exp += n(e.amt)); p.innerText = `£${(inc - exp).toFixed(2)}`; };
-window.renderLedger = () => { const l = document.getElementById('expenseList'); if(!l) return; l.innerHTML = '<h3 class="section-title">💸 Spend History</h3>'; db.expenses.forEach(e => { const d = document.createElement('div'); d.className = 'card'; d.innerHTML = `<div style="display:flex; justify-content:space-between"><div><strong>${e.desc}</strong><br><small>${e.date}</small></div><div style="color:var(--danger)">-£${n(e.amt).toFixed(2)}</div></div>`; l.appendChild(d); }); };
-window.addExpense = () => { const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value); if(!d || a<=0) return; db.expenses.push({desc:d, amt:a, date:new Date().toLocaleDateString('en-GB')}); saveData(); renderAll(); document.getElementById('expDesc').value = ""; document.getElementById('expAmt').value = ""; };
-window.completeCycle = () => { if(!confirm("Start New Month?")) return; db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload(); };
-window.updateGreeting = () => { const hr = new Date().getHours(); document.getElementById('greetingMsg').innerText = (hr < 12) ? "Good Morning, Jonathan! ☕" : (hr < 18) ? "Good Afternoon, Jonathan! ☀️" : "Good Evening, Jonathan! 🌙"; };
-window.toggleDarkMode = () => { const isDark = document.getElementById('darkModeToggle').checked; document.body.className = isDark ? 'dark-mode' : 'light-mode'; localStorage.setItem('Hydro_Dark_Pref', isDark); };
+window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
+window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); renderLedger(); };
+window.renderLedger = () => {
+    const list = document.getElementById('expenseList'); if(!list) return;
+    list.innerHTML = '<h3 class="hall-of-fame-title">💸 Spend History</h3>';
+    db.expenses.forEach(e => {
+        const div = document.createElement('div'); div.className = 'customer-tile';
+        div.innerHTML = `<div style="display:flex; justify-content:space-between; width:100%"><div><strong>${e.desc}</strong><small>${e.date}</small></div><div class="amt-red" style="font-size:16px">-£${n(e.amt).toFixed(2)}</div></div>`;
+        list.appendChild(div);
+    });
+};
+window.addExpense = () => {
+    const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value);
+    if(!d || a<=0) return;
+    db.expenses.push({desc:d, amt:a, date:new Date().toLocaleDateString('en-GB')});
+    saveData(); renderAll();
+    document.getElementById('expDesc').value = ""; document.getElementById('expAmt').value = "";
+};
+window.updateGreeting = () => {
+    const hr = new Date().getHours();
+    document.getElementById('greetingMsg').innerText = (hr < 12) ? "Good Morning, Jonathan! ☕" : (hr < 18) ? "Good Afternoon, Jonathan! ☀️" : "Good Evening, Jonathan! 🌙";
+};
+window.toggleDarkMode = () => {
+    const isDark = document.getElementById('darkModeToggle').checked;
+    document.body.className = isDark ? 'dark-mode' : 'light-mode';
+    localStorage.setItem('Hydro_Dark_Pref', isDark);
+};
