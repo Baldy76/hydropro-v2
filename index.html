@@ -4,21 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro v7.0</title>
-    <link rel="stylesheet" href="styles.css?v=70">
+    <title>Hydro Pro v7.1</title>
+    <link rel="stylesheet" href="styles.css?v=71">
 </head>
 <body class="light-mode">
 
     <div class="sticky-header">
+        <div class="mode-switch-wrapper">
+            <label class="ios-switch">
+                <input type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()">
+                <span class="slider"></span>
+            </label>
+        </div>
+
         <div class="header-top">
             <div class="brand-container">
                 <img src="Logo.png" id="mainLogo" class="logo-img" alt="Hydro Logo">
-            </div>
-            <div class="mode-switch-wrapper">
-                <label class="ios-switch">
-                    <input type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()">
-                    <span class="slider"></span>
-                </label>
             </div>
         </div>
         
@@ -91,7 +92,7 @@
                 <button type="button" class="btn-uat full-width-btn" onclick="runUATClear()">🛠️ RESET ALL DATA</button>
             </div>
             
-            <div class="version-tag">v7.0 - Regression Tested Build</div>
+            <div class="version-tag">v7.1 - Slider & Chart Fix</div>
         </div>
 
         <div id="master" class="tab-content">
@@ -111,7 +112,7 @@
             <div class="card">
                 <h3 style="text-align:center; margin-bottom: 20px;">Current Cycle Breakdown</h3>
                 <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 25px;">
-                    <svg width="200" height="200" viewBox="0 0 42 42" id="statPieSvg" style="transform: rotate(-90deg); border-radius: 50%;">
+                    <svg width="180" height="180" viewBox="0 0 42 42" id="statPieSvg" style="transform: rotate(-90deg); border-radius: 50%;">
                         <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#eee" stroke-width="6"></circle>
                         <circle id="pieCollected" cx="21" cy="21" r="15.915" fill="transparent" stroke="var(--stat-collected)" stroke-width="6" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
                         <circle id="pieOwed" cx="21" cy="21" r="15.915" fill="transparent" stroke="var(--stat-owed)" stroke-width="6" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
@@ -128,7 +129,6 @@
             <div class="card">
                 <h3 style="text-align:center;">Lifetime Performance</h3>
                 <div style="background: var(--primary); color: white; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px;">
-                    <small style="opacity:0.7; letter-spacing: 1px;">TOTAL REVENUE COLLECTED</small><br>
                     <span id="statFYTotal" style="font-size: 32px; font-weight: 900;">£0</span>
                 </div>
                 <table style="width:100%; border-collapse: collapse;">
@@ -180,6 +180,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=70"></script>
+    <script src="app.js?v=71"></script>
 </body>
 </html>
