@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v18.3</title>
-    <link rel="stylesheet" href="styles.css?v=183">
+    <title>Hydro Pro v18.4 - Hardened</title>
+    <link rel="stylesheet" href="styles.css?v=184">
 </head>
 <body class="light-mode">
 
@@ -23,6 +23,10 @@
         </div>
     </div>
 
+    <div id="globalNav" class="subpage-nav hidden">
+        <button class="back-pill bounce-on-tap" onclick="handleBackNavigation()">🏠 Back to Home</button>
+    </div>
+
     <div class="main-container">
         
         <div id="home" class="tab-content active">
@@ -33,10 +37,6 @@
                 <button class="tile tile-admin bounce-on-tap" onclick="openTab('spend')"><span>💸</span><small>Ledger</small></button>
                 <button class="tile tile-weekly-hub bounce-on-tap" onclick="openTab('weeksHub')"><span>📅</span><small>Weekly Work</small></button>
             </div>
-        </div>
-
-        <div id="globalNav" class="subpage-nav hidden">
-            <button class="back-pill bounce-on-tap" onclick="handleBackNavigation()">🏠 Back to Home</button>
         </div>
 
         <div id="weeksHub" class="tab-content">
@@ -57,13 +57,13 @@
                 <div class="fun-input-group"><div class="fun-icon">🛣️</div><div class="fun-field-stack"><label>Street</label><input type="text" id="cStreet" class="creative-input"></div></div>
                 <div class="fun-input-group"><div class="fun-icon">📍</div><div class="fun-field-stack"><label>Postcode</label><input type="text" id="cPostcode" class="creative-input postcode-input"></div></div>
                 <div class="fun-input-group"><div class="fun-icon">💰</div><div class="fun-field-stack"><label>Price £</label><input type="number" id="cPrice" class="creative-input"></div></div>
-                <div class="fun-input-group" style="border: none;"><div class="fun-icon">📝</div><div class="fun-field-stack"><label>Notes</label><textarea id="cNotes" class="creative-textarea"></textarea></div></div>
+                <div class="fun-input-group" style="border: none;"><div class="fun-icon">📝</div><div class="fun-field-stack"><label>Private Notes</label><textarea id="cNotes" class="creative-textarea"></textarea></div></div>
                 <button class="btn-main full-width-btn creative-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
         </div>
 
         <div id="master" class="tab-content">
-            <div class="search-container-full"><input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search..." oninput="renderMasterTable()"></div>
+            <div class="search-container-full"><input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()"></div>
             <div id="masterTableBody"></div>
             <div class="card action-card-green"><button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
         </div>
@@ -73,7 +73,7 @@
                 <h3 class="section-title">💸 Log Expense</h3>
                 <input type="text" id="expDesc" placeholder="Description" class="creative-input" style="background:var(--input-bg); border-radius:10px; padding:10px; margin-bottom:10px;">
                 <input type="number" id="expAmt" placeholder="0.00" class="creative-input" style="background:var(--input-bg); border-radius:10px; padding:10px;">
-                <button class="btn-main full-width-btn bounce-on-tap" onclick="addExpense()" style="margin-top:15px;">💾 Add Expense</button>
+                <button class="btn-main full-width-btn bounce-on-tap" onclick="addExpense()" style="margin-top:15px;">💾 Save Expense</button>
             </div>
             <div id="expenseList"></div>
         </div>
@@ -83,14 +83,10 @@
             <div id="monthlyHistoryContainer"></div>
         </div>
 
-        <div id="week1" class="tab-content"></div>
-        <div id="week2" class="tab-content"></div>
-        <div id="week3" class="tab-content"></div>
-        <div id="week4" class="tab-content"></div>
-        <div id="week5" class="tab-content"></div>
+        <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
     </div>
 
-    <div class="page-version-footer">v18.3 - Structural Lock</div>
-    <script src="app.js?v=183"></script>
+    <div class="page-version-footer">v18.4 - Lockdown Protocol Active</div>
+    <script src="app.js?v=184"></script>
 </body>
 </html>
