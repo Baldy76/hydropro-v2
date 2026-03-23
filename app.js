@@ -30,7 +30,7 @@ window.openTab = (evt, name) => {
 };
 
 window.renderWeekLists = () => {
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 4; i++) {
         const container = document.getElementById(`week${i}`); if (!container) continue;
         container.innerHTML = '';
         const weekCusts = db.customers.filter(c => c.week == i);
@@ -46,7 +46,7 @@ window.renderWeekLists = () => {
 
 window.saveCustomer = () => {
     const nVal = document.getElementById('cName').value; if(!nVal) return;
-    db.customers.push({ id: Date.now().toString(), name: nVal, address: document.getElementById('cAddr').value, postcode: document.getElementById('cPostcode').value, phone: document.getElementById('cPhone').value, price: n(document.getElementById('cPrice').value), week: document.getElementById('cWeek').value, day: document.getElementById('cDay').value, cleaned: false, paidThisMonth: 0 });
+    db.customers.push({ id: Date.now().toString(), name: nVal, address: document.getElementById('cAddr').value, phone: document.getElementById('cPhone').value, price: n(document.getElementById('cPrice').value), week: document.getElementById('cWeek').value, day: document.getElementById('cDay').value, cleaned: false, paidThisMonth: 0 });
     saveData(); location.reload();
 };
 
