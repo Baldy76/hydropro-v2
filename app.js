@@ -83,7 +83,7 @@ window.handleDebtCollection = (id) => {
         c.debtHistory = [];
     } else {
         let rem = amountPaid;
-        for (let i = 0; i < c.debtHistory.length; i++) {
+        for (let i = 0; i < (c.debtHistory || []).length; i++) {
             if (rem <= 0) break;
             if (c.debtHistory[i].amount <= rem) { rem -= c.debtHistory[i].amount; c.debtHistory.splice(i, 1); i--; }
             else { c.debtHistory[i].amount -= rem; rem = 0; }
@@ -95,36 +95,51 @@ window.handleDebtCollection = (id) => {
 
 const calculateDebt = (c) => (c.debtHistory || []).reduce((sum, d) => sum + n(d.amount), 0);
 
+window.generateMessage = (customer) => {
+    const date = new Date().toLocaleDateString('en-GB');
+    const debt = calculateDebt(customer);
+    const total = n(customer.price) + debt;
+    let msg = `Hey ${customer.name}, just to let you know that your windows were cleaned today ${date} at ${customer.address}.`;
+    if(debt > 0) msg += ` Total including previous balance is £${total.toFixed(2)}.`;
+    else msg += ` Balance is £${n(customer.price).toFixed(2)}.`;
+    return `${msg}\n\nPlease find my bank details below:\n\nJonathan\n${BANK_DETAILS}`;
+};
+
+window.handleWhatsApp = (id) => {
+    const c = db.customers.find(x => x.id === id);
+    if(!c || !c.phone) return;
+    window.open(`https://wa.me/${c.phone.replace(/\s+/g, '')}?text=${encodeURIComponent(generateMessage(c))}`, '_blank');
+};
+
+window.handleSMS = (id) => {
+    const c = db.customers.find(x => x.id === id);
+    if(!c || !c.phone) return;
+    const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    window.location.href = `sms:${c.phone.replace(/\s+/g, '')}${isiOS ? '&' : '?'}body=${encodeURIComponent(generateMessage(c))}`;
+};
+
 window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); };
 
 window.renderStats = () => {
     const curMonth = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
     if(document.getElementById('statsMonthTitle')) document.getElementById('statsMonthTitle').innerText = `${curMonth} Summary`;
-
     let inc = db.customers.reduce((sum, c) => sum + n(c.paidThisMonth), 0);
     let exp = db.expenses.reduce((sum, e) => sum + n(e.amt), 0);
     let targetWorkVal = db.customers.reduce((sum, c) => sum + n(c.price), 0);
     let pendingCollection = db.customers.reduce((sum, c) => sum + Math.max(0, n(c.price) - n(c.paidThisMonth)), 0);
     let totalOwedDebt = db.customers.reduce((sum, c) => sum + calculateDebt(c), 0);
-
     const netProfit = inc - exp;
     const progress = targetWorkVal > 0 ? (inc / targetWorkVal) * 100 : 0;
 
-    // Hero Update
-    document.getElementById('currProfit').innerText = `£${netProfit.toFixed(2)}`;
-    
-    // Progress Update
-    document.getElementById('progressBar').style.width = `${progress}%`;
-    document.getElementById('collectionPercent').innerText = `${Math.round(progress)}%`;
-    
-    // Grid Updates
-    document.getElementById('targetWork').innerText = `£${targetWorkVal.toFixed(2)}`;
-    document.getElementById('stillToCollect').innerText = `£${pendingCollection.toFixed(2)}`;
-    document.getElementById('currRevenue').innerText = `£${inc.toFixed(2)}`;
-    document.getElementById('currSpend').innerText = `£${exp.toFixed(2)}`;
-    document.getElementById('totalOldDebt').innerText = `£${totalOwedDebt.toFixed(2)}`;
+    if(document.getElementById('currProfit')) document.getElementById('currProfit').innerText = `£${netProfit.toFixed(2)}`;
+    if(document.getElementById('progressBar')) document.getElementById('progressBar').style.width = `${progress}%`;
+    if(document.getElementById('collectionPercent')) document.getElementById('collectionPercent').innerText = `${Math.round(progress)}%`;
+    if(document.getElementById('targetWork')) document.getElementById('targetWork').innerText = `£${targetWorkVal.toFixed(2)}`;
+    if(document.getElementById('stillToCollect')) document.getElementById('stillToCollect').innerText = `£${pendingCollection.toFixed(2)}`;
+    if(document.getElementById('currRevenue')) document.getElementById('currRevenue').innerText = `£${inc.toFixed(2)}`;
+    if(document.getElementById('currSpend')) document.getElementById('currSpend').innerText = `£${exp.toFixed(2)}`;
+    if(document.getElementById('totalOldDebt')) document.getElementById('totalOldDebt').innerText = `£${totalOwedDebt.toFixed(2)}`;
 
-    // History
     const hist = document.getElementById('monthlyHistoryContainer');
     if (hist) {
         hist.innerHTML = '<h3 class="section-title" style="margin-top:25px;">History</h3>';
@@ -206,7 +221,7 @@ window.editCust = (id) => {
 window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
 window.closeCustModal = () => document.getElementById('custModal').style.display = 'none';
 window.toggleDarkMode = () => { const d = document.getElementById('darkModeToggle').checked; document.body.className = d ? 'dark-mode' : 'light-mode'; localStorage.setItem('Hydro_Dark_Pref', d); };
-window.runUATClear = () => { if(confirm("Wipe?")) { localStorage.clear(); location.reload(); } };
+window.runUATClear = () => { if(confirm("Wipe all data?")) { localStorage.clear(); location.reload(); } };
 window.addExpense = () => { const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value); if(!d || a<=0) return; db.expenses.push({desc:d, amt:a, date:new Date().toLocaleDateString()}); saveData(); location.reload(); };
 window.completeCycle = () => {
     if(!confirm("Archive Month?")) return;
