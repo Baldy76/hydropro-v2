@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro v8.6</title>
-    <link rel="stylesheet" href="styles.css?v=86">
+    <title>Hydro Pro v8.8</title>
+    <link rel="stylesheet" href="styles.css?v=88">
 </head>
 <body class="light-mode">
 
@@ -16,11 +15,9 @@
                 <span class="slider"></span>
             </label>
         </div>
-        
         <div class="header-top">
             <img src="Logo.png" class="logo-img" alt="Hydro Logo">
         </div>
-        
         <div class="tabs">
             <button class="tab active" onclick="openTab(event, 'admin')">Setup</button>
             <button class="tab" onclick="openTab(event, 'master')">Custs</button>
@@ -34,13 +31,12 @@
     </div>
 
     <div class="main-container">
-        <div id="headerDate" class="date-txt">Loading...</div>
+        <div id="headerDate" class="date-txt"></div>
 
         <div id="admin" class="tab-content active">
-            <div class="card fade-in">
+            <div class="card">
                 <h3 class="section-title">New Customer</h3>
                 <input type="hidden" id="editId">
-                
                 <div class="input-stack">
                     <input type="text" id="cName" placeholder="Full Name">
                     <input type="text" id="cAddr" placeholder="Address">
@@ -48,7 +44,6 @@
                     <input type="tel" id="cPhone" placeholder="Mobile Number">
                     <input type="number" id="cPrice" placeholder="Price £">
                 </div>
-                
                 <div class="label-heading">Schedule</div>
                 <div class="grid-2">
                     <select id="cWeek">
@@ -57,58 +52,71 @@
                     </select>
                     <select id="cFreq">
                         <option value="4">4 Weeks</option><option value="8">8 Weeks</option>
+                        <option value="12">12 Weeks</option>
                     </select>
                 </div>
-                
-                <select id="cDay" style="margin-top:10px;">
-                    <option value="Monday">Monday</option><option value="Tuesday">Tuesday</option>
-                    <option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option>
-                    <option value="Friday">Friday</option>
-                </select>
-
-                <textarea id="cNotes" placeholder="Special Notes..."></textarea>
-                
                 <button class="btn-main full-width-btn" onclick="saveCustomer()">💾 Save Customer</button>
-                
-                <div id="editActions" class="hidden">
-                    <button class="btn-danger full-width-btn" style="margin-top:10px;" onclick="deleteCustomer()">🗑 Delete</button>
-                    <button class="btn-neutral full-width-btn" style="margin-top:10px;" onclick="clearForm()">Cancel</button>
-                </div>
             </div>
-
+            
             <div class="card start-month-card">
                 <button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button>
             </div>
-
+            
             <div class="card">
                 <h3 class="section-title">Database</h3>
                 <div class="grid-2">
                     <button class="btn-ghost full-width-btn" onclick="exportFullCSV()">💾 Export</button>
                     <button class="btn-ghost full-width-btn" onclick="document.getElementById('csvFile').click()">📂 Import</button>
                 </div>
-                <input type="file" id="csvFile" accept=".csv" onchange="importFullCSV(event)" style="display:none;">
+                <input type="file" id="csvFile" style="display:none;" onchange="importFullCSV(event)">
             </div>
-
-            <button type="button" class="btn-uat-link" onclick="runUATClear()">Reset All App Data</button>
-            <div class="version-tag">v8.6 - Interaction Fix</div>
+            <button class="btn-uat-link" onclick="runUATClear()">Reset App Data</button>
         </div>
 
         <div id="master" class="tab-content">
             <div class="card no-padding overflow-hidden">
                 <div class="search-container">
-                    <input type="text" id="mainSearch" placeholder="🔍 Search customers..." oninput="handleSearch()">
+                    <input type="text" id="mainSearch" placeholder="🔍 Search list..." oninput="handleSearch()">
                 </div>
                 <div id="masterTableBody"></div>
             </div>
         </div>
-        <div id="stats" class="tab-content"></div>
-        <div id="spend" class="tab-content"></div>
+
+        <div id="stats" class="tab-content">
+            <div class="card">
+                <h3 class="section-title" style="text-align:center;">This Month</h3>
+                <div class="profit-card">
+                    <div class="profit-stat"><small>Gross</small><strong id="statGross">£0</strong></div>
+                    <div class="profit-stat"><small>Spent</small><strong id="statExp" class="text-owed">£0</strong></div>
+                    <div class="profit-stat"><small>Net</small><strong id="statNet">£0</strong></div>
+                </div>
+                <div style="display:flex; justify-content:center; padding:20px 0;">
+                    <svg width="150" height="150" viewBox="0 0 42 42" id="statPieSvg">
+                        <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#eee" stroke-width="5"></circle>
+                        <circle id="pieCollected" cx="21" cy="21" r="15.915" fill="transparent" stroke="var(--success)" stroke-width="5" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
+                        <circle id="pieOwed" cx="21" cy="21" r="15.915" fill="transparent" stroke="var(--danger)" stroke-width="5" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
+                        <circle id="piePending" cx="21" cy="21" r="15.915" fill="transparent" stroke="var(--accent)" stroke-width="5" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div id="spend" class="tab-content">
+            <div class="card">
+                <h3 class="section-title">Log Expense</h3>
+                <input type="text" id="expName" placeholder="Fuel, Insurance etc">
+                <input type="number" id="expAmount" placeholder="£">
+                <button class="btn-main full-width-btn" onclick="addExpense()">Log Expense</button>
+            </div>
+            <div id="expenseList"></div>
+        </div>
+
         <div id="week1" class="tab-content"></div>
         <div id="week2" class="tab-content"></div>
         <div id="week3" class="tab-content"></div>
         <div id="week4" class="tab-content"></div>
     </div>
 
-    <script src="app.js?v=86"></script>
+    <script src="app.js?v=88"></script>
 </body>
 </html>
