@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro v8.3</title>
-    <link rel="stylesheet" href="styles.css?v=83">
+    <title>Hydro Pro v8.4</title>
+    <link rel="stylesheet" href="styles.css?v=84">
 </head>
 <body class="light-mode">
 
@@ -37,14 +37,16 @@
         <div id="headerDate" class="date-txt">Loading...</div>
 
         <div id="admin" class="tab-content active">
-            <div class="card">
-                <h3 id="formTitle">Customer Entry</h3>
+            <div class="card fade-in">
+                <h3 class="section-title">Quick Entry</h3>
                 <input type="hidden" id="editId">
-                <input type="text" id="cName" placeholder="Customer Name">
-                <input type="text" id="cAddr" placeholder="Address">
-                <input type="text" id="cPostcode" placeholder="Postcode">
-                <input type="tel" id="cPhone" placeholder="Mobile Number">
-                <input type="number" id="cPrice" placeholder="Price £">
+                <div class="input-group">
+                    <input type="text" id="cName" placeholder="Customer Name">
+                    <input type="text" id="cAddr" placeholder="Address">
+                    <input type="text" id="cPostcode" placeholder="Postcode">
+                    <input type="tel" id="cPhone" placeholder="Mobile Number">
+                    <input type="number" id="cPrice" placeholder="Price £">
+                </div>
                 
                 <div class="grid-2">
                     <select id="cWeek">
@@ -54,7 +56,6 @@
                     <select id="cFreq">
                         <option value="4">Every 4 Weeks</option>
                         <option value="8">Every 8 Weeks</option>
-                        <option value="12">Every 12 Weeks</option>
                     </select>
                 </div>
                 
@@ -64,136 +65,79 @@
                     <option value="Friday">Friday</option>
                 </select>
 
-                <textarea id="cNotes" placeholder="Notes (Gates, Dogs etc)"></textarea>
-                <button class="btn-main full-width-btn" onclick="saveCustomer()">💾 Save Customer</button>
+                <textarea id="cNotes" placeholder="Gates, Dogs, Special Instructions..."></textarea>
+                <button class="btn-main full-width-btn shadow-btn" onclick="saveCustomer()">💾 Save Customer</button>
                 
                 <div id="editActions" class="hidden">
-                    <button id="btnDeleteCust" class="btn-danger full-width-btn" style="margin-top:10px;" onclick="deleteCustomer()">🗑 Delete Customer</button>
-                    <button id="cancelEdit" class="btn-neutral full-width-btn" style="margin-top:10px;" onclick="clearForm()">Cancel Edit</button>
+                    <button id="btnDeleteCust" class="btn-danger full-width-btn" style="margin-top:10px;" onclick="deleteCustomer()">🗑 Delete</button>
+                    <button id="cancelEdit" class="btn-neutral full-width-btn" style="margin-top:10px;" onclick="clearForm()">Cancel</button>
                 </div>
             </div>
 
-            <div class="card">
-                <button class="btn-danger full-width-btn" style="height:65px;" onclick="completeCycle()">🚀 START NEW MONTH</button>
+            <div class="card fade-in" style="background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);">
+                <button class="btn-clear full-width-btn" style="color:white; font-weight:900;" onclick="completeCycle()">🚀 START NEW MONTH</button>
             </div>
 
-            <div class="card">
-                <h3>Bank Details</h3>
-                <button id="btnBankAction" class="btn-alt full-width-btn" onclick="handleBankAction()">🔓 Edit Bank Details</button>
-                <input type="text" id="bName" placeholder="Account Name" disabled style="margin-top:15px;">
-                <input type="text" id="bSort" placeholder="Sort Code" disabled>
-                <input type="text" id="bAcc" placeholder="Account Number" disabled>
-            </div>
-
-            <div class="card">
-                <h3>Data Management</h3>
+            <div class="card fade-in">
+                <h3 class="section-title">Data Management</h3>
                 <div class="grid-2-spaced">
-                    <button class="btn-export-custom full-width-btn" onclick="exportFullCSV()">💾 Export CSV</button>
-                    <button class="btn-import-custom full-width-btn" onclick="document.getElementById('csvFile').click()">📂 Import CSV</button>
+                    <button class="btn-export-custom full-width-btn" onclick="exportFullCSV()">💾 Export</button>
+                    <button class="btn-import-custom full-width-btn" onclick="document.getElementById('csvFile').click()">📂 Import</button>
                 </div>
                 <input type="file" id="csvFile" accept=".csv" onchange="importFullCSV(event)" style="display:none;">
             </div>
 
-            <div style="margin-top:50px; padding-bottom: 10px;">
+            <div style="margin-top:30px;">
                 <button type="button" class="btn-uat full-width-btn" onclick="runUATClear()">🛠️ RESET ALL DATA</button>
             </div>
             
-            <div class="version-tag">v8.3 - Full Card Integration</div>
+            <div class="version-tag">v8.4 - Sleek Design Build</div>
         </div>
 
         <div id="master" class="tab-content">
-            <div class="card" style="padding:0; overflow:hidden;">
-                <div style="padding:15px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; gap: 10px;">
-                    <input type="text" id="mainSearch" placeholder="🔍 Search customers..." oninput="handleSearch()" style="margin:0; flex-grow: 1;">
-                    <button onclick="renderAll()" style="height:48px; width:48px; border-radius:10px; background:#eee;">🔄</button>
+            <div class="card no-padding overflow-hidden fade-in">
+                <div class="search-bar-container">
+                    <input type="text" id="mainSearch" placeholder="Search database..." oninput="handleSearch()">
                 </div>
                 <div id="masterTableBody"></div>
             </div>
         </div>
 
         <div id="stats" class="tab-content">
-            <div class="card">
-                <h3 style="text-align:center;">This Month's Profit</h3>
-                <div class="profit-display">
-                    <div class="profit-line"><span>Revenue:</span><strong id="statGross" class="text-paid">£0</strong></div>
-                    <div class="profit-line"><span>Expenses:</span><strong id="statExp" class="text-owed">-£0</strong></div>
-                    <hr style="opacity:0.1; margin: 10px 0;">
-                    <div class="profit-line" style="font-size:24px;"><span>NET PROFIT:</span><strong id="statNet">£0</strong></div>
+            <div class="card fade-in">
+                <h3 class="section-title center">Financial Summary</h3>
+                <div class="profit-card">
+                    <div class="profit-stat">
+                        <small>Revenue</small>
+                        <strong id="statGross" class="text-paid">£0</strong>
+                    </div>
+                    <div class="profit-stat">
+                        <small>Expenses</small>
+                        <strong id="statExp" class="text-owed">£0</strong>
+                    </div>
+                    <div class="profit-stat total">
+                        <small>Net Profit</small>
+                        <strong id="statNet">£0</strong>
+                    </div>
                 </div>
-                <div style="display: flex; justify-content: center; margin-top: 20px;">
-                    <svg width="160" height="160" viewBox="0 0 42 42" id="statPieSvg" style="transform: rotate(-90deg); border-radius: 50%;">
-                        <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#eee" stroke-width="6"></circle>
-                        <circle id="pieCollected" cx="21" cy="21" r="15.915" fill="transparent" stroke="var(--stat-collected)" stroke-width="6" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
-                        <circle id="pieOwed" cx="21" cy="21" r="15.915" fill="transparent" stroke="var(--stat-owed)" stroke-width="6" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
-                        <circle id="piePending" cx="21" cy="21" r="15.915" fill="transparent" stroke="var(--stat-pending)" stroke-width="6" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
+                <div class="chart-container">
+                    <svg width="160" height="160" viewBox="0 0 42 42" id="statPieSvg">
+                        <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#e0e0e0" stroke-width="5"></circle>
+                        <circle id="pieCollected" cx="21" cy="21" r="15.915" fill="transparent" stroke="var(--stat-collected)" stroke-width="5" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
+                        <circle id="pieOwed" cx="21" cy="21" r="15.915" fill="transparent" stroke="var(--stat-owed)" stroke-width="5" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
+                        <circle id="piePending" cx="21" cy="21" r="15.915" fill="transparent" stroke="var(--stat-pending)" stroke-width="5" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
                     </svg>
                 </div>
             </div>
-
-            <div class="card">
-                <h3 style="text-align:center;">Lifetime Performance</h3>
-                <div style="background: var(--primary); color: white; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px;">
-                    <span id="statFYTotal" style="font-size: 32px; font-weight: 900;">£0</span>
-                </div>
-                <table style="width:100%; border-collapse: collapse;">
-                    <tbody id="overallHistoryBody"></tbody>
-                </table>
             </div>
-        </div>
 
-        <div id="spend" class="tab-content">
-            <div class="card">
-                <h3>Log Expense</h3>
-                <input type="text" id="expName" placeholder="Item (e.g. Fuel)">
-                <input type="number" id="expAmount" placeholder="Amount £">
-                <button class="btn-main full-width-btn" onclick="addExpense()">Add Expense</button>
-            </div>
-            <div id="expenseList"></div>
-        </div>
-
+        <div id="spend" class="tab-content"></div>
         <div id="week1" class="tab-content"></div>
         <div id="week2" class="tab-content"></div>
         <div id="week3" class="tab-content"></div>
         <div id="week4" class="tab-content"></div>
     </div>
 
-    <div id="customerModal" class="modal-overlay" onclick="if(event.target === this) closeCustomerModal()">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeCustomerModal()">✖</button>
-            <div id="modName" style="font-size:22px; font-weight:900; color:var(--primary);"></div>
-            <p id="modAddr" style="opacity:0.6; font-size:14px; margin-bottom: 10px;"></p>
-            <div id="modNextClean" style="font-size:12px; font-weight:700; color:var(--accent); margin-bottom:10px;"></div>
-            
-            <div class="ledger-container">
-                <small class="ledger-title">Activity Ledger</small>
-                <div id="ledgerBox"></div>
-                <div class="current-month-summary">
-                    <span>Current Month:</span>
-                    <span id="modCurrentStatus"></span>
-                </div>
-            </div>
-
-            <div class="total-owed-display">
-                <small>TOTAL OWED:</small><br>
-                <span id="modOwed"></span>
-            </div>
-            
-            <div class="modal-action-footer">
-                <button class="btn-alt full-width-btn" onclick="editFromModal()">⚙️ Edit Details</button>
-                <button class="btn-neutral full-width-btn" onclick="closeCustomerModal()">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="msgModal" class="modal-overlay" style="z-index:11000;" onclick="if(event.target === this) this.style.display='none'">
-        <div class="modal-content">
-            <h3>Template Selection</h3>
-            <button class="btn-alt full-width-btn" style="margin-bottom:12px;" onclick="executeMessage('coming')">🗓 "Coming Tomorrow"</button>
-            <button class="btn-main full-width-btn" style="margin-bottom:12px;" onclick="executeMessage('done')">✅ "Job Done / Bank Info"</button>
-            <button class="btn-neutral full-width-btn" onclick="document.getElementById('msgModal').style.display='none'">Cancel</button>
-        </div>
-    </div>
-
-    <script src="app.js?v=83"></script>
+    <script src="app.js?v=84"></script>
 </body>
 </html>
