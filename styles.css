@@ -1,113 +1,67 @@
-const MASTER_KEY = 'HydroPro_App_Production';
-let db = { customers: [], expenses: [], history: [] }; 
-const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
+:root { 
+    --primary: #1c1c1e; --accent: #007aff; --danger: #ff3b30; --success: #34c759;
+    --bg: #f2f2f7; --card-bg: #ffffff; --input-bg: #f2f2f7; --text: #000000;
+}
 
-window.onload = () => {
-    updateGreeting();
-    const dateEl = document.getElementById('headerDate');
-    if (dateEl) dateEl.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-    const saved = localStorage.getItem(MASTER_KEY);
-    if (saved) db = JSON.parse(saved);
-    
-    // Baseline integrity checks
-    if (!db.customers) db.customers = [];
-    if (!db.expenses) db.expenses = [];
-    if (!db.history) db.history = [];
-    db.customers.forEach(c => { 
-        if(!c.paymentLogs) c.paymentLogs = []; 
-        if(!c.debtHistory) c.debtHistory = [];
-    });
+body.dark-mode { --bg: #000000; --card-bg: #1c1c1e; --input-bg: #2c2c2e; --text: #ffffff; }
 
-    const isDark = localStorage.getItem('Hydro_Dark_Pref') === 'true';
-    document.body.className = isDark ? 'dark-mode' : 'light-mode';
-    if(document.getElementById('darkModeToggle')) document.getElementById('darkModeToggle').checked = isDark;
-    
-    renderAll();
-};
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; }
 
-window.openTab = (name) => {
-    // Hide all tabs
-    document.querySelectorAll(".tab-content").forEach(c => c.style.display = "none");
-    
-    // Show selected tab
-    const target = document.getElementById(name);
-    if (target) target.style.display = "block";
-    
-    // Show back button logic
-    const homeTabs = ['home', 'weeklyHub'];
-    const backBtn = document.getElementById('globalBack');
-    
-    if (homeTabs.includes(name)) {
-        if(backBtn) backBtn.style.display = "none";
-    } else {
-        if(backBtn) backBtn.style.display = "block";
-    }
+/* THE LOGO FIX: STRICTLY SLIM */
+.app-header { 
+    display: flex; justify-content: space-between; align-items: center; 
+    padding: 10px 20px; height: 60px; /* Reduced from 80px */
+}
+.logo-img { 
+    max-height: 38px; /* Forced slim height */
+    width: auto; 
+    max-width: 180px; 
+    object-fit: contain; 
+}
 
-    renderAll();
-    window.scrollTo(0,0);
-};
+.ios-switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+.ios-switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #d1d1d6; transition: .3s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 2px; bottom: 2px; background-color: white; transition: .3s; border-radius: 50%; }
+input:checked + .slider { background-color: var(--success); }
 
-// --- DATA INTEGRITY FIX (Restored from Baseline) ---
-window.saveCustomer = () => {
-    const nameVal = document.getElementById('cName').value;
-    if(!nameVal) return;
-    const id = document.getElementById('editId').value || Date.now().toString();
-    const idx = db.customers.findIndex(x => x.id === id);
-    let ex = idx > -1 ? db.customers[idx] : null;
+/* HERO SECTION */
+.home-hero { padding: 5px 20px 15px 20px; text-align: center; }
+.home-greeting { font-size: 11px; font-weight: 800; opacity: 0.5; text-transform: uppercase; }
+.home-date { font-size: 24px; font-weight: 900; color: var(--accent); margin: 2px 0; }
+.home-weather { display: inline-flex; align-items: center; gap: 6px; background: rgba(0,122,255,0.1); padding: 5px 12px; border-radius: 15px; font-size: 12px; font-weight: 800; }
 
-    const entry = {
-        id, name: nameVal, address: (document.getElementById('cAddr').value || ""),
-        postcode: document.getElementById('cPostcode').value, phone: document.getElementById('cPhone').value,
-        price: n(document.getElementById('cPrice').value), week: document.getElementById('cWeek').value,
-        day: document.getElementById('cDay').value, notes: document.getElementById('cNotes').value,
-        cleaned: ex ? ex.cleaned : false, 
-        paidThisMonth: ex ? ex.paidThisMonth : 0, 
-        debtHistory: ex ? ex.debtHistory : [], 
-        paymentLogs: ex ? ex.paymentLogs : []
-    };
+/* HOME GRID COMPRESSION: TO FIT ALL ON ONE SCREEN */
+.home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; }
+.tile { 
+    height: 100px; /* Reduced from 135px */
+    border-radius: 24px; border: none; display: flex; 
+    flex-direction: column; align-items: center; justify-content: center; 
+    gap: 6px; cursor: pointer; box-shadow: 0 6px 12px rgba(0,0,0,0.06); 
+}
+.tile span { font-size: 28px; }
+.tile small { font-size: 12px; font-weight: 900; text-transform: uppercase; }
 
-    if(idx > -1) db.customers[idx] = entry; 
-    else db.customers.push(entry);
-    
-    saveData(); location.reload(); 
-};
+.tile-admin { background: var(--card-bg); color: var(--text); border: 1px solid rgba(0,0,0,0.02); }
+.tile-week { background: var(--accent); color: white; }
 
-window.renderWeekLists = () => {
-    // UPDATED FOR WEEKS 1-5
-    for (let i = 1; i <= 5; i++) {
-        const container = document.getElementById(`week${i}`);
-        if (!container) continue;
-        container.innerHTML = `<button class="back-pill" onclick="openTab('weeklyHub')">⬅️ Back to Weeks</button>`;
-        
-        const weekCusts = db.customers.filter(c => c.week == i);
-        if (weekCusts.length === 0) {
-            container.innerHTML += `<div class="card" style="text-align:center; opacity:0.5;">No jobs in Week ${i}</div>`;
-            continue;
-        }
+/* NAVIGATION */
+.subpage-nav { padding: 12px; background: var(--bg); position: sticky; top: 0; z-index: 100; }
+.back-pill { 
+    width: 100%; height: 52px; border-radius: 18px; border: none; 
+    background: var(--card-bg); color: var(--accent); font-weight: 900; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05); font-size: 15px;
+}
 
-        weekCusts.forEach(c => {
-            const isPaid = n(c.paidThisMonth) >= n(c.price);
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <div onclick="showCustDetails('${c.id}')"><strong style="font-size:19px; color:var(--accent);">${c.name}</strong><br><small>${c.address}</small></div>
-                <div class="workflow-grid">
-                    <div class="status-row">
-                        <button class="action-btn-main ${c.cleaned ? 'btn-cleaned-active' : ''}" onclick="toggleCleaned('${c.id}')">${c.cleaned ? 'Done' : 'Clean'}</button>
-                        <button class="action-btn-main ${isPaid ? 'btn-paid-active' : ''}" onclick="markAsPaid('${c.id}')">${isPaid ? 'Paid' : 'Pay'}</button>
-                    </div>
-                </div>`;
-            container.appendChild(card);
-        });
-    }
-};
+/* RESTORED v13.8 CARDS */
+.main-container { max-width: 500px; margin: 0 auto; }
+.card { background: var(--card-bg); padding: 20px; border-radius: 24px; margin: 0 15px 12px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
 
-window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); renderLedger(); };
-window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
-window.toggleDarkMode = () => { const d = document.getElementById('darkModeToggle').checked; document.body.className = d ? 'dark-mode' : 'light-mode'; localStorage.setItem('Hydro_Dark_Pref', d); };
-window.updateGreeting = () => {
-    const hr = new Date().getHours();
-    let g = (hr < 12) ? "Good Morning, Jonathan! ☕" : (hr < 18) ? "Good Afternoon, Jonathan! ☀️" : "Good Evening, Jonathan! 🌙";
-    document.getElementById('greetingMsg').innerText = g;
-};
-// ... other functions (markAsPaid, toggleCleaned, completeCycle) remain from baseline ...
+.full-width-btn { width: 100%; height: 56px; border-radius: 16px; font-weight: 900; border: none; cursor: pointer; }
+.btn-main { background: var(--accent); color: white; }
+
+.hidden { display: none !important; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.bounce-on-tap:active { transform: scale(0.95); transition: 0.1s; }
