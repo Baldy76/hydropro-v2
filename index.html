@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v13.5</title>
-    <link rel="stylesheet" href="styles.css?v=135">
+    <title>Hydro Pro v13.6</title>
+    <link rel="stylesheet" href="styles.css?v=136">
 </head>
 <body class="light-mode">
 
@@ -78,11 +78,12 @@
                 <button class="btn-main full-width-btn" onclick="saveCustomer()">💾 Save Customer</button>
             </div>
             <div class="card action-card-green"><button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
-            <div class="card action-card-red"><button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL DATA</button></div>
         </div>
 
         <div id="master" class="tab-content">
-            <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()">
+            <div class="card" style="padding:10px; background:transparent; box-shadow:none;">
+                <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()">
+            </div>
             <div id="masterTableBody"></div>
         </div>
 
@@ -90,7 +91,6 @@
             <div class="dashboard-hero">
                 <div class="hero-label" id="statsMonthTitle">Summary</div>
                 <div class="hero-amount" id="currProfit">£0.00</div>
-                <div class="hero-subtext">💰 Total Profit</div>
             </div>
             <div id="monthlyHistoryContainer"></div>
         </div>
@@ -100,9 +100,9 @@
                 <h3 class="section-title">💸 Log Expense</h3>
                 <div class="force-stack">
                     <input type="text" id="expDesc" placeholder="Description" class="large-select" style="margin-bottom:10px;">
-                    <input type="number" id="expAmt" placeholder="Amount £" class="large-select" style="margin-bottom:10px;">
+                    <input type="number" id="expAmt" placeholder="Amount £" class="large-select">
                 </div>
-                <button class="btn-main full-width-btn" onclick="addExpense()">Add Expense</button>
+                <button class="btn-main full-width-btn" onclick="addExpense()" style="margin-top:10px;">Add Expense</button>
             </div>
             <div id="expenseList"></div>
         </div>
@@ -110,6 +110,8 @@
         <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
     </div>
 
-    <script src="app.js?v=135"></script>
+    <div class="page-version-footer">v13.6 - Production</div>
+
+    <script src="app.js?v=136"></script>
 </body>
 </html>
