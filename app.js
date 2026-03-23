@@ -1,4 +1,24 @@
-// 1. NAVIGATION
+// 1. DATE ENGINE
+function getFullDate() {
+    const d = new Date();
+    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const dayName = days[d.getDay()];
+    const date = d.getDate();
+    const monthName = months[d.getMonth()];
+    const year = d.getFullYear();
+    let suffix = "th";
+    if (date < 11 || date > 13) {
+        switch (date % 10) {
+            case 1: suffix = "st"; break;
+            case 2: suffix = "nd"; break;
+            case 3: suffix = "rd"; break;
+        }
+    }
+    return `${dayName} ${date}${suffix} ${monthName} ${year}`;
+}
+
+// 2. NAVIGATION
 window.openTab = function(evt, name) {
     const contents = document.getElementsByClassName("tab-content");
     for (let i = 0; i < contents.length; i++) contents[i].classList.remove("active");
@@ -9,7 +29,7 @@ window.openTab = function(evt, name) {
     window.scrollTo(0,0);
 };
 
-// 2. DATA ENGINE
+// 3. DATA ENGINE
 const MASTER_KEY = 'HydroPro_App_Production';
 let db = JSON.parse(localStorage.getItem(MASTER_KEY)) || { 
     customers: [], incomeHistory: [], expenses: [], bank: {name:'', sort:'', acc:''} 
@@ -27,7 +47,7 @@ window.calculateTrueDebt = function(c) {
     return Math.max(0, past + current);
 };
 
-// 3. UI RENDERING
+// 4. UI RENDERING
 window.renderAll = function() {
     window.renderWeeks();
     window.renderMasterTable();
@@ -49,29 +69,47 @@ window.renderWeeks = function() {
 };
 
 window.renderMasterTable = function() {
-    const s = (document.getElementById('mainSearch').value || "").toLowerCase();
+    const searchInput = document.getElementById('mainSearch');
+    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : "";
     const body = document.getElementById('masterTableBody');
-    if(!body) return; body.innerHTML = '';
+    if(!body) return; 
+    body.innerHTML = '';
     [...db.customers].sort((a,b) => a.name.localeCompare(b.name)).forEach(c => {
-        if(c.name.toLowerCase().includes(s) || (c.address||"").toLowerCase().includes(s)) {
+        if(searchTerm === "" || c.name.toLowerCase().includes(searchTerm) || (c.address||"").toLowerCase().includes(searchTerm)) {
             const debt = calculateTrueDebt(c);
             const tr = document.createElement('tr');
             tr.onclick = () => openCustomerModal(c.id);
-            tr.innerHTML = `<td style="padding:15px;"><strong>${c.name}</strong><br><small>${c.address}</small></td><td style="padding:15px; text-align:right; font-weight:900; color:${debt>0?'var(--stat-owed)':'#000'}">£${debt.toFixed(2)}</td>`;
+            tr.innerHTML = `<td style="padding:15px; border-bottom:1px solid rgba(0,0,0,0.03);"><strong>${c.name}</strong><br><small style="opacity:0.6;">${c.address}</small></td><td style="padding:15px; text-align:right; font-weight:900; border-bottom:1px solid rgba(0,0,0,0.03); color:${debt > 0 ? 'var(--danger)' : 'var(--accent)'}">£${debt.toFixed(2)}</td>`;
             body.appendChild(tr);
         }
     });
 };
 
 window.renderStats = function() {
+    // Current Cycle Stats
     let collM = 0, owedM = 0, projM = 0;
     db.customers.forEach(c => { projM += n(c.price); collM += n(c.paidThisMonth); if(c.cleaned) owedM += Math.max(0, n(c.price)-n(c.paidThisMonth)); });
     document.getElementById('statCollMonth').innerText = '£' + collM.toFixed(2);
     document.getElementById('statOwedMonth').innerText = '£' + owedM.toFixed(2);
     document.getElementById('statPendingMonth').innerText = '£' + Math.max(0, projM - collM - owedM).toFixed(2);
+
+    // Lifetime Overall Stats
+    const historyTotal = (db.incomeHistory || []).reduce((s, h) => s + n(h.amount), 0);
+    const overallTotal = historyTotal + collM;
+    document.getElementById('statFYTotal').innerText = '£' + overallTotal.toFixed(2);
+
+    const histBody = document.getElementById('overallHistoryBody');
+    if(histBody) {
+        histBody.innerHTML = '';
+        [...(db.incomeHistory || [])].reverse().forEach(h => {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td style="padding:10px 0; border-bottom:1px solid rgba(0,0,0,0.05);">${h.month}</td><td style="padding:10px 0; text-align:right; font-weight:700; border-bottom:1px solid rgba(0,0,0,0.05);">£${n(h.amount).toFixed(2)}</td>`;
+            histBody.appendChild(row);
+        });
+    }
 };
 
-// 4. SMART BANK TOGGLE
+// 5. ACTIONS
 window.handleBankAction = function() {
     const btn = document.getElementById('btnBankAction');
     const fields = ['bName', 'bSort', 'bAcc'];
@@ -89,7 +127,6 @@ window.handleBankAction = function() {
     }
 };
 
-// 5. CORE ACTIONS
 window.saveCustomer = function() {
     const id = document.getElementById('editId').value || Date.now();
     const name = document.getElementById('cName').value; if(!name) return;
@@ -112,7 +149,7 @@ window.clearForm = function() { ['editId','cName','cAddr','cPostcode','cPhone','
 window.toggleDarkMode = function() { const isDark = document.getElementById('darkModeToggle').checked; document.body.className = isDark ? 'dark-mode' : 'light-mode'; localStorage.setItem('Hydro_Dark_Pref', isDark); };
 
 window.onload = () => {
-    document.getElementById('headerDate').innerText = new Date().toDateString();
+    document.getElementById('headerDate').innerText = getFullDate();
     const isDark = localStorage.getItem('Hydro_Dark_Pref') === 'true';
     document.body.className = isDark ? 'dark-mode' : 'light-mode';
     document.getElementById('darkModeToggle').checked = isDark;
@@ -120,35 +157,33 @@ window.onload = () => {
     window.clearForm(); window.renderAll();
 };
 
+window.completeCycle = function() {
+    if(!confirm("Start New Month? This wipes 'Done' status and adds payments to History.")) return;
+    const label = new Date().toLocaleDateString('en-GB', {month:'short', year:'2-digit'});
+    const monthlyTotal = db.customers.reduce((s,c) => s + n(c.paidThisMonth), 0);
+    db.incomeHistory = db.incomeHistory || [];
+    db.incomeHistory.push({ month: label, amount: monthlyTotal });
+    db.customers.forEach(c => {
+        const o = calculateTrueDebt(c);
+        if(o > 0) { c.debtHistory = c.debtHistory || []; c.debtHistory.push({ month: label, amount: o }); }
+        c.cleaned = false; c.paidThisMonth = 0;
+    });
+    window.saveData();
+};
+
 window.deleteCustomer = function() { const id = document.getElementById('editId').value; if(id && confirm("Delete permanently?")) { db.customers = db.customers.filter(c => String(c.id) !== String(id)); window.clearForm(); window.saveData(); window.openTab(null, 'master'); } };
 window.sendReminder = function(id, type) {
     const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return;
     const b = db.bank || {name:'', sort:'', acc:''};
-    const msg = `Hey ${c.name}, just to let you know that your windows were washed today at ${c.address}, ${c.postcode || ''}. Please find my bank details below if you wish to pay via bank transfer of £${n(c.price).toFixed(2)}. Thanks for your business Jonathan@Hydro\n\nBank: ${b.name}\nSort: ${b.sort}\nAcc: ${b.acc}`;
+    const bankStr = b.name ? `\n\nBank Details:\nAccount: ${b.name}\nSort Code: ${b.sort}\nAccount No: ${b.acc}` : "";
+    const msg = `Hey ${c.name}, just to let you know that your windows were washed today at ${c.address}, ${c.postcode || ''}. Please find my bank details below if you wish to pay via bank transfer of £${n(c.price).toFixed(2)}. Thanks for your business Jonathan@Hydro${bankStr}`;
     const encoded = encodeURIComponent(msg), phone = c.phone.replace(/\s+/g, '');
     if (type === 'whatsapp') { window.location.href = `https://wa.me/${phone}?text=${encoded}`; } else { window.location.href = `sms:${phone}${/iPhone/i.test(navigator.userAgent)?'&':'?'}body=${encoded}`; }
 };
-
 window.markJobAsCleaned = function(id) { const c = db.customers.find(x => String(x.id) === String(id)); if(c) { c.cleaned = true; window.saveData(); } };
 window.processPayment = function(id) { const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return; const amt = prompt("Amount Paid?", calculateTrueDebt(c).toFixed(2)); if(amt) { c.paidThisMonth += n(amt); window.saveData(); } };
-window.completeCycle = function() { if(!confirm("Start New Month? Debt carries forward.")) return; const label = new Date().toLocaleDateString('en-GB', {month:'short'}); db.incomeHistory.push({ month: label, amount: db.customers.reduce((s,c) => s + n(c.paidThisMonth), 0) }); db.customers.forEach(c => { const o = calculateTrueDebt(c); if(o > 0) { c.debtHistory = c.debtHistory || []; c.debtHistory.push({ month: label, amount: o }); } c.cleaned = false; c.paidThisMonth = 0; }); window.saveData(); };
-window.exportCSV = function() {
-    let csv = "Name,Address,Postcode,Phone,Price,Week,Day,Notes\n";
-    db.customers.forEach(c => { csv += `"${c.name}","${c.address}","${c.postcode}","${c.phone}",${n(c.price)},"${c.week}","${c.day}","${c.notes}"\n`; });
-    const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); link.download = "Hydro_Backup.csv"; link.click();
-};
-window.importCSV = function(e) {
-    const r = new FileReader(); r.onload = (ev) => {
-        const l = ev.target.result.split('\n'); if(l.length <= 1) return;
-        if(!confirm("Append to current list? (Cancel to overwrite)")) db.customers = [];
-        l.slice(1).forEach(line => {
-            const cols = line.split(',').map(c => c.replace(/"/g, '').trim());
-            if(cols.length >= 5) db.customers.push({ id: Date.now()+Math.random(), name: cols[0], address: cols[1], postcode: cols[2], phone: cols[3], price: n(cols[4]), week: cols[5]||'1', day: cols[6]||'Monday', notes: cols[7]||'', cleaned: false, paidThisMonth: 0, debtHistory: [] });
-        });
-        window.saveData(); alert("Imported!");
-    };
-    r.readAsText(e.target.files[0]);
-};
+window.exportCSV = function() { let csv = "Name,Address,Postcode,Phone,Price,Week,Day,Notes\n"; db.customers.forEach(c => { csv += `"${c.name}","${c.address}","${c.postcode}","${c.phone}",${n(c.price)},"${c.week}","${c.day}","${c.notes}"\n`; }); const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); link.download = "Hydro_Backup.csv"; link.click(); };
+window.importCSV = function(e) { const r = new FileReader(); r.onload = (ev) => { const l = ev.target.result.split('\n'); if(l.length <= 1) return; if(!confirm("Append to current list?")) db.customers = []; l.slice(1).forEach(line => { const cols = line.split(',').map(c => c.replace(/"/g, '').trim()); if(cols.length >= 5) db.customers.push({ id: Date.now()+Math.random(), name: cols[0], address: cols[1], postcode: cols[2], phone: cols[3], price: n(cols[4]), week: cols[5]||'1', day: cols[6]||'Monday', notes: cols[7]||'', cleaned: false, paidThisMonth: 0, debtHistory: [] }); }); window.saveData(); }; r.readAsText(e.target.files[0]); };
 window.openCustomerModal = function(id) { const c = db.customers.find(x => String(x.id) === String(id)); document.getElementById('modName').innerText = c.name; document.getElementById('modAddr').innerText = (c.address || "") + " " + (c.postcode || ""); document.getElementById('modOwed').innerText = '£' + calculateTrueDebt(c).toFixed(2); document.getElementById('customerModal').style.display = 'flex'; };
 window.closeCustomerModal = function() { document.getElementById('customerModal').style.display = 'none'; };
 window.runUATClear = function() { if(confirm("WIPE EVERYTHING?")) { localStorage.clear(); location.reload(); } };
