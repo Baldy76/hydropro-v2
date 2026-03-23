@@ -3,6 +3,7 @@ let db = { customers: [], expenses: [] };
 
 const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 
+// --- INITIALIZE ---
 window.onload = () => {
     const dateElement = document.getElementById('headerDate');
     if (dateElement) dateElement.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -10,6 +11,7 @@ window.onload = () => {
     const saved = localStorage.getItem(MASTER_KEY);
     if (saved) db = JSON.parse(saved);
     if (!db.customers) db.customers = [];
+    if (!db.expenses) db.expenses = [];
     
     const isDark = localStorage.getItem('Hydro_Dark_Pref') === 'true';
     document.body.className = isDark ? 'dark-mode' : 'light-mode';
@@ -18,31 +20,7 @@ window.onload = () => {
     renderAll();
 };
 
-window.openTab = function(evt, name) {
-    const contents = document.getElementsByClassName("tab-content");
-    for (let i = 0; i < contents.length; i++) {
-        contents[i].style.display = "none";
-        contents[i].classList.remove("active");
-    }
-    const tabs = document.getElementsByClassName("tab");
-    for (let i = 0; i < tabs.length; i++) { tabs[i].classList.remove("active"); }
-    
-    const target = document.getElementById(name);
-    if (target) {
-        target.style.display = "block";
-        target.classList.add("active");
-    }
-    if (evt) evt.currentTarget.classList.add("active");
-
-    const searchBar = document.getElementById('globalSearchContainer');
-    const filterBar = document.getElementById('dayFilterBar');
-    
-    if(searchBar) name === 'master' ? searchBar.classList.remove('hidden') : searchBar.classList.add('hidden');
-    if(filterBar) name.startsWith('week') ? filterBar.classList.remove('hidden') : filterBar.classList.add('hidden');
-
-    renderAll();
-};
-
+// --- DATA LOGIC ---
 window.saveCustomer = function() {
     const nameVal = document.getElementById('cName').value;
     if(!nameVal) { alert("Enter Name"); return; }
@@ -68,11 +46,84 @@ window.saveCustomer = function() {
     location.reload();
 };
 
-window.runUATClear = () => {
-    if(confirm("Wipe everything?")) {
-        localStorage.clear();
-        location.reload();
+// --- RENDER LOGIC (THE FIX) ---
+window.renderAll = () => {
+    renderMasterTable();
+    renderWeekLists();
+    renderStats();
+    renderExpenses();
+};
+
+window.renderMasterTable = () => {
+    const container = document.getElementById('masterTableBody');
+    if (!container) return;
+    container.innerHTML = '';
+    const search = document.getElementById('mainSearch').value.toLowerCase();
+
+    db.customers.forEach(c => {
+        if (c.name.toLowerCase().includes(search) || c.address.toLowerCase().includes(search)) {
+            const row = document.createElement('div');
+            row.className = 'master-row';
+            row.innerHTML = `
+                <div><strong>${c.name}</strong><br><small>${c.address}</small></div>
+                <div style="text-align:right">£${n(c.price).toFixed(2)}<br><small>${c.day}</small></div>
+            `;
+            container.appendChild(row);
+        }
+    });
+};
+
+window.renderWeekLists = () => {
+    for (let i = 1; i <= 4; i++) {
+        const container = document.getElementById(`week${i}`);
+        if (!container) continue;
+        container.innerHTML = '';
+        const weekCusts = db.customers.filter(c => c.week == i);
+        
+        if (weekCusts.length === 0) {
+            container.innerHTML = '<div class="card" style="text-align:center; opacity:0.5;">No jobs scheduled for this week.</div>';
+            continue;
+        }
+
+        weekCusts.forEach(c => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div><strong>${c.name}</strong><br><small>${c.day} - ${c.address}</small></div>
+                    <div style="font-size:20px; font-weight:900; color:var(--success);">£${n(c.price).toFixed(2)}</div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
     }
+};
+
+window.renderStats = () => {
+    let rev = db.customers.reduce((sum, c) => sum + n(c.price), 0);
+    let exp = db.expenses.reduce((sum, e) => sum + n(e.amt), 0);
+    document.getElementById('statRevenue').innerText = `£${rev.toFixed(2)}`;
+    document.getElementById('statSpend').innerText = `£${exp.toFixed(2)}`;
+    document.getElementById('statProfit').innerText = `£${(rev - exp).toFixed(2)}`;
+};
+
+// --- MISC ---
+window.openTab = (evt, name) => {
+    document.querySelectorAll(".tab-content").forEach(c => c.style.display = "none");
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    document.getElementById(name).style.display = "block";
+    if(evt) evt.currentTarget.classList.add("active");
+    const search = document.getElementById('globalSearchContainer');
+    name === 'master' ? search.classList.remove('hidden') : search.classList.add('hidden');
+};
+
+window.addExpense = () => {
+    const desc = document.getElementById('expDesc').value;
+    const amt = n(document.getElementById('expAmt').value);
+    if (!desc || amt <= 0) return;
+    db.expenses.push({ desc, amt, date: new Date().toLocaleDateString() });
+    localStorage.setItem(MASTER_KEY, JSON.stringify(db));
+    location.reload();
 };
 
 window.toggleDarkMode = () => {
@@ -81,6 +132,4 @@ window.toggleDarkMode = () => {
     localStorage.setItem('Hydro_Dark_Pref', isDark);
 };
 
-window.renderAll = () => {
-    // Logic for master list and weeks...
-};
+window.runUATClear = () => { if(confirm("Wipe all data?")) { localStorage.clear(); location.reload(); } };
