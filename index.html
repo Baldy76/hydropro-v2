@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v17.1</title>
-    <link rel="stylesheet" href="styles.css?v=171">
+    <title>Hydro Pro v17.2</title>
+    <link rel="stylesheet" href="styles.css?v=172">
 </head>
 <body class="light-mode">
 
+    <div class="mode-switch-wrapper">
+        <label class="ios-switch">
+            <input type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()">
+            <span class="slider"></span>
+        </label>
+    </div>
+
     <div class="app-header" id="globalHeader">
         <img src="Logo.png" class="logo-img" alt="Hydro Pro">
-        <div class="mode-switch-wrapper">
-            <label class="ios-switch">
-                <input type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()">
-                <span class="slider"></span>
-            </label>
-        </div>
     </div>
 
     <div class="main-container">
@@ -60,44 +61,37 @@
                     </div>
                 </div>
                 <div class="fun-input-group">
-                    <div class="fun-icon" style="background: rgba(255, 149, 0, 0.15);">🏠</div>
+                    <div class="fun-icon">🏠</div>
                     <div class="fun-field-stack">
-                        <label>House Number / Name</label>
-                        <input type="text" id="cHouseNum" placeholder="e.g. 22" class="creative-input">
+                        <label>House No.</label>
+                        <input type="text" id="cHouseNum" placeholder="22" class="creative-input">
                     </div>
                 </div>
                 <div class="fun-input-group">
-                    <div class="fun-icon" style="background: rgba(52, 199, 89, 0.15);">🛣️</div>
+                    <div class="fun-icon">🛣️</div>
                     <div class="fun-field-stack">
-                        <label>Street Name</label>
+                        <label>Street</label>
                         <input type="text" id="cStreet" placeholder="Street Name" class="creative-input">
                     </div>
                 </div>
                 <div class="fun-input-group">
-                    <div class="fun-icon" style="background: rgba(175, 82, 222, 0.15);">📍</div>
+                    <div class="fun-icon">📍</div>
                     <div class="fun-field-stack">
                         <label>Postcode</label>
-                        <input type="text" id="cPostcode" placeholder="Postcode" class="creative-input">
+                        <input type="text" id="cPostcode" placeholder="NE1 1AA" class="creative-input">
                     </div>
                 </div>
                 <div class="fun-input-group">
-                    <div class="fun-icon" style="background: rgba(0, 122, 255, 0.15);">📱</div>
+                    <div class="fun-icon">💰</div>
                     <div class="fun-field-stack">
-                        <label>Mobile Number</label>
-                        <input type="tel" id="cPhone" placeholder="Mobile" class="creative-input">
-                    </div>
-                </div>
-                <div class="fun-input-group">
-                    <div class="fun-icon" style="background: rgba(255, 59, 48, 0.15);">💰</div>
-                    <div class="fun-field-stack">
-                        <label>Clean Price (£)</label>
+                        <label>Price £</label>
                         <input type="number" id="cPrice" placeholder="0.00" class="creative-input">
                     </div>
                 </div>
                 <div class="fun-input-group">
-                    <div class="fun-icon" style="background: rgba(90, 200, 250, 0.15);">📅</div>
+                    <div class="fun-icon">📅</div>
                     <div class="fun-field-stack">
-                        <label>Rotational Week</label>
+                        <label>Week</label>
                         <select id="cWeek" class="creative-select">
                             <option value="1">Week 1</option><option value="2">Week 2</option>
                             <option value="3">Week 3</option><option value="4">Week 4</option>
@@ -106,64 +100,44 @@
                     </div>
                 </div>
                 <div class="fun-input-group">
-                    <div class="fun-icon" style="background: rgba(255, 204, 0, 0.15);">☀️</div>
+                    <div class="fun-icon">☀️</div>
                     <div class="fun-field-stack">
-                        <label>Scheduled Day</label>
+                        <label>Day</label>
                         <select id="cDay" class="creative-select">
                             <option value="Monday">Monday</option><option value="Tuesday">Tuesday</option>
                             <option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option>
-                            <option value="Friday">Friday</option><option value="Saturday">Saturday</option>
-                            <option value="Sunday">Sunday</option>
+                            <option value="Friday">Friday</option>
                         </select>
                     </div>
                 </div>
                 <div class="fun-input-group" style="border: none;">
-                    <div class="fun-icon" style="background: rgba(142, 142, 147, 0.15);">📝</div>
+                    <div class="fun-icon">📝</div>
                     <div class="fun-field-stack">
-                        <label>Private Notes</label>
-                        <textarea id="cNotes" placeholder="Codes, dogs, etc..." class="creative-textarea"></textarea>
+                        <label>Notes</label>
+                        <textarea id="cNotes" placeholder="Details..." class="creative-textarea"></textarea>
                     </div>
                 </div>
-                <button class="btn-main full-width-btn bounce-on-tap creative-save-btn" onclick="saveCustomer()">
-                    ✨ Save Customer
-                </button>
+                <button class="btn-main full-width-btn creative-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
         </div>
 
         <div id="master" class="tab-content">
             <div class="card" style="padding:10px; background:transparent; box-shadow:none;">
-                <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()">
+                <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search..." oninput="renderMasterTable()">
             </div>
             <div id="masterTableBody"></div>
-            
-            <div class="card action-card-green" style="margin-top:20px;">
+            <div class="card action-card-green">
                 <button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button>
             </div>
-        </div>
-
-        <div id="stats" class="tab-content">
-            <div class="dashboard-hero"><div id="currProfit" class="hero-amount">£0.00</div></div>
-            <div id="monthlyHistoryContainer"></div>
         </div>
 
         <div id="spend" class="tab-content">
             <div class="card">
                 <h3 class="section-title">💸 Log Expense</h3>
-                <div class="fun-input-group">
-                    <div class="fun-field-stack">
-                        <label>Description</label>
-                        <input type="text" id="expDesc" placeholder="e.g. Fuel" class="creative-input">
-                    </div>
-                </div>
-                <div class="fun-input-group">
-                    <div class="fun-field-stack">
-                        <label>Amount £</label>
-                        <input type="number" id="expAmt" placeholder="0.00" class="creative-input">
-                    </div>
-                </div>
-                <button class="btn-main full-width-btn bounce-on-tap" onclick="addExpense()" style="margin-top:15px;">Add Expense</button>
+                <input type="text" id="expDesc" placeholder="Fuel, Tools etc" class="creative-input" style="background:var(--input-bg); border-radius:10px; padding:10px; margin-bottom:10px;">
+                <input type="number" id="expAmt" placeholder="0.00" class="creative-input" style="background:var(--input-bg); border-radius:10px; padding:10px;">
+                <button class="btn-main full-width-btn" onclick="addExpense()" style="margin-top:15px;">Add Expense</button>
             </div>
-
             <div class="card">
                 <h3 class="section-title">📊 QuickBooks Exports</h3>
                 <div class="grid-1x2">
@@ -171,16 +145,14 @@
                     <button class="pill-btn qb-btn" onclick="exportQBExpenses()">🧾 QB Spend</button>
                 </div>
             </div>
-
             <div id="expenseList"></div>
         </div>
 
-        <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div>
-        <div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div>
-        <div id="week5" class="tab-content"></div>
+        <div id="stats" class="tab-content"><div id="currProfit" class="hero-amount">£0.00</div><div id="monthlyHistoryContainer"></div></div>
+        <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
     </div>
 
-    <div class="page-version-footer">v17.1 - Production Sync</div>
-    <script src="app.js?v=171"></script>
+    <div class="page-version-footer">v17.2 - Final Alignment</div>
+    <script src="app.js?v=172"></script>
 </body>
 </html>
