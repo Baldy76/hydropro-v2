@@ -1,8 +1,7 @@
-// GLOBAL DATA STORAGE
+// GLOBAL DATA
 const MASTER_KEY = 'HydroPro_App_Production';
 let db = { customers: [], incomeHistory: [], expenses: [], bank: {name:'', sort:'', acc:''} };
 
-// UTILITY: NUMBER PARSER
 const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 
 // 1. DATE ENGINE
@@ -22,17 +21,14 @@ function getFullDate() {
     return `${days[d.getDay()]} ${date}${suffix} ${months[d.getMonth()]} ${d.getFullYear()}`;
 }
 
-// 2. BOOT SEQUENCE
+// 2. BOOT
 window.onload = () => {
     const saved = localStorage.getItem(MASTER_KEY);
     if (saved) db = JSON.parse(saved);
-    
-    // Safety check for missing arrays
     if (!db.customers) db.customers = [];
     if (!db.incomeHistory) db.incomeHistory = [];
     
     document.getElementById('headerDate').innerText = getFullDate();
-    
     const isDark = localStorage.getItem('Hydro_Dark_Pref') === 'true';
     document.body.className = isDark ? 'dark-mode' : 'light-mode';
     document.getElementById('darkModeToggle').checked = isDark;
@@ -41,29 +37,24 @@ window.onload = () => {
     document.getElementById('bName').value = b.name || ''; 
     document.getElementById('bSort').value = b.sort || ''; 
     document.getElementById('bAcc').value = b.acc || '';
-    
     renderAll();
 };
 
-// 3. NAVIGATION ENGINE
+// 3. NAV
 window.openTab = function(evt, name) {
     const contents = document.getElementsByClassName("tab-content");
     const tabs = document.getElementsByClassName("tab");
     for (let i = 0; i < contents.length; i++) contents[i].classList.remove("active");
     for (let i = 0; i < tabs.length; i++) tabs[i].classList.remove("active");
-    
     document.getElementById(name).classList.add("active");
     if (evt) evt.currentTarget.classList.add("active");
-
-    // Immediate refresh on tab switch
     if (name === 'master') renderMasterTable();
     if (name === 'stats') renderStats();
     if (name.startsWith('week')) renderWeeks();
-    
     window.scrollTo(0,0);
 };
 
-// 4. DATA LOGIC
+// 4. LOGIC
 window.saveData = function() {
     localStorage.setItem(MASTER_KEY, JSON.stringify(db));
     renderAll();
@@ -76,7 +67,7 @@ window.calculateTrueDebt = function(c) {
     return Math.max(0, past + current);
 };
 
-// 5. UI RENDERERS
+// 5. RENDERING
 window.renderAll = function() {
     renderMasterTable();
     renderStats();
@@ -86,18 +77,21 @@ window.renderAll = function() {
 window.renderWeeks = function() {
     for(let i=1; i<=4; i++) {
         const div = document.getElementById('week' + i);
-        if(!div) continue; 
-        div.innerHTML = '';
-        const weekCusts = db.customers.filter(c => String(c.week) === String(i));
-        
-        weekCusts.forEach(c => {
+        if(!div) continue; div.innerHTML = '';
+        db.customers.filter(c => String(c.week) === String(i)).forEach(c => {
             const debt = calculateTrueDebt(c);
+            let debtLabels = "";
+            (c.debtHistory || []).forEach(d => {
+                debtLabels += `<span class="debt-history-badge">${d.month}: £${n(d.amount).toFixed(2)}</span>`;
+            });
+
             let card = document.createElement('div');
             card.className = `customer-card ${debt > 0 ? 'has-debt' : ''}`;
             card.innerHTML = `
                 <div onclick="openCustomerModal('${c.id}')">
                     <div style="display:flex; justify-content:space-between"><strong>${c.name}</strong><strong>£${n(c.price).toFixed(2)}</strong></div>
                     <small style="opacity:0.6">${c.address}</small>
+                    <div style="margin-top:5px;">${debtLabels}</div>
                 </div>
                 <div class="card-action-grid">
                     <button class="icon-btn-small" onclick="window.open('http://maps.apple.com/?q=${encodeURIComponent(c.address)}')">📍 Map</button>
@@ -114,20 +108,22 @@ window.renderWeeks = function() {
 
 window.renderMasterTable = function() {
     const body = document.getElementById('masterTableBody');
-    if(!body) return; 
-    body.innerHTML = '';
-    
-    const search = document.getElementById('mainSearch').value.toLowerCase().trim();
-    const sorted = [...db.customers].sort((a,b) => a.name.localeCompare(b.name));
-    
-    sorted.forEach(c => {
+    if(!body) return; body.innerHTML = '';
+    const search = (document.getElementById('mainSearch').value || "").toLowerCase().trim();
+    [...db.customers].sort((a,b) => a.name.localeCompare(b.name)).forEach(c => {
         if(search === "" || c.name.toLowerCase().includes(search) || c.address.toLowerCase().includes(search)) {
             const debt = calculateTrueDebt(c);
+            let debtLabels = "";
+            (c.debtHistory || []).forEach(d => {
+                debtLabels += `<span class="debt-history-badge">${d.month}: £${n(d.amount).toFixed(2)}</span>`;
+            });
+
             const tr = document.createElement('tr');
             tr.onclick = () => openCustomerModal(c.id);
             tr.innerHTML = `
                 <td style="padding:15px; border-bottom:1px solid rgba(0,0,0,0.03);">
                     <strong>${c.name}</strong><br><small style="opacity:0.6;">${c.address}</small>
+                    <div>${debtLabels}</div>
                 </td>
                 <td style="padding:15px; text-align:right; font-weight:900; color:${debt > 0 ? 'var(--danger)' : 'var(--accent)'}">
                     £${debt.toFixed(2)}
@@ -139,24 +135,12 @@ window.renderMasterTable = function() {
 
 window.renderStats = function() {
     let collM = 0, owedM = 0, projM = 0;
-    db.customers.forEach(c => { 
-        projM += n(c.price); 
-        collM += n(c.paidThisMonth); 
-        if(c.cleaned) owedM += Math.max(0, n(c.price)-n(c.paidThisMonth)); 
-    });
-    
-    const sColl = document.getElementById('statCollMonth');
-    const sOwed = document.getElementById('statOwedMonth');
-    const sPend = document.getElementById('statPendingMonth');
-    const sTotal = document.getElementById('statFYTotal');
-    
-    if(sColl) sColl.innerText = '£' + collM.toFixed(2);
-    if(sOwed) sOwed.innerText = '£' + owedM.toFixed(2);
-    if(sPend) sPend.innerText = '£' + Math.max(0, projM - collM - owedM).toFixed(2);
-
-    const historyTotal = db.incomeHistory.reduce((s, h) => s + n(h.amount), 0);
-    if(sTotal) sTotal.innerText = '£' + (historyTotal + collM).toFixed(2);
-
+    db.customers.forEach(c => { projM += n(c.price); collM += n(c.paidThisMonth); if(c.cleaned) owedM += Math.max(0, n(c.price)-n(c.paidThisMonth)); });
+    if(document.getElementById('statCollMonth')) document.getElementById('statCollMonth').innerText = '£' + collM.toFixed(2);
+    if(document.getElementById('statOwedMonth')) document.getElementById('statOwedMonth').innerText = '£' + owedM.toFixed(2);
+    if(document.getElementById('statPendingMonth')) document.getElementById('statPendingMonth').innerText = '£' + Math.max(0, projM - collM - owedM).toFixed(2);
+    const historyTotal = (db.incomeHistory || []).reduce((s, h) => s + n(h.amount), 0);
+    if(document.getElementById('statFYTotal')) document.getElementById('statFYTotal').innerText = '£' + (historyTotal + collM).toFixed(2);
     const histBody = document.getElementById('overallHistoryBody');
     if(histBody) {
         histBody.innerHTML = '';
@@ -166,62 +150,30 @@ window.renderStats = function() {
     }
 };
 
-// 6. CORE ACTIONS
+// 6. ACTIONS
 window.saveCustomer = function() {
     const id = document.getElementById('editId').value || Date.now();
     const name = document.getElementById('cName').value; 
-    if(!name) { alert("Name required"); return; }
-    
-    const entry = { 
-        id: id, 
-        name: name, 
-        address: document.getElementById('cAddr').value, 
-        postcode: document.getElementById('cPostcode').value, 
-        phone: document.getElementById('cPhone').value, 
-        price: n(document.getElementById('cPrice').value), 
-        week: document.getElementById('cWeek').value, 
-        day: document.getElementById('cDay').value, 
-        notes: document.getElementById('cNotes').value, 
-        cleaned: false, paidThisMonth: 0, debtHistory: [] 
-    };
-
+    if(!name) return;
+    const entry = { id: id, name: name, address: document.getElementById('cAddr').value, postcode: document.getElementById('cPostcode').value, phone: document.getElementById('cPhone').value, price: n(document.getElementById('cPrice').value), week: document.getElementById('cWeek').value, day: document.getElementById('cDay').value, notes: document.getElementById('cNotes').value, cleaned: false, paidThisMonth: 0, debtHistory: [] };
     const idx = db.customers.findIndex(x => String(x.id) === String(id));
     if(idx > -1) { 
-        entry.cleaned = db.customers[idx].cleaned; 
-        entry.paidThisMonth = db.customers[idx].paidThisMonth; 
-        entry.debtHistory = db.customers[idx].debtHistory || []; 
+        const old = db.customers[idx];
+        entry.cleaned = old.cleaned; entry.paidThisMonth = old.paidThisMonth; entry.debtHistory = old.debtHistory || [];
         db.customers[idx] = entry; 
-    } else { 
-        db.customers.push(entry); 
-    }
-    clearForm(); 
-    saveData(); 
-    openTab(null, 'master');
+    } else { db.customers.push(entry); }
+    clearForm(); saveData(); openTab(null, 'master');
 };
 
 window.editCustomer = function(id) { 
     const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return; 
     document.getElementById('editId').value = c.id; 
-    document.getElementById('cName').value = c.name; 
-    document.getElementById('cAddr').value = c.address; 
-    document.getElementById('cPostcode').value = c.postcode; 
-    document.getElementById('cPhone').value = c.phone; 
-    document.getElementById('cPrice').value = c.price; 
-    document.getElementById('cWeek').value = c.week; 
-    document.getElementById('cDay').value = c.day; 
-    document.getElementById('cNotes').value = c.notes; 
-    document.getElementById('editActions').classList.remove('hidden'); 
-    document.getElementById('formTitle').innerText = "Edit Customer"; 
+    document.getElementById('cName').value = c.name; document.getElementById('cAddr').value = c.address; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPhone').value = c.phone; document.getElementById('cPrice').value = c.price; document.getElementById('cWeek').value = c.week; document.getElementById('cDay').value = c.day; document.getElementById('cNotes').value = c.notes; 
+    document.getElementById('editActions').classList.remove('hidden'); document.getElementById('formTitle').innerText = "Edit Customer"; 
     window.openTab(null, 'admin'); 
 };
 
-window.clearForm = function() { 
-    ['editId','cName','cAddr','cPostcode','cPhone','cPrice','cNotes'].forEach(id => {
-        const el = document.getElementById(id); if(el) el.value = '';
-    }); 
-    document.getElementById('editActions').classList.add('hidden'); 
-    document.getElementById('formTitle').innerText = "Customer Entry"; 
-};
+window.clearForm = function() { ['editId','cName','cAddr','cPostcode','cPhone','cPrice','cNotes'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; }); document.getElementById('editActions').classList.add('hidden'); document.getElementById('formTitle').innerText = "Customer Entry"; };
 
 window.deleteCustomer = function() {
     const id = document.getElementById('editId').value;
@@ -232,75 +184,99 @@ window.deleteCustomer = function() {
 };
 
 window.handleBankAction = function() {
-    const btn = document.getElementById('btnBankAction');
     const isLocked = document.getElementById('bName').disabled;
     if (isLocked) {
         ['bName','bSort','bAcc'].forEach(id => document.getElementById(id).disabled = false);
-        btn.innerText = "🔒 Save & Lock Details";
-        btn.classList.add('btn-save-state');
+        document.getElementById('btnBankAction').innerText = "🔒 Save & Lock Details";
+        document.getElementById('btnBankAction').classList.add('btn-save-state');
     } else {
         db.bank = { name: document.getElementById('bName').value, sort: document.getElementById('bSort').value, acc: document.getElementById('bAcc').value };
         ['bName','bSort','bAcc'].forEach(id => document.getElementById(id).disabled = true);
-        btn.innerText = "🔓 Edit Bank Details";
-        btn.classList.remove('btn-save-state');
+        document.getElementById('btnBankAction').innerText = "🔓 Edit Bank Details";
+        document.getElementById('btnBankAction').classList.remove('btn-save-state');
         saveData();
     }
 };
 
 window.completeCycle = function() {
-    if(!confirm("Start New Month? Unpaid balances move to debt.")) return;
+    if(!confirm("Start New Month? Unpaid current moves to debt.")) return;
     const label = new Date().toLocaleDateString('en-GB', {month:'short', year:'2-digit'});
     db.incomeHistory.push({ month: label, amount: db.customers.reduce((s,c) => s + n(c.paidThisMonth), 0) });
     db.customers.forEach(c => {
         const o = calculateTrueDebt(c);
         if(o > 0) {
-            if(!c.debtHistory) c.debtHistory = [];
-            c.debtHistory.push({ month: label, amount: o });
+            c.debtHistory = c.debtHistory || [];
+            // Combine debt if month already exists or add new
+            const existing = c.debtHistory.find(h => h.month === label);
+            if(existing) existing.amount = n(existing.amount) + o;
+            else c.debtHistory.push({ month: label, amount: o });
         }
         c.cleaned = false; c.paidThisMonth = 0;
     });
     saveData();
 };
 
-window.exportCSV = function() {
-    let csv = "Name,Address,Postcode,Phone,Price,Week,Day,Notes\n";
-    db.customers.forEach(c => { csv += `"${c.name}","${c.address}","${c.postcode}","${c.phone}",${n(c.price)},"${c.week}","${c.day}","${c.notes}"\n`; });
-    const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); link.download = "Hydro_Backup.csv"; link.click();
-};
-
-window.importCSV = function(e) {
-    const r = new FileReader(); r.onload = (ev) => {
-        const l = ev.target.result.split('\n'); if(l.length <= 1) return;
-        if(!confirm("Append to current list? (Cancel to overwrite)")) db.customers = [];
-        l.slice(1).forEach(line => {
-            const cols = line.split(',').map(c => c.replace(/"/g, '').trim());
-            if(cols.length >= 5) {
-                db.customers.push({ id: Date.now()+Math.random(), name: cols[0], address: cols[1], postcode: cols[2], phone: cols[3], price: n(cols[4]), week: cols[5]||'1', day: cols[6]||'Monday', notes: cols[7]||'', cleaned: false, paidThisMonth: 0, debtHistory: [] });
-            }
-        });
-        saveData();
-        alert("Imported!");
-        location.reload(); // Force full app reboot on import
-    };
-    r.readAsText(e.target.files[0]);
+window.processPayment = function(id) {
+    const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return;
+    const amt = prompt("Payment amount?", calculateTrueDebt(c).toFixed(2));
+    if(amt === null) return;
+    let pay = n(amt);
+    // Logic to clear debt history first
+    if(c.debtHistory && c.debtHistory.length > 0) {
+        for(let i=0; i<c.debtHistory.length; i++) {
+            if(pay <= 0) break;
+            let owe = n(c.debtHistory[i].amount);
+            if(pay >= owe) { pay -= owe; c.debtHistory[i].amount = 0; }
+            else { c.debtHistory[i].amount = owe - pay; pay = 0; }
+        }
+        c.debtHistory = c.debtHistory.filter(h => n(h.amount) > 0);
+    }
+    c.paidThisMonth += pay;
+    saveData();
 };
 
 window.sendReminder = function(id, type) {
     const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return;
     const b = db.bank || {name:'', sort:'', acc:''};
     const bankStr = b.name ? `\n\nBank: ${b.name}\nSort: ${b.sort}\nAcc: ${b.acc}` : "";
-    const msg = `Hey ${c.name}, windows washed at ${c.address}. Total: £${n(c.price).toFixed(2)}. Jonathan@Hydro${bankStr}`;
+    const msg = `Hey ${c.name}, windows washed at ${c.address}. Total: £${calculateTrueDebt(c).toFixed(2)}. Jonathan@Hydro${bankStr}`;
     const encoded = encodeURIComponent(msg), phone = c.phone.replace(/\s+/g, '');
     if (type === 'whatsapp') { window.location.href = `https://wa.me/${phone}?text=${encoded}`; }
     else { window.location.href = `sms:${phone}${/iPhone/i.test(navigator.userAgent)?'&':'?'}body=${encoded}`; }
 };
 
+window.importCSV = function(e) {
+    const r = new FileReader(); r.onload = (ev) => {
+        const l = ev.target.result.split('\n'); if(l.length <= 1) return;
+        if(!confirm("Append to current list?")) db.customers = [];
+        l.slice(1).forEach(line => {
+            const cols = line.split(',').map(c => c.replace(/"/g, '').trim());
+            if(cols.length >= 5) db.customers.push({ id: Date.now()+Math.random(), name: cols[0], address: cols[1], postcode: cols[2], phone: cols[3], price: n(cols[4]), week: cols[5]||'1', day: cols[6]||'Monday', notes: cols[7]||'', cleaned: false, paidThisMonth: 0, debtHistory: [] });
+        });
+        saveData(); location.reload();
+    };
+    r.readAsText(e.target.files[0]);
+};
+
+window.openCustomerModal = function(id) {
+    const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return;
+    document.getElementById('modName').innerText = c.name;
+    document.getElementById('modAddr').innerText = (c.address || "") + " " + (c.postcode || "");
+    document.getElementById('modOwed').innerText = '£' + calculateTrueDebt(c).toFixed(2);
+    
+    let histHtml = "";
+    (c.debtHistory || []).forEach(h => {
+        histHtml += `<div>${h.month}: Owed £${n(h.amount).toFixed(2)}</div>`;
+    });
+    document.getElementById('debtDetailsBox').innerHTML = histHtml || "No previous debt.";
+    document.getElementById('customerModal').style.display = 'flex';
+};
+
 window.markJobAsCleaned = function(id) { const c = db.customers.find(x => String(x.id) === String(id)); if(c) { c.cleaned = true; saveData(); } };
-window.processPayment = function(id) { const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return; const amt = prompt("Payment amount?", calculateTrueDebt(c).toFixed(2)); if(amt) { c.paidThisMonth += n(amt); saveData(); } };
-window.toggleDarkMode = function() { const isDark = document.getElementById('darkModeToggle').checked; document.body.className = isDark ? 'dark-mode' : 'light-mode'; localStorage.setItem('Hydro_Dark_Pref', isDark); };
-window.openCustomerModal = function(id) { const c = db.customers.find(x => String(x.id) === String(id)); document.getElementById('modName').innerText = c.name; document.getElementById('modAddr').innerText = (c.address || "") + " " + (c.postcode || ""); document.getElementById('modOwed').innerText = '£' + calculateTrueDebt(c).toFixed(2); document.getElementById('customerModal').style.display = 'flex'; };
 window.closeCustomerModal = function() { document.getElementById('customerModal').style.display = 'none'; };
 window.runUATClear = function() { if(confirm("WIPE EVERYTHING?")) { localStorage.clear(); location.reload(); } };
+window.toggleDarkMode = function() { const isDark = document.getElementById('darkModeToggle').checked; document.body.className = isDark ? 'dark-mode' : 'light-mode'; localStorage.setItem('Hydro_Dark_Pref', isDark); };
 window.handleSearch = function() { renderMasterTable(); };
-window.addExpense = function() { const v = n(document.getElementById('expAmount').value); if(v > 0) { if(!db.expenses) db.expenses = []; db.expenses.push({amt: v, name: document.getElementById('expName').value || 'Expense'}); saveData(); document.getElementById('expAmount').value=''; } };
+window.exportCSV = function() { let csv = "Name,Address,Postcode,Phone,Price,Week,Day,Notes\n"; db.customers.forEach(c => { csv += `"${c.name}","${c.address}","${c.postcode}","${c.phone}",${n(c.price)},"${c.week}","${c.day}","${c.notes}"\n`; }); const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); link.download = "Hydro_Backup.csv"; link.click(); };
 function editFromModal() { const name = document.getElementById('modName').innerText; const c = db.customers.find(x => x.name === name); if(c) { closeCustomerModal(); editCustomer(c.id); } }
+window.addExpense = function() { const v = n(document.getElementById('expAmount').value); if(v > 0) { if(!db.expenses) db.expenses = []; db.expenses.push({amt: v, name: document.getElementById('expName').value || 'Expense'}); saveData(); document.getElementById('expAmount').value=''; } };
