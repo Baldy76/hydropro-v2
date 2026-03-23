@@ -37,8 +37,7 @@ window.saveCustomer = () => {
     const existing = idx > -1 ? db.customers[idx] : null;
 
     const entry = {
-        id, name, 
-        houseNum: document.getElementById('cHouseNum').value, 
+        id, name, houseNum: document.getElementById('cHouseNum').value, 
         street: document.getElementById('cStreet').value,
         postcode: document.getElementById('cPostcode').value.toUpperCase(), 
         price: n(document.getElementById('cPrice').value),
@@ -65,23 +64,23 @@ window.renderStats = () => {
     const monthYearEl = document.getElementById('currentMonthYear');
     if (monthYearEl) monthYearEl.innerText = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) + " Summary";
 
-    let totalTarget = 0, totalPaid = 0, totalArrears = 0, totalSpend = 0;
+    let target = 0, paid = 0, arrears = 0, spend = 0;
     db.customers.forEach(c => {
-        totalTarget += n(c.price);
-        totalPaid += n(c.paidThisMonth);
-        if (c.cleaned && n(c.paidThisMonth) < n(c.price)) totalArrears += (n(c.price) - n(c.paidThisMonth));
+        target += n(c.price);
+        paid += n(c.paidThisMonth);
+        if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth));
     });
-    db.expenses.forEach(e => totalSpend += n(e.amt));
-    const profit = totalPaid - totalSpend;
-    const progress = totalTarget > 0 ? (totalPaid / totalTarget) * 100 : 0;
+    db.expenses.forEach(e => spend += n(e.amt));
+    const profit = paid - spend;
+    const progress = target > 0 ? (paid / target) * 100 : 0;
 
     const map = {
         'currProfit': `£${profit.toFixed(2)}`,
-        'statsIncome': `£${totalPaid.toFixed(2)}`,
-        'statsSpend': `£${totalSpend.toFixed(2)}`,
-        'statsArrears': `£${totalArrears.toFixed(2)}`,
-        'statsTarget': `£${totalTarget.toFixed(2)}`,
-        'statsRemaining': `£${(totalTarget - totalPaid).toFixed(2)}`,
+        'statsIncome': `£${paid.toFixed(2)}`,
+        'statsSpend': `£${spend.toFixed(2)}`,
+        'statsArrears': `£${arrears.toFixed(2)}`,
+        'statsTarget': `£${target.toFixed(2)}`,
+        'statsRemaining': `£${(target - paid).toFixed(2)}`,
         'progressPercent': `${Math.round(progress)}%`
     };
 
@@ -127,7 +126,7 @@ window.updateGreeting = () => {
 };
 
 window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
-window.renderAll = () => { renderMasterTable(); renderStats(); renderWeekLists(); renderLedger(); };
+window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); renderLedger(); };
 window.editCust = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; openTab('admin'); document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cHouseNum').value = c.houseNum; document.getElementById('cStreet').value = c.street; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPrice').value = c.price; document.getElementById('cNotes').value = c.notes; };
 window.toggleCleaned = (id) => { const c = db.customers.find(x => x.id === id); if (c) { c.cleaned = !c.cleaned; saveData(); renderAll(); } };
 window.markAsPaid = (id) => { const c = db.customers.find(x => x.id === id); if (!c) return; const isPaid = n(c.paidThisMonth) >= n(c.price); c.paidThisMonth = isPaid ? 0 : c.price; saveData(); renderAll(); };
