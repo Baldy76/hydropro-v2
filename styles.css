@@ -8,7 +8,7 @@ body.dark-mode { --bg: #000000; --card-bg: #1c1c1e; --input-bg: #2c2c2e; --text:
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; }
 
-/* SLIDER FIX: Pinned to top right */
+/* SLIDER FIX */
 .mode-switch-wrapper { position: fixed; right: 20px; top: 20px; z-index: 10000; }
 .ios-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
 .ios-switch input { opacity: 0; width: 0; height: 0; }
@@ -38,6 +38,11 @@ input:checked + .slider { background-color: var(--success); }
 .fun-field-stack { flex-grow: 1; }
 .fun-field-stack label { display: block; font-size: 9px; font-weight: 800; text-transform: uppercase; color: #8e8e93; }
 .creative-input, .creative-select, .creative-textarea { width: 100%; border: none; background: transparent; color: var(--text); font-size: 16px; font-weight: 600; outline: none; }
+
+/* AUTO-CAPS CSS logic */
+.postcode-input { text-transform: uppercase; }
+.postcode-input::placeholder { text-transform: none; }
+
 .creative-textarea { min-height: 100px; padding-top: 5px; }
 .creative-save-btn { margin-top: 20px; background: linear-gradient(135deg, var(--accent), #5856d6) !important; color: white !important; height: 60px; font-weight: 900; border-radius: 20px; border: none; width: 100%; }
 
