@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v13.4</title>
-    <link rel="stylesheet" href="styles.css?v=134">
+    <title>Hydro Pro v13.6</title>
+    <link rel="stylesheet" href="styles.css?v=136">
 </head>
 <body class="light-mode">
 
@@ -19,7 +19,12 @@
             </div>
         </div>
         <div class="date-container">
-            <div id="greetingMsg" class="greeting-txt">Hello, Jonathan!</div>
+            <div id="greetingMsg" class="greeting-txt">Hey there!</div>
+            
+            <div id="weatherWrap" class="weather-pill hidden">
+                <span id="wIcon"></span> <span id="wTemp">--°C</span> | <small id="wDesc">Loading...</small>
+            </div>
+
             <div id="headerDate" class="date-txt"></div>
         </div>
         <div class="tabs-grid">
@@ -89,7 +94,7 @@
             <div class="dashboard-hero">
                 <div class="hero-label" id="statsMonthTitle">Summary</div>
                 <div class="hero-amount" id="currProfit">£0.00</div>
-                <div class="hero-subtext">💰 Net Profit (Income - Spend)</div>
+                <div class="hero-subtext">💰 Total Profit in Pocket</div>
             </div>
             <div class="card stat-card">
                 <div class="stat-header"><span>Monthly Progress</span><span id="collectionPercent">0%</span></div>
@@ -114,7 +119,7 @@
                 </div>
             </div>
             <div class="card debt-highlight-card clickable-stat" onclick="showArrearsModal()">
-                <div class="stat-row"><span>Arrears Ledger 🔍</span><strong id="totalOldDebt">£0.00</strong></div>
+                <div class="stat-row"><span>Arrears 🔍</span><strong id="totalOldDebt">£0.00</strong></div>
             </div>
             <div id="monthlyHistoryContainer"></div>
         </div>
@@ -134,19 +139,15 @@
             </div>
             <div id="expenseList"></div>
         </div>
-        
-        <div id="week1" class="tab-content"></div>
-        <div id="week2" class="tab-content"></div>
-        <div id="week3" class="tab-content"></div>
-        <div id="week4" class="tab-content"></div>
-        <div id="week5" class="tab-content"></div> </div>
+        <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
+    </div>
 
-    <div class="global-footer">v13.4 - Calendar Flexible</div>
+    <div class="global-footer">v13.6 - Weather Smart Build</div>
 
     <div id="globalModal" class="modal-overlay" onclick="if(event.target === this) closeModal()">
         <div class="modal-content"><button class="close-btn" onclick="closeModal()">✕</button><div id="modalContentBody"></div></div>
     </div>
 
-    <script src="app.js?v=134"></script>
+    <script src="app.js?v=136"></script>
 </body>
 </html>
