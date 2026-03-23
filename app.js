@@ -47,11 +47,12 @@ window.saveCustomer = () => {
     const idx = db.customers.findIndex(x => x.id === id);
     let ex = idx > -1 ? db.customers[idx] : null;
 
+    // Added .toUpperCase() to ensure postcode data is always saved in capitals
     const entry = {
         id, name,
         houseNum: document.getElementById('cHouseNum').value,
         street: document.getElementById('cStreet').value,
-        postcode: document.getElementById('cPostcode').value,
+        postcode: document.getElementById('cPostcode').value.toUpperCase(),
         price: n(document.getElementById('cPrice').value),
         week: document.getElementById('cWeek').value,
         day: document.getElementById('cDay').value,
@@ -62,7 +63,7 @@ window.saveCustomer = () => {
 
     if(idx > -1) db.customers[idx] = entry; else db.customers.push(entry);
     saveData();
-    window.resetForm(); // Clears entry screen after save
+    window.resetForm(); 
     alert("Customer Saved Successfully! ✅");
 };
 
@@ -83,8 +84,8 @@ window.addExpense = () => {
     if(!d || a<=0) return;
     db.expenses.push({desc:d, amt:a, date:new Date().toLocaleDateString('en-GB')});
     saveData(); renderAll();
-    document.getElementById('expDesc').value = ""; // Clears description
-    document.getElementById('expAmt').value = ""; // Clears amount
+    document.getElementById('expDesc').value = "";
+    document.getElementById('expAmt').value = "";
 };
 
 // --- RENDER LOGIC ---
