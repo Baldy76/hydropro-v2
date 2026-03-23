@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro - Production v5</title>
+    <title>Hydro Pro - Production v5.2</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="light-mode">
@@ -80,16 +80,18 @@
 
             <div class="card">
                 <h3>Data Management</h3>
-                <div class="grid-2">
-                    <button class="btn-export full-width-btn" onclick="exportCSV()">💾 Export</button>
-                    <button class="btn-import full-width-btn" onclick="document.getElementById('csvFile').click()">📂 Import</button>
+                <div class="grid-2-spaced">
+                    <button class="btn-export-custom full-width-btn" onclick="exportCSV()">💾 Export</button>
+                    <button class="btn-import-custom full-width-btn" onclick="document.getElementById('csvFile').click()">📂 Import</button>
                 </div>
                 <input type="file" id="csvFile" accept=".csv" onchange="importCSV(event)" style="display:none;">
             </div>
 
-            <div style="margin-top:50px; padding-bottom: 50px;">
+            <div style="margin-top:50px; padding-bottom: 10px;">
                 <button type="button" class="btn-uat full-width-btn" onclick="runUATClear()">🛠️ RESET ALL DATA</button>
             </div>
+            
+            <div class="version-tag">v5.2 - Stable Production</div>
         </div>
 
         <div id="master" class="tab-content">
