@@ -3,6 +3,7 @@ const BANK_DETAILS = "Bank: Monzo\nAcc: 12345678\nSort: 00-00-00";
 let db = { customers: [], expenses: [], history: [] }; 
 const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 
+// --- STARTUP ---
 window.onload = () => {
     const dateEl = document.getElementById('headerDate');
     if (dateEl) dateEl.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
@@ -59,29 +60,30 @@ window.saveCustomer = () => {
 // --- DRILL-DOWN MODALS ---
 window.showIncomeModal = () => {
     const body = document.getElementById('modalContentBody');
-    let html = '<h3 class="section-title">Collected Payments</h3>';
+    let html = '<h3 class="section-title">Collections Drill-down</h3>';
     let total = 0;
 
     db.customers.forEach(c => {
         (c.paymentLogs || []).forEach(log => {
             const isDebt = log.type === 'debt';
             const color = isDebt ? 'var(--danger)' : 'var(--success)';
+            const label = isDebt ? 'Debt Paid' : 'Job Paid';
             html += `<div class="drilldown-row">
-                <div><strong>${c.name}</strong><br><small>${log.date}</small></div>
+                <div><strong>${c.name}</strong><br><small>${log.date} (${label})</small></div>
                 <div style="color:${color}; font-weight:bold;">£${n(log.amount).toFixed(2)}</div>
             </div>`;
             total += n(log.amount);
         });
     });
 
-    html += `<div class="drilldown-total"><span>Net Income</span><span>£${total.toFixed(2)}</span></div>`;
+    html += `<div class="drilldown-total"><span>Total Cash Collected</span><span>£${total.toFixed(2)}</span></div>`;
     body.innerHTML = html;
     document.getElementById('globalModal').style.display = 'flex';
 };
 
 window.showExpenseModal = () => {
     const body = document.getElementById('modalContentBody');
-    let html = '<h3 class="section-title">Expense Log</h3>';
+    let html = '<h3 class="section-title">Expense Drill-down</h3>';
     let total = 0;
 
     db.expenses.forEach(e => {
@@ -121,7 +123,7 @@ window.handleDebtCollection = (id) => {
     const c = db.customers.find(x => x.id === id);
     if (!c) return;
     const currentTotal = calculateDebt(c);
-    const input = prompt(`Old Debt Collection: £${currentTotal.toFixed(2)}`, currentTotal.toFixed(2));
+    const input = prompt(`Collection for ${c.name}: £${currentTotal.toFixed(2)}`, currentTotal.toFixed(2));
     if (input === null) return;
     const amountPaid = n(input);
     if (amountPaid <= 0) return;
@@ -149,33 +151,35 @@ window.renderStats = () => {
     const curMonth = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
     if(document.getElementById('statsMonthTitle')) document.getElementById('statsMonthTitle').innerText = `${curMonth} Summary`;
     
-    let totalIncome = 0;
-    db.customers.forEach(c => { (c.paymentLogs || []).forEach(log => totalIncome += n(log.amount)); });
-    
+    // 1. Calculate Actual Cash Flow (Independent of month work)
+    let totalCashIn = 0;
+    db.customers.forEach(c => { (c.paymentLogs || []).forEach(log => totalCashIn += n(log.amount)); });
     let monthExpenses = db.expenses.reduce((sum, e) => sum + n(e.amt), 0);
-    let potentialWorkValue = db.customers.reduce((sum, c) => sum + n(c.price), 0);
-    
-    // Corrected Progress: Current Month Payments only vs Potential
-    let currentMonthCollections = db.customers.reduce((sum, c) => sum + n(c.paidThisMonth), 0);
-    let remainingWorkValue = potentialWorkValue - currentMonthCollections;
-    
-    let totalOwedDebt = db.customers.reduce((sum, c) => sum + calculateDebt(c), 0);
-    let netPosition = totalIncome - monthExpenses;
-    
-    let progress = potentialWorkValue > 0 ? (currentMonthCollections / potentialWorkValue) * 100 : 0;
+    let cashInHand = totalCashIn - monthExpenses;
 
-    if(document.getElementById('currProfit')) document.getElementById('currProfit').innerText = `£${netPosition.toFixed(2)}`;
+    // 2. Calculate Progress (Based strictly on jobs scheduled for this cycle)
+    let totalJobValueScheduled = db.customers.reduce((sum, c) => sum + n(c.price), 0);
+    let jobRevenueCollected = db.customers.reduce((sum, c) => sum + n(c.paidThisMonth), 0);
+    let remainingJobValue = totalJobValueScheduled - jobRevenueCollected;
+    
+    // 3. Old Debt
+    let totalOwedOldDebt = db.customers.reduce((sum, c) => sum + calculateDebt(c), 0);
+    
+    let progress = totalJobValueScheduled > 0 ? (jobRevenueCollected / totalJobValueScheduled) * 100 : 0;
+
+    // UI UPDATES
+    if(document.getElementById('currProfit')) document.getElementById('currProfit').innerText = `£${cashInHand.toFixed(2)}`;
     if(document.getElementById('progressBar')) document.getElementById('progressBar').style.width = `${progress}%`;
     if(document.getElementById('collectionPercent')) document.getElementById('collectionPercent').innerText = `${Math.round(progress)}%`;
-    if(document.getElementById('targetWork')) document.getElementById('targetWork').innerText = `£${potentialWorkValue.toFixed(2)}`;
-    if(document.getElementById('stillToCollect')) document.getElementById('stillToCollect').innerText = `£${Math.max(0, remainingWorkValue).toFixed(2)}`;
-    if(document.getElementById('currRevenue')) document.getElementById('currRevenue').innerText = `£${totalIncome.toFixed(2)}`;
+    if(document.getElementById('targetWork')) document.getElementById('targetWork').innerText = `£${totalJobValueScheduled.toFixed(2)}`;
+    if(document.getElementById('stillToCollect')) document.getElementById('stillToCollect').innerText = `£${Math.max(0, remainingJobValue).toFixed(2)}`;
+    if(document.getElementById('currRevenue')) document.getElementById('currRevenue').innerText = `£${totalCashIn.toFixed(2)}`;
     if(document.getElementById('currSpend')) document.getElementById('currSpend').innerText = `£${monthExpenses.toFixed(2)}`;
-    if(document.getElementById('totalOldDebt')) document.getElementById('totalOldDebt').innerText = `£${totalOwedDebt.toFixed(2)}`;
+    if(document.getElementById('totalOldDebt')) document.getElementById('totalOldDebt').innerText = `£${totalOwedOldDebt.toFixed(2)}`;
 
     const hist = document.getElementById('monthlyHistoryContainer');
     if (hist) {
-        hist.innerHTML = '<h3 class="section-title" style="margin-top:25px;">History</h3>';
+        hist.innerHTML = '<h3 class="section-title" style="margin-top:25px;">Month History</h3>';
         db.history.forEach(h => {
             const d = document.createElement('div'); d.className = 'history-card';
             d.innerHTML = `<div class="history-grid">
@@ -206,7 +210,7 @@ window.renderWeekLists = () => {
         const container = document.getElementById(`week${i}`);
         if (!container) continue; container.innerHTML = '';
         const weekCusts = db.customers.filter(c => c.week == i);
-        if (weekCusts.length === 0) { container.innerHTML = '<div class="card" style="text-align:center; opacity:0.5;">No jobs.</div>'; continue; }
+        if (weekCusts.length === 0) { container.innerHTML = '<div class="card" style="text-align:center; opacity:0.5;">No jobs scheduled.</div>'; continue; }
         weekCusts.forEach(c => {
             const isPaid = n(c.paidThisMonth) >= n(c.price);
             const debt = calculateDebt(c);
@@ -238,7 +242,7 @@ window.showCustDetails = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
     const body = document.getElementById('modalContentBody');
     const debt = calculateDebt(c);
-    body.innerHTML = `<h2 style="margin-top:0; color:var(--accent);">${c.name}</h2><p>📍 ${c.address} ${c.postcode}</p><p>📞 ${c.phone || 'N/A'}</p><p>💰 £${n(c.price).toFixed(2)}</p>${debt > 0 ? `<p style="color:var(--danger); font-weight:bold;">Debt: £${debt.toFixed(2)}</p>` : ''}<p>📝 ${c.notes || 'No notes.'}</p><button class="btn-main full-width-btn" onclick="editCust('${c.id}')">⚙️ Edit</button>`;
+    body.innerHTML = `<h2 style="margin-top:0; color:var(--accent);">${c.name}</h2><p>📍 ${c.address} ${c.postcode}</p><p>📞 ${c.phone || 'N/A'}</p><p>💰 Price: £${n(c.price).toFixed(2)}</p>${debt > 0 ? `<p style="color:var(--danger); font-weight:bold;">Old Debt: £${debt.toFixed(2)}</p>` : ''}<p>📝 Notes: ${c.notes || 'No notes.'}</p><button class="btn-main full-width-btn" onclick="editCust('${c.id}')">⚙️ Edit Customer</button>`;
     document.getElementById('globalModal').style.display = 'flex';
 };
 
@@ -253,19 +257,22 @@ window.editCust = (id) => {
 
 window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
 window.toggleDarkMode = () => { const d = document.getElementById('darkModeToggle').checked; document.body.className = d ? 'dark-mode' : 'light-mode'; localStorage.setItem('Hydro_Dark_Pref', d); };
-window.runUATClear = () => { if(confirm("Wipe?")) { localStorage.clear(); location.reload(); } };
+window.runUATClear = () => { if(confirm("Wipe all data?")) { localStorage.clear(); location.reload(); } };
 window.addExpense = () => { 
     const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value); 
     if(!d || a<=0) return; 
     db.expenses.push({desc:d, amt:a, date:new Date().toLocaleString('en-GB')}); 
     saveData(); location.reload(); 
 };
+
 window.completeCycle = () => {
-    if(!confirm("Archive Month?")) return;
+    if(!confirm("Archive Month & Reset? This moves unpaid jobs to Debt Ledger.")) return;
     let mInc = 0; db.customers.forEach(c => { (c.paymentLogs||[]).forEach(l => mInc += n(l.amount)); });
     let mExp = db.expenses.reduce((sum, e) => sum + n(e.amt), 0);
-    let nDebt = db.customers.reduce((sum, c) => sum + (c.cleaned ? Math.max(0, n(c.price) - n(c.paidThisMonth)) : 0), 0);
+    let nDebt = db.customers.reduce((sum, c) => sum + (c.cleaned && n(c.paidThisMonth) < n(c.price) ? n(c.price) - n(c.paidThisMonth) : 0), 0);
+    
     db.history.unshift({ month: new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }), income: mInc, spend: mExp, debtCreated: nDebt });
+    
     db.customers.forEach(c => {
         const bal = c.cleaned ? (n(c.price) - n(c.paidThisMonth)) : (0 - n(c.paidThisMonth));
         if (bal > 0) { if(!c.debtHistory) c.debtHistory = []; c.debtHistory.push({ date: new Date().toLocaleDateString(), amount: bal }); }
@@ -273,11 +280,13 @@ window.completeCycle = () => {
     });
     db.expenses = []; saveData(); location.reload();
 };
+
 window.exportFullCSV = () => {
     let c = "ID,Name,Address,Postcode,Phone,Price,Week,Day,Notes\n";
     db.customers.forEach(x => { c += `${x.id},"${x.name}","${x.address}","${x.postcode}","${x.phone}",${x.price},${x.week},"${x.day}","${x.notes}"\n`; });
-    const b = new Blob([c], { type: 'text/csv' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `Backup.csv`; a.click();
+    const b = new Blob([c], { type: 'text/csv' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `HydroBackup.csv`; a.click();
 };
+
 window.importFullCSV = (e) => {
     const f = e.target.files[0], r = new FileReader();
     r.onload = (ev) => {
