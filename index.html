@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v13.9.1</title>
-    <link rel="stylesheet" href="styles.css?v=1391">
+    <title>Hydro Pro v14.0</title>
+    <link rel="stylesheet" href="styles.css?v=140">
 </head>
 <body class="light-mode">
 
@@ -25,18 +25,20 @@
             </div>
             <div id="headerDate" class="date-txt"></div>
         </div>
-        <div class="tabs-grid">
-            <button class="tab active" onclick="openTab(event, 'admin')">Setup</button>
-            <button class="tab" onclick="openTab(event, 'master')">Custs</button>
-            <button class="tab" onclick="openTab(event, 'stats')">Stats</button>
-            <button class="tab" onclick="openTab(event, 'spend')">Ledger</button>
-        </div>
-        <div class="week-tabs-row">
-            <button class="tab" onclick="openTab(event, 'week1')">W1</button>
-            <button class="tab" onclick="openTab(event, 'week2')">W2</button>
-            <button class="tab" onclick="openTab(event, 'week3')">W3</button>
-            <button class="tab" onclick="openTab(event, 'week4')">W4</button>
-            <button class="tab" onclick="openTab(event, 'week5')">W5</button>
+        <div class="nav-wrapper">
+            <div class="tabs-grid main-nav">
+                <button class="tab active" onclick="openTab(event, 'admin')">Setup</button>
+                <button class="tab" onclick="openTab(event, 'master')">Custs</button>
+                <button class="tab" onclick="openTab(event, 'stats')">Stats</button>
+                <button class="tab" onclick="openTab(event, 'spend')">Ledger</button>
+            </div>
+            <div class="tabs-grid week-nav">
+                <button class="tab" onclick="openTab(event, 'week1')">W1</button>
+                <button class="tab" onclick="openTab(event, 'week2')">W2</button>
+                <button class="tab" onclick="openTab(event, 'week3')">W3</button>
+                <button class="tab" onclick="openTab(event, 'week4')">W4</button>
+                <button class="tab" onclick="openTab(event, 'week5')">W5</button>
+            </div>
         </div>
     </div>
 
@@ -134,12 +136,12 @@
         <div id="week5" class="tab-content"></div>
     </div>
 
-    <div class="global-footer">v13.9.1 - Build Re-Synced</div>
+    <div class="global-footer">v14.0 - UI Restored</div>
 
     <div id="globalModal" class="modal-overlay" onclick="if(event.target === this) closeModal()">
         <div class="modal-content"><button class="close-btn" onclick="closeModal()">✕</button><div id="modalContentBody"></div></div>
     </div>
 
-    <script src="app.js?v=1391"></script>
+    <script src="app.js?v=140"></script>
 </body>
 </html>
