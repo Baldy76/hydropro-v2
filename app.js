@@ -1,18 +1,16 @@
 const MASTER_KEY = 'HydroPro_App_Production';
 let db = { customers: [], incomeHistory: [], expenses: [], bank: {name:'', sort:'', acc:''} };
 
+// --- BOOT ENGINE ---
 window.onload = () => {
-    // Immediate Date Render
     const dateElement = document.getElementById('headerDate');
     if (dateElement) {
-        dateElement.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        dateElement.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
     }
     
-    // Load Data
     const saved = localStorage.getItem(MASTER_KEY);
     if (saved) db = JSON.parse(saved);
     
-    // Dark Mode Sync
     const isDark = localStorage.getItem('Hydro_Dark_Pref') === 'true';
     document.body.className = isDark ? 'dark-mode' : 'light-mode';
     if(document.getElementById('darkModeToggle')) document.getElementById('darkModeToggle').checked = isDark;
@@ -29,11 +27,13 @@ window.openTab = function(evt, name) {
     const tabs = document.getElementsByClassName("tab");
     for (let i = 0; i < tabs.length; i++) { tabs[i].classList.remove("active"); }
     
-    document.getElementById(name).style.display = "block";
-    document.getElementById(name).classList.add("active");
+    const target = document.getElementById(name);
+    target.style.display = "block";
+    // Slight delay to trigger animation
+    setTimeout(() => target.classList.add("active"), 10);
+    
     if (evt) evt.currentTarget.classList.add("active");
 
-    // Dynamic UI Elements
     const searchBar = document.getElementById('globalSearchContainer');
     const filterBar = document.getElementById('dayFilterBar');
     
@@ -46,10 +46,5 @@ window.openTab = function(evt, name) {
     renderAll();
 };
 
-window.toggleDarkMode = () => {
-    const isDark = document.getElementById('darkModeToggle').checked;
-    document.body.className = isDark ? 'dark-mode' : 'light-mode';
-    localStorage.setItem('Hydro_Dark_Pref', isDark);
-};
-
-// ... Include all other v10.1 logic functions (saveCustomer, renderWeeks, etc.) ...
+// ... Include standard logic (saveCustomer, renderWeeks, etc.) ...
+// Note: Ensure your renderWeeks uses the Hybrid Card classes from v10.0
