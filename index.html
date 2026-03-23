@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v14.7</title>
-    <link rel="stylesheet" href="styles.css?v=147">
+    <title>Hydro Pro v14.8</title>
+    <link rel="stylesheet" href="styles.css?v=148">
 </head>
 <body class="light-mode">
 
     <div class="sticky-header">
         <div class="header-top">
-            <img src="Logo-Light.png" id="appLogo" class="logo-img" alt="Logo">
+            <img src="Logo-Light.png" id="appLogo" class="logo-img" alt="Hydro Pro Logo">
             <div class="mode-switch-wrapper">
                 <label class="ios-switch">
                     <input type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()">
@@ -18,31 +18,25 @@
                 </label>
             </div>
         </div>
-        
-        <div class="header-center-info">
+        <div class="date-container">
             <div id="greetingMsg" class="greeting-txt">Hey there!</div>
             <div id="weatherWrap" class="weather-pill hidden bounce-on-tap" onclick="openWeatherApp()">
                 <span id="wIcon"></span> <span id="wTemp">--°C</span>
             </div>
             <div id="headerDate" class="date-txt"></div>
         </div>
-
-        <nav class="nav-container">
-            <div class="nav-row">
-                <button class="tab active bounce-on-tap" onclick="openTab(event, 'admin')">Set up</button>
-                <button class="tab bounce-on-tap" onclick="openTab(event, 'master')">Custs</button>
-                <button class="tab bounce-on-tap" onclick="openTab(event, 'plan')">Plan</button>
-                <button class="tab bounce-on-tap" onclick="openTab(event, 'stats')">Stats</button>
-                <button class="tab bounce-on-tap" onclick="openTab(event, 'spend')">Ledger</button>
-            </div>
-            <div class="nav-row">
-                <button class="tab bounce-on-tap" onclick="openTab(event, 'week1')">W1</button>
-                <button class="tab bounce-on-tap" onclick="openTab(event, 'week2')">W2</button>
-                <button class="tab bounce-on-tap" onclick="openTab(event, 'week3')">W3</button>
-                <button class="tab bounce-on-tap" onclick="openTab(event, 'week4')">W4</button>
-                <button class="tab bounce-on-tap" onclick="openTab(event, 'week5')">W5</button>
-            </div>
-        </nav>
+        <div class="tabs">
+            <button class="tab active" onclick="openTab(event, 'admin')">Set up</button>
+            <button class="tab" onclick="openTab(event, 'plan')">Plan</button>
+            <button class="tab" onclick="openTab(event, 'master')">Custs</button>
+            <button class="tab" onclick="openTab(event, 'stats')">Stats</button>
+            <button class="tab" onclick="openTab(event, 'spend')">Ledger</button>
+            <button class="tab" onclick="openTab(event, 'week1')">W1</button>
+            <button class="tab" onclick="openTab(event, 'week2')">W2</button>
+            <button class="tab" onclick="openTab(event, 'week3')">W3</button>
+            <button class="tab" onclick="openTab(event, 'week4')">W4</button>
+            <button class="tab" onclick="openTab(event, 'week5')">W5</button>
+        </div>
     </div>
 
     <div class="main-container">
@@ -63,8 +57,16 @@
                         <input type="number" id="cPrice" placeholder="Price £">
                     </div>
                     <div class="grid-1x2">
-                        <select id="cWeek" class="large-select"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option><option value="5">Week 5</option></select>
-                        <select id="cDay" class="large-select"><option value="Monday">Monday</option><option value="Tuesday">Tuesday</option><option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option><option value="Friday">Friday</option></select>
+                        <select id="cWeek" class="large-select">
+                            <option value="1">Week 1</option><option value="2">Week 2</option>
+                            <option value="3">Week 3</option><option value="4">Week 4</option>
+                            <option value="5">Week 5</option>
+                        </select>
+                        <select id="cDay" class="large-select">
+                            <option value="Monday">Monday</option><option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                        </select>
                     </div>
                     <textarea id="cNotes" placeholder="Notes..." class="premium-textarea"></textarea>
                     <button class="btn-main full-width-btn bounce-on-tap" onclick="saveCustomer()">💾 Save Customer</button>
@@ -86,10 +88,14 @@
             <div class="card">
                 <h3 class="section-title">🛰️ Smart Routing</h3>
                 <div class="grid-1x2">
-                    <select id="planWeekSelect" class="large-select"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option><option value="5">Week 5</option></select>
-                    <button class="btn-main bounce-on-tap" style="margin-top:0;" onclick="optimizeDay(document.getElementById('planWeekSelect').value)">🚀 Sort Week</button>
+                    <select id="planWeekSelect" class="large-select">
+                        <option value="1">Week 1</option><option value="2">Week 2</option>
+                        <option value="3">Week 3</option><option value="4">Week 4</option>
+                        <option value="5">Week 5</option>
+                    </select>
+                    <button class="btn-main bounce-on-tap" style="margin-top:0;" onclick="optimizeDay(document.getElementById('planWeekSelect').value)">🚀 Sort Route</button>
                 </div>
-                <button class="btn-main full-width-btn bounce-on-tap" style="background:var(--success); margin-top:10px;" onclick="mapTheDay(document.getElementById('planWeekSelect').value)">🗺️ Open Driving Map</button>
+                <button class="btn-main full-width-btn bounce-on-tap" style="background:var(--success); margin-top:10px;" onclick="mapTheDay(document.getElementById('planWeekSelect').value)">🗺️ Open Multi-Stop Map</button>
             </div>
             <div class="card">
                 <h3 class="section-title">📢 Weekly Broadcaster</h3>
@@ -107,11 +113,6 @@
                 <div class="hero-label" id="statsMonthTitle">Summary</div>
                 <div class="hero-amount" id="currProfit">£0.00</div>
                 <div class="hero-subtext">💰 Total Profit in Pocket</div>
-            </div>
-            <div class="card stat-card">
-                <div class="stat-header"><span>Monthly Progress</span><span id="collectionPercent">0%</span></div>
-                <div class="progress-container"><div id="progressBar" class="progress-fill"></div></div>
-                <div class="stat-line-item"><span>Target: <strong id="targetWork">£0.00</strong></span><span>Remaining: <strong id="stillToCollect">£0.00</strong></span></div>
             </div>
             <div class="grid-1x2" style="margin-top:15px;">
                 <div class="card mini-card clickable-stat bounce-on-tap" onclick="showIncomeModal()"><div class="mini-card-content"><small>Revenue 🔍</small><strong id="currRevenue" style="color:var(--success)">£0.00</strong></div></div>
@@ -132,19 +133,15 @@
             <div id="expenseList"></div>
         </div>
 
-        <div id="week1" class="tab-content"></div>
-        <div id="week2" class="tab-content"></div>
-        <div id="week3" class="tab-content"></div>
-        <div id="week4" class="tab-content"></div>
-        <div id="week5" class="tab-content"></div>
+        <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
     </div>
 
-    <div class="global-footer">v14.7 - Midnight Navy Edition</div>
+    <div class="global-footer">v14.8 - Restored & Navy Polished</div>
 
     <div id="globalModal" class="modal-overlay" onclick="if(event.target === this) closeModal()">
         <div class="modal-content"><button class="close-btn" onclick="closeModal()">✕</button><div id="modalContentBody"></div></div>
     </div>
 
-    <script src="app.js?v=147"></script>
+    <script src="app.js?v=148"></script>
 </body>
 </html>
