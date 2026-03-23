@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Hydro Pro - Production Build</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="light-mode">
+    <div class="sticky-header">
+        <div class="header-top">
+            <div class="brand-container">
+                <img src="Logo.png" id="mainLogo" class="logo-img" alt="Hydro Logo">
+            </div>
+            <div class="mode-switch-wrapper">
+                <label class="ios-switch">
+                    <input type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+        <div class="tabs">
+            <button class="tab active" onclick="openTab(event, 'admin')">Setup</button>
+            <button class="tab" onclick="openTab(event, 'master')">Custs</button>
+            <button class="tab" onclick="openTab(event, 'stats')">Stats</button>
+            <button class="tab" onclick="openTab(event, 'spend')">Spend</button>
+            <button class="tab" onclick="openTab(event, 'week1')">W1</button>
+            <button class="tab" onclick="openTab(event, 'week2')">W2</button>
+            <button class="tab" onclick="openTab(event, 'week3')">W3</button>
+            <button class="tab" onclick="openTab(event, 'week4')">W4</button>
+        </div>
+    </div>
+    <div class="main-container">
+        <div id="headerDate" class="date-txt">Loading...</div>
+        <div id="admin" class="tab-content active">
+            <div class="card">
+                <h3 id="formTitle">Customer Entry</h3>
+                <input type="hidden" id="editId">
+                <input type="text" id="cName" placeholder="Customer Name">
+                <input type="text" id="cAddr" placeholder="Address">
+                <input type="text" id="cPostcode" placeholder="Postcode">
+                <input type="tel" id="cPhone" placeholder="Mobile Number">
+                <input type="number" id="cPrice" placeholder="Price £">
+                <div class="grid-2">
+                    <select id="cWeek"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option></select>
+                    <select id="cDay"><option value="Monday">Monday</option><option value="Tuesday">Tuesday</option><option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option><option value="Friday">Friday</option></select>
+                </div>
+                <textarea id="cNotes" placeholder="Notes (Gates, Dogs etc)"></textarea>
+                <button class="btn-main full-width-btn" onclick="saveCustomer()">💾 Save Customer</button>
+                <button id="btnDeleteCust" class="btn-danger full-width-btn" style="display:none; margin-top:10px;" onclick="deleteCustomer()">🗑 Delete</button>
+                <button id="cancelEdit" class="btn-neutral full-width-btn" style="display:none; margin-top:10px;" onclick="clearForm()">Cancel Edit</button>
+            </div>
+            <div class="card" style="background: rgba(235, 51, 73, 0.05);"><button class="btn-danger full-width-btn" style="height:65px;" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
+            <div class="card">
+                <h3>Bank Details</h3>
+                <button class="btn-alt full-width-btn" id="editBankBtn" onclick="unlockBank()">🔓 Edit Bank Details</button>
+                <button id="btnBankSave" class="btn-main full-width-btn" style="display:none; margin-bottom:12px;" onclick="lockAndSaveBank()">🔒 Save & Lock</button>
+                <input type="text" id="bName" placeholder="Account Name" disabled><input type="text" id="bSort" placeholder="Sort Code" disabled><input type="text" id="bAcc" placeholder="Account Number" disabled>
+            </div>
+            <div class="card"><div class="grid-2"><button class="btn-export" onclick="exportCSV()">💾 Export</button><button class="btn-import" onclick="document.getElementById('csvFile').click()">📂 Import</button></div><input type="file" id="csvFile" accept=".csv" onchange="importCSV(event)" style="display:none;"></div>
+            <div style="margin-top:50px; padding-bottom: 30px;"><button type="button" class="btn-uat full-width-btn" onclick="runUATClear()">🛠️ RESET ALL DATA</button></div>
+        </div>
+        <div id="master" class="tab-content"><div class="card" style="padding:0; overflow:hidden;"><div style="padding:15px; border-bottom: 1px solid rgba(0,0,0,0.05);"><input type="text" id="mainSearch" placeholder="🔍 Search..." oninput="handleSearch()" style="margin:0; width:100%;"></div><table style="width:100%; border-collapse:collapse;"><thead><tr class="table-header-row"><th>Customer Details</th><th style="text-align:right">Owed</th></tr></thead><tbody id="masterTableBody"></tbody></table></div></div>
+        <div id="stats" class="tab-content">
+            <div class="card"><h3 style="text-align:center; margin-bottom:15px;">This Month</h3><div class="stats-grid"><div class="metric-tile tile-collected">Revenue<br><strong id="statCollMonth">£0</strong></div><div class="metric-tile tile-owed">Owed<br><strong id="statOwedMonth">£0</strong></div><div class="metric-tile tile-pending">Pending<br><strong id="statPendingMonth">£0</strong></div></div><div id="pieMonth" class="pie" style="margin-top:25px;"></div><div id="legendMonth" class="legend"></div></div>
+            <div class="card"><h3 style="text-align:center;">Overall</h3><div id="pieOverall" class="pie"></div><div id="legendOverall" class="legend"></div><div class="fy-box"><div style="display:flex; justify-content:space-between"><span>TOTAL REV</span><strong id="statFYTotal">£0</strong></div><table style="width:100%; margin-top:10px;"><tbody id="quarterlyTableBody"></tbody></table></div></div>
+        </div>
+        <div id="spend" class="tab-content"><div class="card"><h3>Log Expense</h3><input type="text" id="expName" placeholder="Item"><input type="number" id="expAmount" placeholder="Amount £"><button class="btn-main full-width-btn" onclick="addExpense()">Add Expense</button></div><div id="expenseList"></div></div>
+        <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div>
+    </div>
+    <div id="customerModal" class="modal-overlay" onclick="if(event.target === this) closeCustomerModal()"><div class="modal-content"><button class="modal-close" onclick="closeCustomerModal()">✖</button><div id="modName" style="font-size:20px; font-weight:900; color:var(--primary);"></div><p id="modAddr" style="opacity:0.6; font-size:14px;"></p><div class="history-container"><table id="modHistoryTable" style="width:100%;"></table></div><div style="text-align:right; margin-top:15px; padding:15px; background:rgba(0,0,0,0.03); border-radius:12px;"><small style="font-weight:800; opacity:0.5;">TOTAL OUTSTANDING:</small><br><span id="modOwed" style="font-size:28px; font-weight:900;"></span></div><button class="btn-alt" style="margin-top:15px;" onclick="editFromModal()">⚙️ Edit Details</button></div></div>
+    <script src="app.js"></script>
+</body>
+</html>
