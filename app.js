@@ -5,6 +5,7 @@ const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 
 // --- STARTUP ---
 window.onload = () => {
+    updateGreeting();
     const dateEl = document.getElementById('headerDate');
     if (dateEl) dateEl.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     const saved = localStorage.getItem(MASTER_KEY);
@@ -22,6 +23,15 @@ window.onload = () => {
     document.body.className = isDark ? 'dark-mode' : 'light-mode';
     if(document.getElementById('darkModeToggle')) document.getElementById('darkModeToggle').checked = isDark;
     renderAll();
+};
+
+const updateGreeting = () => {
+    const hr = new Date().getHours();
+    let g = "Hello, Jonathan!";
+    if (hr < 12) g = "Good Morning, Jonathan! ☕";
+    else if (hr < 18) g = "Good Afternoon, Jonathan! ☀️";
+    else g = "Good Evening, Jonathan! 🌙";
+    document.getElementById('greetingMsg').innerText = g;
 };
 
 window.openTab = (evt, name) => {
@@ -64,7 +74,7 @@ window.exportQBIncome = () => {
     db.customers.forEach(c => {
         (c.paymentLogs || []).forEach((log, idx) => {
             const dateStr = log.date.split(',')[0].replace(/\//g, '-');
-            csv += `"${c.name}",${dateStr},INV-${c.id}-${idx},"Window Clean",${n(log.amount).toFixed(2)},0\n`;
+            csv += `"${c.name}",${dateStr},INV-${c.id}-${idx},"Window Cleaning",${n(log.amount).toFixed(2)},0\n`;
         });
     });
     downloadCSV(csv, "QB_Income.csv");
@@ -74,7 +84,7 @@ window.exportQBExpenses = () => {
     let csv = "Vendor,Date,Description,Amount,Account\n";
     db.expenses.forEach(e => {
         const dateStr = e.date.split(',')[0].replace(/\//g, '-');
-        csv += `"Vendor",${dateStr},"${e.desc}",${n(e.amt).toFixed(2)},"Expenses"\n`;
+        csv += `"Vendor",${dateStr},"${e.desc}",${n(e.amt).toFixed(2)},"Supplies"\n`;
     });
     downloadCSV(csv, "QB_Expenses.csv");
 };
@@ -88,7 +98,7 @@ const downloadCSV = (csv, fn) => {
 // --- MODALS ---
 window.showIncomeModal = () => {
     const body = document.getElementById('modalContentBody');
-    let html = '<h3 class="section-title">Collections Log</h3>';
+    let html = '<h3 class="section-title">💸 Income Drill-down</h3>';
     let total = 0;
     db.customers.forEach(c => {
         (c.paymentLogs || []).forEach(log => {
@@ -96,25 +106,25 @@ window.showIncomeModal = () => {
             total += n(log.amount);
         });
     });
-    html += `<div class="drilldown-total"><span>Total Collected</span><span>£${total.toFixed(2)}</span></div>`;
+    html += `<div class="drilldown-total"><span>Collected</span><span>£${total.toFixed(2)}</span></div>`;
     body.innerHTML = html; document.getElementById('globalModal').style.display = 'flex';
 };
 
 window.showExpenseModal = () => {
     const body = document.getElementById('modalContentBody');
-    let html = '<h3 class="section-title">Expense Log</h3>';
+    let html = '<h3 class="section-title">🧾 Expense Log</h3>';
     let total = 0;
     db.expenses.forEach(e => {
         html += `<div class="drilldown-row"><div><strong>${e.desc}</strong><br><small>${e.date}</small></div><div style="font-weight:bold;">£${n(e.amt).toFixed(2)}</div></div>`;
         total += n(e.amt);
     });
-    html += `<div class="drilldown-total"><span>Total Spent</span><span>£${total.toFixed(2)}</span></div>`;
+    html += `<div class="drilldown-total"><span>Spent</span><span>£${total.toFixed(2)}</span></div>`;
     body.innerHTML = html; document.getElementById('globalModal').style.display = 'flex';
 };
 
 window.showArrearsModal = () => {
     const body = document.getElementById('modalContentBody');
-    let html = '<h3 class="section-title">Arrears Breakdown</h3>';
+    let html = '<h3 class="section-title">⚠️ Arrears Breakdown</h3>';
     let total = 0;
     db.customers.forEach(c => {
         (c.debtHistory || []).forEach(d => {
@@ -122,7 +132,7 @@ window.showArrearsModal = () => {
             total += n(d.amount);
         });
     });
-    html += `<div class="drilldown-total"><span>Total Owed Debt</span><span>£${total.toFixed(2)}</span></div>`;
+    html += `<div class="drilldown-total"><span>Total Debt</span><span>£${total.toFixed(2)}</span></div>`;
     body.innerHTML = html; document.getElementById('globalModal').style.display = 'flex';
 };
 
@@ -147,7 +157,7 @@ window.markAsPaid = (id) => {
 window.handleDebtCollection = (id) => {
     const c = db.customers.find(x => x.id === id); if (!c) return;
     const totalOwed = (c.debtHistory || []).reduce((s,d)=>s+n(d.amount),0);
-    const input = prompt(`Collection for ${c.name}: £${totalOwed.toFixed(2)}`, totalOwed.toFixed(2));
+    const input = prompt(`Debt Collection: £${totalOwed.toFixed(2)}`, totalOwed.toFixed(2));
     if (input === null) return;
     const amt = n(input); if (amt <= 0) return;
     if(!c.paymentLogs) c.paymentLogs = [];
@@ -163,45 +173,20 @@ window.handleDebtCollection = (id) => {
 
 const calculateDebt = (c) => (c.debtHistory || []).reduce((sum, d) => sum + n(d.amount), 0);
 
-// --- RENDER HISTORY (HALL OF FAME v12.13) ---
+// --- RENDER HISTORY ---
 window.renderHistory = () => {
     const hist = document.getElementById('monthlyHistoryContainer');
     if (!hist) return;
-    hist.innerHTML = '<h3 class="section-title" style="margin-top:35px; border-bottom: 2px solid rgba(0,0,0,0.05); padding-bottom:10px;">🏆 Business Timeline</h3>';
-    
-    if(db.history.length === 0) {
-        hist.innerHTML += '<div class="card" style="text-align:center; opacity:0.5;">No history recorded yet. Complete your first month to see magic happen!</div>';
-        return;
-    }
-
+    hist.innerHTML = '<h3 class="section-title" style="margin-top:35px; border-bottom: 2px solid rgba(0,0,0,0.05); padding-bottom:10px;">🏆 Business Hall of Fame</h3>';
+    if(db.history.length === 0) { hist.innerHTML += '<div class="card" style="text-align:center; opacity:0.5;">Month-end snapshots will appear here.</div>'; return; }
     db.history.forEach(h => {
         const net = n(h.income) - n(h.spend);
-        const d = document.createElement('div'); 
-        d.className = 'history-item-card';
-        d.innerHTML = `
-            <div class="history-top-row">
-                <span class="history-month-name">${h.month}</span>
-                <span style="font-size:18px;">📈</span>
-            </div>
-            <div class="history-badge-grid">
-                <div class="h-badge">
-                    <small>Income</small>
-                    <strong>£${n(h.income).toFixed(2)}</strong>
-                </div>
-                <div class="h-badge">
-                    <small>Expenses</small>
-                    <strong>£${n(h.spend).toFixed(2)}</strong>
-                </div>
-                <div class="h-badge">
-                    <small>Month Profit</small>
-                    <strong class="h-profit">£${net.toFixed(2)}</strong>
-                </div>
-                <div class="h-badge">
-                    <small>New Debt</small>
-                    <strong class="h-debt">£${n(h.debtCreated).toFixed(2)}</strong>
-                </div>
-            </div>
-        `; 
+        const d = document.createElement('div'); d.className = 'history-item-card';
+        d.innerHTML = `<div class="history-top-row"><span class="history-month-name">${h.month}</span><span style="font-size:18px;">🔥</span></div>
+            <div class="history-badge-grid"><div class="h-badge"><small>Collected</small><strong>£${n(h.income).toFixed(2)}</strong></div>
+            <div class="h-badge"><small>Spent</small><strong>£${n(h.spend).toFixed(2)}</strong></div>
+            <div class="h-badge"><small>Net Profit</small><strong class="h-profit">£${net.toFixed(2)}</strong></div>
+            <div class="h-badge"><small>Arrears Added</small><strong class="h-debt">£${n(h.debtCreated).toFixed(2)}</strong></div></div>`; 
         hist.appendChild(d);
     });
 };
@@ -209,14 +194,12 @@ window.renderHistory = () => {
 window.renderStats = () => {
     const curMonth = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
     if(document.getElementById('statsMonthTitle')) document.getElementById('statsMonthTitle').innerText = `${curMonth} Summary`;
-    
     let totalIn = 0; db.customers.forEach(c => { (c.paymentLogs||[]).forEach(l => totalIn += n(l.amount)); });
     let totalOut = db.expenses.reduce((sum, e) => sum + n(e.amt), 0);
     let potentialVal = db.customers.reduce((sum, c) => sum + n(c.price), 0);
     let jobCollected = db.customers.reduce((sum, c) => sum + n(c.paidThisMonth), 0);
     let overdueVal = db.customers.reduce((sum, c) => sum + calculateDebt(c), 0);
     let progress = potentialVal > 0 ? (jobCollected / potentialVal) * 100 : 0;
-
     if(document.getElementById('currProfit')) document.getElementById('currProfit').innerText = `£${(totalIn - totalOut).toFixed(2)}`;
     if(document.getElementById('currRevenue')) document.getElementById('currRevenue').innerText = `£${totalIn.toFixed(2)}`;
     if(document.getElementById('currSpend')) document.getElementById('currSpend').innerText = `£${totalOut.toFixed(2)}`;
@@ -225,18 +208,15 @@ window.renderStats = () => {
     if(document.getElementById('targetWork')) document.getElementById('targetWork').innerText = `£${potentialVal.toFixed(2)}`;
     if(document.getElementById('stillToCollect')) document.getElementById('stillToCollect').innerText = `£${Math.max(0, potentialVal - jobCollected).toFixed(2)}`;
     if(document.getElementById('totalOldDebt')) document.getElementById('totalOldDebt').innerText = `£${overdueVal.toFixed(2)}`;
-
     renderHistory();
 };
 
 window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); renderLedger(); };
-
 window.renderLedger = () => {
     const list = document.getElementById('expenseList'); if(!list) return;
-    list.innerHTML = '<h3 class="section-title">Monthly Expense History</h3>';
+    list.innerHTML = '<h3 class="section-title">💸 Expense Timeline</h3>';
     db.expenses.forEach(e => {
-        const div = document.createElement('div'); div.className = 'card';
-        div.style.padding = '15px'; div.style.marginBottom = '10px';
+        const div = document.createElement('div'); div.className = 'card'; div.style.padding = '18px'; div.style.marginBottom = '10px';
         div.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><div><strong>${e.desc}</strong><br><small>${e.date}</small></div><div style="font-weight:900; color:var(--danger);">£${n(e.amt).toFixed(2)}</div></div>`;
         list.appendChild(div);
     });
@@ -251,23 +231,25 @@ window.renderMasterTable = () => {
             const row = document.createElement('div'); row.className = 'master-row';
             row.onclick = () => showCustDetails(c.id);
             const d = calculateDebt(c);
-            row.innerHTML = `<div><strong>${c.name}</strong><br><small>${c.address}</small></div><div style="text-align:right">£${n(c.price).toFixed(2)}${d > 0 ? '<br><small style="color:var(--danger)">Debt: £' + d.toFixed(2) + '</small>' : ''}</div>`;
+            row.innerHTML = `<div><strong>${c.name}</strong><br><small>${c.address}</small></div><div style="text-align:right">£${n(c.price).toFixed(2)}${d > 0 ? '<br><small style="color:var(--danger); font-weight:800;">ARREARS: £' + d.toFixed(2) + '</small>' : ''}</div>`;
             container.appendChild(row);
         }
     });
 };
+
 window.renderWeekLists = () => {
     for (let i = 1; i <= 4; i++) {
         const container = document.getElementById(`week${i}`); if (!container) continue;
         container.innerHTML = '';
         const weekCusts = db.customers.filter(c => c.week == i);
+        if (weekCusts.length === 0) { container.innerHTML = '<div class="card" style="text-align:center; opacity:0.5; padding:40px;">🍹 Week complete! Relax.</div>'; continue; }
         weekCusts.forEach(c => {
             const isPaid = n(c.paidThisMonth) >= n(c.price);
             const d = calculateDebt(c);
             const card = document.createElement('div'); card.className = 'card';
-            card.innerHTML = `<div onclick="showCustDetails('${c.id}')"><strong style="font-size:18px;">${c.name}</strong><br><small style="opacity:0.6;">${c.address}</small></div>
-                <div class="workflow-grid"><div class="comms-row"><button class="icon-btn-large" style="color:#25D366" onclick="handleWhatsApp('${c.id}')">💬</button><button class="icon-btn-large" style="color:#007AFF" onclick="handleSMS('${c.id}')">📱</button><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.address + ' ' + c.postcode)}" target="_blank" class="icon-btn-large" style="color:#ea4335">📍</a></div>
-                <div class="status-row" style="${d > 0 ? 'grid-template-columns:repeat(3,1fr)' : 'grid-template-columns:1fr 1fr'}"><button class="action-btn-main ${c.cleaned ? 'btn-cleaned-active' : ''}" onclick="toggleCleaned('${c.id}')">${c.cleaned ? 'Cleaned ✅' : 'Cleaned'}</button><button class="action-btn-main ${isPaid ? 'btn-paid-active' : 'btn-pay-pending'}" onclick="markAsPaid('${c.id}')">${isPaid ? 'Paid ✅' : 'Pay £' + n(c.price).toFixed(2)}</button>${d > 0 ? `<button class="action-btn-main btn-debt-pending" onclick="handleDebtCollection('${c.id}')">Debt £${d.toFixed(2)}</button>` : ''}</div></div>`;
+            card.innerHTML = `<div onclick="showCustDetails('${c.id}')"><strong style="font-size:19px; color:var(--accent);">${c.name}</strong><br><small style="opacity:0.6; font-weight:600;">${c.address}</small></div>
+                <div class="workflow-grid"><div class="comms-row"><button class="icon-btn-large bounce-on-tap" style="color:#25D366" onclick="handleWhatsApp('${c.id}')">💬</button><button class="icon-btn-large bounce-on-tap" style="color:#007AFF" onclick="handleSMS('${c.id}')">📱</button><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.address + ' ' + c.postcode)}" target="_blank" class="icon-btn-large bounce-on-tap" style="color:#ea4335">📍</a></div>
+                <div class="status-row" style="${d > 0 ? 'grid-template-columns:repeat(3,1fr)' : 'grid-template-columns:1fr 1fr'}"><button class="action-btn-main bounce-on-tap ${c.cleaned ? 'btn-cleaned-active' : ''}" onclick="toggleCleaned('${c.id}')">${c.cleaned ? 'Done ✅' : 'Cleaned'}</button><button class="action-btn-main bounce-on-tap ${isPaid ? 'btn-paid-active' : 'btn-pay-pending'}" onclick="markAsPaid('${c.id}')">${isPaid ? 'Paid 💰' : 'Pay £' + n(c.price).toFixed(2)}</button>${d > 0 ? `<button class="action-btn-main bounce-on-tap btn-debt-pending" onclick="handleDebtCollection('${c.id}')">Arrears £${d.toFixed(2)}</button>` : ''}</div></div>`;
             container.appendChild(card);
         });
     }
@@ -277,7 +259,7 @@ window.showCustDetails = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
     const body = document.getElementById('modalContentBody');
     const d = calculateDebt(c);
-    body.innerHTML = `<h2 style="margin-top:0; color:var(--accent);">${c.name}</h2><p>📍 ${c.address} ${c.postcode}</p><p>📞 ${c.phone || 'N/A'}</p><p>💰 Price: £${n(c.price).toFixed(2)}</p>${d > 0 ? `<p style="color:var(--danger); font-weight:bold;">Arrears: £${d.toFixed(2)}</p>` : ''}<p>📝 Notes: ${c.notes || 'No notes.'}</p><button class="btn-main full-width-btn" onclick="editCust('${c.id}')">⚙️ Edit Customer</button>`;
+    body.innerHTML = `<h2 style="margin-top:0; color:var(--accent);">${c.name}</h2><p>📍 ${c.address} ${c.postcode}</p><p>📞 ${c.phone || 'N/A'}</p><p>💰 Price: £${n(c.price).toFixed(2)}</p>${d > 0 ? `<p style="color:var(--danger); font-weight:bold; background:rgba(255,59,48,0.1); padding:10px; border-radius:10px;">Arrears: £${d.toFixed(2)}</p>` : ''}<p>📝 Notes: ${c.notes || 'No notes.'}</p><button class="btn-main full-width-btn" onclick="editCust('${c.id}')">⚙️ Edit Customer</button>`;
     document.getElementById('globalModal').style.display = 'flex';
 };
 
