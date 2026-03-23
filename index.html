@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro v10.4</title>
-    <link rel="stylesheet" href="styles.css?v=104">
+    <title>Hydro Pro v10.6</title>
+    <link rel="stylesheet" href="styles.css?v=106">
 </head>
 <body class="light-mode">
 
@@ -61,25 +61,19 @@
                     <input type="tel" id="cPhone" placeholder="Mobile Number">
                     <input type="number" id="cPrice" placeholder="Price £">
                 </div>
-                <div class="label-heading">Schedule</div>
                 <div class="grid-2">
-                    <select id="cWeek">
+                    <select id="cWeek" class="large-select">
                         <option value="1">Week 1</option><option value="2">Week 2</option>
                         <option value="3">Week 3</option><option value="4">Week 4</option>
                     </select>
-                    <select id="cDay">
+                    <select id="cDay" class="large-select">
                         <option value="Monday">Monday</option><option value="Tuesday">Tuesday</option>
                         <option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option>
                         <option value="Friday">Friday</option>
                     </select>
                 </div>
-                <textarea id="cNotes" placeholder="Notes (Dogs, Gates, Parking...)" style="width:100%; margin-top:10px; border-radius:12px; padding:12px; border:1px solid #ddd;"></textarea>
+                <textarea id="cNotes" placeholder="Notes..." class="premium-textarea"></textarea>
                 <button class="btn-main full-width-btn" onclick="saveCustomer()">💾 Save Customer</button>
-                
-                <div id="editActions" class="hidden" style="margin-top:10px;">
-                    <button class="btn-danger full-width-btn" onclick="deleteCustomer()">🗑 Delete</button>
-                    <button class="btn-neutral full-width-btn" style="margin-top:10px;" onclick="clearForm()">Cancel</button>
-                </div>
             </div>
 
             <div class="card action-card-green">
@@ -98,30 +92,16 @@
             <div class="card action-card-red">
                 <button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL DATA</button>
             </div>
-
-            <div class="version-tag">v10.4 - Unified Stable Build</div>
+            <div class="version-tag">v10.6 - Engine Restored</div>
         </div>
 
         <div id="master" class="tab-content"><div id="masterTableBody"></div></div>
-        <div id="stats" class="tab-content"></div>
-        <div id="spend" class="tab-content"></div>
         <div id="week1" class="tab-content"></div>
         <div id="week2" class="tab-content"></div>
         <div id="week3" class="tab-content"></div>
         <div id="week4" class="tab-content"></div>
     </div>
 
-    <div id="payModal" class="modal-overlay" onclick="if(event.target === this) this.style.display='none'">
-        <div class="modal-content">
-            <h3 class="section-title">Log Payment</h3>
-            <p id="payCustName" style="font-weight:bold;"></p>
-            <div class="grid-2">
-                <button class="btn-main full-width-btn" onclick="confirmQuickPay('full')">Full Pay</button>
-                <button class="btn-neutral full-width-btn" onclick="confirmQuickPay('custom')">Custom</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="app.js?v=104"></script>
+    <script src="app.js?v=106"></script>
 </body>
 </html>
