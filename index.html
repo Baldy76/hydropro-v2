@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro - Production v6.0</title>
+    <title>Hydro Pro - Production v6.1</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="light-mode">
@@ -91,7 +91,7 @@
                 <button type="button" class="btn-uat full-width-btn" onclick="runUATClear()">🛠️ RESET ALL DATA</button>
             </div>
             
-            <div class="version-tag">v6.0 - Master Recovery</div>
+            <div class="version-tag">v6.1 - Debt History Build</div>
         </div>
 
         <div id="master" class="tab-content">
@@ -149,8 +149,9 @@
             <div id="modName" style="font-size:20px; font-weight:900; color:var(--primary);"></div>
             <p id="modAddr" style="opacity:0.6; font-size:14px;"></p>
             <hr style="opacity:0.1; margin:15px 0;">
+            <div id="debtDetailsBox" style="font-size:12px; margin-bottom:15px;"></div>
             <div style="text-align:right;">
-                <small style="font-weight:800; opacity:0.5;">OUTSTANDING:</small><br>
+                <small style="font-weight:800; opacity:0.5;">TOTAL OUTSTANDING:</small><br>
                 <span id="modOwed" style="font-size:28px; font-weight:900;"></span>
             </div>
             <button class="btn-alt" style="margin-top:15px; width:100%;" onclick="editFromModal()">⚙️ Edit Customer Details</button>
