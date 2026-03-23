@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro v8.5</title>
-    <link rel="stylesheet" href="styles.css?v=85">
+    <title>Hydro Pro v8.6</title>
+    <link rel="stylesheet" href="styles.css?v=86">
 </head>
 <body class="light-mode">
 
@@ -16,9 +16,11 @@
                 <span class="slider"></span>
             </label>
         </div>
+        
         <div class="header-top">
-            <img src="Logo.png" id="mainLogo" class="logo-img" alt="Hydro Logo">
+            <img src="Logo.png" class="logo-img" alt="Hydro Logo">
         </div>
+        
         <div class="tabs">
             <button class="tab active" onclick="openTab(event, 'admin')">Setup</button>
             <button class="tab" onclick="openTab(event, 'master')">Custs</button>
@@ -36,7 +38,7 @@
 
         <div id="admin" class="tab-content active">
             <div class="card fade-in">
-                <h3 class="section-title">Customer Details</h3>
+                <h3 class="section-title">New Customer</h3>
                 <input type="hidden" id="editId">
                 
                 <div class="input-stack">
@@ -47,7 +49,7 @@
                     <input type="number" id="cPrice" placeholder="Price £">
                 </div>
                 
-                <div class="label-heading">Schedule & Frequency</div>
+                <div class="label-heading">Schedule</div>
                 <div class="grid-2">
                     <select id="cWeek">
                         <option value="1">Week 1</option><option value="2">Week 2</option>
@@ -64,22 +66,22 @@
                     <option value="Friday">Friday</option>
                 </select>
 
-                <textarea id="cNotes" placeholder="Notes (Gates, dogs, etc...)"></textarea>
+                <textarea id="cNotes" placeholder="Special Notes..."></textarea>
                 
                 <button class="btn-main full-width-btn" onclick="saveCustomer()">💾 Save Customer</button>
                 
                 <div id="editActions" class="hidden">
                     <button class="btn-danger full-width-btn" style="margin-top:10px;" onclick="deleteCustomer()">🗑 Delete</button>
-                    <button class="btn-neutral full-width-btn" style="margin-top:10px;" onclick="clearForm()">Cancel Edit</button>
+                    <button class="btn-neutral full-width-btn" style="margin-top:10px;" onclick="clearForm()">Cancel</button>
                 </div>
             </div>
 
-            <div class="card fade-in start-month-card">
+            <div class="card start-month-card">
                 <button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button>
             </div>
 
-            <div class="card fade-in">
-                <h3 class="section-title">Data Management</h3>
+            <div class="card">
+                <h3 class="section-title">Database</h3>
                 <div class="grid-2">
                     <button class="btn-ghost full-width-btn" onclick="exportFullCSV()">💾 Export</button>
                     <button class="btn-ghost full-width-btn" onclick="document.getElementById('csvFile').click()">📂 Import</button>
@@ -87,19 +89,18 @@
                 <input type="file" id="csvFile" accept=".csv" onchange="importFullCSV(event)" style="display:none;">
             </div>
 
-            <button type="button" class="btn-uat-link" onclick="runUATClear()">Reset All Data</button>
-            <div class="version-tag">v8.5 - Pro Design Refined</div>
+            <button type="button" class="btn-uat-link" onclick="runUATClear()">Reset All App Data</button>
+            <div class="version-tag">v8.6 - Interaction Fix</div>
         </div>
 
         <div id="master" class="tab-content">
-            <div class="card no-padding overflow-hidden fade-in">
+            <div class="card no-padding overflow-hidden">
                 <div class="search-container">
                     <input type="text" id="mainSearch" placeholder="🔍 Search customers..." oninput="handleSearch()">
                 </div>
                 <div id="masterTableBody"></div>
             </div>
         </div>
-
         <div id="stats" class="tab-content"></div>
         <div id="spend" class="tab-content"></div>
         <div id="week1" class="tab-content"></div>
@@ -108,6 +109,6 @@
         <div id="week4" class="tab-content"></div>
     </div>
 
-    <script src="app.js?v=85"></script>
+    <script src="app.js?v=86"></script>
 </body>
 </html>
