@@ -6,10 +6,22 @@ window.onload = () => {
     updateGreeting();
     const dateEl = document.getElementById('headerDate');
     if (dateEl) dateEl.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' });
+    
     const saved = localStorage.getItem(MASTER_KEY);
     if (saved) db = JSON.parse(saved);
+    
+    // Baseline Integrity Checks
     if (!db.customers) db.customers = [];
     if (!db.expenses) db.expenses = [];
+    db.customers.forEach(c => { 
+        if(!c.paymentLogs) c.paymentLogs = []; 
+        if(!c.debtHistory) c.debtHistory = [];
+    });
+
+    const isDark = localStorage.getItem('Hydro_Dark_Pref') === 'true';
+    document.body.className = isDark ? 'dark-mode' : 'light-mode';
+    if(document.getElementById('darkModeToggle')) document.getElementById('darkModeToggle').checked = isDark;
+    
     renderAll();
 };
 
@@ -47,7 +59,7 @@ window.saveCustomer = () => {
     const idx = db.customers.findIndex(x => x.id === id);
     let ex = idx > -1 ? db.customers[idx] : null;
 
-    db.customers.push({
+    const entry = {
         id, name,
         houseNum: document.getElementById('cHouseNum').value,
         street: document.getElementById('cStreet').value,
@@ -58,10 +70,15 @@ window.saveCustomer = () => {
         day: document.getElementById('cDay').value,
         notes: document.getElementById('cNotes').value,
         cleaned: ex ? ex.cleaned : false,
-        paidThisMonth: ex ? ex.paidThisMonth : 0
-    });
-    if(idx > -1) db.customers.splice(idx, 1); // Maintain baseline replacement logic
-    localStorage.setItem(MASTER_KEY, JSON.stringify(db));
+        paidThisMonth: ex ? ex.paidThisMonth : 0,
+        debtHistory: ex ? ex.debtHistory : [],
+        paymentLogs: ex ? ex.paymentLogs : []
+    };
+
+    if(idx > -1) db.customers[idx] = entry;
+    else db.customers.push(entry);
+    
+    saveData();
     openTab('home');
 };
 
@@ -95,13 +112,12 @@ window.editCust = (id) => {
     document.getElementById('cNotes').value = c.notes;
 };
 
+window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
+window.renderAll = () => { renderWeekLists(); };
 window.updateGreeting = () => {
     const hr = new Date().getHours();
     document.getElementById('greetingMsg').innerText = (hr < 12) ? "Good Morning! ☕" : (hr < 18) ? "Good Afternoon! ☀️" : "Good Evening! 🌙";
 };
-
-window.renderAll = () => { renderWeekLists(); };
-
 window.toggleDarkMode = () => {
     const isDark = document.getElementById('darkModeToggle').checked;
     document.body.className = isDark ? 'dark-mode' : 'light-mode';
