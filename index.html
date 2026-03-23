@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v18.8</title>
-    <link rel="stylesheet" href="styles.css?v=188">
+    <title>Hydro Pro v18.9</title>
+    <link rel="stylesheet" href="styles.css?v=189">
 </head>
 <body class="light-mode">
 
@@ -29,20 +29,6 @@
 
     <div class="main-container">
         
-        <div id="master" class="tab-content">
-            <div class="search-container-full">
-                <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()">
-            </div>
-            
-            <div id="masterTableBody"></div>
-
-            <div class="full-width-action-area">
-                <div class="card action-card-green">
-                    <button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button>
-                </div>
-            </div>
-        </div>
-
         <div id="home" class="tab-content active">
             <div class="home-grid">
                 <button class="tile tile-admin bounce-on-tap" onclick="openTab('admin')"><span>✨</span><small>Setup</small></button>
@@ -50,6 +36,18 @@
                 <button class="tile tile-admin bounce-on-tap" onclick="openTab('stats')"><span>📊</span><small>Stats</small></button>
                 <button class="tile tile-admin bounce-on-tap" onclick="openTab('spend')"><span>💸</span><small>Ledger</small></button>
                 <button class="tile tile-weekly-hub bounce-on-tap" onclick="openTab('weeksHub')"><span>📅</span><small>Weekly Work</small></button>
+            </div>
+        </div>
+
+        <div id="master" class="tab-content">
+            <div class="search-container-full">
+                <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()">
+            </div>
+            <div id="masterTableBody"></div>
+            <div class="full-width-action-area">
+                <div class="card action-card-green">
+                    <button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button>
+                </div>
             </div>
         </div>
 
@@ -98,7 +96,7 @@
         <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
     </div>
 
-    <div class="page-version-footer">v18.8 - Structural Lock</div>
-    <script src="app.js?v=188"></script>
+    <div class="page-version-footer">v18.9 - Visual Match Build</div>
+    <script src="app.js?v=189"></script>
 </body>
 </html>
