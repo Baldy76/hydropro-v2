@@ -50,40 +50,15 @@ window.saveCustomer = () => {
 
     if(idx > -1) db.customers[idx] = entry; else db.customers.push(entry);
     saveData();
-    
-    // RESTORED POPUP
     alert("Customer Saved Successfully! ✨");
     
-    // Clear Form
-    document.getElementById('editId').value = "";
-    document.getElementById('cName').value = "";
-    document.getElementById('cHouseNum').value = "";
-    document.getElementById('cStreet').value = "";
-    document.getElementById('cPostcode').value = "";
-    document.getElementById('cPrice').value = "";
-    document.getElementById('cNotes').value = "";
+    // Reset Form
+    ['editId', 'cName', 'cHouseNum', 'cStreet', 'cPostcode', 'cPrice', 'cNotes'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.value = "";
+    });
     
     openTab('home');
-};
-
-window.renderStats = () => {
-    let target = 0, paid = 0, arrears = 0, spend = 0;
-    db.customers.forEach(c => {
-        target += n(c.price);
-        paid += n(c.paidThisMonth);
-        if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth));
-    });
-    db.expenses.forEach(e => spend += n(e.amt));
-    const progress = target > 0 ? (paid / target) * 100 : 0;
-
-    if(document.getElementById('currProfit')) document.getElementById('currProfit').innerText = `£${(paid - spend).toFixed(2)}`;
-    if(document.getElementById('statsIncome')) document.getElementById('statsIncome').innerText = `£${paid.toFixed(2)}`;
-    if(document.getElementById('statsSpend')) document.getElementById('statsSpend').innerText = `£${spend.toFixed(2)}`;
-    if(document.getElementById('statsArrears')) document.getElementById('statsArrears').innerText = `£${arrears.toFixed(2)}`;
-    if(document.getElementById('statsTarget')) document.getElementById('statsTarget').innerText = `£${target.toFixed(2)}`;
-    if(document.getElementById('statsRemaining')) document.getElementById('statsRemaining').innerText = `£${(target - paid).toFixed(2)}`;
-    if(document.getElementById('progressPercent')) document.getElementById('progressPercent').innerText = `${Math.round(progress)}%`;
-    if(document.getElementById('progressBarFill')) document.getElementById('progressBarFill').style.width = `${progress}%`;
 };
 
 window.renderMasterTable = () => {
@@ -98,6 +73,34 @@ window.renderMasterTable = () => {
             body.appendChild(tile);
         }
     });
+};
+
+window.renderStats = () => {
+    let target = 0, paid = 0, arrears = 0, spend = 0;
+    db.customers.forEach(c => {
+        target += n(c.price);
+        paid += n(c.paidThisMonth);
+        if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth));
+    });
+    db.expenses.forEach(e => spend += n(e.amt));
+    const progress = target > 0 ? (paid / target) * 100 : 0;
+
+    const els = {
+        'currProfit': `£${(paid - spend).toFixed(2)}`,
+        'statsIncome': `£${paid.toFixed(2)}`,
+        'statsSpend': `£${spend.toFixed(2)}`,
+        'statsArrears': `£${arrears.toFixed(2)}`,
+        'statsTarget': `£${target.toFixed(2)}`,
+        'statsRemaining': `£${(target - paid).toFixed(2)}`,
+        'progressPercent': `${Math.round(progress)}%`
+    };
+
+    for (let [id, val] of Object.entries(els)) {
+        const el = document.getElementById(id);
+        if(el) el.innerText = val;
+    }
+    const bar = document.getElementById('progressBarFill');
+    if(bar) bar.style.width = `${progress}%`;
 };
 
 window.renderWeekLists = () => {
