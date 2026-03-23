@@ -1,90 +1,169 @@
-<div id="admin" class="tab-content">
-    <div class="portal-header">
-        <img src="Logo.png" class="portal-logo" alt="Hydro Pro">
-        <p class="portal-subtitle">Building your empire, one client at a time! 🚀</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Hydro Pro v16.6</title>
+    <link rel="stylesheet" href="styles.css?v=166">
+</head>
+<body class="light-mode">
+
+    <div class="app-header" id="globalHeader">
+        <img src="Logo.png" class="logo-img" id="mainLogo" alt="Logo">
+        <div class="mode-switch-wrapper">
+            <label class="ios-switch">
+                <input type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()">
+                <span class="slider"></span>
+            </label>
+        </div>
     </div>
 
-    <div class="card creative-form-card">
-        <input type="hidden" id="editId">
+    <div class="main-container">
         
-        <div class="fun-input-group">
-            <div class="fun-icon">👤</div>
-            <div class="fun-field-stack">
-                <label>Customer Name</label>
-                <input type="text" id="cName" placeholder="Who's the lucky client?" class="creative-input">
+        <div id="home" class="tab-content active">
+            <div class="home-hero">
+                <div id="greetingMsg" class="home-greeting">Good Morning</div>
+                <div id="headerDate" class="home-date"></div>
+            </div>
+
+            <div class="home-grid">
+                <button class="tile tile-admin bounce-on-tap" onclick="openTab('admin')"><span>✨</span><small>Setup</small></button>
+                <button class="tile tile-admin bounce-on-tap" onclick="openTab('master')"><span>👥</span><small>Custs</small></button>
+                <button class="tile tile-admin bounce-on-tap" onclick="openTab('stats')"><span>📊</span><small>Stats</small></button>
+                <button class="tile tile-admin bounce-on-tap" onclick="openTab('spend')"><span>💸</span><small>Ledger</small></button>
+                
+                <button class="tile tile-week bounce-on-tap" onclick="openTab('week1')"><span>1</span><small>Week 1</small></button>
+                <button class="tile tile-week bounce-on-tap" onclick="openTab('week2')"><span>2</span><small>Week 2</small></button>
+                <button class="tile tile-week bounce-on-tap" onclick="openTab('week3')"><span>3</span><small>Week 3</small></button>
+                <button class="tile tile-week bounce-on-tap" onclick="openTab('week4')"><span>4</span><small>Week 4</small></button>
+                <button class="tile tile-week bounce-on-tap" onclick="openTab('week5')"><span>5</span><small>Week 5</small></button>
             </div>
         </div>
 
-        <div class="fun-input-group">
-            <div class="fun-icon" style="background: rgba(255, 149, 0, 0.15);">🏠</div>
-            <div class="fun-field-stack">
-                <label>House Number / Name</label>
-                <input type="text" id="cHouseNum" placeholder="e.g. 22 or 'The Willows'" class="creative-input">
+        <div id="subpageNav" class="subpage-nav hidden">
+            <button class="back-pill bounce-on-tap" onclick="handleBackNavigation()">🏠 Back to Home</button>
+        </div>
+
+        <div id="admin" class="tab-content">
+            <div class="portal-header">
+                <img src="Logo.png" class="portal-logo" alt="Hydro Pro">
+                <p class="portal-subtitle">Building your empire! 🚀</p>
+            </div>
+
+            <div class="card creative-form-card">
+                <input type="hidden" id="editId">
+                
+                <div class="fun-input-group">
+                    <div class="fun-icon">👤</div>
+                    <div class="fun-field-stack">
+                        <label>Customer Name</label>
+                        <input type="text" id="cName" placeholder="Full Name" class="creative-input">
+                    </div>
+                </div>
+
+                <div class="fun-input-group">
+                    <div class="fun-icon" style="background: rgba(255, 149, 0, 0.15);">🏠</div>
+                    <div class="fun-field-stack">
+                        <label>House Number / Name</label>
+                        <input type="text" id="cHouseNum" placeholder="e.g. 22" class="creative-input">
+                    </div>
+                </div>
+
+                <div class="fun-input-group">
+                    <div class="fun-icon" style="background: rgba(52, 199, 89, 0.15);">🛣️</div>
+                    <div class="fun-field-stack">
+                        <label>Street Name</label>
+                        <input type="text" id="cStreet" placeholder="Street Name" class="creative-input">
+                    </div>
+                </div>
+
+                <div class="fun-input-group">
+                    <div class="fun-icon" style="background: rgba(175, 82, 222, 0.15);">📍</div>
+                    <div class="fun-field-stack">
+                        <label>Postcode</label>
+                        <input type="text" id="cPostcode" placeholder="Postcode" class="creative-input">
+                    </div>
+                </div>
+
+                <div class="fun-input-group">
+                    <div class="fun-icon" style="background: rgba(0, 122, 255, 0.15);">📱</div>
+                    <div class="fun-field-stack">
+                        <label>Mobile Number</label>
+                        <input type="tel" id="cPhone" placeholder="Mobile" class="creative-input">
+                    </div>
+                </div>
+
+                <div class="fun-input-group">
+                    <div class="fun-icon" style="background: rgba(255, 59, 48, 0.15);">💰</div>
+                    <div class="fun-field-stack">
+                        <label>Clean Price (£)</label>
+                        <input type="number" id="cPrice" placeholder="0.00" class="creative-input">
+                    </div>
+                </div>
+
+                <div class="grid-1x2">
+                    <div class="fun-input-group-compact">
+                        <label>📅 Week</label>
+                        <select id="cWeek" class="creative-select">
+                            <option value="1">Week 1</option><option value="2">Week 2</option>
+                            <option value="3">Week 3</option><option value="4">Week 4</option>
+                            <option value="5">Week 5</option>
+                        </select>
+                    </div>
+                    <div class="fun-input-group-compact">
+                        <label>☀️ Day</label>
+                        <select id="cDay" class="creative-select">
+                            <option value="Monday">Mon</option><option value="Tuesday">Tue</option>
+                            <option value="Wednesday">Wed</option><option value="Thursday">Thu</option>
+                            <option value="Friday">Fri</option><option value="Saturday">Sat</option>
+                            <option value="Sunday">Sun</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="fun-input-group" style="border: none;">
+                    <div class="fun-icon" style="background: rgba(142, 142, 147, 0.15);">📝</div>
+                    <div class="fun-field-stack">
+                        <label>Private Notes</label>
+                        <textarea id="cNotes" placeholder="Access codes..." class="creative-textarea"></textarea>
+                    </div>
+                </div>
+
+                <button class="btn-main full-width-btn bounce-on-tap creative-save-btn" onclick="saveCustomer()">
+                    ✨ Create Magic (Save)
+                </button>
+            </div>
+            
+            <div class="card action-card-green" style="margin-top:20px;">
+                <button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button>
             </div>
         </div>
 
-        <div class="fun-input-group">
-            <div class="fun-icon" style="background: rgba(52, 199, 89, 0.15);">🛣️</div>
-            <div class="fun-field-stack">
-                <label>Street Name</label>
-                <input type="text" id="cStreet" placeholder="e.g. Baker Street" class="creative-input">
-            </div>
+        <div id="master" class="tab-content">
+            <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search..." oninput="renderMasterTable()">
+            <div id="masterTableBody"></div>
         </div>
 
-        <div class="fun-input-group">
-            <div class="fun-icon" style="background: rgba(175, 82, 222, 0.15);">📍</div>
-            <div class="fun-field-stack">
-                <label>Postcode</label>
-                <input type="text" id="cPostcode" placeholder="e.g. NW1 6XE" class="creative-input">
+        <div id="stats" class="tab-content">
+            <div class="dashboard-hero">
+                <div class="hero-amount" id="currProfit">£0.00</div>
+                <small>NET PROFIT</small>
             </div>
+            <div id="monthlyHistoryContainer"></div>
         </div>
 
-        <div class="fun-input-group">
-            <div class="fun-icon" style="background: rgba(0, 122, 255, 0.15);">📱</div>
-            <div class="fun-field-stack">
-                <label>Mobile Number</label>
-                <input type="tel" id="cPhone" placeholder="Reach them at..." class="creative-input">
-            </div>
+        <div id="spend" class="tab-content">
+            <div id="expenseList"></div>
         </div>
 
-        <div class="fun-input-group">
-            <div class="fun-icon" style="background: rgba(255, 59, 48, 0.15);">💰</div>
-            <div class="fun-field-stack">
-                <label>Clean Price (£)</label>
-                <input type="number" id="cPrice" placeholder="0.00" class="creative-input">
-            </div>
-        </div>
-
-        <div class="grid-1x2">
-            <div class="fun-input-group-compact">
-                <label>📅 Week</label>
-                <select id="cWeek" class="creative-select">
-                    <option value="1">Week 1</option><option value="2">Week 2</option>
-                    <option value="3">Week 3</option><option value="4">Week 4</option>
-                    <option value="5">Week 5</option>
-                </select>
-            </div>
-            <div class="fun-input-group-compact">
-                <label>☀️ Day</label>
-                <select id="cDay" class="creative-select">
-                    <option value="Monday">Mon</option><option value="Tuesday">Tue</option>
-                    <option value="Wednesday">Wed</option><option value="Thursday">Thu</option>
-                    <option value="Friday">Fri</option><option value="Saturday">Sat</option>
-                    <option value="Sunday">Sun</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="fun-input-group" style="border: none;">
-            <div class="fun-icon" style="background: rgba(142, 142, 147, 0.15);">📝</div>
-            <div class="fun-field-stack">
-                <label>Private Notes</label>
-                <textarea id="cNotes" placeholder="Codes, dogs, or specific requests..." class="creative-textarea"></textarea>
-            </div>
-        </div>
-
-        <button class="btn-main full-width-btn bounce-on-tap creative-save-btn" onclick="saveCustomer()">
-            ✨ Create Magic (Save)
-        </button>
+        <div id="week1" class="tab-content"></div>
+        <div id="week2" class="tab-content"></div>
+        <div id="week3" class="tab-content"></div>
+        <div id="week4" class="tab-content"></div>
+        <div id="week5" class="tab-content"></div>
     </div>
-</div>
+
+    <div class="page-version-footer">v16.6 - Creative Portal Build</div>
+    <script src="app.js?v=166"></script>
+</body>
+</html>
