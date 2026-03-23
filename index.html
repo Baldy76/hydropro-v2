@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v13.4</title>
-    <link rel="stylesheet" href="styles.css?v=134">
+    <title>Hydro Pro v13.5</title>
+    <link rel="stylesheet" href="styles.css?v=135">
 </head>
 <body class="light-mode">
 
-    <div class="sticky-header">
+    <div class="sticky-header" id="mainHeader">
         <div class="header-top">
             <img src="Logo.png" class="logo-img" alt="Hydro Pro Logo">
             <div class="mode-switch-wrapper">
@@ -75,7 +75,7 @@
                     </select>
                 </div>
                 <textarea id="cNotes" placeholder="Notes..." class="premium-textarea"></textarea>
-                <button class="btn-main full-width-btn bounce-on-tap" onclick="saveCustomer()">💾 Save Customer</button>
+                <button class="btn-main full-width-btn" onclick="saveCustomer()">💾 Save Customer</button>
             </div>
             <div class="card action-card-green"><button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
             <div class="card action-card-red"><button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL DATA</button></div>
@@ -102,7 +102,7 @@
                     <input type="text" id="expDesc" placeholder="Description" class="large-select" style="margin-bottom:10px;">
                     <input type="number" id="expAmt" placeholder="Amount £" class="large-select" style="margin-bottom:10px;">
                 </div>
-                <button class="btn-main full-width-btn bounce-on-tap" onclick="addExpense()">Add Expense</button>
+                <button class="btn-main full-width-btn" onclick="addExpense()">Add Expense</button>
             </div>
             <div id="expenseList"></div>
         </div>
@@ -110,10 +110,6 @@
         <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
     </div>
 
-    <div id="globalModal" class="modal-overlay" onclick="if(event.target === this) closeModal()">
-        <div class="modal-content"><button class="close-btn" onclick="closeModal()">✕</button><div id="modalContentBody"></div></div>
-    </div>
-
-    <script src="app.js?v=134"></script>
+    <script src="app.js?v=135"></script>
 </body>
 </html>
