@@ -20,17 +20,31 @@ window.onload = () => {
     renderAll();
 };
 
-// --- NAVIGATION ---
+// --- NAVIGATION (THE ISOLATION SHIELD) ---
 window.openTab = (evt, name) => {
+    // 1. Hide ALL tab contents
     document.querySelectorAll(".tab-content").forEach(c => c.style.display = "none");
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    document.getElementById(name).style.display = "block";
-    if (evt) evt.currentTarget.classList.add("active");
     
+    // 2. STRIKE TEAM: Force hide the setup wrapper if we aren't on Setup
+    const setupWrapper = document.getElementById('setup-form-wrapper');
+    if (setupWrapper) {
+        name === 'admin' ? setupWrapper.classList.remove('hidden') : setupWrapper.classList.add('hidden');
+    }
+
+    // 3. Toggle Global Search visibility
     const search = document.getElementById('globalSearchContainer');
     if(search) name === 'master' ? search.classList.remove('hidden') : search.classList.add('hidden');
     
+    // 4. Activate current tab
+    const target = document.getElementById(name);
+    if (target) {
+        target.style.display = "block";
+        if (evt) evt.currentTarget.classList.add("active");
+    }
+
     renderAll();
+    window.scrollTo(0, 0);
 };
 
 // --- DATA LOGIC ---
@@ -51,38 +65,6 @@ window.saveCustomer = () => {
     saveData();
     alert("Saved!");
     location.reload(); 
-};
-
-// --- MONTH END LEDGER LOGIC ---
-window.completeCycle = () => {
-    if(!confirm("🚀 Archive Month & Reset? All unpaid work moves to Debt.")) return;
-
-    let monthInc = db.customers.reduce((sum, c) => sum + n(c.paidThisMonth), 0);
-    let monthExp = db.expenses.reduce((sum, e) => sum + n(e.amt), 0);
-    let newDebt = db.customers.reduce((sum, c) => {
-        return sum + (c.cleaned ? Math.max(0, n(c.price) - n(c.paidThisMonth)) : 0);
-    }, 0);
-
-    db.history.unshift({
-        month: new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }),
-        income: monthInc,
-        spend: monthExp,
-        debtCreated: newDebt
-    });
-
-    db.customers.forEach(c => {
-        const balance = c.cleaned ? (n(c.price) - n(c.paidThisMonth)) : (0 - n(c.paidThisMonth));
-        if (balance > 0) {
-            if(!c.debtHistory) c.debtHistory = [];
-            c.debtHistory.push({ date: new Date().toLocaleDateString(), amount: balance });
-        }
-        c.cleaned = false;
-        c.paidThisMonth = 0;
-    });
-
-    db.expenses = []; 
-    saveData();
-    location.reload();
 };
 
 // --- RENDERING ---
@@ -171,6 +153,19 @@ window.addExpense = () => {
     if (!desc || amt <= 0) return;
     db.expenses.push({ desc, amt, date: new Date().toLocaleDateString() });
     saveData(); location.reload();
+};
+window.completeCycle = () => {
+    if(!confirm("🚀 Archive Month & Reset?")) return;
+    let mInc = db.customers.reduce((sum, c) => sum + n(c.paidThisMonth), 0);
+    let mExp = db.expenses.reduce((sum, e) => sum + n(e.amt), 0);
+    let nDebt = db.customers.reduce((sum, c) => sum + (c.cleaned ? Math.max(0, n(c.price) - n(c.paidThisMonth)) : 0), 0);
+    db.history.unshift({ month: new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }), income: mInc, spend: mExp, debtCreated: nDebt });
+    db.customers.forEach(c => {
+        const balance = c.cleaned ? (n(c.price) - n(c.paidThisMonth)) : (0 - n(c.paidThisMonth));
+        if (balance > 0) { if(!c.debtHistory) c.debtHistory = []; c.debtHistory.push({ date: new Date().toLocaleDateString(), amount: balance }); }
+        c.cleaned = false; c.paidThisMonth = 0;
+    });
+    db.expenses = []; saveData(); location.reload();
 };
 window.exportFullCSV = function() {
     let csv = "ID,Name,Address,Postcode,Phone,Price,Week,Day,Notes\n";
