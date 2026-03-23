@@ -4,21 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro v10.1</title>
-    <link rel="stylesheet" href="styles.css?v=101">
+    <title>Hydro Pro v10.2</title>
+    <link rel="stylesheet" href="styles.css?v=102">
 </head>
 <body class="light-mode">
 
     <div class="sticky-header">
-        <div class="mode-switch-wrapper">
-            <label class="ios-switch">
-                <input type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()">
-                <span class="slider"></span>
-            </label>
-        </div>
         <div class="header-top">
             <img src="Logo.png" class="logo-img" alt="Hydro Pro Logo">
         </div>
+
+        <div class="utility-row">
+            <div id="headerDate" class="date-txt"></div>
+            <div class="mode-switch-wrapper">
+                <label class="ios-switch">
+                    <input type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+        
         <div class="tabs">
             <button class="tab active" onclick="openTab(event, 'admin')">Setup</button>
             <button class="tab" onclick="openTab(event, 'master')">Custs</button>
@@ -32,8 +37,6 @@
     </div>
 
     <div class="main-container">
-        <div id="headerDate" class="date-txt"></div>
-
         <div id="globalSearchContainer" class="search-outer hidden">
             <input type="text" id="mainSearch" class="search-input-sleek" placeholder="🔍 Search customers..." oninput="handleSearch()">
         </div>
@@ -72,6 +75,7 @@
                 </div>
                 <textarea id="cNotes" placeholder="Notes (Dogs, Gates, Parking...)" style="margin-top:10px;"></textarea>
                 <button class="btn-main full-width-btn" onclick="saveCustomer()">💾 Save Customer</button>
+                
                 <div id="editActions" class="hidden" style="margin-top:10px;">
                     <button class="btn-danger full-width-btn" onclick="deleteCustomer()">🗑 Delete</button>
                     <button class="btn-neutral full-width-btn" style="margin-top:10px;" onclick="clearForm()">Cancel</button>
@@ -95,12 +99,10 @@
                 <button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL DATA</button>
             </div>
 
-            <div class="version-tag">v10.1 - Structural Rescue</div>
+            <div class="version-tag">v10.2 - Utility Row Restore</div>
         </div>
 
-        <div id="master" class="tab-content">
-            <div id="masterTableBody"></div>
-        </div>
+        <div id="master" class="tab-content"><div id="masterTableBody"></div></div>
         <div id="stats" class="tab-content"></div>
         <div id="spend" class="tab-content"></div>
         <div id="week1" class="tab-content"></div>
@@ -109,6 +111,6 @@
         <div id="week4" class="tab-content"></div>
     </div>
 
-    <script src="app.js?v=101"></script>
+    <script src="app.js?v=102"></script>
 </body>
 </html>
