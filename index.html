@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v11.4</title>
-    <link rel="stylesheet" href="styles.css?v=114">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Hydro Pro v11.5</title>
+    <link rel="stylesheet" href="styles.css?v=115">
 </head>
 <body class="light-mode">
 
@@ -18,7 +19,11 @@
                 </label>
             </div>
         </div>
-        <div class="date-container"><div id="headerDate" class="date-txt"></div></div>
+
+        <div class="date-container">
+            <div id="headerDate" class="date-txt"></div>
+        </div>
+        
         <div class="tabs">
             <button class="tab active" onclick="openTab(event, 'admin')">Setup</button>
             <button class="tab" onclick="openTab(event, 'master')">Custs</button>
@@ -37,60 +42,66 @@
         </div>
 
         <div id="admin" class="tab-content active">
-            <div id="setup-form-wrapper">
-                <div class="card">
-                    <h3 class="section-title">New Customer</h3>
-                    <input type="hidden" id="editId">
-                    <div class="input-stack force-stack">
-                        <input type="text" id="cName" placeholder="Full Name">
-                        <input type="text" id="cAddr" placeholder="Address">
-                        <input type="text" id="cPostcode" placeholder="Postcode">
-                        <input type="tel" id="cPhone" placeholder="Mobile Number">
-                        <input type="number" id="cPrice" placeholder="Price £">
-                    </div>
-                    <div class="grid-1x2">
-                        <select id="cWeek" class="large-select">
-                            <option value="1">Week 1</option><option value="2">Week 2</option>
-                            <option value="3">Week 3</option><option value="4">Week 4</option>
-                        </select>
-                        <select id="cDay" class="large-select">
-                            <option value="Monday">Monday</option><option value="Tuesday">Tuesday</option>
-                            <option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option>
-                            <option value="Friday">Friday</option>
-                        </select>
-                    </div>
-                    <textarea id="cNotes" placeholder="Notes..." class="premium-textarea"></textarea>
-                    <button class="btn-main full-width-btn" onclick="saveCustomer()">💾 Save Customer</button>
+            <div class="card">
+                <h3 class="section-title">New Customer</h3>
+                <input type="hidden" id="editId">
+                <div class="input-stack force-stack">
+                    <input type="text" id="cName" placeholder="Full Name">
+                    <input type="text" id="cAddr" placeholder="Address">
+                    <input type="text" id="cPostcode" placeholder="Postcode">
+                    <input type="tel" id="cPhone" placeholder="Mobile Number">
+                    <input type="number" id="cPrice" placeholder="Price £">
                 </div>
-
-                <div class="card">
-                    <h3 class="section-title">Database</h3>
-                    <div class="grid-1x2">
-                        <button class="btn-export-blue full-width-btn" onclick="exportFullCSV()">💾 Export</button>
-                        <button class="btn-import-yellow full-width-btn" onclick="document.getElementById('csvFile').click()">📂 Import</button>
-                    </div>
-                    <input type="file" id="csvFile" style="display:none;" onchange="importFullCSV(event)">
+                
+                <div class="label-heading">Schedule</div>
+                <div class="grid-1x2">
+                    <select id="cWeek" class="large-select">
+                        <option value="1">Week 1</option><option value="2">Week 2</option>
+                        <option value="3">Week 3</option><option value="4">Week 4</option>
+                    </select>
+                    <select id="cDay" class="large-select">
+                        <option value="Monday">Monday</option><option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                    </select>
                 </div>
-
-                <div class="card action-card-red">
-                    <button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL DATA</button>
-                </div>
+                <textarea id="cNotes" placeholder="Notes..." class="premium-textarea"></textarea>
+                <button class="btn-main full-width-btn" onclick="saveCustomer()">💾 Save Customer</button>
             </div>
-            <div class="version-tag">v11.4 - Logic Isolation</div>
+
+            <div class="card action-card-green">
+                <button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button>
+            </div>
+
+            <div class="card">
+                <h3 class="section-title">Database</h3>
+                <div class="grid-1x2">
+                    <button class="btn-export-blue full-width-btn" onclick="exportFullCSV()">💾 Export</button>
+                    <button class="btn-import-yellow full-width-btn" onclick="document.getElementById('csvFile').click()">📂 Import</button>
+                </div>
+                <input type="file" id="csvFile" style="display:none;" onchange="importFullCSV(event)">
+            </div>
+
+            <div class="card action-card-red">
+                <button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL DATA</button>
+            </div>
+            <div class="version-tag">v11.5 - Financial Ledger Build</div>
         </div>
 
         <div id="master" class="tab-content">
             <div id="masterTableBody"></div>
         </div>
-        
+
         <div id="stats" class="tab-content">
             <div class="card">
-                <h3 class="section-title">Financial Summary</h3>
-                <div class="stat-row"><span>Total Revenue:</span> <strong id="statRevenue">£0.00</strong></div>
-                <div class="stat-row"><span>Total Expenses:</span> <strong id="statSpend">£0.00</strong></div>
+                <h3 class="section-title">Monthly Summary</h3>
+                <div class="stat-row"><span>Income:</span> <strong id="currRevenue">£0.00</strong></div>
+                <div class="stat-row"><span>Expenses:</span> <strong id="currSpend">£0.00</strong></div>
+                <div class="stat-row"><span>New Debt:</span> <strong id="currDebt" style="color:var(--danger)">£0.00</strong></div>
                 <hr>
-                <div class="stat-row"><span>Net Profit:</span> <strong id="statProfit" style="color:var(--success)">£0.00</strong></div>
+                <div class="stat-row"><span>Net Position:</span> <strong id="currProfit" style="color:var(--success)">£0.00</strong></div>
             </div>
+            <div id="monthlyHistoryContainer"></div>
         </div>
 
         <div id="spend" class="tab-content">
@@ -111,6 +122,6 @@
         <div id="week4" class="tab-content"></div>
     </div>
 
-    <script src="app.js?v=114"></script>
+    <script src="app.js?v=115"></script>
 </body>
 </html>
