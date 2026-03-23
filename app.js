@@ -67,14 +67,15 @@ window.renderAll = function() {
 
 function updatePieChart(coll, owed, pend) {
     const total = coll + owed + pend;
-    if (total === 0) return;
-    const pColl = (coll / total) * 100;
-    const pOwed = (owed / total) * 100;
-    const pPend = (pend / total) * 100;
     const elColl = document.getElementById('pieCollected');
     const elOwed = document.getElementById('pieOwed');
     const elPend = document.getElementById('piePending');
-    if(!elColl || !elOwed || !elPend) return;
+    if(!elColl || total === 0) return;
+
+    const pColl = (coll / total) * 100;
+    const pOwed = (owed / total) * 100;
+    const pPend = (pend / total) * 100;
+
     elColl.setAttribute('stroke-dasharray', `${pColl} 100`);
     elColl.setAttribute('stroke-dashoffset', `0`);
     elOwed.setAttribute('stroke-dasharray', `${pOwed} 100`);
@@ -143,15 +144,13 @@ window.openCustomerModal = function(id) {
     document.getElementById('modOwed').style.color = totalOwed > 0 ? 'var(--danger)' : 'var(--stat-collected)';
     let ledgerHtml = "";
     const allMonths = [...new Set([...(c.debtHistory||[]).map(d=>d.month), ...(c.paymentHistory||[]).map(p=>p.month)])];
-    if(allMonths.length > 0) {
-        allMonths.forEach(m => {
-            const d = (c.debtHistory||[]).find(x => x.month === m);
-            const p = (c.paymentHistory||[]).find(x => x.month === m);
-            if(d) ledgerHtml += `<div class="ledger-row text-owed"><span>${m}</span><span>£${n(d.amount).toFixed(2)}</span></div>`;
-            else if(p) ledgerHtml += `<div class="ledger-row text-paid"><span>${m} PAID ✅</span><span>£${n(p.amount).toFixed(2)}</span></div>`;
-        });
-    } else { ledgerHtml = "<div style='opacity:0.5; text-align:center; padding:10px;'>No history found.</div>"; }
-    document.getElementById('ledgerBox').innerHTML = ledgerHtml;
+    allMonths.forEach(m => {
+        const d = (c.debtHistory||[]).find(x => x.month === m);
+        const p = (c.paymentHistory||[]).find(x => x.month === m);
+        if(d) ledgerHtml += `<div class="ledger-row text-owed"><span>${m}</span><span>£${n(d.amount).toFixed(2)}</span></div>`;
+        else if(p) ledgerHtml += `<div class="ledger-row text-paid"><span>${m} PAID ✅</span><span>£${n(p.amount).toFixed(2)}</span></div>`;
+    });
+    document.getElementById('ledgerBox').innerHTML = ledgerHtml || "<div style='opacity:0.5; text-align:center;'>No history.</div>";
     const statusBox = document.getElementById('modCurrentStatus');
     if (n(c.paidThisMonth) >= n(c.price)) statusBox.innerHTML = `<span class="text-paid">PAID ✅</span>`;
     else statusBox.innerHTML = `<span class="text-owed">OWED £${(n(c.price) - n(c.paidThisMonth)).toFixed(2)}</span>`;
@@ -159,7 +158,7 @@ window.openCustomerModal = function(id) {
 };
 
 window.completeCycle = function() {
-    if(!confirm("Start New Month? Unpaid moves to Debt.")) return;
+    if(!confirm("Start New Month? Unpaid current moves to debt.")) return;
     const label = new Date().toLocaleDateString('en-GB', {month:'short', year:'2-digit'});
     if (!db.incomeHistory) db.incomeHistory = [];
     db.incomeHistory.push({ month: label, amount: db.customers.reduce((s,c) => s + n(c.paidThisMonth), 0) });
@@ -182,7 +181,7 @@ window.processPayment = function(id) {
     const amt = prompt("Amount paid?", calculateTrueDebt(c).toFixed(2));
     if(amt === null) return;
     let pay = n(amt);
-    if(c.debtHistory && c.debtHistory.length > 0) {
+    if(c.debtHistory) {
         for(let i=0; i<c.debtHistory.length; i++) {
             if(pay <= 0) break;
             let owe = n(c.debtHistory[i].amount);
