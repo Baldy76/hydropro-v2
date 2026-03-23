@@ -25,16 +25,11 @@ window.onload = () => {
     renderAll();
 };
 
-// --- NAVIGATION HUB LOGIC ---
 window.openTab = (name) => {
-    // Hide all contents
     document.querySelectorAll(".tab-content").forEach(c => c.style.display = "none");
-    
-    // Show target
     const target = document.getElementById(name);
     if (target) target.style.display = "block";
     
-    // Global Back Button Logic
     const hubPages = ['home', 'weeksHub'];
     const navBar = document.getElementById('globalNav');
     if (navBar) {
@@ -46,7 +41,6 @@ window.openTab = (name) => {
 };
 
 window.handleBackNavigation = () => {
-    // Logic to determine if we go back to Weeks Hub or Home
     const activeWeek = Array.from(document.querySelectorAll('.tab-content'))
         .find(c => c.id.startsWith('week') && c.id !== 'weeksHub' && c.style.display === 'block');
     
@@ -54,7 +48,6 @@ window.handleBackNavigation = () => {
     else openTab('home');
 };
 
-// --- DATA INTEGRITY (v13.3 Baseline) ---
 window.saveCustomer = () => {
     const nameVal = document.getElementById('cName').value;
     if(!nameVal) return;
@@ -80,7 +73,6 @@ window.saveCustomer = () => {
 };
 
 window.renderWeekLists = () => {
-    // Loop updated for Weeks 1-5
     for (let i = 1; i <= 5; i++) {
         const container = document.getElementById(`week${i}`);
         if (!container) continue;
@@ -94,7 +86,6 @@ window.renderWeekLists = () => {
 
         weekCusts.forEach(c => {
             const isPaid = n(c.paidThisMonth) >= n(c.price);
-            const d = (c.debtHistory||[]).reduce((s,x)=>s+n(x.amount),0);
             const card = document.createElement('div');
             card.className = 'card';
             card.innerHTML = `
@@ -112,4 +103,9 @@ window.renderWeekLists = () => {
 
 window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); renderLedger(); };
 window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
-// Remaining functions (MarkAsPaid, Expenses, Archive) remain identical to v13.3
+window.toggleDarkMode = () => { const d = document.getElementById('darkModeToggle').checked; document.body.className = d ? 'dark-mode' : 'light-mode'; localStorage.setItem('Hydro_Dark_Pref', d); };
+window.updateGreeting = () => {
+    const hr = new Date().getHours();
+    let g = (hr < 12) ? "Good Morning, Jonathan! ☕" : (hr < 18) ? "Good Afternoon, Jonathan! ☀️" : "Good Evening, Jonathan! 🌙";
+    document.getElementById('greetingMsg').innerText = g;
+};
