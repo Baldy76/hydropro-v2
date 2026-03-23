@@ -1,4 +1,4 @@
-// NAVIGATION
+// 1. NAVIGATION ENGINE
 window.openTab = function(evt, name) {
     const contents = document.getElementsByClassName("tab-content");
     for (let i = 0; i < contents.length; i++) contents[i].classList.remove("active");
@@ -9,7 +9,7 @@ window.openTab = function(evt, name) {
     window.scrollTo(0,0);
 };
 
-// DATA ENGINE
+// 2. DATA ENGINE
 const MASTER_KEY = 'HydroPro_App_Production';
 let db = JSON.parse(localStorage.getItem(MASTER_KEY)) || { 
     customers: [], incomeHistory: [], expenses: [], bank: {name:'', sort:'', acc:''} 
@@ -27,7 +27,7 @@ window.calculateTrueDebt = function(c) {
     return Math.max(0, past + current);
 };
 
-// UI RENDERING
+// 3. UI RENDERING
 window.renderAll = function() {
     window.renderWeeks();
     window.renderMasterTable();
@@ -50,7 +50,7 @@ window.renderWeeks = function() {
                 <div class="card-action-grid">
                     <button class="icon-btn-small" onclick="window.open('http://maps.apple.com/?q=${encodeURIComponent(c.address)}')">📍 Map</button>
                     <button class="icon-btn-small" onclick="editCustomer('${c.id}')">⚙️ Edit</button>
-                    <button class="icon-btn-small ${c.cleaned?'is-done':''}" onclick="markJobAsCleaned('${c.id}')">${c.cleaned?'Done ✅':'Clean'}</button>
+                    <button class="icon-btn-small ${c.cleaned?'wa-btn':''}" onclick="markJobAsCleaned('${c.id}')">${c.cleaned?'Done ✅':'Clean'}</button>
                     <button class="btn-main" onclick="processPayment('${c.id}')">£${debt.toFixed(2)} Pay</button>
                     <button class="icon-btn-small wa-btn" onclick="sendReminder('${c.id}','whatsapp')">💬 WA</button>
                     <button class="icon-btn-small sms-btn" onclick="sendReminder('${c.id}','sms')">📱 SMS</button>
@@ -65,12 +65,12 @@ window.renderMasterTable = function() {
     const body = document.getElementById('masterTableBody');
     if(!body) return; body.innerHTML = '';
     [...db.customers].sort((a,b) => a.name.localeCompare(b.name)).forEach(c => {
-        if(c.name.toLowerCase().includes(s) || c.address.toLowerCase().includes(s)) {
+        if(c.name.toLowerCase().includes(s) || (c.address||"").toLowerCase().includes(s)) {
             const debt = calculateTrueDebt(c);
             const tr = document.createElement('tr');
             tr.onclick = () => openCustomerModal(c.id);
             tr.innerHTML = `<td style="padding:15px;"><strong>${c.name}</strong><br><small>${c.address}</small></td>
-                            <td style="padding:15px; text-align:right; font-weight:900;">£${debt.toFixed(2)}</td>`;
+                            <td style="padding:15px; text-align:right; font-weight:900; color:${debt>0?'var(--stat-owed)':'#000'}">£${debt.toFixed(2)}</td>`;
             body.appendChild(tr);
         }
     });
@@ -84,7 +84,35 @@ window.renderStats = function() {
     document.getElementById('statPendingMonth').innerText = '£' + Math.max(0, projM - collM - owedM).toFixed(2);
 };
 
-// CORE ACTIONS
+// 4. SMART BANK TOGGLE ACTION
+window.handleBankAction = function() {
+    const btn = document.getElementById('btnBankAction');
+    const fields = ['bName', 'bSort', 'bAcc'];
+    const isLocked = document.getElementById('bName').disabled;
+
+    if (isLocked) {
+        // STATE: UNLOCKING
+        fields.forEach(id => document.getElementById(id).disabled = false);
+        btn.innerText = "🔒 Save & Lock Details";
+        btn.classList.remove('btn-alt');
+        btn.classList.add('btn-save-state');
+        document.getElementById('bName').focus();
+    } else {
+        // STATE: SAVING & LOCKING
+        db.bank = {
+            name: document.getElementById('bName').value,
+            sort: document.getElementById('bSort').value,
+            acc: document.getElementById('bAcc').value
+        };
+        fields.forEach(id => document.getElementById(id).disabled = true);
+        btn.innerText = "🔓 Edit Bank Details";
+        btn.classList.remove('btn-save-state');
+        btn.classList.add('btn-alt');
+        window.saveData();
+    }
+};
+
+// 5. CORE ACTIONS
 window.saveCustomer = function() {
     const id = document.getElementById('editId').value || Date.now();
     const name = document.getElementById('cName').value;
@@ -115,8 +143,7 @@ window.editCustomer = function(id) {
 
 window.clearForm = function() { 
     ['editId','cName','cAddr','cPostcode','cPhone','cPrice','cNotes'].forEach(id => {
-        const el = document.getElementById(id);
-        if(el) el.value = '';
+        const el = document.getElementById(id); if(el) el.value = '';
     }); 
     document.getElementById('editActions').classList.add('hidden'); 
     document.getElementById('formTitle').innerText = "Customer Entry"; 
@@ -133,24 +160,30 @@ window.onload = () => {
     const isDark = localStorage.getItem('Hydro_Dark_Pref') === 'true';
     document.body.className = isDark ? 'dark-mode' : 'light-mode';
     document.getElementById('darkModeToggle').checked = isDark;
+    
+    // Load Bank Info
+    const b = db.bank || {}; 
+    document.getElementById('bName').value = b.name || ''; 
+    document.getElementById('bSort').value = b.sort || ''; 
+    document.getElementById('bAcc').value = b.acc || '';
+
     window.clearForm();
     window.renderAll();
 };
 
 window.deleteCustomer = function() {
     const id = document.getElementById('editId').value;
-    if(!id) return;
-    if(confirm("Delete this customer permanently?")) {
-        db.customers = db.customers.filter(c => String(c.id) !== String(id));
-        window.clearForm(); window.saveData(); window.openTab(null, 'master');
-    }
+    if(!id || !confirm("Delete this customer permanently?")) return;
+    db.customers = db.customers.filter(c => String(c.id) !== String(id));
+    window.clearForm(); window.saveData(); window.openTab(null, 'master');
 };
 
 window.sendReminder = function(id, type) {
     const c = db.customers.find(x => String(x.id) === String(id));
     if(!c) return;
     const b = db.bank || {name:'', sort:'', acc:''};
-    const msg = `Hey ${c.name}, just to let you know that your windows were washed today at ${c.address}, ${c.postcode || ''}. Please find my bank details below if you wish to pay via bank transfer of £${n(c.price).toFixed(2)}. Thanks for your business Jonathan@Hydro\n\nBank: ${b.name}\nSort: ${b.sort}\nAcc: ${b.acc}`;
+    const bankStr = b.name ? `\n\nBank Details:\nAccount: ${b.name}\nSort Code: ${b.sort}\nAccount No: ${b.acc}` : "";
+    const msg = `Hey ${c.name}, just to let you know that your windows were washed today at ${c.address}, ${c.postcode || ''}. Please find my bank details below if you wish to pay via bank transfer of £${n(c.price).toFixed(2)}. Thanks for your business Jonathan@Hydro${bankStr}`;
     const encoded = encodeURIComponent(msg), phone = c.phone.replace(/\s+/g, '');
     if (type === 'whatsapp') { window.location.href = `https://wa.me/${phone}?text=${encoded}`; }
     else { window.location.href = `sms:${phone}${/iPhone/i.test(navigator.userAgent)?'&':'?'}body=${encoded}`; }
@@ -161,8 +194,6 @@ window.processPayment = function(id) { const c = db.customers.find(x => String(x
 window.completeCycle = function() { if(!confirm("Start New Month? Debt carries forward.")) return; const label = new Date().toLocaleDateString('en-GB', {month:'short'}); db.incomeHistory.push({ month: label, amount: db.customers.reduce((s,c) => s + n(c.paidThisMonth), 0) }); db.customers.forEach(c => { const o = calculateTrueDebt(c); if(o > 0) { c.debtHistory = c.debtHistory || []; c.debtHistory.push({ month: label, amount: o }); } c.cleaned = false; c.paidThisMonth = 0; }); window.saveData(); };
 window.exportCSV = function() { let csv = "Name,Address,Price\n" + db.customers.map(c => `"${c.name}","${c.address}",${n(c.price)}`).join("\n"); const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); link.download = "Hydro_Backup.csv"; link.click(); };
 window.importCSV = function(e) { const r = new FileReader(); r.onload = (ev) => { const l = ev.target.result.split('\n'); l.slice(1).forEach(line => { const cols = line.split(',').map(c => c.replace(/"/g, '').trim()); if(cols.length >= 3) db.customers.push({ id: Date.now()+Math.random(), name: cols[0], address: cols[1], price: n(cols[2]), cleaned: false, paidThisMonth: 0, debtHistory: [] }); }); window.saveData(); }; r.readAsText(e.target.files[0]); };
-window.unlockBank = function() { ['bName','bSort','bAcc'].forEach(id => document.getElementById(id).disabled = false); document.getElementById('editBankBtn').classList.add('hidden'); document.getElementById('btnBankSave').classList.remove('hidden'); };
-window.lockAndSaveBank = function() { db.bank = { name: document.getElementById('bName').value, sort: document.getElementById('bSort').value, acc: document.getElementById('bAcc').value }; ['bName','bSort','bAcc'].forEach(id => document.getElementById(id).disabled = true); document.getElementById('editBankBtn').classList.remove('hidden'); document.getElementById('btnBankSave').classList.add('hidden'); window.saveData(); };
 window.openCustomerModal = function(id) { const c = db.customers.find(x => String(x.id) === String(id)); document.getElementById('modName').innerText = c.name; document.getElementById('modAddr').innerText = (c.address || "") + " " + (c.postcode || ""); document.getElementById('modOwed').innerText = '£' + calculateTrueDebt(c).toFixed(2); document.getElementById('customerModal').style.display = 'flex'; };
 window.closeCustomerModal = function() { document.getElementById('customerModal').style.display = 'none'; };
 window.runUATClear = function() { if(confirm("WIPE EVERYTHING?")) { localStorage.clear(); location.reload(); } };
