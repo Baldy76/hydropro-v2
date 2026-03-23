@@ -60,18 +60,20 @@
                 <textarea id="cNotes" placeholder="Notes (Gates, Dogs etc)"></textarea>
                 <button class="btn-main full-width-btn" onclick="saveCustomer()">💾 Save Customer</button>
                 
-                <button id="btnDeleteCust" class="btn-danger full-width-btn" style="display:none; margin-top:10px;" onclick="deleteCustomer()">🗑 Delete Customer</button>
-                <button id="cancelEdit" class="btn-neutral full-width-btn" style="display:none; margin-top:10px;" onclick="clearForm()">Cancel Edit</button>
+                <div id="editActions" class="hidden">
+                    <button id="btnDeleteCust" class="btn-danger full-width-btn" style="margin-top:10px;" onclick="deleteCustomer()">🗑 Delete Customer</button>
+                    <button id="cancelEdit" class="btn-neutral full-width-btn" style="margin-top:10px;" onclick="clearForm()">Cancel Edit</button>
+                </div>
             </div>
 
-            <div class="card" style="background: rgba(235, 51, 73, 0.05);">
+            <div class="card month-action-card">
                 <button class="btn-danger full-width-btn" style="height:65px;" onclick="completeCycle()">🚀 START NEW MONTH</button>
             </div>
 
             <div class="card">
                 <h3>Bank Details</h3>
                 <button class="btn-alt full-width-btn" id="editBankBtn" onclick="unlockBank()">🔓 Edit Bank Details</button>
-                <button id="btnBankSave" class="btn-main full-width-btn" style="display:none; margin-bottom:12px;" onclick="lockAndSaveBank()">🔒 Save & Lock</button>
+                <button id="btnBankSave" class="btn-main full-width-btn hidden" style="margin-bottom:12px;" onclick="lockAndSaveBank()">🔒 Save & Lock</button>
                 <input type="text" id="bName" placeholder="Account Name" disabled>
                 <input type="text" id="bSort" placeholder="Sort Code" disabled>
                 <input type="text" id="bAcc" placeholder="Account Number" disabled>
@@ -104,7 +106,7 @@
 
         <div id="stats" class="tab-content">
             <div class="card">
-                <h3 style="text-align:center; margin-bottom:15px;">This Month</h3>
+                <h3 style="text-align:center;">This Month</h3>
                 <div class="stats-grid">
                     <div class="metric-tile tile-collected">Revenue<br><strong id="statCollMonth">£0</strong></div>
                     <div class="metric-tile tile-owed">Owed<br><strong id="statOwedMonth">£0</strong></div>
@@ -113,21 +115,12 @@
                 <div id="pieMonth" class="pie" style="margin-top:25px;"></div>
                 <div id="legendMonth" class="legend"></div>
             </div>
-            <div class="card">
-                <h3 style="text-align:center;">Overall</h3>
-                <div id="pieOverall" class="pie"></div>
-                <div id="legendOverall" class="legend"></div>
-                <div class="fy-box">
-                    <div style="display:flex; justify-content:space-between"><span>FY REVENUE</span><strong id="statFYTotal">£0</strong></div>
-                    <table style="width:100%; margin-top:10px;"><tbody id="quarterlyTableBody"></tbody></table>
-                </div>
-            </div>
         </div>
 
         <div id="spend" class="tab-content">
             <div class="card">
                 <h3>Log Expense</h3>
-                <input type="text" id="expName" placeholder="Item Name">
+                <input type="text" id="expName" placeholder="Item">
                 <input type="number" id="expAmount" placeholder="Amount £">
                 <button class="btn-main full-width-btn" onclick="addExpense()">Add Expense</button>
             </div>
@@ -136,20 +129,6 @@
 
         <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div>
         <div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div>
-    </div>
-
-    <div id="customerModal" class="modal-overlay" onclick="if(event.target === this) closeCustomerModal()">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeCustomerModal()">✖</button>
-            <div id="modName" style="font-size:20px; font-weight:900; color:var(--primary);"></div>
-            <p id="modAddr" style="opacity:0.6; font-size:14px;"></p>
-            <div class="history-container"><table id="modHistoryTable" style="width:100%;"></table></div>
-            <div style="text-align:right; margin-top:15px; padding:15px; background:rgba(0,0,0,0.03); border-radius:12px;">
-                <small style="font-weight:800; opacity:0.5;">TOTAL OUTSTANDING:</small><br>
-                <span id="modOwed" style="font-size:28px; font-weight:900;"></span>
-            </div>
-            <button class="btn-alt" style="margin-top:15px;" onclick="editFromModal()">⚙️ Edit Details</button>
-        </div>
     </div>
 
     <script src="app.js"></script>
