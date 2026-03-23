@@ -1,5 +1,4 @@
 const MASTER_KEY = 'HydroPro_App_Production';
-const BANK_DETAILS = "Bank: Monzo\nAcc: 12345678\nSort: 00-00-00"; 
 let db = { customers: [], expenses: [], history: [] }; 
 const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 
@@ -46,7 +45,6 @@ window.openTab = (evt, name) => {
     renderAll();
 };
 
-// --- DATA INTEGRITY FIX: SAVE CUSTOMER ---
 window.saveCustomer = () => {
     const nameVal = document.getElementById('cName').value;
     if(!nameVal) { alert("Enter Name"); return; }
@@ -66,7 +64,7 @@ window.saveCustomer = () => {
     };
 
     if(idx > -1) {
-        db.customers[idx] = entry; // Direct replacement to prevent duplicates
+        db.customers[idx] = entry; 
     } else {
         db.customers.push(entry);
     }
@@ -74,7 +72,6 @@ window.saveCustomer = () => {
     saveData(); alert("Saved!"); location.reload(); 
 };
 
-// --- MODALS ---
 window.showIncomeModal = () => {
     const body = document.getElementById('modalContentBody');
     let html = '<h3 class="section-title">💸 Collections Log</h3>';
@@ -114,7 +111,6 @@ window.showArrearsModal = () => {
 
 window.closeModal = () => document.getElementById('globalModal').style.display = 'none';
 
-// --- WORKFLOW HANDLERS ---
 window.toggleCleaned = (id) => {
     const c = db.customers.find(x => x.id === id); if (!c) return;
     c.cleaned = !c.cleaned; saveData(); renderWeekLists();
@@ -152,7 +148,6 @@ window.handleDebtCollection = (id) => {
     saveData(); renderWeekLists(); renderStats();
 };
 
-// --- STATS CALIBRATION ---
 window.renderStats = () => {
     const curMonth = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
     if(document.getElementById('statsMonthTitle')) document.getElementById('statsMonthTitle').innerText = `${curMonth} Summary`;
@@ -217,7 +212,8 @@ window.renderMasterTable = () => {
 };
 
 window.renderWeekLists = () => {
-    for (let i = 1; i <= 4; i++) {
+    // Loop updated to 5 weeks
+    for (let i = 1; i <= 5; i++) {
         const container = document.getElementById(`week${i}`); if (!container) continue;
         container.innerHTML = '';
         const weekCusts = db.customers.filter(c => c.week == i);
