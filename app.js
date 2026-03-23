@@ -1,88 +1,258 @@
-:root { 
-    --primary: #1c1c1e; --accent: #007aff; --danger: #ff3b30; --success: #34c759;
-    --bg: #f2f2f7; --card-bg: #ffffff; --input-bg: #f2f2f7; --text: #000000;
-    --shadow: 0 4px 12px rgba(0,0,0,0.08);
-    /* Custom Colors */
-    --export-blue: #add8e6;
-    --import-yellow: #fff9c4;
+const MASTER_KEY = 'HydroPro_App_Production';
+let db = { customers: [], incomeHistory: [], expenses: [], bank: {name:'', sort:'', acc:''} };
+let activeMsgId = null;
+
+const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
+
+// --- BOOT ENGINE ---
+window.onload = () => {
+    // 1. PRIORITY: Render Date
+    const dateElement = document.getElementById('headerDate');
+    if (dateElement) {
+        const now = new Date();
+        const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+        dateElement.innerText = now.toLocaleDateString('en-GB', options);
+    }
+
+    // 2. Load Data
+    const saved = localStorage.getItem(MASTER_KEY);
+    if (saved) {
+        try { db = JSON.parse(saved); } catch (e) { console.error("Data error"); }
+    }
+    
+    if (!db.customers) db.customers = [];
+    if (!db.incomeHistory) db.incomeHistory = [];
+    if (!db.expenses) db.expenses = [];
+    
+    // 3. Dark Mode
+    const isDark = localStorage.getItem('Hydro_Dark_Pref') === 'true';
+    document.body.className = isDark ? 'dark-mode' : 'light-mode';
+    if (document.getElementById('darkModeToggle')) document.getElementById('darkModeToggle').checked = isDark;
+    
+    renderAll();
+};
+
+// --- TAB ENGINE ---
+window.openTab = function(evt, name) {
+    const contents = document.getElementsByClassName("tab-content");
+    for (let i = 0; i < contents.length; i++) {
+        contents[i].style.display = "none";
+        contents[i].classList.remove("active");
+    }
+    const tabs = document.getElementsByClassName("tab");
+    for (let i = 0; i < tabs.length; i++) { tabs[i].classList.remove("active"); }
+    const target = document.getElementById(name);
+    if (target) {
+        target.style.display = "block";
+        target.classList.add("active");
+    }
+    if (evt) evt.currentTarget.classList.add("active");
+    renderAll();
+    window.scrollTo(0,0);
+};
+
+// --- RENDERERS ---
+window.renderAll = function() {
+    renderWeeks();
+    renderMasterTable();
+    renderStats();
+    renderExpenses();
+};
+
+window.renderWeeks = function() {
+    for(let i=1; i<=4; i++) {
+        const div = document.getElementById('week' + i);
+        if(!div) continue; div.innerHTML = '';
+        db.customers.filter(c => String(c.week) === String(i)).forEach(c => {
+            const debt = calculateTrueDebt(c);
+            const isCleaned = c.cleaned;
+            let card = document.createElement('div');
+            card.className = `customer-card fade-in ${debt > 0 ? 'has-debt' : ''}`;
+            card.innerHTML = `
+                <div class="card-status-bar"></div>
+                <div class="card-main-content" onclick="openCustomerModal('${c.id}')">
+                    <div class="card-title-row">
+                        <span class="card-name">${c.name}</span>
+                        <span class="card-price">£${n(c.price).toFixed(2)}</span>
+                    </div>
+                    <span class="card-addr">${c.address}</span>
+                </div>
+                <div class="card-actions-wrapper">
+                    <div class="action-sub-grid">
+                        <button class="btn-admin-small full-width-btn" onclick="openMessageTemplates('${c.id}')">💬 Message</button>
+                        <button class="btn-admin-small full-width-btn" onclick="editCustomer('${c.id}')">⚙️ Edit</button>
+                    </div>
+                    <div class="action-sub-grid">
+                        <button class="btn-main btn-work" onclick="markJobAsCleaned('${c.id}')">${isCleaned?'Done ✅':'Clean'}</button>
+                        <button class="btn-alt btn-work" onclick="processPayment('${c.id}')">Payment</button>
+                    </div>
+                </div>`;
+            div.appendChild(card);
+        });
+    }
+};
+
+window.renderMasterTable = function() {
+    const body = document.getElementById('masterTableBody');
+    if(!body) return; body.innerHTML = '';
+    const search = (document.getElementById('mainSearch').value || "").toLowerCase().trim();
+    [...db.customers].sort((a,b) => a.name.localeCompare(b.name)).forEach(c => {
+        if(search === "" || c.name.toLowerCase().includes(search) || c.address.toLowerCase().includes(search)) {
+            const debt = calculateTrueDebt(c);
+            const row = document.createElement('div');
+            row.className = 'master-row-card';
+            row.style = "padding:15px 20px; border-bottom:1px solid rgba(0,0,0,0.05); display:flex; justify-content:space-between; align-items:center;";
+            row.onclick = () => openCustomerModal(c.id);
+            row.innerHTML = `
+                <div>
+                    <div style="font-weight:700; font-size:16px;">${c.name}</div>
+                    <div style="font-size:13px; opacity:0.5;">${c.address}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-weight:800; color:${debt > 0 ? 'var(--danger)' : 'var(--success)'}; font-size:18px;">£${debt.toFixed(2)}</div>
+                    <small style="font-size:10px; opacity:0.4; font-weight:700;">BALANCE</small>
+                </div>`;
+            body.appendChild(row);
+        }
+    });
+};
+
+window.renderStats = function() {
+    let collM = 0, owedM = 0, projM = 0;
+    db.customers.forEach(c => { 
+        projM += n(c.price); collM += n(c.paidThisMonth); 
+        if(c.cleaned) owedM += Math.max(0, n(c.price)-n(c.paidThisMonth)); 
+    });
+    let pendM = Math.max(0, projM - collM - owedM);
+    let totalExp = (db.expenses||[]).reduce((s, e) => s + n(e.amt), 0);
+
+    if(document.getElementById('statGross')) document.getElementById('statGross').innerText = '£' + collM.toFixed(2);
+    if(document.getElementById('statExp')) document.getElementById('statExp').innerText = '£' + totalExp.toFixed(2);
+    if(document.getElementById('statNet')) document.getElementById('statNet').innerText = '£' + (collM - totalExp).toFixed(2);
+    updatePieChart(collM, owedM, pendM);
+};
+
+// --- LOGIC ---
+window.saveData = function() { localStorage.setItem(MASTER_KEY, JSON.stringify(db)); renderAll(); };
+
+window.calculateTrueDebt = function(c) {
+    if (!c) return 0;
+    const past = (c.debtHistory || []).reduce((s, e) => s + n(e.amount), 0);
+    const current = c.cleaned ? (n(c.price) - n(c.paidThisMonth)) : (0 - n(c.paidThisMonth));
+    return Math.max(0, past + current);
+};
+
+window.saveCustomer = function() {
+    const id = document.getElementById('editId').value || Date.now();
+    const name = document.getElementById('cName').value; if(!name) return;
+    const entry = { id: id, name: name, address: document.getElementById('cAddr').value, postcode: document.getElementById('cPostcode').value, phone: document.getElementById('cPhone').value, price: n(document.getElementById('cPrice').value), week: document.getElementById('cWeek').value, freq: document.getElementById('cFreq').value, day: "Monday", notes: "", cleaned: false, paidThisMonth: 0, debtHistory: [], paymentHistory: [], nextDue: '' };
+    const idx = db.customers.findIndex(x => String(x.id) === String(id));
+    if(idx > -1) { 
+        const old = db.customers[idx];
+        entry.cleaned = old.cleaned; entry.paidThisMonth = old.paidThisMonth; 
+        entry.debtHistory = old.debtHistory || []; entry.paymentHistory = old.paymentHistory || [];
+        db.customers[idx] = entry; 
+    } else { db.customers.push(entry); }
+    clearForm(); saveData(); openTab(null, 'master');
+};
+
+window.editCustomer = function(id) { 
+    const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return; 
+    document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cAddr').value = c.address;
+    document.getElementById('cPrice').value = c.price; document.getElementById('cWeek').value = c.week; document.getElementById('cFreq').value = c.freq || "4";
+    document.getElementById('editActions').classList.remove('hidden'); openTab(null, 'admin'); 
+};
+
+window.clearForm = function() { ['editId','cName','cAddr','cPostcode','cPhone','cPrice'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; }); document.getElementById('editActions').classList.add('hidden'); };
+
+window.markJobAsCleaned = function(id) {
+    const c = db.customers.find(x => String(x.id) === String(id));
+    if(c) {
+        c.cleaned = true;
+        const next = new Date();
+        next.setDate(next.getDate() + ((n(c.freq) || 4) * 7));
+        c.nextDue = next.toLocaleDateString('en-GB', {day:'numeric', month:'short'});
+        saveData();
+    }
+};
+
+window.processPayment = function(id) {
+    const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return;
+    const amt = prompt("Amount paid?", calculateTrueDebt(c).toFixed(2));
+    if(amt === null) return;
+    let pay = n(amt);
+    if(c.debtHistory) {
+        for(let i=0; i<c.debtHistory.length; i++) {
+            if(pay <= 0) break;
+            let owe = n(c.debtHistory[i].amount);
+            if(pay >= owe) { pay -= owe; c.debtHistory[i].amount = 0; }
+            else { c.debtHistory[i].amount = owe - pay; pay = 0; }
+        }
+        c.debtHistory = c.debtHistory.filter(h => n(h.amount) > 0);
+    }
+    c.paidThisMonth += pay; saveData();
+};
+
+window.exportFullCSV = function() {
+    let csv = "ID,Name,Address,Postcode,Phone,Price,Week,Freq,Day,Notes,Cleaned,PaidThisMonth,DebtHistory,PaymentHistory,NextDue\n";
+    db.customers.forEach(c => {
+        csv += `${c.id},"${c.name}","${c.address}","${c.postcode}","${c.phone}",${n(c.price)},${c.week},${c.freq},"${c.day||''}","${c.notes||''}",${c.cleaned?1:0},${n(c.paidThisMonth)},"${JSON.stringify(c.debtHistory||[]).replace(/"/g, '""')}","${JSON.stringify(c.paymentHistory||[]).replace(/"/g, '""')}","${c.nextDue}"\n`;
+    });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+    link.download = `HydroPro_Backup.csv`;
+    link.click();
+};
+
+window.importFullCSV = function(e) {
+    const r = new FileReader(); r.onload = (ev) => {
+        const lines = ev.target.result.split(/\r?\n/);
+        if(lines.length <= 1) return;
+        db.customers = [];
+        lines.slice(1).forEach(l => {
+            if(!l.trim()) return;
+            const cols = l.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g).map(v => v.replace(/^"|"$/g, '').replace(/""/g, '"'));
+            if(cols.length < 5) return;
+            db.customers.push({ id:cols[0], name:cols[1], address:cols[2], postcode:cols[3], phone:cols[4], price:n(cols[5]), week:cols[6], freq:cols[7], day:cols[8], notes:cols[9], cleaned:cols[10]=="1", paidThisMonth:n(cols[11]), debtHistory:JSON.parse(cols[12]||"[]"), paymentHistory:JSON.parse(cols[13]||"[]"), nextDue:cols[14] });
+        });
+        saveData(); location.reload();
+    };
+    r.readAsText(e.target.files[0]);
+};
+
+window.runUATClear = function() { if(confirm("ARE YOU SURE? This will WIPE ALL DATA permanently!")) { localStorage.clear(); location.reload(); } };
+window.toggleDarkMode = function() { const isDark = document.getElementById('darkModeToggle').checked; document.body.className = isDark ? 'dark-mode' : 'light-mode'; localStorage.setItem('Hydro_Dark_Pref', isDark); };
+window.handleSearch = function() { renderMasterTable(); };
+window.openMessageTemplates = function(id) { activeMsgId = id; document.getElementById('msgModal').style.display = 'flex'; };
+window.executeMessage = function(type) {
+    const c = db.customers.find(x => String(x.id) === String(activeMsgId));
+    if(!c) return;
+    const b = db.bank || {name:'', sort:'', acc:''};
+    let msg = type === 'coming' ? `Hey ${c.name}, coming tomorrow to wash windows at ${c.address}. Jonathan @Hydro` : `Hey ${c.name}, windows cleaned! Total: £${calculateTrueDebt(c).toFixed(2)}. Bank: ${b.name}, Sort: ${b.sort}, Acc: ${b.acc}. Jonathan @Hydro`;
+    window.location.href = `https://wa.me/${c.phone.replace(/\s+/g, '')}?text=${encodeURIComponent(msg)}`;
+    document.getElementById('msgModal').style.display = 'none';
+};
+window.openCustomerModal = function(id) {
+    const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return;
+    document.getElementById('modName').innerText = c.name;
+    document.getElementById('modAddr').innerText = c.address;
+    document.getElementById('modOwed').innerText = '£' + calculateTrueDebt(c).toFixed(2);
+    document.getElementById('customerModal').style.display = 'flex';
+};
+window.closeCustomerModal = function() { document.getElementById('customerModal').style.display = 'none'; };
+function updatePieChart(coll, owed, pend) {
+    const total = coll + owed + pend;
+    const elColl = document.getElementById('pieCollected');
+    const elOwed = document.getElementById('pieOwed');
+    const elPend = document.getElementById('piePending');
+    if(!elColl || total === 0) return;
+    const pColl = (coll / total) * 100;
+    const pOwed = (owed / total) * 100;
+    const pPend = (pend / total) * 100;
+    elColl.setAttribute('stroke-dasharray', `${pColl} 100`);
+    elColl.setAttribute('stroke-dashoffset', `0`);
+    elOwed.setAttribute('stroke-dasharray', `${pOwed} 100`);
+    elOwed.setAttribute('stroke-dashoffset', `-${pColl}`);
+    elPend.setAttribute('stroke-dasharray', `${pPend} 100`);
+    elPend.setAttribute('stroke-dashoffset', `-${pColl + pOwed}`);
 }
-body.dark-mode { 
-    --bg: #000000; --card-bg: #1c1c1e; --input-bg: #2c2c2e; --text: #ffffff; 
-}
-
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
-
-/* LOGO & HEADER - DOUBLED SIZE */
-.sticky-header { 
-    position: sticky; top: 0; background: var(--bg); z-index: 9999; 
-    padding: 15px 0; border-bottom: 1px solid rgba(0,0,0,0.1);
-    pointer-events: none;
-}
-.header-top, .tabs, .mode-switch-wrapper { pointer-events: auto; }
-
-.header-top { 
-    display: flex; justify-content: center; align-items: center;
-    height: 120px; /* Doubled height */
-    margin-bottom: 10px; 
-}
-.logo-img { 
-    max-height: 110px; /* Doubled max-height */
-    width: auto; object-fit: contain; display: block;
-}
-
-.mode-switch-wrapper { position: absolute; right: 15px; top: 25px; z-index: 10001; }
-.ios-switch { position: relative; display: inline-block; width: 46px; height: 26px; }
-.ios-switch input { opacity: 0; width: 0; height: 0; }
-.slider { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #d1d1d6; transition: .3s; border-radius: 34px; }
-.slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 2px; bottom: 2px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-input:checked + .slider { background-color: var(--success); }
-input:checked + .slider:before { transform: translateX(20px); }
-
-.tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 0 12px; }
-.tab { background: rgba(0,0,0,0.06); border: none; height: 38px; border-radius: 10px; font-size: 11px; font-weight: 700; color: #8e8e93; }
-.tab.active { background: var(--accent); color: white; }
-
-/* TAB ISOLATION */
-.tab-content { display: none; }
-.tab-content.active { display: block !important; }
-.main-container { max-width: 500px; margin: 0 auto; padding: 15px; }
-.card { background: var(--card-bg); padding: 22px; border-radius: 20px; box-shadow: var(--shadow); margin-bottom: 15px; }
-.no-padding { padding: 0 !important; }
-.overflow-hidden { overflow: hidden; }
-
-/* ACTION CARDS */
-.action-card-green { background: linear-gradient(135deg, #28a745, #34c759); padding: 8px; border: none; }
-.action-card-red { background: linear-gradient(135deg, #dc3545, #ff3b30); padding: 8px; border: none; }
-.btn-clear { background: transparent; color: white; font-weight: 900; border: none; width: 100%; height: 52px; cursor: pointer; }
-
-/* DATABASE BUTTONS */
-.btn-export-blue { background-color: var(--export-blue); color: #000; }
-.btn-import-yellow { background-color: var(--import-yellow); color: #000; }
-
-/* FORMS & BUTTONS */
-.input-stack input, select, textarea { background: var(--input-bg); border: 1px solid rgba(0,0,0,0.05); margin-bottom: 8px; padding: 14px; border-radius: 12px; width: 100%; font-size: 16px; color: var(--text); -webkit-appearance: none; }
-.btn-main { background: var(--accent); color: white; margin-top: 10px; }
-.btn-danger { background: var(--danger); color: white; }
-.btn-neutral { background: #8e8e93; color: white; }
-.full-width-btn { width: 100%; height: 52px; border-radius: 14px; font-weight: 700; border: none; cursor: pointer; }
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-/* REST OF UI */
-.section-title { font-size: 18px; font-weight: 700; margin-bottom: 15px; }
-.label-heading { font-size: 11px; font-weight: 800; text-transform: uppercase; opacity: 0.4; margin: 15px 0 8px 5px; }
-.date-txt { text-align: center; font-weight: 900; color: var(--accent); margin: 15px 0; text-transform: uppercase; font-size: 13px; letter-spacing: 1px; min-height: 1.2em; }
-.version-tag { text-align: center; font-size: 10px; opacity: 0.3; padding: 20px; }
-.hidden { display: none !important; }
-
-/* JOB CARDS */
-.customer-card { background: var(--card-bg); border-radius: 20px; margin-bottom: 16px; overflow: hidden; border: 1px solid rgba(0,0,0,0.05); }
-.card-status-bar { height: 4px; width: 100%; background: var(--success); }
-.customer-card.has-debt .card-status-bar { background: var(--danger); }
-.card-main-content { padding: 16px; }
-.card-title-row { display: flex; justify-content: space-between; align-items: baseline; }
-.card-name { font-size: 19px; font-weight: 800; }
-.card-price { font-size: 18px; font-weight: 900; color: var(--success); }
-.card-actions-wrapper { background: rgba(0,0,0,0.02); padding: 12px; border-top: 1px solid rgba(0,0,0,0.05); }
-.action-sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.btn-admin-small { height: 38px !important; font-size: 12px !important; background: #eee; color: #666; margin-bottom: 8px; }
