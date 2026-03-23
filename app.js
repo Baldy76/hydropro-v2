@@ -3,7 +3,7 @@ const BANK_DETAILS = "Bank: Monzo\nAcc: 12345678\nSort: 00-00-00";
 let db = { customers: [], expenses: [], history: [] }; 
 const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 
-// --- STARTUP AUDIT ---
+// --- STARTUP ---
 window.onload = () => {
     updateGreeting();
     const dateEl = document.getElementById('headerDate');
@@ -13,12 +13,7 @@ window.onload = () => {
     if (!db.customers) db.customers = [];
     if (!db.expenses) db.expenses = [];
     if (!db.history) db.history = [];
-    
-    db.customers.forEach(c => { 
-        if(!c.paymentLogs) c.paymentLogs = []; 
-        if(!c.debtHistory) c.debtHistory = [];
-    });
-
+    db.customers.forEach(c => { if(!c.paymentLogs) c.paymentLogs = []; if(!c.debtHistory) c.debtHistory = []; });
     const isDark = localStorage.getItem('Hydro_Dark_Pref') === 'true';
     document.body.className = isDark ? 'dark-mode' : 'light-mode';
     if(document.getElementById('darkModeToggle')) document.getElementById('darkModeToggle').checked = isDark;
@@ -44,34 +39,50 @@ window.openTab = (evt, name) => {
     const target = document.getElementById(name);
     if (target) { target.style.display = "block"; if (evt) evt.currentTarget.classList.add("active"); }
     renderAll();
+    window.scrollTo(0,0);
 };
 
-// --- DATA INTEGRITY FIX: SAVE CUSTOMER ---
+// --- DATA LOGIC ---
 window.saveCustomer = () => {
     const nameVal = document.getElementById('cName').value;
     if(!nameVal) { alert("Enter Name"); return; }
     const id = document.getElementById('editId').value || Date.now().toString();
     const idx = db.customers.findIndex(x => x.id === id);
     let ex = idx > -1 ? db.customers[idx] : null;
-
     const entry = {
         id, name: nameVal, address: (document.getElementById('cAddr').value || ""),
         postcode: document.getElementById('cPostcode').value, phone: document.getElementById('cPhone').value,
         price: n(document.getElementById('cPrice').value), week: document.getElementById('cWeek').value,
         day: document.getElementById('cDay').value, notes: document.getElementById('cNotes').value,
-        cleaned: ex ? ex.cleaned : false, 
-        paidThisMonth: ex ? ex.paidThisMonth : 0, 
-        debtHistory: ex ? ex.debtHistory : [], 
-        paymentLogs: ex ? ex.paymentLogs : []
+        cleaned: ex ? ex.cleaned : false, paidThisMonth: ex ? ex.paidThisMonth : 0, 
+        debtHistory: ex ? ex.debtHistory : [], paymentLogs: ex ? ex.paymentLogs : []
     };
-
-    if(idx > -1) {
-        db.customers[idx] = entry; // Direct replacement to prevent duplicates
-    } else {
-        db.customers.push(entry);
-    }
-    
+    if(idx > -1) db.customers[idx] = entry; else db.customers.push(entry);
     saveData(); alert("Saved!"); location.reload(); 
+};
+
+window.exportQBIncome = () => {
+    let csv = "Customer,Invoice Date,Invoice No,Service,Amount,Tax Amount\n";
+    db.customers.forEach(c => { (c.paymentLogs || []).forEach((log, idx) => {
+        const dateStr = log.date.split(',')[0].replace(/\//g, '-');
+        csv += `"${c.name}",${dateStr},INV-${c.id}-${idx},"Window Clean",${n(log.amount).toFixed(2)},0\n`;
+    }); });
+    downloadCSV(csv, "QB_Income.csv");
+};
+
+window.exportQBExpenses = () => {
+    let csv = "Vendor,Date,Description,Amount,Account\n";
+    db.expenses.forEach(e => {
+        const dateStr = e.date.replace(/\//g, '-');
+        csv += `"Vendor",${dateStr},"${e.desc}",${n(e.amt).toFixed(2)},"Expenses"\n`;
+    });
+    downloadCSV(csv, "QB_Expenses.csv");
+};
+
+const downloadCSV = (csv, fn) => {
+    const b = new Blob([csv], { type: 'text/csv' });
+    const u = URL.createObjectURL(b);
+    const a = document.createElement('a'); a.href = u; a.download = fn; a.click();
 };
 
 // --- MODALS ---
@@ -105,16 +116,15 @@ window.showArrearsModal = () => {
     let html = '<h3 class="section-title">⚠️ Arrears Ledger</h3>';
     let total = 0;
     db.customers.forEach(c => { (c.debtHistory || []).forEach(d => {
-        html += `<div class="drilldown-row"><div><strong>${c.name}</strong><br><small>Month: ${d.month || 'Old'}<br>Cleaned: ${d.date}</small></div><div style="color:var(--danger); font-weight:bold;">£${n(d.amount).toFixed(2)}</div></div>`;
+        html += `<div class="drilldown-row"><div><strong>${c.name}</strong><br><small>Added: ${d.date}<br>${d.month || 'Old'}</small></div><div style="color:var(--danger); font-weight:bold;">£${n(d.amount).toFixed(2)}</div></div>`;
         total += n(d.amount);
     }); });
-    html += `<div class="drilldown-total"><span>Total Owed</span><span>£${total.toFixed(2)}</span></div>`;
+    html += `<div class="drilldown-total"><span>Total Arrears Owed</span><span>£${total.toFixed(2)}</span></div>`;
     body.innerHTML = html; document.getElementById('globalModal').style.display = 'flex';
 };
 
 window.closeModal = () => document.getElementById('globalModal').style.display = 'none';
 
-// --- WORKFLOW HANDLERS ---
 window.toggleCleaned = (id) => {
     const c = db.customers.find(x => x.id === id); if (!c) return;
     c.cleaned = !c.cleaned; saveData(); renderWeekLists();
@@ -136,13 +146,9 @@ window.handleDebtCollection = (id) => {
     const input = prompt(`Debt Collection for ${c.name}: £${totalOwed.toFixed(2)}\nEnter amount paid:`, totalOwed.toFixed(2));
     if (input === null) return;
     const amt = n(input); if (amt <= 0) return;
-    
-    let context = "";
-    if(c.debtHistory.length > 0) context = `${c.debtHistory[0].month || ''} Clean: ${c.debtHistory[0].date}`;
-
+    let context = ""; if(c.debtHistory.length > 0) context = `${c.debtHistory[0].month || ''} Clean: ${c.debtHistory[0].date}`;
     if(!c.paymentLogs) c.paymentLogs = [];
     c.paymentLogs.push({ date: new Date().toLocaleString('en-GB'), amount: amt, type: 'debt', arrearsContext: context });
-
     let rem = amt;
     for (let i = 0; i < (c.debtHistory || []).length; i++) {
         if (rem <= 0) break;
@@ -152,24 +158,23 @@ window.handleDebtCollection = (id) => {
     saveData(); renderWeekLists(); renderStats();
 };
 
-// --- STATS CALIBRATION ---
+// --- RENDER STATS (Full 5-Week Support) ---
 window.renderStats = () => {
     const curMonth = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
     if(document.getElementById('statsMonthTitle')) document.getElementById('statsMonthTitle').innerText = `${curMonth} Summary`;
     let totalIn = 0; db.customers.forEach(c => { (c.paymentLogs||[]).forEach(l => totalIn += n(l.amount)); });
     let totalOut = db.expenses.reduce((sum, e) => sum + n(e.amt), 0);
-    let targetVal = db.customers.reduce((sum, c) => sum + n(c.price), 0);
+    let potentialVal = db.customers.reduce((sum, c) => sum + n(c.price), 0);
     let jobCollected = db.customers.reduce((sum, c) => sum + n(c.paidThisMonth), 0);
     let overdueVal = db.customers.reduce((sum, c) => sum + (c.debtHistory||[]).reduce((s,d)=>s+n(d.amount),0), 0);
-    let progress = targetVal > 0 ? (jobCollected / targetVal) * 100 : 0;
-
+    let progress = potentialVal > 0 ? (jobCollected / potentialVal) * 100 : 0;
     document.getElementById('currProfit').innerText = `£${(totalIn - totalOut).toFixed(2)}`;
     document.getElementById('currRevenue').innerText = `£${totalIn.toFixed(2)}`;
     document.getElementById('currSpend').innerText = `£${totalOut.toFixed(2)}`;
     document.getElementById('progressBar').style.width = `${progress}%`;
     document.getElementById('collectionPercent').innerText = `${Math.round(progress)}%`;
-    document.getElementById('targetWork').innerText = `£${targetVal.toFixed(2)}`;
-    document.getElementById('stillToCollect').innerText = `£${Math.max(0, targetVal - jobCollected).toFixed(2)}`;
+    document.getElementById('targetWork').innerText = `£${potentialVal.toFixed(2)}`;
+    document.getElementById('stillToCollect').innerText = `£${Math.max(0, potentialVal - jobCollected).toFixed(2)}`;
     document.getElementById('totalOldDebt').innerText = `£${overdueVal.toFixed(2)}`;
     renderHistory();
 };
@@ -177,7 +182,7 @@ window.renderStats = () => {
 window.renderHistory = () => {
     const hist = document.getElementById('monthlyHistoryContainer'); if (!hist) return;
     hist.innerHTML = '<h3 class="section-title" style="margin-top:35px; color: var(--qb-green); font-weight:800;">🏆 The Hall of Fame</h3>';
-    if(db.history.length === 0) { hist.innerHTML += '<div class="card" style="text-align:center; opacity:0.5;">Month-end snapshots appear here.</div>'; return; }
+    if(db.history.length === 0) { hist.innerHTML += '<div class="card" style="text-align:center; opacity:0.5;">Snapshots will appear here.</div>'; return; }
     db.history.forEach(h => {
         const net = n(h.income) - n(h.spend);
         const d = document.createElement('div'); d.className = 'history-item-card';
@@ -210,18 +215,18 @@ window.renderMasterTable = () => {
             const row = document.createElement('div'); row.className = 'master-row';
             row.onclick = () => showCustDetails(c.id);
             const d = (c.debtHistory||[]).reduce((s,x)=>s+n(x.amount),0);
-            row.innerHTML = `<div><strong>${c.name}</strong><br><small>${c.address || 'No Address'}</small></div><div style="text-align:right">£${n(c.price).toFixed(2)}${d > 0 ? '<br><small style="color:var(--danger); font-weight:800;">ARREARS: £' + d.toFixed(2) + '</small>' : ''}</div>`;
+            row.innerHTML = `<div><strong>${c.name}</strong><br><small>${c.address || 'No Address'}</small></div><div style="text-align:right">£${n(c.price).toFixed(2)}${d > 0 ? '<br><small style="color:var(--danger); font-weight:800;">Debt: £' + d.toFixed(2) + '</small>' : ''}</div>`;
             container.appendChild(row);
         }
     });
 };
 
 window.renderWeekLists = () => {
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 1; i <= 5; i++) {
         const container = document.getElementById(`week${i}`); if (!container) continue;
         container.innerHTML = '';
         const weekCusts = db.customers.filter(c => c.week == i);
-        if (weekCusts.length === 0) { container.innerHTML = '<div class="card" style="text-align:center; opacity:0.5; padding:40px;">🍹 Week complete!</div>'; continue; }
+        if (weekCusts.length === 0) { container.innerHTML = '<div class="card" style="text-align:center; opacity:0.5; padding:40px;">🍹 Week empty.</div>'; continue; }
         weekCusts.forEach(c => {
             const isPaid = n(c.paidThisMonth) >= n(c.price);
             const d = (c.debtHistory||[]).reduce((s,x)=>s+n(x.amount),0);
@@ -265,7 +270,6 @@ window.completeCycle = () => {
     let mInc = 0; db.customers.forEach(c => { (c.paymentLogs||[]).forEach(l => mInc += n(l.amount)); });
     let mExp = db.expenses.reduce((sum, e) => sum + n(e.amt), 0);
     let nDebt = 0;
-
     db.customers.forEach(c => {
         if (c.cleaned && n(c.paidThisMonth) < n(c.price)) {
             const bal = n(c.price) - n(c.paidThisMonth);
@@ -275,35 +279,14 @@ window.completeCycle = () => {
         }
         c.cleaned = false; c.paidThisMonth = 0; c.paymentLogs = [];
     });
-
     db.history.unshift({ month: curLabel, income: mInc, spend: mExp, debtCreated: nDebt });
     db.expenses = []; saveData(); location.reload();
 };
-
 window.exportFullCSV = () => {
     let c = "ID,Name,Address,Postcode,Phone,Price,Week,Day,Notes\n";
     db.customers.forEach(x => { c += `${x.id},"${x.name}","${x.address}","${x.postcode}","${x.phone}",${x.price},${x.week},"${x.day}","${x.notes}"\n`; });
     const b = new Blob([c], { type: 'text/csv' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `HydroBackup.csv`; a.click();
 };
-
-window.exportQBIncome = () => {
-    let csv = "Customer,Invoice Date,Invoice No,Service,Amount,Tax Amount\n";
-    db.customers.forEach(c => { (c.paymentLogs || []).forEach((log, idx) => {
-        const dateStr = log.date.split(',')[0].replace(/\//g, '-');
-        csv += `"${c.name}",${dateStr},INV-${c.id}-${idx},"Window Clean",${n(log.amount).toFixed(2)},0\n`;
-    }); });
-    const b = new Blob([csv], { type: 'text/csv' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `QB_Income.csv`; a.click();
-};
-
-window.exportQBExpenses = () => {
-    let csv = "Vendor,Date,Description,Amount,Account\n";
-    db.expenses.forEach(e => {
-        const dateStr = e.date.replace(/\//g, '-');
-        csv += `"Vendor",${dateStr},"${e.desc}",${n(e.amt).toFixed(2)},"Expenses"\n`;
-    });
-    const b = new Blob([csv], { type: 'text/csv' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `QB_Expenses.csv`; a.click();
-};
-
 window.importFullCSV = (e) => {
     const f = e.target.files[0], r = new FileReader();
     r.onload = (ev) => {
