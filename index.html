@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v14.6</title>
-    <link rel="stylesheet" href="styles.css?v=146">
+    <title>Hydro Pro v14.7</title>
+    <link rel="stylesheet" href="styles.css?v=147">
 </head>
 <body class="light-mode">
 
@@ -29,18 +29,18 @@
 
         <nav class="nav-container">
             <div class="nav-row">
-                <button class="tab active" onclick="openTab(event, 'admin')">Set up</button>
-                <button class="tab" onclick="openTab(event, 'master')">Custs</button>
-                <button class="tab" onclick="openTab(event, 'plan')">Plan</button>
-                <button class="tab" onclick="openTab(event, 'stats')">Stats</button>
-                <button class="tab" onclick="openTab(event, 'spend')">Ledger</button>
+                <button class="tab active bounce-on-tap" onclick="openTab(event, 'admin')">Set up</button>
+                <button class="tab bounce-on-tap" onclick="openTab(event, 'master')">Custs</button>
+                <button class="tab bounce-on-tap" onclick="openTab(event, 'plan')">Plan</button>
+                <button class="tab bounce-on-tap" onclick="openTab(event, 'stats')">Stats</button>
+                <button class="tab bounce-on-tap" onclick="openTab(event, 'spend')">Ledger</button>
             </div>
             <div class="nav-row">
-                <button class="tab" onclick="openTab(event, 'week1')">W1</button>
-                <button class="tab" onclick="openTab(event, 'week2')">W2</button>
-                <button class="tab" onclick="openTab(event, 'week3')">W3</button>
-                <button class="tab" onclick="openTab(event, 'week4')">W4</button>
-                <button class="tab" onclick="openTab(event, 'week5')">W5</button>
+                <button class="tab bounce-on-tap" onclick="openTab(event, 'week1')">W1</button>
+                <button class="tab bounce-on-tap" onclick="openTab(event, 'week2')">W2</button>
+                <button class="tab bounce-on-tap" onclick="openTab(event, 'week3')">W3</button>
+                <button class="tab bounce-on-tap" onclick="openTab(event, 'week4')">W4</button>
+                <button class="tab bounce-on-tap" onclick="openTab(event, 'week5')">W5</button>
             </div>
         </nav>
     </div>
@@ -106,7 +106,7 @@
             <div class="dashboard-hero">
                 <div class="hero-label" id="statsMonthTitle">Summary</div>
                 <div class="hero-amount" id="currProfit">£0.00</div>
-                <div class="hero-subtext">💰 Total Profit</div>
+                <div class="hero-subtext">💰 Total Profit in Pocket</div>
             </div>
             <div class="card stat-card">
                 <div class="stat-header"><span>Monthly Progress</span><span id="collectionPercent">0%</span></div>
@@ -114,8 +114,8 @@
                 <div class="stat-line-item"><span>Target: <strong id="targetWork">£0.00</strong></span><span>Remaining: <strong id="stillToCollect">£0.00</strong></span></div>
             </div>
             <div class="grid-1x2" style="margin-top:15px;">
-                <div class="card mini-card clickable-stat bounce-on-tap" onclick="showIncomeModal()"><small>Revenue 🔍</small><strong id="currRevenue" style="color:var(--success)">£0.00</strong></div>
-                <div class="card mini-card clickable-stat bounce-on-tap" onclick="showExpenseModal()"><small>Spend 🔍</small><strong id="currSpend" style="color:var(--danger)">£0.00</strong></div>
+                <div class="card mini-card clickable-stat bounce-on-tap" onclick="showIncomeModal()"><div class="mini-card-content"><small>Revenue 🔍</small><strong id="currRevenue" style="color:var(--success)">£0.00</strong></div></div>
+                <div class="card mini-card clickable-stat bounce-on-tap" onclick="showExpenseModal()"><div class="mini-card-content"><small>Spend 🔍</small><strong id="currSpend" style="color:var(--danger)">£0.00</strong></div></div>
             </div>
             <div class="card debt-highlight-card clickable-stat bounce-on-tap" onclick="showArrearsModal()">
                 <div class="stat-row"><span>Arrears 🔍</span><strong id="totalOldDebt">£0.00</strong></div>
@@ -132,15 +132,19 @@
             <div id="expenseList"></div>
         </div>
 
-        <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
+        <div id="week1" class="tab-content"></div>
+        <div id="week2" class="tab-content"></div>
+        <div id="week3" class="tab-content"></div>
+        <div id="week4" class="tab-content"></div>
+        <div id="week5" class="tab-content"></div>
     </div>
 
-    <div class="global-footer">v14.6 - The Perfectionist Restore</div>
+    <div class="global-footer">v14.7 - Midnight Navy Edition</div>
 
     <div id="globalModal" class="modal-overlay" onclick="if(event.target === this) closeModal()">
         <div class="modal-content"><button class="close-btn" onclick="closeModal()">✕</button><div id="modalContentBody"></div></div>
     </div>
 
-    <script src="app.js?v=146"></script>
+    <script src="app.js?v=147"></script>
 </body>
 </html>
