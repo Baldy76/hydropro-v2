@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v17.6</title>
-    <link rel="stylesheet" href="styles.css?v=176">
+    <title>Hydro Pro v17.7</title>
+    <link rel="stylesheet" href="styles.css?v=177">
 </head>
 <body class="light-mode">
 
@@ -55,23 +55,23 @@
                 <input type="hidden" id="editId">
                 <div class="fun-input-group">
                     <div class="fun-icon">👤</div>
-                    <div class="fun-field-stack"><label>Name</label><input type="text" id="cName" class="creative-input"></div>
+                    <div class="fun-field-stack"><label>Name</label><input type="text" id="cName" class="creative-input" placeholder="Client Name"></div>
                 </div>
                 <div class="fun-input-group">
                     <div class="fun-icon">🏠</div>
-                    <div class="fun-field-stack"><label>House No.</label><input type="text" id="cHouseNum" class="creative-input"></div>
+                    <div class="fun-field-stack"><label>House No.</label><input type="text" id="cHouseNum" class="creative-input" placeholder="22"></div>
                 </div>
                 <div class="fun-input-group">
                     <div class="fun-icon">🛣️</div>
-                    <div class="fun-field-stack"><label>Street</label><input type="text" id="cStreet" class="creative-input"></div>
+                    <div class="fun-field-stack"><label>Street</label><input type="text" id="cStreet" class="creative-input" placeholder="Street Name"></div>
                 </div>
                 <div class="fun-input-group">
                     <div class="fun-icon">📍</div>
-                    <div class="fun-field-stack"><label>Postcode</label><input type="text" id="cPostcode" class="creative-input postcode-input"></div>
+                    <div class="fun-field-stack"><label>Postcode</label><input type="text" id="cPostcode" class="creative-input postcode-input" placeholder="NE1 1AA"></div>
                 </div>
                 <div class="fun-input-group">
                     <div class="fun-icon">💰</div>
-                    <div class="fun-field-stack"><label>Price £</label><input type="number" id="cPrice" class="creative-input"></div>
+                    <div class="fun-field-stack"><label>Price £</label><input type="number" id="cPrice" class="creative-input" placeholder="0.00"></div>
                 </div>
                 <div class="fun-input-group">
                     <div class="fun-icon">📅</div>
@@ -95,6 +95,13 @@
                         </select>
                     </div>
                 </div>
+                <div class="fun-input-group" style="border: none;">
+                    <div class="fun-icon">📝</div>
+                    <div class="fun-field-stack">
+                        <label>Private Notes</label>
+                        <textarea id="cNotes" placeholder="Access codes, dog info..." class="creative-textarea"></textarea>
+                    </div>
+                </div>
                 <button class="btn-main full-width-btn creative-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
         </div>
@@ -112,7 +119,7 @@
         <div id="spend" class="tab-content">
             <div class="card">
                 <h3 class="section-title">💸 Log Expense</h3>
-                <input type="text" id="expDesc" placeholder="Fuel, Tools etc" class="creative-input" style="background:var(--input-bg); border-radius:10px; padding:10px; margin-bottom:10px;">
+                <input type="text" id="expDesc" placeholder="Description" class="creative-input" style="background:var(--input-bg); border-radius:10px; padding:10px; margin-bottom:10px;">
                 <input type="number" id="expAmt" placeholder="0.00" class="creative-input" style="background:var(--input-bg); border-radius:10px; padding:10px;">
                 <button class="btn-main full-width-btn" onclick="addExpense()" style="margin-top:15px;">Add Expense</button>
             </div>
@@ -127,13 +134,13 @@
         </div>
 
         <div id="stats" class="tab-content"><div id="currProfit" class="hero-amount">£0.00</div><div id="monthlyHistoryContainer"></div></div>
-        
+
         <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div>
         <div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div>
         <div id="week5" class="tab-content"></div>
     </div>
 
-    <div class="page-version-footer">v17.6 - Centered Branding</div>
-    <script src="app.js?v=176"></script>
+    <div class="page-version-footer">v17.7 - UI Refinement</div>
+    <script src="app.js?v=177"></script>
 </body>
 </html>
