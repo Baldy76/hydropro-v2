@@ -26,7 +26,6 @@ window.openTab = (name) => {
     const nav = document.getElementById('subpageNav');
     const hubPages = ['home', 'weeksHub'];
     
-    // Manage Global Back Button and Branding View
     if (hubPages.includes(name)) {
         nav.classList.add('hidden');
     } else {
@@ -39,7 +38,6 @@ window.openTab = (name) => {
 
 window.handleBackNavigation = () => {
     const active = document.querySelector('.tab-content.active').id;
-    // Logic: If in a specific week, go to weeks hub. Otherwise go home.
     if (active.startsWith('week') && active !== 'weeksHub') openTab('weeksHub');
     else openTab('home');
 };
@@ -67,7 +65,6 @@ window.renderWeekLists = () => {
     for (let i = 1; i <= 5; i++) {
         const container = document.getElementById(`week${i}`);
         if (!container) continue;
-        // DIRECT HOME BUTTON ADDED HERE
         container.innerHTML = `<button class="back-pill" onclick="openTab('home')">🏠 Back to Home</button>`;
         
         db.customers.filter(c => c.week == i).forEach(c => {
@@ -108,6 +105,7 @@ window.saveCustomer = () => {
         price: n(document.getElementById('cPrice').value),
         week: document.getElementById('cWeek').value,
         day: document.getElementById('cDay').value,
+        notes: document.getElementById('cNotes').value,
         cleaned: ex ? ex.cleaned : false,
         paidThisMonth: ex ? ex.paidThisMonth : 0,
         paymentLogs: ex ? ex.paymentLogs : []
@@ -115,8 +113,14 @@ window.saveCustomer = () => {
 
     if(idx > -1) db.customers[idx] = entry; else db.customers.push(entry);
     saveData();
+    // Clear form after save
     document.getElementById('editId').value = "";
     document.getElementById('cName').value = "";
+    document.getElementById('cHouseNum').value = "";
+    document.getElementById('cStreet').value = "";
+    document.getElementById('cPostcode').value = "";
+    document.getElementById('cPrice').value = "";
+    document.getElementById('cNotes').value = "";
     openTab('home');
 };
 
@@ -144,6 +148,7 @@ window.editCust = (id) => {
     document.getElementById('cPrice').value = c.price;
     document.getElementById('cWeek').value = c.week;
     document.getElementById('cDay').value = c.day;
+    document.getElementById('cNotes').value = c.notes;
 };
 
 window.exportQBIncome = () => {
