@@ -28,7 +28,6 @@ window.onload = () => {
     renderAll();
 };
 
-// --- GREETING & WEATHER ---
 const updateGreeting = () => {
     const hr = new Date().getHours();
     let g = "Hey there!";
@@ -58,54 +57,16 @@ const fetchWeather = async (lat, lon) => {
 window.openWeatherApp = () => {
     if (!currentCoords.lat) return;
     const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    window.open(isiOS ? `weather://` : `https://www.google.com/search?q=weather+at+my+location`, '_blank');
+    window.open(isiOS ? `weather://` : `https://www.google.com/search?q=weather`, '_blank');
 };
 
-// --- PLANNER LOGIC ---
-window.optimizeDay = (weekNum) => {
-    // Sort by street name to group route
-    db.customers.sort((a, b) => {
-        if (a.week != weekNum || b.week != weekNum) return 0;
-        return (a.address || "").localeCompare(b.address || "");
-    });
-    saveData();
-    renderAll();
-    alert(`Week ${weekNum} sorted by street proximity! 🚀`);
-};
-
-window.mapTheDay = (weekNum) => {
-    const dayJobs = db.customers.filter(c => c.week == weekNum && !c.cleaned);
-    if(dayJobs.length === 0) { alert("No pending jobs found for this week."); return; }
-    let url = "https://www.google.com/maps/dir/Current+Loc/Stop1/Stop2/0";
-    const last = dayJobs[dayJobs.length - 1];
-    url += encodeURIComponent(last.address + " " + (last.postcode || ""));
-    if (dayJobs.length > 1) {
-        let ways = dayJobs.slice(0, -1).map(c => c.address + " " + (c.postcode || "")).join('|');
-        url += "&waypoints=" + encodeURIComponent(ways);
-    }
-    window.open(url, '_blank');
-};
-
-window.broadcastWeek = (weekNum, type) => {
-    const weekCusts = db.customers.filter(c => c.week == weekNum && c.phone && !c.cleaned);
-    if(weekCusts.length === 0) { alert("No pending customers with phone numbers."); return; }
-    if(!confirm(`Open ${weekCusts.length} messaging windows?`)) return;
-    weekCusts.forEach((c, i) => {
-        setTimeout(() => {
-            const msg = `Hey ${c.name}, cleaning windows at ${c.address} this ${c.day}. See ya!`;
-            const phone = c.phone.replace(/\s+/g, '');
-            let url = (type === 'wa') ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}` : `sms:${phone}${/iPad|iPhone|iPod/.test(navigator.userAgent)?'&':'?'}body=${encodeURIComponent(msg)}`;
-            window.open(url, '_blank');
-        }, i * 1200);
-    });
-};
-
-// --- CORE APP HANDLERS ---
+// --- CORE HANDLERS ---
 window.openTab = (evt, name) => {
     document.querySelectorAll(".tab-content").forEach(c => c.style.display = "none");
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
     const target = document.getElementById(name); if(target) target.style.display = "block";
     if(evt) evt.currentTarget.classList.add("active");
+    renderAll();
     window.scrollTo(0,0);
 };
 
@@ -118,22 +79,25 @@ window.saveCustomer = () => {
     saveData(); location.reload(); 
 };
 
-window.renderWeekLists = () => {
-    for (let i = 1; i <= 5; i++) {
-        const container = document.getElementById(`week${i}`); if (!container) continue;
-        container.innerHTML = '';
-        const weekCusts = db.customers.filter(c => c.week == i);
-        if (weekCusts.length === 0) { container.innerHTML = '<div class="card" style="text-align:center; opacity:0.5; padding:40px;">🍹 Week empty.</div>'; continue; }
-        weekCusts.forEach(c => {
-            const isPaid = n(c.paidThisMonth) >= n(c.price);
-            const d = (c.debtHistory||[]).reduce((s,x)=>s+n(x.amount),0);
-            const card = document.createElement('div'); card.className = 'card';
-            card.innerHTML = `<div onclick="showCustDetails('${c.id}')"><strong style="font-size:18px; color:var(--accent);">${c.name}</strong><br><small style="opacity:0.6; font-weight:600;">${c.address}</small></div>
-                <div class="workflow-grid"><div class="comms-row"><button class="icon-btn-large bounce-on-tap" style="color:#25D366" onclick="handleWhatsApp('${c.id}')">💬</button><button class="icon-btn-large bounce-on-tap" style="color:#007AFF" onclick="handleSMS('${c.id}')">📱</button><a href="https://www.google.com/maps/dir/Current+Loc/Stop1/Stop2/1{encodeURIComponent((c.address||'') + ' ' + (c.postcode||''))}" target="_blank" class="icon-btn-large bounce-on-tap" style="color:#ea4335">📍</a></div>
-                <div class="status-row" style="${d > 0 ? 'grid-template-columns:repeat(3,1fr)' : 'grid-template-columns:1fr 1fr'}"><button class="action-btn-main bounce-on-tap ${c.cleaned ? 'btn-cleaned-active' : ''}" onclick="toggleCleaned('${c.id}')">${c.cleaned ? 'Done ✅' : 'Cleaned'}</button><button class="action-btn-main bounce-on-tap ${isPaid ? 'btn-paid-active' : 'btn-pay-pending'}" onclick="markAsPaid('${c.id}')">${isPaid ? 'Paid' : 'Pay £' + n(c.price).toFixed(2)}</button>${d > 0 ? `<button class="action-btn-main bounce-on-tap btn-debt-pending" onclick="handleDebtCollection('${c.id}')">Debt £${d.toFixed(2)}</button>` : ''}</div></div>`;
-            container.appendChild(card);
-        });
-    }
+window.optimizeDay = (w) => {
+    db.customers.sort((a,b) => (a.week==w && b.week==w) ? (a.address||"").localeCompare(b.address||"") : 0);
+    saveData(); renderWeekLists(); alert(`Week ${w} Sorted! 🚀`);
+};
+
+window.mapTheDay = (w) => {
+    const dayJobs = db.customers.filter(c => c.week == w && !c.cleaned); if(dayJobs.length === 0) return;
+    let url = "https://www.google.com/maps/dir/"; 
+    dayJobs.forEach(c => url += encodeURIComponent(c.address + " " + c.postcode) + "/");
+    window.open(url, '_blank');
+};
+
+window.broadcastWeek = (w, t) => {
+    const cs = db.customers.filter(c => c.week == w && c.phone && !c.cleaned);
+    cs.forEach((c, i) => setTimeout(() => {
+        const msg = encodeURIComponent(`Hey ${c.name}, cleaning your windows at ${c.address} this ${c.day}. See ya!`);
+        const p = c.phone.replace(/\s+/g,'');
+        window.open(t=='wa' ? `https://wa.me/${p}?text=${msg}` : `sms:${p}${/iPhone|iPad/.test(navigator.userAgent)?'&':'?'}body=${msg}`, '_blank');
+    }, i*1200));
 };
 
 // --- DATA UTILS ---
@@ -158,25 +122,26 @@ window.importFullCSV = (e) => {
     };
     r.readAsText(f);
 };
-window.completeCycle = () => {
-    if(!confirm("Start New Month? Unpaid move to arrears.")) return;
-    const curLabel = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
-    let mInc = 0; db.customers.forEach(c => (c.paymentLogs||[]).forEach(l => mInc += n(l.amount)));
-    let mExp = db.expenses.reduce((s, e) => s + n(e.amt), 0);
-    let nDebt = 0;
-    db.customers.forEach(c => {
-        if (c.cleaned && n(c.paidThisMonth) < n(c.price)) {
-            const bal = n(c.price) - n(c.paidThisMonth);
-            if(!c.debtHistory) c.debtHistory = []; c.debtHistory.push({ date: new Date().toLocaleDateString('en-GB'), amount: bal, month: curLabel });
-            nDebt += bal;
-        }
-        c.cleaned = false; c.paidThisMonth = 0; c.paymentLogs = [];
-    });
-    db.history.unshift({ month: curLabel, income: mInc, spend: mExp, debtCreated: nDebt });
-    db.expenses = []; saveData(); location.reload();
+
+// --- RENDERING ---
+window.renderWeekLists = () => {
+    for (let i = 1; i <= 5; i++) {
+        const container = document.getElementById(`week${i}`); if (!container) continue;
+        container.innerHTML = '';
+        const weekCusts = db.customers.filter(c => c.week == i);
+        if (weekCusts.length === 0) { container.innerHTML = '<div class="card" style="text-align:center; opacity:0.5; padding:40px;">🍹 Week empty.</div>'; continue; }
+        weekCusts.forEach(c => {
+            const isPaid = n(c.paidThisMonth) >= n(c.price);
+            const d = (c.debtHistory||[]).reduce((s,x)=>s+n(x.amount),0);
+            const card = document.createElement('div'); card.className = 'card';
+            card.innerHTML = `<div onclick="showCustDetails('${c.id}')"><strong style="font-size:18px; color:var(--accent);">${c.name}</strong><br><small style="opacity:0.6; font-weight:600;">${c.address}</small></div>
+                <div class="workflow-grid"><div class="comms-row"><button class="icon-btn-large bounce-on-tap" style="color:#25D366" onclick="handleWhatsApp('${c.id}')">💬</button><button class="icon-btn-large bounce-on-tap" style="color:#007AFF" onclick="handleSMS('${c.id}')">📱</button><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((c.address||'') + ' ' + (c.postcode||''))}" target="_blank" class="icon-btn-large bounce-on-tap" style="color:#ea4335">📍</a></div>
+                <div class="status-row" style="${d > 0 ? 'grid-template-columns:repeat(3,1fr)' : 'grid-template-columns:1fr 1fr'}"><button class="action-btn-main bounce-on-tap ${c.cleaned ? 'btn-cleaned-active' : ''}" onclick="toggleCleaned('${c.id}')">${c.cleaned ? 'Done ✅' : 'Cleaned'}</button><button class="action-btn-main bounce-on-tap ${isPaid ? 'btn-paid-active' : 'btn-pay-pending'}" onclick="markAsPaid('${c.id}')">${isPaid ? 'Paid' : 'Pay £' + n(c.price).toFixed(2)}</button>${d > 0 ? `<button class="action-btn-main bounce-on-tap btn-debt-pending" onclick="handleDebtCollection('${c.id}')">Debt £${d.toFixed(2)}</button>` : ''}</div></div>`;
+            container.appendChild(card);
+        });
+    }
 };
 
-// ... (Modal logic and rest of stats logic stays consistent with 13.8)
 window.renderStats = () => {
     let totalIn = 0; db.customers.forEach(c => (c.paymentLogs||[]).forEach(l => totalIn += n(l.amount)));
     let totalOut = db.expenses.reduce((s, e) => s + n(e.amt), 0);
@@ -215,15 +180,7 @@ window.renderMasterTable = () => {
         container.appendChild(row);
     }});
 };
-window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); renderLedger(); };
-window.renderLedger = () => {
-    const list = document.getElementById('expenseList'); if(!list) return; list.innerHTML = '<h3 class="section-title">💸 Spend History</h3>';
-    db.expenses.forEach(e => {
-        const div = document.createElement('div'); div.className = 'card'; div.style.padding = '18px';
-        div.innerHTML = `<div style="display:flex; justify-content:space-between;"><div><strong>${e.desc}</strong><br><small>${e.date}</small></div><div style="font-weight:900; color:var(--danger);">£${n(e.amt).toFixed(2)}</div></div>`;
-        list.appendChild(div);
-    });
-};
+window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); };
 window.showCustDetails = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
     const body = document.getElementById('modalContentBody');
@@ -246,6 +203,23 @@ window.exportQBExpenses = () => {
     let csv = "Vendor,Date,Description,Amount,Account\n";
     db.expenses.forEach(e => { const dStr = e.date.replace(/\//g, '-'); csv += `"Vendor",${dStr},"${e.desc}",${n(e.amt).toFixed(2)},"Expenses"\n`; });
     const b = new Blob([csv], { type: 'text/csv' }); const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = `QB_Expenses.csv`; a.click();
+};
+window.completeCycle = () => {
+    if(!confirm("Archive Month? Unpaid move to arrears.")) return;
+    const curLabel = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+    let mInc = 0; db.customers.forEach(c => (c.paymentLogs||[]).forEach(l => mInc += n(l.amount)));
+    let mExp = db.expenses.reduce((s, e) => s + n(e.amt), 0);
+    let nDebt = 0;
+    db.customers.forEach(c => {
+        if (c.cleaned && n(c.paidThisMonth) < n(c.price)) {
+            const bal = n(c.price) - n(c.paidThisMonth);
+            if(!c.debtHistory) c.debtHistory = []; c.debtHistory.push({ date: new Date().toLocaleDateString('en-GB'), amount: bal, month: curLabel });
+            nDebt += bal;
+        }
+        c.cleaned = false; c.paidThisMonth = 0; c.paymentLogs = [];
+    });
+    db.history.unshift({ month: curLabel, income: mInc, spend: mExp, debtCreated: nDebt });
+    db.expenses = []; saveData(); location.reload();
 };
 window.handleWhatsApp = (id) => { const c = db.customers.find(x => x.id === id); if(c && c.phone) window.open(`https://wa.me/${c.phone.replace(/\s+/g,'')}`, '_blank'); };
 window.handleSMS = (id) => { const c = db.customers.find(x => x.id === id); if(c && c.phone) window.open(`sms:${c.phone.replace(/\s+/g,'')}${/iPhone|iPad/.test(navigator.userAgent)?'&':'?'}body=`, '_blank'); };
