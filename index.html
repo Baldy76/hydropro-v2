@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro v11.6</title>
-    <link rel="stylesheet" href="styles.css?v=116">
+    <title>Hydro Pro v11.7</title>
+    <link rel="stylesheet" href="styles.css?v=117">
 </head>
 <body class="light-mode">
 
@@ -19,11 +19,7 @@
                 </label>
             </div>
         </div>
-
-        <div class="date-container">
-            <div id="headerDate" class="date-txt"></div>
-        </div>
-        
+        <div class="date-container"><div id="headerDate" class="date-txt"></div></div>
         <div class="tabs">
             <button class="tab active" onclick="openTab(event, 'admin')">Setup</button>
             <button class="tab" onclick="openTab(event, 'master')">Custs</button>
@@ -38,7 +34,7 @@
 
     <div class="main-container">
         <div id="globalSearchContainer" class="search-outer hidden">
-            <input type="text" id="mainSearch" class="search-input-sleek" placeholder="🔍 Search customers..." oninput="renderMasterTable()">
+            <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()">
         </div>
 
         <div id="admin" class="tab-content active">
@@ -85,7 +81,7 @@
                     <button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL DATA</button>
                 </div>
             </div>
-            <div class="version-tag">v11.6 - Isolation Shield</div>
+            <div class="version-tag">v11.7 - Interaction & Pill UI</div>
         </div>
 
         <div id="master" class="tab-content">
@@ -94,7 +90,7 @@
 
         <div id="stats" class="tab-content">
             <div class="card">
-                <h3 class="section-title">Monthly Summary</h3>
+                <h3 class="section-title" id="statsMonthTitle">Monthly Summary</h3>
                 <div class="stat-row"><span>Income:</span> <strong id="currRevenue">£0.00</strong></div>
                 <div class="stat-row"><span>Expenses:</span> <strong id="currSpend">£0.00</strong></div>
                 <div class="stat-row"><span>New Debt:</span> <strong id="currDebt" style="color:var(--danger)">£0.00</strong></div>
@@ -122,6 +118,13 @@
         <div id="week4" class="tab-content"></div>
     </div>
 
-    <script src="app.js?v=116"></script>
+    <div id="custModal" class="modal-overlay" onclick="if(event.target === this) closeCustModal()">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeCustModal()">✕</button>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script src="app.js?v=117"></script>
 </body>
 </html>
