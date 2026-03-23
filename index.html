@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro - Production v5.8</title>
+    <title>Hydro Pro - Production v5.9</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="light-mode">
@@ -91,13 +91,13 @@
                 <button type="button" class="btn-uat full-width-btn" onclick="runUATClear()">🛠️ RESET ALL DATA</button>
             </div>
             
-            <div class="version-tag">v5.8 - Logic Recovery Build</div>
+            <div class="version-tag">v5.9 - Restore Build</div>
         </div>
 
         <div id="master" class="tab-content">
             <div class="card" style="padding:0; overflow:hidden;">
                 <div style="padding:15px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; gap: 10px;">
-                    <input type="text" id="mainSearch" placeholder="🔍 Search..." oninput="handleSearch()" style="margin:0; flex-grow: 1;">
+                    <input type="text" id="mainSearch" placeholder="🔍 Search database..." oninput="handleSearch()" style="margin:0; flex-grow: 1;">
                     <button onclick="renderMasterTable()" style="height:48px; width:48px; border-radius:10px; background:#eee;">🔄</button>
                 </div>
                 <table style="width:100%; border-collapse:collapse;">
@@ -117,9 +117,9 @@
                 </div>
             </div>
             <div class="card">
-                <h3 style="text-align:center;">Overall History</h3>
+                <h3 style="text-align:center;">Lifetime Performance</h3>
                 <div style="background: var(--primary); color: white; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px;">
-                    <small>LIFETIME REVENUE</small><br>
+                    <small>TOTAL REVENUE</small><br>
                     <span id="statFYTotal" style="font-size: 32px; font-weight: 900;">£0</span>
                 </div>
                 <table style="width:100%; border-collapse: collapse;">
