@@ -1,5 +1,6 @@
 const MASTER_KEY = 'HydroPro_App_Production';
 let db = { customers: [], expenses: [] };
+let currentDayFilter = 'All';
 
 const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 
@@ -19,91 +20,81 @@ window.onload = () => {
     renderAll();
 };
 
-// --- CORE DATA FUNCTIONS ---
+// --- NAVIGATION ENGINE (RESCUE) ---
+window.openTab = function(evt, name) {
+    // 1. Hide all contents
+    const contents = document.getElementsByClassName("tab-content");
+    for (let i = 0; i < contents.length; i++) {
+        contents[i].style.display = "none";
+        contents[i].classList.remove("active");
+    }
+
+    // 2. Deactivate all tab buttons
+    const tabs = document.getElementsByClassName("tab");
+    for (let i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove("active");
+    }
+
+    // 3. Show target tab
+    const target = document.getElementById(name);
+    if (target) {
+        target.style.display = "block";
+        target.classList.add("active");
+    }
+    
+    // 4. Highlight button
+    if (evt) evt.currentTarget.classList.add("active");
+
+    // 5. Toggle Sub-UI Elements (Safe Check)
+    const searchBar = document.getElementById('globalSearchContainer');
+    const filterBar = document.getElementById('dayFilterBar');
+    
+    if (searchBar) {
+        name === 'master' ? searchBar.classList.remove('hidden') : searchBar.classList.add('hidden');
+    }
+
+    if (filterBar) {
+        name.startsWith('week') ? filterBar.classList.remove('hidden') : filterBar.classList.add('hidden');
+    }
+
+    renderAll();
+    window.scrollTo(0, 0);
+};
+
+// --- DATA ENGINE ---
 window.saveCustomer = function() {
-    const nameInput = document.getElementById('cName');
-    if(!nameInput.value) { alert("Please enter a name"); return; }
+    const nameVal = document.getElementById('cName').value;
+    if(!nameVal) { alert("Enter Name"); return; }
     
     const id = document.getElementById('editId').value || Date.now().toString();
-    const newCust = {
+    const entry = {
         id: id,
-        name: nameInput.value,
-        address: document.getElementById('cAddr').value || "",
-        postcode: document.getElementById('cPostcode').value || "",
-        phone: document.getElementById('cPhone').value || "",
+        name: nameVal,
+        address: document.getElementById('cAddr').value,
+        postcode: document.getElementById('cPostcode').value,
+        phone: document.getElementById('cPhone').value,
         price: n(document.getElementById('cPrice').value),
         week: document.getElementById('cWeek').value,
         day: document.getElementById('cDay').value,
-        notes: document.getElementById('cNotes').value || "",
+        notes: document.getElementById('cNotes').value,
         cleaned: false,
         paidThisMonth: 0,
         debtHistory: []
     };
 
     const idx = db.customers.findIndex(x => x.id === id);
-    if (idx > -1) {
-        db.customers[idx] = newCust;
-    } else {
-        db.customers.push(newCust);
-    }
-
+    if(idx > -1) db.customers[idx] = entry; else db.customers.push(entry);
+    
     localStorage.setItem(MASTER_KEY, JSON.stringify(db));
-    alert("Customer Saved Successfully!");
-    location.reload(); // Hard refresh to ensure UI update
+    alert("Saved!");
+    location.reload(); // Hard reset ensures list is built
 };
 
-window.runUATClear = function() {
-    if(confirm("🛑 ARE YOU SURE? This wipes EVERYTHING.")) {
-        if(confirm("Final check: Delete all customers and settings?")) {
-            localStorage.clear();
-            location.reload();
-        }
-    }
-};
-
-window.exportFullCSV = function() {
-    let csv = "ID,Name,Address,Postcode,Phone,Price,Week,Day,Notes\n";
-    db.customers.forEach(c => {
-        csv += `${c.id},"${c.name}","${c.address}","${c.postcode}","${c.phone}",${c.price},${c.week},"${c.day}","${c.notes}"\n`;
-    });
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `HydroPro_Backup.csv`;
-    a.click();
-};
-
-window.importFullCSV = function(e) {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onload = (event) => {
-        const text = event.target.result;
-        const rows = text.split('\n').slice(1);
-        let imported = [];
-        rows.forEach(row => {
-            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-            if(cols.length > 5) {
-                imported.push({
-                    id: cols[0], name: cols[1].replace(/"/g,''), address: cols[2].replace(/"/g,''),
-                    postcode: cols[3].replace(/"/g,''), phone: cols[4].replace(/"/g,''),
-                    price: n(cols[5]), week: cols[6], day: cols[7].replace(/"/g,''), notes: cols[8] ? cols[8].replace(/"/g,'') : ""
-                });
-            }
-        });
-        db.customers = imported;
-        localStorage.setItem(MASTER_KEY, JSON.stringify(db));
+window.runUATClear = () => {
+    if(confirm("Wipe everything?")) {
+        localStorage.clear();
         location.reload();
-    };
-    reader.readAsText(file);
-};
-
-// --- UI FUNCTIONS ---
-window.openTab = (evt, name) => {
-    document.querySelectorAll(".tab-content").forEach(c => c.style.display = "none");
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    document.getElementById(name).style.display = "block";
-    if(evt) evt.currentTarget.classList.add("active");
+    }
 };
 
 window.toggleDarkMode = () => {
@@ -113,5 +104,5 @@ window.toggleDarkMode = () => {
 };
 
 window.renderAll = () => {
-    // Logic for Week Lists...
+    // Logic for building the Master List and Week Lists...
 };
