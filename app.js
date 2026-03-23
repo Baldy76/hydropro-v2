@@ -19,18 +19,12 @@ window.onload = () => {
 };
 
 window.openTab = (name) => {
-    // 1. CLEAR ALL ACTIVE TABS
-    document.querySelectorAll(".tab-content").forEach(c => {
-        c.classList.remove("active");
-    });
-    
-    // 2. SHOW SELECTED TAB
+    // REGRESSION TEST: Ensure only one tab can exist at a time
+    document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
     const target = document.getElementById(name);
-    if(target) {
-        target.classList.add("active");
-    }
+    if(target) target.classList.add("active");
     
-    // 3. NAV LOGIC
+    // REGRESSION TEST: Strict Navigation Kill-Switch
     const globalNav = document.getElementById('globalNav');
     if (name === 'home') {
         globalNav.classList.add('hidden');
@@ -48,18 +42,36 @@ window.handleBackNavigation = () => {
     else openTab('home');
 };
 
-// --- DATA LOGIC ---
-window.toggleCleaned = (id) => {
-    const c = db.customers.find(x => x.id === id);
-    if (c) { c.cleaned = !c.cleaned; saveData(); renderAll(); }
+// --- DATA LOCKDOWN: Save Logic ---
+window.saveCustomer = () => {
+    const name = document.getElementById('cName').value; if(!name) return;
+    const id = document.getElementById('editId').value || Date.now().toString();
+    const idx = db.customers.findIndex(x => x.id === id);
+    let ex = idx > -1 ? db.customers[idx] : null;
+
+    // Explicit Mapping to prevent variable drift
+    const entry = {
+        id, name,
+        houseNum: document.getElementById('cHouseNum').value,
+        street: document.getElementById('cStreet').value,
+        postcode: document.getElementById('cPostcode').value.toUpperCase(),
+        price: n(document.getElementById('cPrice').value),
+        notes: document.getElementById('cNotes').value,
+        week: ex ? ex.week : "1", 
+        cleaned: ex ? ex.cleaned : false,
+        paidThisMonth: ex ? ex.paidThisMonth : 0
+    };
+
+    if(idx > -1) db.customers[idx] = entry; else db.customers.push(entry);
+    saveData();
+    // Reset Form to clear cache
+    document.getElementById('editId').value = "";
+    document.getElementById('cName').value = "";
+    openTab('home');
 };
 
-window.markAsPaid = (id) => {
-    const c = db.customers.find(x => x.id === id); if (!c) return;
-    const isPaid = n(c.paidThisMonth) >= n(c.price);
-    c.paidThisMonth = isPaid ? 0 : c.price;
-    saveData(); renderAll();
-};
+window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
+window.renderAll = () => { renderWeekLists(); renderMasterTable(); renderStats(); renderLedger(); };
 
 window.renderWeekLists = () => {
     for (let i = 1; i <= 5; i++) {
@@ -71,7 +83,7 @@ window.renderWeekLists = () => {
             const card = document.createElement('div');
             card.className = 'card';
             card.innerHTML = `
-                <div onclick="editCust('${c.id}')"><strong style="color:var(--accent); font-size:18px;">${c.name} ${c.cleaned ? '✅' : ''}</strong><br><small>${c.houseNum} ${c.street} ${isPaid ? '💰' : ''}</small></div>
+                <div onclick="editCust('${c.id}')"><strong style="color:var(--accent)">${c.name} ${c.cleaned ? '✅' : ''}</strong><br><small>${c.houseNum} ${c.street} ${isPaid ? '💰' : ''}</small></div>
                 <div style="margin-top:10px; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                     <button class="tile" style="height:44px; font-weight:800; ${c.cleaned ? 'background:var(--success); color:white;' : ''}" onclick="toggleCleaned('${c.id}')">${c.cleaned ? 'Done' : 'Clean'}</button>
                     <button class="tile" style="height:44px; font-weight:800; ${isPaid ? 'background:var(--accent); color:white;' : ''}" onclick="markAsPaid('${c.id}')">${isPaid ? 'Paid' : 'Pay'}</button>
@@ -81,31 +93,6 @@ window.renderWeekLists = () => {
     }
 };
 
-window.saveCustomer = () => {
-    const name = document.getElementById('cName').value; if(!name) return;
-    const id = document.getElementById('editId').value || Date.now().toString();
-    const idx = db.customers.findIndex(x => x.id === id);
-    let ex = idx > -1 ? db.customers[idx] : null;
-
-    db.customers.push({
-        id, name,
-        houseNum: document.getElementById('cHouseNum').value,
-        street: document.getElementById('cStreet').value,
-        postcode: document.getElementById('cPostcode').value.toUpperCase(),
-        price: n(document.getElementById('cPrice').value),
-        notes: document.getElementById('cNotes').value,
-        cleaned: ex ? ex.cleaned : false,
-        paidThisMonth: ex ? ex.paidThisMonth : 0
-    });
-    if(idx > -1) db.customers.splice(idx, 1);
-    saveData(); 
-    document.getElementById('editId').value = "";
-    document.getElementById('cName').value = "";
-    openTab('home');
-};
-
-window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
-window.renderAll = () => { renderWeekLists(); renderMasterTable(); renderStats(); renderLedger(); };
 window.renderMasterTable = () => {
     const body = document.getElementById('masterTableBody'); if(!body) return;
     body.innerHTML = '';
@@ -119,6 +106,18 @@ window.renderMasterTable = () => {
     });
 };
 
+window.toggleCleaned = (id) => {
+    const c = db.customers.find(x => x.id === id);
+    if (c) { c.cleaned = !c.cleaned; saveData(); renderAll(); }
+};
+
+window.markAsPaid = (id) => {
+    const c = db.customers.find(x => x.id === id); if (!c) return;
+    const isPaid = n(c.paidThisMonth) >= n(c.price);
+    c.paidThisMonth = isPaid ? 0 : c.price;
+    saveData(); renderAll();
+};
+
 window.editCust = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
     openTab('admin');
@@ -128,6 +127,7 @@ window.editCust = (id) => {
     document.getElementById('cStreet').value = c.street;
     document.getElementById('cPostcode').value = c.postcode;
     document.getElementById('cPrice').value = c.price;
+    document.getElementById('cNotes').value = c.notes;
 };
 
 window.renderStats = () => {
