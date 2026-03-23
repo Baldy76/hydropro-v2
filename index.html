@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v13.8 Restore</title>
-    <link rel="stylesheet" href="styles.css?v=138">
+    <title>Hydro Pro v13.7</title>
+    <link rel="stylesheet" href="styles.css?v=137">
 </head>
 <body class="light-mode">
 
     <div class="sticky-header">
         <div class="header-top">
-            <img src="Logo-Light.png" id="appLogo" class="logo-img" alt="Logo">
+            <img src="Logo.png" class="logo-img" alt="Logo">
             <div class="mode-switch-wrapper">
                 <label class="ios-switch">
                     <input type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()">
@@ -18,7 +18,6 @@
                 </label>
             </div>
         </div>
-        
         <div class="date-container">
             <div id="greetingMsg" class="greeting-txt">Hey there!</div>
             <div id="weatherWrap" class="weather-pill hidden bounce-on-tap" onclick="openWeatherApp()">
@@ -26,7 +25,6 @@
             </div>
             <div id="headerDate" class="date-txt"></div>
         </div>
-
         <div class="tabs">
             <button class="tab active" onclick="openTab(event, 'admin')">Setup</button>
             <button class="tab" onclick="openTab(event, 'master')">Custs</button>
@@ -60,17 +58,10 @@
                     <select id="cWeek" class="large-select"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option><option value="5">Week 5</option></select>
                     <select id="cDay" class="large-select"><option value="Monday">Monday</option><option value="Tuesday">Tuesday</option><option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option><option value="Friday">Friday</option></select>
                 </div>
-                <textarea id="cNotes" placeholder="Notes..." class="premium-textarea"></textarea>
                 <button class="btn-main full-width-btn bounce-on-tap" onclick="saveCustomer()">💾 Save Customer</button>
             </div>
             <div class="card action-card-green"><button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
-            <div class="card">
-                <div class="grid-1x2">
-                    <button class="pill-btn bounce-on-tap" style="background:#add8e6; color:#000;" onclick="exportFullCSV()">💾 Export</button>
-                    <button class="pill-btn bounce-on-tap" style="background:#fff9c4; color:#000;" onclick="document.getElementById('csvFile').click()">📂 Import</button>
-                </div>
-                <input type="file" id="csvFile" style="display:none;" onchange="importFullCSV(event)">
-            </div>
+            <div class="card action-card-red"><button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL DATA</button></div>
         </div>
 
         <div id="master" class="tab-content"><div id="masterTableBody"></div></div>
@@ -78,23 +69,20 @@
         <div id="stats" class="tab-content">
             <div class="dashboard-hero"><div class="hero-label">Net Profit</div><div class="hero-amount" id="currProfit">£0.00</div></div>
             <div class="grid-1x2" style="margin-top:15px;">
-                <div class="card mini-card clickable-stat bounce-on-tap" onclick="showIncomeModal()"><small>Revenue 🔍</small><strong id="currRevenue" style="color:var(--success)">£0.00</strong></div>
-                <div class="card mini-card clickable-stat bounce-on-tap" onclick="showExpenseModal()"><small>Spend 🔍</small><strong id="currSpend" style="color:var(--danger)">£0.00</strong></div>
+                <div class="card mini-card clickable-stat bounce-on-tap" onclick="showIncomeModal()"><small>Revenue</small><strong id="currRevenue" style="color:var(--success)">£0.00</strong></div>
+                <div class="card mini-card clickable-stat bounce-on-tap" onclick="showExpenseModal()"><small>Spend</small><strong id="currSpend" style="color:var(--danger)">£0.00</strong></div>
             </div>
-            <div class="card debt-highlight-card clickable-stat bounce-on-tap" onclick="showArrearsModal()"><div class="stat-row"><span>Arrears 🔍</span><strong id="totalOldDebt">£0.00</strong></div></div>
-            <div id="monthlyHistoryContainer"></div>
+            <div class="card debt-highlight-card"><div class="stat-row"><span>Arrears</span><strong id="totalOldDebt">£0.00</strong></div></div>
         </div>
 
         <div id="spend" class="tab-content">
-            <div class="card"><h3 class="section-title">Log Expense</h3><input type="text" id="expDesc" placeholder="Description" class="large-select"><input type="number" id="expAmt" placeholder="Amount £" class="large-select"><button class="btn-main full-width-btn bounce-on-tap" onclick="addExpense()">Add Expense</button></div>
+            <div class="card"><h3 class="section-title">💸 Log Expense</h3><input type="text" id="expDesc" placeholder="Description" class="large-select"><input type="number" id="expAmt" placeholder="Amount £" class="large-select"><button class="btn-main full-width-btn bounce-on-tap" onclick="addExpense()">Add Expense</button></div>
             <div id="expenseList"></div>
         </div>
 
         <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
     </div>
 
-    <div id="globalModal" class="modal-overlay" onclick="if(event.target === this) closeModal()"><div class="modal-content"><button class="close-btn" onclick="closeModal()">✕</button><div id="modalContentBody"></div></div></div>
-    
-    <script src="app.js?v=138"></script>
+    <script src="app.js?v=137"></script>
 </body>
 </html>
