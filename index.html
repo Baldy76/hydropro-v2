@@ -4,22 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro v7.1</title>
-    <link rel="stylesheet" href="styles.css?v=71">
+    <title>Hydro Pro v7.0</title>
+    <link rel="stylesheet" href="styles.css?v=70">
 </head>
 <body class="light-mode">
 
     <div class="sticky-header">
-        <div class="mode-switch-wrapper">
-            <label class="ios-switch">
-                <input type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()">
-                <span class="slider"></span>
-            </label>
-        </div>
-
         <div class="header-top">
             <div class="brand-container">
                 <img src="Logo.png" id="mainLogo" class="logo-img" alt="Hydro Logo">
+            </div>
+            <div class="mode-switch-wrapper">
+                <label class="ios-switch">
+                    <input type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()">
+                    <span class="slider"></span>
+                </label>
             </div>
         </div>
         
@@ -92,7 +91,7 @@
                 <button type="button" class="btn-uat full-width-btn" onclick="runUATClear()">🛠️ RESET ALL DATA</button>
             </div>
             
-            <div class="version-tag">v7.1 - Slider & Chart Fix</div>
+            <div class="version-tag">v7.0 - Rollback Stable</div>
         </div>
 
         <div id="master" class="tab-content">
@@ -112,7 +111,7 @@
             <div class="card">
                 <h3 style="text-align:center; margin-bottom: 20px;">Current Cycle Breakdown</h3>
                 <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 25px;">
-                    <svg width="180" height="180" viewBox="0 0 42 42" id="statPieSvg" style="transform: rotate(-90deg); border-radius: 50%;">
+                    <svg width="200" height="200" viewBox="0 0 42 42" id="statPieSvg" style="transform: rotate(-90deg); border-radius: 50%;">
                         <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#eee" stroke-width="6"></circle>
                         <circle id="pieCollected" cx="21" cy="21" r="15.915" fill="transparent" stroke="var(--stat-collected)" stroke-width="6" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
                         <circle id="pieOwed" cx="21" cy="21" r="15.915" fill="transparent" stroke="var(--stat-owed)" stroke-width="6" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
@@ -159,27 +158,27 @@
             <div id="modName" style="font-size:22px; font-weight:900; color:var(--primary);"></div>
             <p id="modAddr" style="opacity:0.6; font-size:14px; margin-bottom: 10px;"></p>
             
-            <div class="ledger-container">
-                <small class="ledger-title">Monthly Activity Ledger</small>
-                <div id="ledgerBox"></div>
-                <div class="current-month-summary">
+            <div class="ledger-container" style="background: rgba(0,0,0,0.03); padding: 15px; border-radius: 12px; margin-bottom: 15px;">
+                <small style="font-weight: 800; opacity: 0.5; text-transform: uppercase;">Ledger</small>
+                <div id="ledgerBox" style="font-size:14px; margin-top: 5px;"></div>
+                <div class="current-month-summary" style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(0,0,0,0.1); display: flex; justify-content: space-between; font-weight: 800;">
                     <span>Current Month:</span>
                     <span id="modCurrentStatus"></span>
                 </div>
             </div>
 
-            <div class="total-owed-display">
-                <small>TOTAL OWED:</small><br>
-                <span id="modOwed"></span>
+            <div class="total-owed-display" style="text-align:right; margin-bottom: 15px;">
+                <small style="font-weight:800; opacity:0.5;">TOTAL OWED:</small><br>
+                <span id="modOwed" style="font-size:32px; font-weight:900;"></span>
             </div>
             
-            <div class="modal-action-footer">
+            <div class="modal-action-footer" style="display:flex; flex-direction:column; gap:10px;">
                 <button class="btn-alt full-width-btn" onclick="editFromModal()">⚙️ Edit Details</button>
                 <button class="btn-neutral full-width-btn" onclick="closeCustomerModal()">Close</button>
             </div>
         </div>
     </div>
 
-    <script src="app.js?v=71"></script>
+    <script src="app.js?v=70"></script>
 </body>
 </html>
