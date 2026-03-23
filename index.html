@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v19.8</title>
-    <link rel="stylesheet" href="styles.css?v=198">
+    <title>Hydro Pro v19.9</title>
+    <link rel="stylesheet" href="styles.css?v=199">
 </head>
 <body class="light-mode">
 
@@ -29,47 +29,6 @@
 
     <div class="main-container">
         
-        <div id="stats" class="tab-content">
-            <div class="stats-hero-card">
-                <div class="stats-summary-title" id="currentMonthYear">Summary</div>
-                <div class="stats-main-amount" id="currProfit">£0.00</div>
-                <div class="stats-hero-sub">💰 Total Profit in Pocket</div>
-            </div>
-
-            <div class="stats-card">
-                <div class="progress-header">
-                    <span>Monthly Progress</span><span id="progressPercent">0%</span>
-                </div>
-                <div class="progress-bar-bg">
-                    <div id="progressBarFill" class="progress-bar-fill"></div>
-                </div>
-                <div class="progress-footer">
-                    <span>TARGET: <strong id="statsTarget">£0.00</strong></span>
-                    <span>REMAINING: <strong id="statsRemaining">£0.00</strong></span>
-                </div>
-            </div>
-
-            <div class="stats-grid-2x1">
-                <div class="stats-mini-card">
-                    <small>MONTH INCOME 🔍</small>
-                    <div class="amt-green" id="statsIncome">£0.00</div>
-                </div>
-                <div class="stats-mini-card">
-                    <small>MONTH SPEND 🔍</small>
-                    <div class="amt-red" id="statsSpend">£0.00</div>
-                </div>
-            </div>
-
-            <div class="arrears-pill">
-                Arrears 🔍 <span id="statsArrears">£0.00</span>
-            </div>
-
-            <h3 class="hall-of-fame-title">🏆 The Hall of Fame</h3>
-            <div id="monthlyHistoryContainer">
-                <div class="empty-history-msg">Month-end snapshots appear here.</div>
-            </div>
-        </div>
-
         <div id="home" class="tab-content active">
             <div class="home-grid">
                 <button class="tile tile-admin bounce-on-tap" onclick="openTab('admin')"><span>✨</span><small>Setup</small></button>
@@ -78,6 +37,42 @@
                 <button class="tile tile-admin bounce-on-tap" onclick="openTab('spend')"><span>💸</span><small>Ledger</small></button>
                 <button class="tile tile-weekly-hub bounce-on-tap" onclick="openTab('weeksHub')"><span>📅</span><small>Weekly Work</small></button>
             </div>
+        </div>
+
+        <div id="weeksHub" class="tab-content">
+            <div class="weeks-grid">
+                <button class="tile-week-blue" onclick="openTab('week1')">Week 1</button>
+                <button class="tile-week-blue" onclick="openTab('week2')">Week 2</button>
+                <button class="tile-week-blue" onclick="openTab('week3')">Week 3</button>
+                <button class="tile-week-blue" onclick="openTab('week4')">Week 4</button>
+                <button class="tile-week-blue tile-week-5" onclick="openTab('week5')">Week 5</button>
+            </div>
+        </div>
+
+        <div id="week1" class="tab-content"></div>
+        <div id="week2" class="tab-content"></div>
+        <div id="week3" class="tab-content"></div>
+        <div id="week4" class="tab-content"></div>
+        <div id="week5" class="tab-content"></div>
+
+        <div id="stats" class="tab-content">
+            <div class="stats-hero-card">
+                <div class="stats-summary-title" id="currentMonthYear">Summary</div>
+                <div class="stats-main-amount" id="currProfit">£0.00</div>
+                <div class="stats-hero-sub">💰 Total Profit in Pocket</div>
+            </div>
+            <div class="stats-card">
+                <div class="progress-header"><span>Monthly Progress</span><span id="progressPercent">0%</span></div>
+                <div class="progress-bar-bg"><div id="progressBarFill" class="progress-bar-fill"></div></div>
+                <div class="progress-footer"><span>TARGET: <strong id="statsTarget">£0.00</strong></span><span>REMAINING: <strong id="statsRemaining">£0.00</strong></span></div>
+            </div>
+            <div class="stats-grid-2x1">
+                <div class="stats-mini-card"><small>MONTH INCOME 🔍</small><div class="amt-green" id="statsIncome">£0.00</div></div>
+                <div class="stats-mini-card"><small>MONTH SPEND 🔍</small><div class="amt-red" id="statsSpend">£0.00</div></div>
+            </div>
+            <div class="arrears-pill">Arrears 🔍 <span id="statsArrears">£0.00</span></div>
+            <h3 class="hall-of-fame-title">🏆 The Hall of Fame</h3>
+            <div id="monthlyHistoryContainer"></div>
         </div>
 
         <div id="master" class="tab-content">
@@ -93,18 +88,16 @@
                 <div class="fun-input-group"><div class="fun-icon" style="background:rgba(255,149,0,0.15)">🏠</div><div class="fun-field-stack"><label>House No.</label><input type="text" id="cHouseNum" class="creative-input"></div></div>
                 <div class="fun-input-group"><div class="fun-icon" style="background:rgba(52,199,89,0.15)">🛣️</div><div class="fun-field-stack"><label>Street</label><input type="text" id="cStreet" class="creative-input"></div></div>
                 <div class="fun-input-group"><div class="fun-icon" style="background:rgba(175,82,222,0.15)">📍</div><div class="fun-field-stack"><label>Postcode</label><input type="text" id="cPostcode" class="creative-input postcode-input"></div></div>
-                <div class="fun-input-group"><div class="fun-icon" style="background:rgba(255,59,48,0.15)">💰</div><div class="fun-field-stack"><label>Clean Price (£)</label><input type="number" id="cPrice" class="creative-input"></div></div>
-                <div class="fun-input-group" style="border:none"><div class="fun-icon" style="background:rgba(142,142,147,0.15)">📝</div><div class="fun-field-stack"><label>Notes</label><textarea id="cNotes" class="creative-textarea"></textarea></div></div>
+                <div class="fun-input-group"><div class="fun-icon" style="background:rgba(255,59,48,0.15)">💰</div><div class="fun-field-stack"><label>Price £</label><input type="number" id="cPrice" class="creative-input"></div></div>
+                <div class="fun-input-group" style="border:none"><div class="fun-icon" style="background:rgba(142,142,147,0.15)">📝</div><div class="fun-field-stack"><label>Private Notes</label><textarea id="cNotes" class="creative-textarea"></textarea></div></div>
                 <button class="btn-main full-width-btn creative-save-btn bounce-on-tap" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
         </div>
 
         <div id="spend" class="tab-content"><div id="expenseList"></div></div>
-        <div id="weeksHub" class="tab-content"><div class="weeks-grid"><button class="tile-week-blue" onclick="openTab('week1')">Week 1</button><button class="tile-week-blue" onclick="openTab('week2')">Week 2</button><button class="tile-week-blue" onclick="openTab('week3')">Week 3</button><button class="tile-week-blue" onclick="openTab('week4')">Week 4</button><button class="tile-week-blue tile-week-5" onclick="openTab('week5')">Week 5</button></div></div>
-        <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
     </div>
 
-    <div class="page-version-footer">v19.8 - UI Audit Locked</div>
-    <script src="app.js?v=198"></script>
+    <div class="page-version-footer">v19.9 - Master Navigation Build</div>
+    <script src="app.js?v=199"></script>
 </body>
 </html>
