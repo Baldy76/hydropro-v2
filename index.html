@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v16.0</title>
-    <link rel="stylesheet" href="styles.css?v=160">
+    <title>Hydro Pro v16.1</title>
+    <link rel="stylesheet" href="styles.css?v=161">
 </head>
 <body class="light-mode">
 
@@ -31,10 +31,11 @@
 
             <div class="home-grid">
                 <button class="tile tile-admin bounce-on-tap" onclick="openTab('admin')"><span>✨</span><small>Setup</small></button>
-                <button class="tile tile-admin bounce-on-tap" onclick="openTab('master')"><span>👥</span><small>Customers</small></button>
-                <button class="tile tile-admin bounce-on-tap" onclick="openTab('plan')"><span>🛰️</span><small>Planner</small></button>
+                <button class="tile tile-admin bounce-on-tap" onclick="openTab('master')"><span>👥</span><small>Custs</small></button>
+                <button class="tile tile-admin bounce-on-tap" onclick="openTab('plan')"><span>🛰️</span><small>Plan</small></button>
                 <button class="tile tile-admin bounce-on-tap" onclick="openTab('stats')"><span>📊</span><small>Stats</small></button>
                 <button class="tile tile-admin bounce-on-tap" onclick="openTab('spend')"><span>💸</span><small>Ledger</small></button>
+                
                 <button class="tile tile-week bounce-on-tap" onclick="openTab('week1')"><span>📅</span><small>Week 1</small></button>
                 <button class="tile tile-week bounce-on-tap" onclick="openTab('week2')"><span>📅</span><small>Week 2</small></button>
                 <button class="tile tile-week bounce-on-tap" onclick="openTab('week3')"><span>📅</span><small>Week 3</small></button>
@@ -44,12 +45,12 @@
         </div>
 
         <div id="subpageNav" class="subpage-nav hidden">
-            <button class="back-btn bounce-on-tap" onclick="openTab('home')">← Back to Home</button>
+            <button class="back-btn bounce-on-tap" onclick="openTab('home')">🏠 Back to Home</button>
         </div>
 
         <div id="admin" class="tab-content">
             <div class="card">
-                <h3 class="section-title">Add New Client</h3>
+                <h3 class="section-title">Add Client</h3>
                 <input type="hidden" id="editId">
                 <div class="input-stack force-stack">
                     <input type="text" id="cName" placeholder="Full Name">
@@ -66,30 +67,21 @@
                 <button class="btn-main full-width-btn bounce-on-tap" onclick="saveCustomer()">💾 Save Customer</button>
             </div>
             <div class="card action-card-green"><button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
-            <div class="card">
-                <div class="grid-1x2">
-                    <button class="pill-btn bounce-on-tap" style="background:#add8e6; color:#000;" onclick="exportFullCSV()">💾 Export</button>
-                    <button class="pill-btn bounce-on-tap" style="background:#fff9c4; color:#000;" onclick="document.getElementById('csvFile').click()">📂 Import</button>
-                </div>
-                <input type="file" id="csvFile" style="display:none;" onchange="importFullCSV(event)">
-            </div>
-            <div class="card action-card-red"><button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET SYSTEM</button></div>
+            <div class="card"><div class="grid-1x2"><button class="pill-btn bounce-on-tap" style="background:#add8e6" onclick="exportFullCSV()">💾 Export</button><button class="pill-btn bounce-on-tap" style="background:#fff9c4" onclick="document.getElementById('csvFile').click()">📂 Import</button></div><input type="file" id="csvFile" style="display:none;" onchange="importFullCSV(event)"></div>
         </div>
 
         <div id="plan" class="tab-content">
             <div class="card">
-                <h3 class="section-title">Route Optimizer</h3>
-                <div class="grid-1x2">
-                    <select id="planWeekSelect" class="large-select"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option><option value="5">Week 5</option></select>
-                    <button class="btn-main bounce-on-tap" style="margin-top:0;" onclick="optimizeDay(document.getElementById('planWeekSelect').value)">🚀 Sort Day</button>
-                </div>
+                <h3 class="section-title">Routing</h3>
+                <select id="planWeekSelect" class="large-select" style="margin-bottom:10px;"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option><option value="5">Week 5</option></select>
+                <button class="btn-main full-width-btn bounce-on-tap" onclick="optimizeDay(document.getElementById('planWeekSelect').value)">🚀 Sort Week</button>
                 <button class="btn-main full-width-btn bounce-on-tap" style="background:var(--success); margin-top:10px;" onclick="mapTheDay(document.getElementById('planWeekSelect').value)">🗺️ Driving Map</button>
             </div>
             <div class="card">
                 <h3 class="section-title">Broadcaster</h3>
                 <div class="grid-1x2">
                     <button class="btn-main bounce-on-tap" style="margin-top:0; background:#25D366" onclick="broadcastWeek(document.getElementById('planWeekSelect').value, 'wa')">💬 WhatsApp</button>
-                    <button class="btn-main bounce-on-tap" style="margin-top:0; background:var(--accent)" onclick="broadcastWeek(document.getElementById('planWeekSelect').value, 'sms')">📱 SMS</button>
+                    <button class="btn-main bounce-on-tap" style="margin-top:0; background:var(--accent)" onclick="broadcastWeek(document.getElementById('planWeekSelect').value, 'sms')">📱 SMS All</button>
                 </div>
             </div>
         </div>
@@ -100,29 +92,17 @@
         </div>
 
         <div id="stats" class="tab-content">
-            <div class="dashboard-hero">
-                <div class="hero-label">Net Profit</div>
-                <div class="hero-amount" id="currProfit">£0.00</div>
-            </div>
+            <div class="dashboard-hero"><div class="hero-label">Total Profit</div><div class="hero-amount" id="currProfit">£0.00</div></div>
             <div class="grid-1x2" style="margin-top:15px;">
                 <div class="card mini-card clickable-stat bounce-on-tap" onclick="showIncomeModal()"><small>Revenue 🔍</small><strong id="currRevenue" style="color:var(--success)">£0.00</strong></div>
                 <div class="card mini-card clickable-stat bounce-on-tap" onclick="showExpenseModal()"><small>Spend 🔍</small><strong id="currSpend" style="color:var(--danger)">£0.00</strong></div>
             </div>
-            <div class="card debt-highlight-card clickable-stat bounce-on-tap" onclick="showArrearsModal()">
-                <div class="stat-row"><span>Arrears Owed 🔍</span><strong id="totalOldDebt">£0.00</strong></div>
-            </div>
+            <div class="card debt-highlight-card clickable-stat bounce-on-tap" onclick="showArrearsModal()"><div class="stat-row"><span>Arrears Owed 🔍</span><strong id="totalOldDebt">£0.00</strong></div></div>
             <div id="monthlyHistoryContainer"></div>
         </div>
 
         <div id="spend" class="tab-content">
-            <div class="card">
-                <h3 class="section-title">Log Expense</h3>
-                <div class="force-stack">
-                    <input type="text" id="expDesc" placeholder="Description" class="large-select" style="margin-bottom:10px;">
-                    <input type="number" id="expAmt" placeholder="Amount £" class="large-select">
-                </div>
-                <button class="btn-main full-width-btn bounce-on-tap" onclick="addExpense()">Add Expense</button>
-            </div>
+            <div class="card"><h3 class="section-title">Log Expense</h3><input type="text" id="expDesc" placeholder="Description" class="large-select" style="margin-bottom:10px;"><input type="number" id="expAmt" placeholder="Amount £" class="large-select"><button class="btn-main full-width-btn bounce-on-tap" onclick="addExpense()">Add Expense</button></div>
             <div id="expenseList"></div>
         </div>
 
@@ -130,6 +110,6 @@
     </div>
 
     <div id="globalModal" class="modal-overlay" onclick="if(event.target === this) closeModal()"><div class="modal-content"><button class="close-btn" onclick="closeModal()">✕</button><div id="modalContentBody"></div></div></div>
-    <script src="app.js?v=160"></script>
+    <script src="app.js?v=161"></script>
 </body>
 </html>
