@@ -43,7 +43,6 @@ window.saveCustomer = () => {
     };
     const idx = db.customers.findIndex(x => x.id === id);
     if(idx > -1) {
-        // Keep debt history if editing
         const existing = db.customers[idx];
         entry.debtHistory = existing.debtHistory || [];
         entry.paidThisMonth = existing.paidThisMonth || 0;
@@ -72,14 +71,41 @@ window.markAsPaid = (id) => {
     renderWeekLists();
 };
 
-window.clearDebt = (id) => {
+window.handleDebtCollection = (id) => {
     const c = db.customers.find(x => x.id === id);
     if (!c) return;
-    if(confirm(`Clear all debt (£${calculateDebt(c)}) for ${c.name}?`)) {
+    const currentTotal = calculateDebt(c);
+    
+    const input = prompt(`Debt Collection for ${c.name}\nTotal Owed: £${currentTotal.toFixed(2)}\n\nEnter amount paid:`, currentTotal.toFixed(2));
+    
+    if (input === null) return; // User cancelled
+    const amountPaid = n(input);
+    if (amountPaid <= 0) return;
+
+    if (amountPaid >= currentTotal) {
         c.debtHistory = [];
-        saveData();
-        renderWeekLists();
+        alert("Debt cleared fully!");
+    } else {
+        // Partial Payment Logic: Subtract from the oldest debt entries first
+        let remainingToSubtract = amountPaid;
+        // Sort debtHistory so we clear oldest first (optional, but standard)
+        for (let i = 0; i < c.debtHistory.length; i++) {
+            if (remainingToSubtract <= 0) break;
+            let debtEntry = c.debtHistory[i];
+            if (debtEntry.amount <= remainingToSubtract) {
+                remainingToSubtract -= debtEntry.amount;
+                c.debtHistory.splice(i, 1);
+                i--; // Adjust index due to splice
+            } else {
+                debtEntry.amount -= remainingToSubtract;
+                remainingToSubtract = 0;
+            }
+        }
+        alert(`Partial payment of £${amountPaid.toFixed(2)} recorded. £${calculateDebt(c).toFixed(2)} remains.`);
     }
+
+    saveData();
+    renderWeekLists();
 };
 
 const calculateDebt = (c) => {
@@ -146,7 +172,6 @@ window.renderWeekLists = () => {
             const card = document.createElement('div');
             card.className = 'card';
             
-            // Layout Row 2 Grid depends on Debt presence
             const gridStyle = hasDebt ? 'grid-template-columns: repeat(3, 1fr);' : 'grid-template-columns: 1fr 1fr;';
 
             card.innerHTML = `
@@ -169,7 +194,7 @@ window.renderWeekLists = () => {
                             ${isPaid ? 'Paid ✅' : 'Pay £' + n(c.price).toFixed(2)}
                         </button>
                         ${hasDebt ? `
-                        <button class="action-btn-main btn-debt-pending" onclick="clearDebt('${c.id}')">
+                        <button class="action-btn-main btn-debt-pending" onclick="handleDebtCollection('${c.id}')">
                             Debt £${debt.toFixed(2)}
                         </button>` : ''}
                     </div>
@@ -250,4 +275,18 @@ window.completeCycle = () => {
     db.expenses = []; saveData(); location.reload();
 };
 window.exportFullCSV = () => { let c = "ID,Name,Address,Postcode,Phone,Price,Week,Day,Notes\n"; db.customers.forEach(x => { c += `${x.id},"${x.name}","${x.address}","${x.postcode}","${x.phone}",${x.price},${x.week},"${x.day}","${x.notes}"\n`; }); const b = new Blob([c], { type: 'text/csv' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `Backup.csv`; a.click(); };
-window.importFullCSV = (e) => { const f = e.target.files[0], r = new FileReader(); r.onload = (ev) => { const rows = ev.target.result.split('\n').slice(1); let imp = []; rows.forEach(row => { const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); if(cols.length > 5) { imp.push({ id: cols[0], name: cols[1].replace(/"/g,''), address: cols[2].replace(/"/g,''), postcode: cols[3].replace(/"/g,''), phone: cols[4].replace(/"/g,''), price: n(cols[5]), week: cols[6], day: cols[7].replace(/"/g,''), notes: cols[8] ? cols[8].replace(/"/g,'') : "", cleaned: false, paidThisMonth: 0, debtHistory: [] }); } }); db.customers = imp; saveData(); location.reload(); }; r.readAsText(f); };
+window.importFullCSV = (e) => {
+    const f = e.target.files[0], r = new FileReader();
+    r.onload = (ev) => {
+        const rows = ev.target.result.split('\n').slice(1);
+        let imp = [];
+        rows.forEach(row => {
+            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            if(cols.length > 5) {
+                imp.push({ id: cols[0], name: cols[1].replace(/"/g,''), address: cols[2].replace(/"/g,''), postcode: cols[3].replace(/"/g,''), phone: cols[4].replace(/"/g,''), price: n(cols[5]), week: cols[6], day: cols[7].replace(/"/g,''), notes: cols[8] ? cols[8].replace(/"/g,'') : "", cleaned: false, paidThisMonth: 0, debtHistory: [] });
+            }
+        });
+        db.customers = imp; saveData(); location.reload();
+    };
+    r.readAsText(f);
+};
