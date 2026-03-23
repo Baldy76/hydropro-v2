@@ -71,11 +71,9 @@ function updatePieChart(coll, owed, pend) {
     const elOwed = document.getElementById('pieOwed');
     const elPend = document.getElementById('piePending');
     if(!elColl || total === 0) return;
-
     const pColl = (coll / total) * 100;
     const pOwed = (owed / total) * 100;
     const pPend = (pend / total) * 100;
-
     elColl.setAttribute('stroke-dasharray', `${pColl} 100`);
     elColl.setAttribute('stroke-dashoffset', `0`);
     elOwed.setAttribute('stroke-dasharray', `${pOwed} 100`);
