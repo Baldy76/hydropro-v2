@@ -111,17 +111,64 @@ window.renderStats = function() {
     }
 };
 
+// NEW MODAL LEDGER LOGIC
+window.openCustomerModal = function(id) {
+    const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return;
+    document.getElementById('modName').innerText = c.name;
+    document.getElementById('modAddr').innerText = (c.address || "") + " " + (c.postcode || "");
+    
+    const totalOwed = calculateTrueDebt(c);
+    document.getElementById('modOwed').innerText = '£' + totalOwed.toFixed(2);
+    document.getElementById('modOwed').style.color = totalOwed > 0 ? 'var(--danger)' : 'var(--stat-collected)';
+    
+    // Ledger Building
+    let ledgerHtml = "";
+    // Get all unique months from both arrays
+    const allMonths = [...new Set([...(c.debtHistory||[]).map(d=>d.month), ...(c.paymentHistory||[]).map(p=>p.month)])];
+    
+    if(allMonths.length > 0) {
+        allMonths.forEach(m => {
+            const debt = (c.debtHistory||[]).find(x => x.month === m);
+            const paid = (c.paymentHistory||[]).find(x => x.month === m);
+            
+            if(debt) {
+                ledgerHtml += `<div class="ledger-row text-owed"><span>${m}: OWED</span><span>£${n(debt.amount).toFixed(2)}</span></div>`;
+            } else if(paid) {
+                ledgerHtml += `<div class="ledger-row text-paid"><span>${m}: PAID ✅</span><span>£${n(paid.amount).toFixed(2)}</span></div>`;
+            }
+        });
+    } else {
+        ledgerHtml = "<div style='opacity:0.5; text-align:center; padding:10px;'>No payment history yet.</div>";
+    }
+    document.getElementById('ledgerBox').innerHTML = ledgerHtml;
+
+    // Current Month Inline Status
+    const statusBox = document.getElementById('modCurrentStatus');
+    if (n(c.paidThisMonth) >= n(c.price)) {
+        statusBox.innerHTML = `<span class="text-paid">PAID ✅ (£${n(c.paidThisMonth).toFixed(2)})</span>`;
+    } else {
+        const bal = n(c.price) - n(c.paidThisMonth);
+        statusBox.innerHTML = `<span class="text-owed">OWED (£${bal.toFixed(2)})</span>`;
+    }
+
+    document.getElementById('customerModal').style.display = 'flex';
+};
+
 window.completeCycle = function() {
-    if(!confirm("Start New Month? Unpaid current moves to debt.")) return;
+    if(!confirm("Start New Month? Unpaid moved to Debt, Paid moved to History.")) return;
     const label = new Date().toLocaleDateString('en-GB', {month:'short', year:'2-digit'});
     db.incomeHistory.push({ month: label, amount: db.customers.reduce((s,c) => s + n(c.paidThisMonth), 0) });
     db.customers.forEach(c => {
         if(!c.paymentHistory) c.paymentHistory = [];
-        if(n(c.paidThisMonth) > 0) c.paymentHistory.push({ month: label, amount: n(c.paidThisMonth) });
+        if(!c.debtHistory) c.debtHistory = [];
+        
+        // If fully or partially paid
+        if(n(c.paidThisMonth) > 0 && n(c.paidThisMonth) >= n(c.price)) {
+             c.paymentHistory.push({ month: label, amount: n(c.paidThisMonth) });
+        }
         
         const o = calculateTrueDebt(c);
         if(o > 0) {
-            c.debtHistory = c.debtHistory || [];
             const existing = c.debtHistory.find(h => h.month === label);
             if(existing) existing.amount = n(existing.amount) + o;
             else c.debtHistory.push({ month: label, amount: o });
@@ -149,34 +196,6 @@ window.processPayment = function(id) {
     saveData();
 };
 
-window.openCustomerModal = function(id) {
-    const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return;
-    document.getElementById('modName').innerText = c.name;
-    document.getElementById('modAddr').innerText = (c.address || "") + " " + (c.postcode || "");
-    
-    // NEW: Current Paid Display
-    document.getElementById('modPaidNow').innerText = '£' + n(c.paidThisMonth).toFixed(2);
-    
-    const totalDebt = calculateTrueDebt(c);
-    document.getElementById('modOwed').innerText = '£' + totalDebt.toFixed(2);
-    document.getElementById('modOwed').style.color = totalDebt > 0 ? 'var(--danger)' : 'var(--stat-collected)';
-    
-    let ledgerHtml = "";
-    const allMonths = [...new Set([...(c.debtHistory||[]).map(d=>d.month), ...(c.paymentHistory||[]).map(p=>p.month)])];
-    
-    if(allMonths.length > 0) {
-        allMonths.forEach(m => {
-            const d = (c.debtHistory||[]).find(x => x.month === m);
-            const p = (c.paymentHistory||[]).find(x => x.month === m);
-            if(d) { ledgerHtml += `<div class="ledger-row text-debt"><span>${m}: OWED</span><span>£${n(d.amount).toFixed(2)}</span></div>`; }
-            else if(p) { ledgerHtml += `<div class="ledger-row text-paid"><span>${m}: PAID ✅</span><span>£${n(p.amount).toFixed(2)}</span></div>`; }
-        });
-    } else { ledgerHtml = "<div style='opacity:0.5; text-align:center; padding:10px;'>No history yet.</div>"; }
-
-    document.getElementById('ledgerBox').innerHTML = ledgerHtml;
-    document.getElementById('customerModal').style.display = 'flex';
-};
-
 window.saveCustomer = function() {
     const id = document.getElementById('editId').value || Date.now();
     const name = document.getElementById('cName').value; if(!name) return;
@@ -201,12 +220,10 @@ window.handleBankAction = function() {
     if (isLocked) {
         ['bName','bSort','bAcc'].forEach(id => document.getElementById(id).disabled = false);
         document.getElementById('btnBankAction').innerText = "🔒 Save & Lock Details";
-        document.getElementById('btnBankAction').classList.add('btn-save-state');
     } else {
         db.bank = { name: document.getElementById('bName').value, sort: document.getElementById('bSort').value, acc: document.getElementById('bAcc').value };
         ['bName','bSort','bAcc'].forEach(id => document.getElementById(id).disabled = true);
         document.getElementById('btnBankAction').innerText = "🔓 Edit Bank Details";
-        document.getElementById('btnBankAction').classList.remove('btn-save-state');
         saveData();
     }
 };
@@ -217,8 +234,7 @@ window.sendReminder = function(id, type) {
     const bankStr = b.name ? `\n\nBank: ${b.name}\nSort: ${b.sort}\nAcc: ${b.acc}` : "";
     const msg = `Hey ${c.name}, windows washed at ${c.address}. Total: £${calculateTrueDebt(c).toFixed(2)}. Jonathan@Hydro${bankStr}`;
     const encoded = encodeURIComponent(msg), phone = c.phone.replace(/\s+/g, '');
-    if (type === 'whatsapp') { window.location.href = `https://wa.me/${phone}?text=${encoded}`; }
-    else { window.location.href = `sms:${phone}${/iPhone/i.test(navigator.userAgent)?'&':'?'}body=${encoded}`; }
+    if (type === 'whatsapp') { window.location.href = `https://wa.me/${phone}?text=${encoded}`; } else { window.location.href = `sms:${phone}${/iPhone/i.test(navigator.userAgent)?'&':'?'}body=${encoded}`; }
 };
 window.importCSV = function(e) {
     const r = new FileReader(); r.onload = (ev) => {
