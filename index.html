@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v12.11</title>
-    <link rel="stylesheet" href="styles.css?v=1211">
+    <title>Hydro Pro v12.12</title>
+    <link rel="stylesheet" href="styles.css?v=1212">
 </head>
 <body class="light-mode">
 
@@ -23,7 +23,8 @@
             <button class="tab active" onclick="openTab(event, 'admin')">Setup</button>
             <button class="tab" onclick="openTab(event, 'master')">Custs</button>
             <button class="tab" onclick="openTab(event, 'stats')">Stats</button>
-            <button class="tab" onclick="openTab(event, 'spend')">Ledger</button> <button class="tab" onclick="openTab(event, 'week1')">W1</button>
+            <button class="tab" onclick="openTab(event, 'spend')">Ledger</button>
+            <button class="tab" onclick="openTab(event, 'week1')">W1</button>
             <button class="tab" onclick="openTab(event, 'week2')">W2</button>
             <button class="tab" onclick="openTab(event, 'week3')">W3</button>
             <button class="tab" onclick="openTab(event, 'week4')">W4</button>
@@ -62,7 +63,7 @@
                     <button class="btn-main full-width-btn" onclick="saveCustomer()">💾 Save Customer</button>
                 </div>
                 <div class="card action-card-green"><button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
-                
+
                 <div class="card">
                     <h3 class="section-title">Database Management</h3>
                     <div class="grid-1x2">
@@ -81,40 +82,32 @@
             <div class="dashboard-hero">
                 <div class="hero-label" id="statsMonthTitle">Summary</div>
                 <div class="hero-amount" id="currProfit">£0.00</div>
-                <div class="hero-subtext">Net Cash (Total Income - Expenses)</div>
+                <div class="hero-subtext">Net Cash (Total Income - Total Expenses)</div>
             </div>
             <div class="card stat-card">
                 <div class="stat-header"><span>Job Completion</span><span id="collectionPercent">0%</span></div>
                 <div class="progress-container"><div id="progressBar" class="progress-fill"></div></div>
-                <div class="stat-row-new">
-                    <div class="stat-block"><small>Cycle Potential</small><strong id="targetWork">£0.00</strong></div>
-                    <div class="stat-block" style="text-align:right;"><small>Work Remaining</small><strong id="stillToCollect">£0.00</strong></div>
+                <div class="stat-line-item">
+                    <span>Monthly Potential: <strong id="targetWork">£0.00</strong></span>
+                    <span>To Be Collected: <strong id="stillToCollect">£0.00</strong></span>
                 </div>
             </div>
             <div class="grid-1x2" style="margin-top:15px;">
-                <div class="card mini-card clickable-stat" onclick="showIncomeModal()">
-                    <small>Income Collected 🔍</small>
-                    <strong id="currRevenue" style="color:var(--success)">£0.00</strong>
-                </div>
-                <div class="card mini-card clickable-stat" onclick="showExpenseModal()">
-                    <small>Spend Total 🔍</small>
-                    <strong id="currSpend" style="color:var(--danger)">£0.00</strong>
-                </div>
+                <div class="card mini-card clickable-stat" onclick="showIncomeModal()"><small>Total Income Collected 🔍</small><strong id="currRevenue" style="color:var(--success)">£0.00</strong></div>
+                <div class="card mini-card clickable-stat" onclick="showExpenseModal()"><small>Total Expenses Paid 🔍</small><strong id="currSpend" style="color:var(--danger)">£0.00</strong></div>
             </div>
-            <div class="card debt-highlight-card"><div class="stat-row"><span>Arrears / Old Debt</span><strong id="totalOldDebt">£0.00</strong></div></div>
+            <div class="card debt-highlight-card clickable-stat" onclick="showArrearsModal()">
+                <div class="stat-row"><span>Overdue Arrears / Debt 🔍</span><strong id="totalOldDebt">£0.00</strong></div>
+            </div>
             <div id="monthlyHistoryContainer"></div>
         </div>
 
         <div id="spend" class="tab-content">
             <div class="card">
                 <h3 class="section-title">Log Expense</h3>
-                <div class="force-stack">
-                    <input type="text" id="expDesc" placeholder="Description" class="large-select" style="margin-bottom:10px;">
-                    <input type="number" id="expAmt" placeholder="Amount £" class="large-select" style="margin-bottom:10px;">
-                </div>
+                <div class="force-stack"><input type="text" id="expDesc" placeholder="Description" class="large-select" style="margin-bottom:10px;"><input type="number" id="expAmt" placeholder="Amount £" class="large-select" style="margin-bottom:10px;"></div>
                 <button class="btn-main full-width-btn" onclick="addExpense()">Add Expense</button>
             </div>
-
             <div class="card">
                 <h3 class="section-title">QuickBooks MTD Export</h3>
                 <div class="grid-1x2">
@@ -122,14 +115,12 @@
                     <button class="pill-btn qb-btn" onclick="exportQBExpenses()">🧾 QB Spend</button>
                 </div>
             </div>
-
             <div id="expenseList"></div>
         </div>
-
         <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div>
     </div>
 
-    <div class="global-footer">v12.11 - Ledger Hub Build</div>
+    <div class="global-footer">v12.12 - Precision Calibration</div>
 
     <div id="globalModal" class="modal-overlay" onclick="if(event.target === this) closeModal()">
         <div class="modal-content">
@@ -138,6 +129,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=1211"></script>
+    <script src="app.js?v=1212"></script>
 </body>
 </html>
