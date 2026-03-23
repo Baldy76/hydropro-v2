@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v12.13</title>
-    <link rel="stylesheet" href="styles.css?v=1213">
+    <title>Hydro Pro v13.0</title>
+    <link rel="stylesheet" href="styles.css?v=130">
 </head>
 <body class="light-mode">
 
@@ -18,7 +18,10 @@
                 </label>
             </div>
         </div>
-        <div class="date-container"><div id="headerDate" class="date-txt"></div></div>
+        <div class="date-container">
+            <div id="greetingMsg" class="greeting-txt">Hello, Jonathan!</div>
+            <div id="headerDate" class="date-txt"></div>
+        </div>
         <div class="tabs">
             <button class="tab active" onclick="openTab(event, 'admin')">Setup</button>
             <button class="tab" onclick="openTab(event, 'master')">Custs</button>
@@ -33,13 +36,13 @@
 
     <div class="main-container">
         <div id="globalSearchContainer" class="search-outer hidden">
-            <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()">
+            <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Find a customer..." oninput="renderMasterTable()">
         </div>
 
         <div id="admin" class="tab-content active">
             <div id="setup-form-wrapper">
                 <div class="card">
-                    <h3 class="section-title">New Customer</h3>
+                    <h3 class="section-title">✨ Add New Client</h3>
                     <input type="hidden" id="editId">
                     <div class="input-stack force-stack">
                         <input type="text" id="cName" placeholder="Full Name">
@@ -60,12 +63,12 @@
                         </select>
                     </div>
                     <textarea id="cNotes" placeholder="Notes..." class="premium-textarea"></textarea>
-                    <button class="btn-main full-width-btn" onclick="saveCustomer()">💾 Save Customer</button>
+                    <button class="btn-main full-width-btn bounce-on-tap" onclick="saveCustomer()">💾 Save Customer</button>
                 </div>
                 <div class="card action-card-green"><button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
 
                 <div class="card">
-                    <h3 class="section-title">Database Management</h3>
+                    <h3 class="section-title">📦 Database</h3>
                     <div class="grid-1x2">
                         <button id="exportBtn" class="pill-btn" onclick="exportFullCSV()">💾 Export</button>
                         <button id="importBtn" class="pill-btn" onclick="document.getElementById('csvFile').click()">📂 Import</button>
@@ -82,35 +85,34 @@
             <div class="dashboard-hero">
                 <div class="hero-label" id="statsMonthTitle">Summary</div>
                 <div class="hero-amount" id="currProfit">£0.00</div>
-                <div class="hero-subtext">Net Cash (Income - Expenses)</div>
+                <div class="hero-subtext">💰 Total Profit in Pocket</div>
             </div>
             <div class="card stat-card">
-                <div class="stat-header"><span>Job Completion</span><span id="collectionPercent">0%</span></div>
+                <div class="stat-header"><span>Monthly Progress</span><span id="collectionPercent">0%</span></div>
                 <div class="progress-container"><div id="progressBar" class="progress-fill"></div></div>
                 <div class="stat-line-item">
-                    <span>Potential: <strong id="targetWork">£0.00</strong></span>
-                    <span>Owed: <strong id="stillToCollect">£0.00</strong></span>
+                    <span>Target: <strong id="targetWork">£0.00</strong></span>
+                    <span>Remaining: <strong id="stillToCollect">£0.00</strong></span>
                 </div>
             </div>
             <div class="grid-1x2" style="margin-top:15px;">
-                <div class="card mini-card clickable-stat" onclick="showIncomeModal()"><small>Total Income 🔍</small><strong id="currRevenue" style="color:var(--success)">£0.00</strong></div>
-                <div class="card mini-card clickable-stat" onclick="showExpenseModal()"><small>Total Spend 🔍</small><strong id="currSpend" style="color:var(--danger)">£0.00</strong></div>
+                <div class="card mini-card clickable-stat" onclick="showIncomeModal()"><small>Revenue 🔍</small><strong id="currRevenue" style="color:var(--success)">£0.00</strong></div>
+                <div class="card mini-card clickable-stat" onclick="showExpenseModal()"><small>Spend 🔍</small><strong id="currSpend" style="color:var(--danger)">£0.00</strong></div>
             </div>
             <div class="card debt-highlight-card clickable-stat" onclick="showArrearsModal()">
-                <div class="stat-row"><span>Arrears / Debt Ledger 🔍</span><strong id="totalOldDebt">£0.00</strong></div>
+                <div class="stat-row"><span>Arrears 🔍</span><strong id="totalOldDebt">£0.00</strong></div>
             </div>
-            
             <div id="monthlyHistoryContainer"></div>
         </div>
 
         <div id="spend" class="tab-content">
             <div class="card">
-                <h3 class="section-title">Log Expense</h3>
+                <h3 class="section-title">💸 Log Expense</h3>
                 <div class="force-stack"><input type="text" id="expDesc" placeholder="Description" class="large-select" style="margin-bottom:10px;"><input type="number" id="expAmt" placeholder="Amount £" class="large-select" style="margin-bottom:10px;"></div>
-                <button class="btn-main full-width-btn" onclick="addExpense()">Add Expense</button>
+                <button class="btn-main full-width-btn bounce-on-tap" onclick="addExpense()">Add Expense</button>
             </div>
             <div class="card">
-                <h3 class="section-title">QuickBooks MTD Export</h3>
+                <h3 class="section-title">📊 QuickBooks Exports</h3>
                 <div class="grid-1x2">
                     <button class="pill-btn qb-btn" onclick="exportQBIncome()">💹 QB Income</button>
                     <button class="pill-btn qb-btn" onclick="exportQBExpenses()">🧾 QB Spend</button>
@@ -118,16 +120,15 @@
             </div>
             <div id="expenseList"></div>
         </div>
-
         <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div>
     </div>
 
-    <div class="global-footer">v12.13 - hall of fame edition</div>
+    <div class="global-footer">v13.0 - Lone Worker Gold</div>
 
     <div id="globalModal" class="modal-overlay" onclick="if(event.target === this) closeModal()">
         <div class="modal-content"><button class="close-btn" onclick="closeModal()">✕</button><div id="modalContentBody"></div></div>
     </div>
 
-    <script src="app.js?v=1213"></script>
+    <script src="app.js?v=130"></script>
 </body>
 </html>
