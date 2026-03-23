@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro - Production v5.6</title>
+    <title>Hydro Pro - Production v5.7</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="light-mode">
@@ -66,7 +66,7 @@
                 </div>
             </div>
 
-            <div class="card" style="background: rgba(235, 51, 73, 0.05);">
+            <div class="card">
                 <button class="btn-danger full-width-btn" style="height:65px;" onclick="completeCycle()">🚀 START NEW MONTH</button>
             </div>
 
@@ -91,13 +91,13 @@
                 <button type="button" class="btn-uat full-width-btn" onclick="runUATClear()">🛠️ RESET ALL DATA</button>
             </div>
             
-            <div class="version-tag">v5.6 - Stable Production</div>
+            <div class="version-tag">v5.7 - Hard Isolation Build</div>
         </div>
 
         <div id="master" class="tab-content">
             <div class="card" style="padding:0; overflow:hidden;">
                 <div style="padding:15px; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                    <input type="text" id="mainSearch" placeholder="🔍 Search Name or Address..." oninput="handleSearch()" style="margin:0; width:100%;">
+                    <input type="text" id="mainSearch" placeholder="🔍 Search database..." oninput="handleSearch()" style="margin:0; width:100%;">
                 </div>
                 <table style="width:100%; border-collapse:collapse;">
                     <thead><tr class="table-header-row"><th style="text-align:left; padding:15px;">CUSTOMER</th><th style="text-align:right; padding:15px;">OWED</th></tr></thead>
@@ -115,11 +115,10 @@
                     <div class="metric-tile tile-pending">Pending<br><strong id="statPendingMonth">£0</strong></div>
                 </div>
             </div>
-
             <div class="card">
-                <h3 style="text-align:center;">Overall Revenue</h3>
-                <div id="lifetimeBox" style="background: var(--primary); color: white; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px;">
-                    <small style="opacity:0.8; text-transform: uppercase;">Total Collected to Date</small><br>
+                <h3 style="text-align:center;">Overall History</h3>
+                <div style="background: var(--primary); color: white; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px;">
+                    <small>LIFETIME REVENUE</small><br>
                     <span id="statFYTotal" style="font-size: 32px; font-weight: 900;">£0</span>
                 </div>
                 <table style="width:100%; border-collapse: collapse;">
@@ -142,20 +141,6 @@
         <div id="week2" class="tab-content"></div>
         <div id="week3" class="tab-content"></div>
         <div id="week4" class="tab-content"></div>
-    </div>
-
-    <div id="customerModal" class="modal-overlay" onclick="if(event.target === this) closeCustomerModal()">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeCustomerModal()">✖</button>
-            <div id="modName" style="font-size:20px; font-weight:900; color:var(--primary);"></div>
-            <p id="modAddr" style="opacity:0.6; font-size:14px;"></p>
-            <div class="history-container"><table id="modHistoryTable" style="width:100%;"></table></div>
-            <div style="text-align:right; margin-top:15px; padding:15px; background:rgba(0,0,0,0.03); border-radius:12px;">
-                <small style="font-weight:800; opacity:0.5;">TOTAL OUTSTANDING:</small><br>
-                <span id="modOwed" style="font-size:28px; font-weight:900;"></span>
-            </div>
-            <button class="btn-alt" style="margin-top:15px;" onclick="editFromModal()">⚙️ Edit Details</button>
-        </div>
     </div>
 
     <script src="app.js"></script>
