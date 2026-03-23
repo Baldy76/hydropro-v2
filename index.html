@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v14.0</title>
-    <link rel="stylesheet" href="styles.css?v=140">
+    <title>Hydro Pro v13.9</title>
+    <link rel="stylesheet" href="styles.css?v=139">
 </head>
 <body class="light-mode">
 
@@ -20,25 +20,26 @@
         </div>
         <div class="date-container">
             <div id="greetingMsg" class="greeting-txt">Hey there!</div>
+            
             <div id="weatherWrap" class="weather-pill hidden bounce-on-tap" onclick="openWeatherApp()">
                 <span id="wIcon"></span> <span id="wTemp">--°C</span> | <small id="wDesc">Loading...</small>
             </div>
+
             <div id="headerDate" class="date-txt"></div>
         </div>
-        <div class="nav-wrapper">
-            <div class="tabs-grid main-nav">
-                <button class="tab active" onclick="openTab(event, 'admin')">Setup</button>
-                <button class="tab" onclick="openTab(event, 'master')">Custs</button>
-                <button class="tab" onclick="openTab(event, 'stats')">Stats</button>
-                <button class="tab" onclick="openTab(event, 'spend')">Ledger</button>
-            </div>
-            <div class="tabs-grid week-nav">
-                <button class="tab" onclick="openTab(event, 'week1')">W1</button>
-                <button class="tab" onclick="openTab(event, 'week2')">W2</button>
-                <button class="tab" onclick="openTab(event, 'week3')">W3</button>
-                <button class="tab" onclick="openTab(event, 'week4')">W4</button>
-                <button class="tab" onclick="openTab(event, 'week5')">W5</button>
-            </div>
+
+        <div class="tabs-grid">
+            <button class="tab active" onclick="openTab(event, 'admin')">Setup</button>
+            <button class="tab" onclick="openTab(event, 'master')">Custs</button>
+            <button class="tab" onclick="openTab(event, 'stats')">Stats</button>
+            <button class="tab" onclick="openTab(event, 'spend')">Ledger</button>
+        </div>
+        <div class="week-tabs-row">
+            <button class="tab" onclick="openTab(event, 'week1')">W1</button>
+            <button class="tab" onclick="openTab(event, 'week2')">W2</button>
+            <button class="tab" onclick="openTab(event, 'week3')">W3</button>
+            <button class="tab" onclick="openTab(event, 'week4')">W4</button>
+            <button class="tab" onclick="openTab(event, 'week5')">W5</button>
         </div>
     </div>
 
@@ -75,6 +76,7 @@
                     <button class="btn-main full-width-btn bounce-on-tap" onclick="saveCustomer()">💾 Save Customer</button>
                 </div>
                 <div class="card action-card-green"><button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
+
                 <div class="card">
                     <h3 class="section-title">📦 Database</h3>
                     <div class="grid-1x2">
@@ -104,8 +106,18 @@
                 </div>
             </div>
             <div class="grid-1x2" style="margin-top:15px;">
-                <div class="card mini-card clickable-stat" onclick="showIncomeModal()"><div class="mini-card-content"><small>Income 🔍</small><strong id="currRevenue" style="color:var(--success)">£0.00</strong></div></div>
-                <div class="card mini-card clickable-stat" onclick="showExpenseModal()"><div class="mini-card-content"><small>Spend 🔍</small><strong id="currSpend" style="color:var(--danger)">£0.00</strong></div></div>
+                <div class="card mini-card clickable-stat" onclick="showIncomeModal()">
+                    <div class="mini-card-content">
+                        <small>Income 🔍</small>
+                        <strong id="currRevenue" style="color:var(--success)">£0.00</strong>
+                    </div>
+                </div>
+                <div class="card mini-card clickable-stat" onclick="showExpenseModal()">
+                    <div class="mini-card-content">
+                        <small>Spend 🔍</small>
+                        <strong id="currSpend" style="color:var(--danger)">£0.00</strong>
+                    </div>
+                </div>
             </div>
             <div class="card debt-highlight-card clickable-stat" onclick="showArrearsModal()">
                 <div class="stat-row"><span>Arrears 🔍</span><strong id="totalOldDebt">£0.00</strong></div>
@@ -116,7 +128,10 @@
         <div id="spend" class="tab-content">
             <div class="card">
                 <h3 class="section-title">💸 Log Expense</h3>
-                <div class="force-stack"><input type="text" id="expDesc" placeholder="Description" class="large-select" style="margin-bottom:10px;"><input type="number" id="expAmt" placeholder="Amount £" class="large-select" style="margin-bottom:10px;"></div>
+                <div class="force-stack">
+                    <input type="text" id="expDesc" placeholder="Description" class="large-select" style="margin-bottom:10px;">
+                    <input type="number" id="expAmt" placeholder="Amount £" class="large-select" style="margin-bottom:10px;">
+                </div>
                 <button class="btn-main full-width-btn bounce-on-tap" onclick="addExpense()">Add Expense</button>
             </div>
             <div class="card">
@@ -128,7 +143,7 @@
             </div>
             <div id="expenseList"></div>
         </div>
-        
+
         <div id="week1" class="tab-content"></div>
         <div id="week2" class="tab-content"></div>
         <div id="week3" class="tab-content"></div>
@@ -136,12 +151,15 @@
         <div id="week5" class="tab-content"></div>
     </div>
 
-    <div class="global-footer">v14.0 - UI Restored</div>
+    <div class="global-footer">v13.9 - Production Verified</div>
 
     <div id="globalModal" class="modal-overlay" onclick="if(event.target === this) closeModal()">
-        <div class="modal-content"><button class="close-btn" onclick="closeModal()">✕</button><div id="modalContentBody"></div></div>
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">✕</button>
+            <div id="modalContentBody"></div>
+        </div>
     </div>
 
-    <script src="app.js?v=140"></script>
+    <script src="app.js?v=139"></script>
 </body>
 </html>
