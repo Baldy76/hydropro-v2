@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v19.1</title>
-    <link rel="stylesheet" href="styles.css?v=191">
+    <title>Hydro Pro v19.2</title>
+    <link rel="stylesheet" href="styles.css?v=192">
 </head>
 <body class="light-mode">
 
@@ -24,7 +24,7 @@
     </div>
 
     <div id="globalNav" class="subpage-nav hidden">
-        <button class="back-pill bounce-on-tap" onclick="handleBackNavigation()">🏠 Back to Home</button>
+        <button class="back-pill bounce-on-tap" onclick="openTab('home')">🏠 Back to Home</button>
     </div>
 
     <div class="main-container">
@@ -39,13 +39,34 @@
             </div>
         </div>
 
-        <div id="weeksHub" class="tab-content">
-            <div class="weeks-grid">
-                <button class="tile-week-blue bounce-on-tap" onclick="openTab('week1')">Week 1</button>
-                <button class="tile-week-blue bounce-on-tap" onclick="openTab('week2')">Week 2</button>
-                <button class="tile-week-blue bounce-on-tap" onclick="openTab('week3')">Week 3</button>
-                <button class="tile-week-blue bounce-on-tap" onclick="openTab('week4')">Week 4</button>
-                <button class="tile-week-blue bounce-on-tap tile-week-5" onclick="openTab('week5')">Week 5</button>
+        <div id="admin" class="tab-content">
+            <div class="card creative-form-card">
+                <input type="hidden" id="editId">
+                <div class="fun-input-group">
+                    <div class="fun-icon" style="background: rgba(0, 122, 255, 0.1);">👤</div>
+                    <div class="fun-field-stack"><label>Customer Name</label><input type="text" id="cName" class="creative-input"></div>
+                </div>
+                <div class="fun-input-group">
+                    <div class="fun-icon" style="background: rgba(255, 149, 0, 0.15);">🏠</div>
+                    <div class="fun-field-stack"><label>House Number</label><input type="text" id="cHouseNum" class="creative-input"></div>
+                </div>
+                <div class="fun-input-group">
+                    <div class="fun-icon" style="background: rgba(52, 199, 89, 0.15);">🛣️</div>
+                    <div class="fun-field-stack"><label>Street Name</label><input type="text" id="cStreet" class="creative-input"></div>
+                </div>
+                <div class="fun-input-group">
+                    <div class="fun-icon" style="background: rgba(175, 82, 222, 0.15);">📍</div>
+                    <div class="fun-field-stack"><label>Postcode</label><input type="text" id="cPostcode" class="creative-input postcode-input"></div>
+                </div>
+                <div class="fun-input-group">
+                    <div class="fun-icon" style="background: rgba(255, 59, 48, 0.15);">💰</div>
+                    <div class="fun-field-stack"><label>Clean Price (£)</label><input type="number" id="cPrice" class="creative-input"></div>
+                </div>
+                <div class="fun-input-group" style="border: none;">
+                    <div class="fun-icon" style="background: rgba(142, 142, 147, 0.15);">📝</div>
+                    <div class="fun-field-stack"><label>Notes</label><textarea id="cNotes" class="creative-textarea"></textarea></div>
+                </div>
+                <button class="btn-main full-width-btn creative-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
         </div>
 
@@ -69,34 +90,26 @@
             <div id="monthlyHistoryContainer"></div>
         </div>
 
-        <div id="admin" class="tab-content">
-            <div class="card creative-form-card">
-                <input type="hidden" id="editId">
-                <div class="fun-input-group"><div class="fun-icon">👤</div><div class="fun-field-stack"><label>Name</label><input type="text" id="cName" class="creative-input"></div></div>
-                <div class="fun-input-group"><div class="fun-icon">🏠</div><div class="fun-field-stack"><label>House No.</label><input type="text" id="cHouseNum" class="creative-input"></div></div>
-                <div class="fun-input-group"><div class="fun-icon">🛣️</div><div class="fun-field-stack"><label>Street</label><input type="text" id="cStreet" class="creative-input"></div></div>
-                <div class="fun-input-group"><div class="fun-icon">📍</div><div class="fun-field-stack"><label>Postcode</label><input type="text" id="cPostcode" class="creative-input postcode-input"></div></div>
-                <div class="fun-input-group"><div class="fun-icon">💰</div><div class="fun-field-stack"><label>Price £</label><input type="number" id="cPrice" class="creative-input"></div></div>
-                <div class="fun-input-group" style="border:none"><div class="fun-icon">📝</div><div class="fun-field-stack"><label>Notes</label><textarea id="cNotes" class="creative-textarea"></textarea></div></div>
-                <button class="btn-main full-width-btn creative-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
-            </div>
-        </div>
-
         <div id="master" class="tab-content">
-            <div class="search-container-full"><input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search..." oninput="renderMasterTable()"></div>
+            <div class="search-container-full"><input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()"></div>
             <div id="masterTableBody"></div>
             <div class="full-width-action-area"><div class="card action-card-green"><button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button></div></div>
         </div>
 
-        <div id="spend" class="tab-content">
-            <div class="card"><h3 class="section-title">💸 Log Expense</h3><input type="text" id="expDesc" placeholder="Description" class="creative-input"><input type="number" id="expAmt" placeholder="0.00" class="creative-input"><button class="btn-main full-width-btn" onclick="addExpense()">💾 Save Expense</button></div>
-            <div id="expenseList"></div>
+        <div id="weeksHub" class="tab-content">
+            <div class="weeks-grid">
+                <button class="tile-week-blue" onclick="openTab('week1')">Week 1</button>
+                <button class="tile-week-blue" onclick="openTab('week2')">Week 2</button>
+                <button class="tile-week-blue" onclick="openTab('week3')">Week 3</button>
+                <button class="tile-week-blue" onclick="openTab('week4')">Week 4</button>
+                <button class="tile-week-blue tile-week-5" onclick="openTab('week5')">Week 5</button>
+            </div>
         </div>
-
+        <div id="spend" class="tab-content"><div id="expenseList"></div></div>
         <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
     </div>
 
-    <div class="page-version-footer">v19.1 - Typography Lockdown</div>
-    <script src="app.js?v=191"></script>
+    <div class="page-version-footer">v19.2 - Final Alignment Lock</div>
+    <script src="app.js?v=192"></script>
 </body>
 </html>
