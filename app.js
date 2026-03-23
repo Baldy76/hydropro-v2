@@ -1,9 +1,9 @@
+
 const MASTER_KEY = 'HydroPro_App_Production';
 let db = { customers: [], expenses: [], history: [] }; 
 let currentCoords = { lat: null, lon: null };
 const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 
-// --- STARTUP ---
 window.onload = () => {
     updateGreeting();
     const dateEl = document.getElementById('headerDate');
@@ -16,7 +16,6 @@ window.onload = () => {
     if (!db.history) db.history = [];
     db.customers.forEach(c => { if(!c.paymentLogs) c.paymentLogs = []; if(!c.debtHistory) c.debtHistory = []; });
     
-    // Sync Midnight Navy Palette & Logo
     const isDark = localStorage.getItem('Hydro_Dark_Pref') === 'true';
     document.body.className = isDark ? 'dark-mode' : 'light-mode';
     const logoImg = document.getElementById('appLogo');
@@ -47,7 +46,6 @@ window.toggleDarkMode = () => {
     localStorage.setItem('Hydro_Dark_Pref', isDark);
 };
 
-// --- WEATHER ---
 const fetchWeather = async (lat, lon) => {
     try {
         const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
@@ -67,10 +65,9 @@ const fetchWeather = async (lat, lon) => {
 window.openWeatherApp = () => {
     if (!currentCoords.lat) return;
     const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    window.open(isiOS ? `weather://` : `https://www.google.com/search?q=weather`, '_blank');
+    window.open(isiOS ? `weather://` : `https://www.google.com/search?q=weather+at+my+location`, '_blank');
 };
 
-// --- CORE UTILS ---
 window.openTab = (evt, name) => {
     document.querySelectorAll(".tab-content").forEach(c => c.style.display = "none");
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
@@ -78,7 +75,29 @@ window.openTab = (evt, name) => {
     if(evt) evt.currentTarget.classList.add("active");
     const search = document.getElementById('globalSearchContainer');
     if(search) name === 'master' ? search.classList.remove('hidden') : search.classList.add('hidden');
+    renderAll();
     window.scrollTo(0,0);
+};
+
+window.optimizeDay = (w) => {
+    db.customers.sort((a,b) => (a.week==w && b.week==w) ? (a.address||"").localeCompare(b.address||"") : 0);
+    saveData(); renderAll(); alert(`Week ${w} Sorted! 🚀`);
+};
+
+window.mapTheDay = (w) => {
+    const dayJobs = db.customers.filter(c => c.week == w && !c.cleaned); if(dayJobs.length === 0) return;
+    let url = "https://www.google.com/maps/dir/Current+Loc/Stop1/Stop2/0"; 
+    dayJobs.forEach(c => url += encodeURIComponent(c.address + " " + (c.postcode||"")) + "/");
+    window.open(url, '_blank');
+};
+
+window.broadcastWeek = (w, t) => {
+    const cs = db.customers.filter(c => c.week == w && c.phone && !c.cleaned);
+    cs.forEach((c, i) => setTimeout(() => {
+        const msg = encodeURIComponent(`Hey ${c.name}, cleaning windows at ${c.address} this ${c.day}. See ya!`);
+        const p = c.phone.replace(/\s+/g,'');
+        window.open(t=='wa' ? `https://wa.me/${p}?text=${msg}` : `sms:${p}${/iPhone|iPad/.test(navigator.userAgent)?'&':'?'}body=${msg}`, '_blank');
+    }, i*1200));
 };
 
 window.saveCustomer = () => {
@@ -101,7 +120,7 @@ window.renderWeekLists = () => {
             const d = (c.debtHistory||[]).reduce((s,x)=>s+n(x.amount),0);
             const card = document.createElement('div'); card.className = 'card';
             card.innerHTML = `<div onclick="showCustDetails('${c.id}')"><strong style="font-size:19px; color:var(--accent);">${c.name}</strong><br><small style="opacity:0.6;">${c.address}</small></div>
-                <div class="workflow-grid"><div class="comms-row"><button class="icon-btn-large" onclick="handleWhatsApp('${c.id}')">💬</button><button class="icon-btn-large" onclick="handleSMS('${c.id}')">📱</button><a href="http://googleusercontent.com/maps.google.com/7{encodeURIComponent((c.address||'') + ' ' + (c.postcode||''))}" target="_blank" class="icon-btn-large">📍</a></div>
+                <div class="workflow-grid"><div class="comms-row"><button class="icon-btn-large" onclick="handleWhatsApp('${c.id}')">💬</button><button class="icon-btn-large" onclick="handleSMS('${c.id}')">📱</button><a href="https://www.google.com/maps/dir/Current+Loc/Stop1/Stop2/0{encodeURIComponent((c.address||'') + ' ' + (c.postcode||''))}" target="_blank" class="icon-btn-large">📍</a></div>
                 <div class="status-row" style="${d > 0 ? 'grid-template-columns:repeat(3,1fr)' : 'grid-template-columns:1fr 1fr'}"><button class="action-btn-main ${c.cleaned ? 'btn-cleaned-active' : ''}" onclick="toggleCleaned('${c.id}')">${c.cleaned ? 'Done ✅' : 'Cleaned'}</button><button class="action-btn-main ${isPaid ? 'btn-paid-active' : 'btn-pay-pending'}" onclick="markAsPaid('${c.id}')">${isPaid ? 'Paid' : 'Pay £' + n(c.price).toFixed(2)}</button>${d > 0 ? `<button class="action-btn-main" onclick="handleDebtCollection('${c.id}')">Debt £${d.toFixed(2)}</button>` : ''}</div></div>`;
             container.appendChild(card);
         });
@@ -133,7 +152,7 @@ window.renderHistory = () => {
         d.innerHTML = `<div class="history-metrics-grid"><div class="metric-bubble b-profit"><small>${h.month}</small><strong>Net £${net.toFixed(2)}</strong></div>
             <div class="metric-bubble b-collected"><small>Collected</small><strong>£${n(h.income).toFixed(2)}</strong></div>
             <div class="metric-bubble b-spent"><small>Spent</small><strong>£${n(h.spend).toFixed(2)}</strong></div>
-            <div class="metric-bubble b-arrears"><small>Arrears</small><strong>£${n(h.debtCreated).toFixed(2)}</strong></div></div>`; 
+            <div class="metric-bubble b-arrears"><small>Arrears Rolled</small><strong>£${n(h.debtCreated).toFixed(2)}</strong></div></div>`; 
         hist.appendChild(d);
     });
 };
@@ -151,30 +170,6 @@ window.renderMasterTable = () => {
 
 window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); renderLedger(); };
 window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
-window.handleWhatsApp = (id) => { const c = db.customers.find(x => x.id === id); if(c && c.phone) window.open(`https://wa.me/${c.phone.replace(/\s+/g,'')}`, '_blank'); };
-window.handleSMS = (id) => { const c = db.customers.find(x => x.id === id); if(c && c.phone) window.open(`sms:${c.phone.replace(/\s+/g,'')}${/iPhone|iPad/.test(navigator.userAgent)?'&':'?'}body=`, '_blank'); };
-window.closeModal = () => document.getElementById('globalModal').style.display = 'none';
-window.updateGreeting = () => {
-    const hr = new Date().getHours();
-    let g = (hr < 12) ? "Good Morning! ☕" : (hr < 18) ? "Good Afternoon! ☀️" : "Good Evening! 🌙";
-    document.getElementById('greetingMsg').innerText = g;
-};
-
-// ... include other logic from v14.6 (completeCycle, exports, etc.)
-window.optimizeDay = (w) => { db.customers.sort((a,b) => (a.week==w && b.week==w) ? (a.address||"").localeCompare(b.address||"") : 0); saveData(); renderAll(); };
-window.mapTheDay = (w) => {
-    const dayJobs = db.customers.filter(c => c.week == w && !c.cleaned); if(dayJobs.length === 0) return;
-    let url = "https://www.google.com/maps/dir/Current+Loc/Stop1/Stop2/0"; dayJobs.forEach(c => url += encodeURIComponent(c.address + " " + (c.postcode||"")) + "/");
-    window.open(url, '_blank');
-};
-window.broadcastWeek = (w, t) => {
-    const cs = db.customers.filter(c => c.week == w && c.phone && !c.cleaned);
-    cs.forEach((c, i) => setTimeout(() => {
-        const msg = encodeURIComponent(`Hey ${c.name}, cleaning windows at ${c.address} this ${c.day}. See ya!`);
-        const p = c.phone.replace(/\s+/g,'');
-        window.open(t=='wa' ? `https://wa.me/${p}?text=${msg}` : `sms:${p}${/iPhone|iPad/.test(navigator.userAgent)?'&':'?'}body=${msg}`, '_blank');
-    }, i*1200));
-};
 window.addExpense = () => { const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value); if(!d || a<=0) return; db.expenses.push({desc:d, amt:a, date:new Date().toLocaleDateString('en-GB')}); saveData(); location.reload(); };
 window.renderLedger = () => {
     const list = document.getElementById('expenseList'); if(!list) return; list.innerHTML = '<h3 class="section-title">💸 Spend History</h3>';
@@ -195,7 +190,7 @@ window.editCust = (id) => {
     document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cAddr').value = c.address; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPhone').value = c.phone; document.getElementById('cPrice').value = c.price; document.getElementById('cWeek').value = c.week; document.getElementById('cDay').value = c.day; document.getElementById('cNotes').value = c.notes;
 };
 window.completeCycle = () => {
-    if(!confirm("Archive Month? Unpaid move to arrears.")) return;
+    if(!confirm("Archive Month?")) return;
     const curLabel = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
     let mInc = 0; db.customers.forEach(c => (c.paymentLogs||[]).forEach(l => mInc += n(l.amount)));
     let mExp = db.expenses.reduce((s, e) => s + n(e.amt), 0);
@@ -229,6 +224,9 @@ window.importFullCSV = (e) => {
     };
     r.readAsText(f);
 };
+window.handleWhatsApp = (id) => { const c = db.customers.find(x => x.id === id); if(c && c.phone) window.open(`https://wa.me/${c.phone.replace(/\s+/g,'')}`, '_blank'); };
+window.handleSMS = (id) => { const c = db.customers.find(x => x.id === id); if(c && c.phone) window.open(`sms:${c.phone.replace(/\s+/g,'')}${/iPhone|iPad/.test(navigator.userAgent)?'&':'?'}body=`, '_blank'); };
+window.closeModal = () => document.getElementById('globalModal').style.display = 'none';
 window.showIncomeModal = () => {
     const body = document.getElementById('modalContentBody');
     let html = '<h3 class="section-title">💸 Collections Log</h3>';
@@ -266,13 +264,21 @@ window.handleDebtCollection = (id) => {
         if (c.debtHistory[i].amount <= rem) { rem -= c.debtHistory[i].amount; c.debtHistory.splice(i, 1); i--; }
         else { c.debtHistory[i].amount -= rem; rem = 0; }
     }
-    saveData(); renderWeekLists(); renderStats();
+    saveData(); renderAll();
 };
 window.markAsPaid = (id) => {
     const c = db.customers.find(x => x.id === id); if (!c || n(c.paidThisMonth) >= n(c.price)) return;
     const amt = n(c.price); c.paidThisMonth = amt;
     if(!c.paymentLogs) c.paymentLogs = [];
     c.paymentLogs.push({ date: new Date().toLocaleString('en-GB'), amount: amt, type: 'income', arrearsContext: null });
-    saveData(); renderWeekLists(); renderStats();
+    saveData(); renderAll();
 };
 window.toggleCleaned = (id) => { const c = db.customers.find(x => x.id === id); if (!c) return; c.cleaned = !c.cleaned; saveData(); renderWeekLists(); };
+window.updateGreeting = () => {
+    const hr = new Date().getHours();
+    let g = "Hey there!";
+    if (hr < 12) g = "Good Morning! ☕";
+    else if (hr < 18) g = "Good Afternoon! ☀️";
+    else g = "Good Evening! 🌙";
+    document.getElementById('greetingMsg').innerText = g;
+};
