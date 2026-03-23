@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v18.4 - Hardened</title>
-    <link rel="stylesheet" href="styles.css?v=184">
+    <title>Hydro Pro v18.5 - UI Alignment</title>
+    <link rel="stylesheet" href="styles.css?v=185">
 </head>
 <body class="light-mode">
 
@@ -39,6 +39,31 @@
             </div>
         </div>
 
+        <div id="master" class="tab-content">
+            <div class="search-container-full">
+                <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()">
+            </div>
+            
+            <div id="masterTableBody"></div>
+
+            <div class="card action-card-green">
+                <button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button>
+            </div>
+        </div>
+
+        <div id="admin" class="tab-content">
+            <div class="card creative-form-card">
+                <input type="hidden" id="editId">
+                <div class="fun-input-group"><div class="fun-icon">👤</div><div class="fun-field-stack"><label>Name</label><input type="text" id="cName" class="creative-input" placeholder="Client Name"></div></div>
+                <div class="fun-input-group"><div class="fun-icon">🏠</div><div class="fun-field-stack"><label>House No.</label><input type="text" id="cHouseNum" class="creative-input" placeholder="22"></div></div>
+                <div class="fun-input-group"><div class="fun-icon">🛣️</div><div class="fun-field-stack"><label>Street</label><input type="text" id="cStreet" class="creative-input" placeholder="Street Name"></div></div>
+                <div class="fun-input-group"><div class="fun-icon">📍</div><div class="fun-field-stack"><label>Postcode</label><input type="text" id="cPostcode" class="creative-input postcode-input" placeholder="NE1 1AA"></div></div>
+                <div class="fun-input-group"><div class="fun-icon">💰</div><div class="fun-field-stack"><label>Price £</label><input type="number" id="cPrice" class="creative-input" placeholder="0.00"></div></div>
+                <div class="fun-input-group" style="border: none;"><div class="fun-icon">📝</div><div class="fun-field-stack"><label>Private Notes</label><textarea id="cNotes" class="creative-textarea" placeholder="Access codes..."></textarea></div></div>
+                <button class="btn-main full-width-btn creative-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
+            </div>
+        </div>
+
         <div id="weeksHub" class="tab-content">
             <div class="home-grid">
                 <button class="tile tile-week bounce-on-tap" onclick="openTab('week1')"><span>1</span><small>Week 1</small></button>
@@ -48,45 +73,12 @@
                 <button class="tile tile-week bounce-on-tap" onclick="openTab('week5')"><span>5</span><small>Week 5</small></button>
             </div>
         </div>
-
-        <div id="admin" class="tab-content">
-            <div class="card creative-form-card">
-                <input type="hidden" id="editId">
-                <div class="fun-input-group"><div class="fun-icon">👤</div><div class="fun-field-stack"><label>Name</label><input type="text" id="cName" class="creative-input"></div></div>
-                <div class="fun-input-group"><div class="fun-icon">🏠</div><div class="fun-field-stack"><label>House No.</label><input type="text" id="cHouseNum" class="creative-input"></div></div>
-                <div class="fun-input-group"><div class="fun-icon">🛣️</div><div class="fun-field-stack"><label>Street</label><input type="text" id="cStreet" class="creative-input"></div></div>
-                <div class="fun-input-group"><div class="fun-icon">📍</div><div class="fun-field-stack"><label>Postcode</label><input type="text" id="cPostcode" class="creative-input postcode-input"></div></div>
-                <div class="fun-input-group"><div class="fun-icon">💰</div><div class="fun-field-stack"><label>Price £</label><input type="number" id="cPrice" class="creative-input"></div></div>
-                <div class="fun-input-group" style="border: none;"><div class="fun-icon">📝</div><div class="fun-field-stack"><label>Private Notes</label><textarea id="cNotes" class="creative-textarea"></textarea></div></div>
-                <button class="btn-main full-width-btn creative-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
-            </div>
-        </div>
-
-        <div id="master" class="tab-content">
-            <div class="search-container-full"><input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()"></div>
-            <div id="masterTableBody"></div>
-            <div class="card action-card-green"><button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
-        </div>
-
-        <div id="spend" class="tab-content">
-            <div class="card">
-                <h3 class="section-title">💸 Log Expense</h3>
-                <input type="text" id="expDesc" placeholder="Description" class="creative-input" style="background:var(--input-bg); border-radius:10px; padding:10px; margin-bottom:10px;">
-                <input type="number" id="expAmt" placeholder="0.00" class="creative-input" style="background:var(--input-bg); border-radius:10px; padding:10px;">
-                <button class="btn-main full-width-btn bounce-on-tap" onclick="addExpense()" style="margin-top:15px;">💾 Save Expense</button>
-            </div>
-            <div id="expenseList"></div>
-        </div>
-
-        <div id="stats" class="tab-content">
-            <div class="dashboard-hero"><div class="hero-label">CURRENT PROFIT</div><div class="hero-amount" id="currProfit">£0.00</div></div>
-            <div id="monthlyHistoryContainer"></div>
-        </div>
-
+        <div id="spend" class="tab-content"><div id="expenseList"></div></div>
+        <div id="stats" class="tab-content"><div class="dashboard-hero"><div class="hero-amount" id="currProfit">£0.00</div></div></div>
         <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
     </div>
 
-    <div class="page-version-footer">v18.4 - Lockdown Protocol Active</div>
-    <script src="app.js?v=184"></script>
+    <div class="page-version-footer">v18.5 - Regression Locked</div>
+    <script src="app.js?v=185"></script>
 </body>
 </html>
