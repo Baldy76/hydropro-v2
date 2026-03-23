@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro v11.5</title>
-    <link rel="stylesheet" href="styles.css?v=115">
+    <title>Hydro Pro v11.6</title>
+    <link rel="stylesheet" href="styles.css?v=116">
 </head>
 <body class="light-mode">
 
@@ -42,50 +42,50 @@
         </div>
 
         <div id="admin" class="tab-content active">
-            <div class="card">
-                <h3 class="section-title">New Customer</h3>
-                <input type="hidden" id="editId">
-                <div class="input-stack force-stack">
-                    <input type="text" id="cName" placeholder="Full Name">
-                    <input type="text" id="cAddr" placeholder="Address">
-                    <input type="text" id="cPostcode" placeholder="Postcode">
-                    <input type="tel" id="cPhone" placeholder="Mobile Number">
-                    <input type="number" id="cPrice" placeholder="Price £">
+            <div id="setup-form-wrapper">
+                <div class="card">
+                    <h3 class="section-title">New Customer</h3>
+                    <input type="hidden" id="editId">
+                    <div class="input-stack force-stack">
+                        <input type="text" id="cName" placeholder="Full Name">
+                        <input type="text" id="cAddr" placeholder="Address">
+                        <input type="text" id="cPostcode" placeholder="Postcode">
+                        <input type="tel" id="cPhone" placeholder="Mobile Number">
+                        <input type="number" id="cPrice" placeholder="Price £">
+                    </div>
+                    <div class="grid-1x2">
+                        <select id="cWeek" class="large-select">
+                            <option value="1">Week 1</option><option value="2">Week 2</option>
+                            <option value="3">Week 3</option><option value="4">Week 4</option>
+                        </select>
+                        <select id="cDay" class="large-select">
+                            <option value="Monday">Monday</option><option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                        </select>
+                    </div>
+                    <textarea id="cNotes" placeholder="Notes..." class="premium-textarea"></textarea>
+                    <button class="btn-main full-width-btn" onclick="saveCustomer()">💾 Save Customer</button>
                 </div>
-                
-                <div class="label-heading">Schedule</div>
-                <div class="grid-1x2">
-                    <select id="cWeek" class="large-select">
-                        <option value="1">Week 1</option><option value="2">Week 2</option>
-                        <option value="3">Week 3</option><option value="4">Week 4</option>
-                    </select>
-                    <select id="cDay" class="large-select">
-                        <option value="Monday">Monday</option><option value="Tuesday">Tuesday</option>
-                        <option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option>
-                        <option value="Friday">Friday</option>
-                    </select>
+
+                <div class="card action-card-green">
+                    <button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button>
                 </div>
-                <textarea id="cNotes" placeholder="Notes..." class="premium-textarea"></textarea>
-                <button class="btn-main full-width-btn" onclick="saveCustomer()">💾 Save Customer</button>
-            </div>
 
-            <div class="card action-card-green">
-                <button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button>
-            </div>
-
-            <div class="card">
-                <h3 class="section-title">Database</h3>
-                <div class="grid-1x2">
-                    <button class="btn-export-blue full-width-btn" onclick="exportFullCSV()">💾 Export</button>
-                    <button class="btn-import-yellow full-width-btn" onclick="document.getElementById('csvFile').click()">📂 Import</button>
+                <div class="card">
+                    <h3 class="section-title">Database</h3>
+                    <div class="grid-1x2">
+                        <button class="btn-export-blue full-width-btn" onclick="exportFullCSV()">💾 Export</button>
+                        <button class="btn-import-yellow full-width-btn" onclick="document.getElementById('csvFile').click()">📂 Import</button>
+                    </div>
+                    <input type="file" id="csvFile" style="display:none;" onchange="importFullCSV(event)">
                 </div>
-                <input type="file" id="csvFile" style="display:none;" onchange="importFullCSV(event)">
-            </div>
 
-            <div class="card action-card-red">
-                <button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL DATA</button>
+                <div class="card action-card-red">
+                    <button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL DATA</button>
+                </div>
             </div>
-            <div class="version-tag">v11.5 - Financial Ledger Build</div>
+            <div class="version-tag">v11.6 - Isolation Shield</div>
         </div>
 
         <div id="master" class="tab-content">
@@ -122,6 +122,6 @@
         <div id="week4" class="tab-content"></div>
     </div>
 
-    <script src="app.js?v=115"></script>
+    <script src="app.js?v=116"></script>
 </body>
 </html>
