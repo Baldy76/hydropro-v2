@@ -55,7 +55,7 @@ window.saveCustomer = () => {
         paymentLogs: ex ? ex.paymentLogs : []
     };
     if(idx > -1) db.customers[idx] = entry; else db.customers.push(entry);
-    saveData(); alert("Saved!"); location.reload(); 
+    saveData(); location.reload(); 
 };
 
 // --- QUICKBOOKS HUB ---
@@ -112,7 +112,6 @@ window.showExpenseModal = () => {
     body.innerHTML = html; document.getElementById('globalModal').style.display = 'flex';
 };
 
-// NEW: Arrears Drilldown
 window.showArrearsModal = () => {
     const body = document.getElementById('modalContentBody');
     let html = '<h3 class="section-title">Arrears Breakdown</h3>';
@@ -164,10 +163,53 @@ window.handleDebtCollection = (id) => {
 
 const calculateDebt = (c) => (c.debtHistory || []).reduce((sum, d) => sum + n(d.amount), 0);
 
-// --- RECALIBRATED STATS ---
+// --- RENDER HISTORY (HALL OF FAME v12.13) ---
+window.renderHistory = () => {
+    const hist = document.getElementById('monthlyHistoryContainer');
+    if (!hist) return;
+    hist.innerHTML = '<h3 class="section-title" style="margin-top:35px; border-bottom: 2px solid rgba(0,0,0,0.05); padding-bottom:10px;">🏆 Business Timeline</h3>';
+    
+    if(db.history.length === 0) {
+        hist.innerHTML += '<div class="card" style="text-align:center; opacity:0.5;">No history recorded yet. Complete your first month to see magic happen!</div>';
+        return;
+    }
+
+    db.history.forEach(h => {
+        const net = n(h.income) - n(h.spend);
+        const d = document.createElement('div'); 
+        d.className = 'history-item-card';
+        d.innerHTML = `
+            <div class="history-top-row">
+                <span class="history-month-name">${h.month}</span>
+                <span style="font-size:18px;">📈</span>
+            </div>
+            <div class="history-badge-grid">
+                <div class="h-badge">
+                    <small>Income</small>
+                    <strong>£${n(h.income).toFixed(2)}</strong>
+                </div>
+                <div class="h-badge">
+                    <small>Expenses</small>
+                    <strong>£${n(h.spend).toFixed(2)}</strong>
+                </div>
+                <div class="h-badge">
+                    <small>Month Profit</small>
+                    <strong class="h-profit">£${net.toFixed(2)}</strong>
+                </div>
+                <div class="h-badge">
+                    <small>New Debt</small>
+                    <strong class="h-debt">£${n(h.debtCreated).toFixed(2)}</strong>
+                </div>
+            </div>
+        `; 
+        hist.appendChild(d);
+    });
+};
+
 window.renderStats = () => {
     const curMonth = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
     if(document.getElementById('statsMonthTitle')) document.getElementById('statsMonthTitle').innerText = `${curMonth} Summary`;
+    
     let totalIn = 0; db.customers.forEach(c => { (c.paymentLogs||[]).forEach(l => totalIn += n(l.amount)); });
     let totalOut = db.expenses.reduce((sum, e) => sum + n(e.amt), 0);
     let potentialVal = db.customers.reduce((sum, c) => sum + n(c.price), 0);
@@ -184,24 +226,14 @@ window.renderStats = () => {
     if(document.getElementById('stillToCollect')) document.getElementById('stillToCollect').innerText = `£${Math.max(0, potentialVal - jobCollected).toFixed(2)}`;
     if(document.getElementById('totalOldDebt')) document.getElementById('totalOldDebt').innerText = `£${overdueVal.toFixed(2)}`;
 
-    const hist = document.getElementById('monthlyHistoryContainer');
-    if (hist) {
-        hist.innerHTML = '<h3 class="section-title" style="margin-top:25px;">History</h3>';
-        db.history.forEach(h => {
-            const d = document.createElement('div'); d.className = 'history-card';
-            d.innerHTML = `<div class="history-grid">
-                <div class="history-item"><small>${h.month}</small><strong>Inc: £${n(h.income).toFixed(2)}</strong></div>
-                <div class="history-item"><small>Debt Created</small><strong style="color:var(--danger)">£${n(h.debtCreated).toFixed(2)}</strong></div>
-            </div>`; hist.appendChild(d);
-        });
-    }
+    renderHistory();
 };
 
 window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); renderLedger(); };
 
 window.renderLedger = () => {
     const list = document.getElementById('expenseList'); if(!list) return;
-    list.innerHTML = '<h3 class="section-title">Expense History</h3>';
+    list.innerHTML = '<h3 class="section-title">Monthly Expense History</h3>';
     db.expenses.forEach(e => {
         const div = document.createElement('div'); div.className = 'card';
         div.style.padding = '15px'; div.style.marginBottom = '10px';
