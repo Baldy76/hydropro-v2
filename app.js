@@ -3,6 +3,7 @@ let db = { customers: [], expenses: [], history: [] };
 const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 
 window.onload = () => {
+    updateGreeting();
     const dateEl = document.getElementById('headerDate');
     if (dateEl) dateEl.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' });
     const saved = localStorage.getItem(MASTER_KEY);
@@ -27,10 +28,11 @@ window.openTab = (evt, name) => {
     const search = document.getElementById('globalSearchContainer');
     if(search) name === 'master' ? search.classList.remove('hidden') : search.classList.add('hidden');
     renderAll();
+    window.scrollTo(0,0);
 };
 
 window.renderWeekLists = () => {
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 1; i <= 5; i++) {
         const container = document.getElementById(`week${i}`); if (!container) continue;
         container.innerHTML = '';
         const weekCusts = db.customers.filter(c => c.week == i);
@@ -50,7 +52,17 @@ window.saveCustomer = () => {
     saveData(); location.reload();
 };
 
-window.renderAll = () => { renderWeekLists(); };
+window.renderAll = () => { renderWeekLists(); renderStats(); };
 window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
 window.toggleCleaned = (id) => { const c = db.customers.find(x => x.id === id); c.cleaned = !c.cleaned; saveData(); renderWeekLists(); };
 window.markAsPaid = (id) => { const c = db.customers.find(x => x.id === id); c.paidThisMonth = c.price; saveData(); renderWeekLists(); };
+window.updateGreeting = () => {
+    const hr = new Date().getHours();
+    let g = hr < 12 ? "Good Morning! ☕" : hr < 18 ? "Good Afternoon! ☀️" : "Good Evening! 🌙";
+    document.getElementById('greetingMsg').innerText = g;
+};
+window.renderStats = () => {
+    let totalIn = 0; db.customers.forEach(c => { totalIn += n(c.paidThisMonth); });
+    let totalOut = 0; db.expenses.forEach(e => { totalOut += n(e.amt); });
+    document.getElementById('currProfit').innerText = `£${(totalIn - totalOut).toFixed(2)}`;
+};
