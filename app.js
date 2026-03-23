@@ -65,24 +65,34 @@ window.renderAll = function() {
     renderWeeks();
 };
 
+// WEEKLY JOB CARDS (Debt History hidden from front)
 window.renderWeeks = function() {
     for(let i=1; i<=4; i++) {
         const div = document.getElementById('week' + i);
         if(!div) continue; div.innerHTML = '';
         db.customers.filter(c => String(c.week) === String(i)).forEach(c => {
             const debt = calculateTrueDebt(c);
-            let debtLabels = "";
-            (c.debtHistory || []).forEach(d => {
-                debtLabels += `<span class="debt-history-badge">${d.month}: £${n(d.amount).toFixed(2)}</span>`;
-            });
             let card = document.createElement('div');
             card.className = `customer-card ${debt > 0 ? 'has-debt' : ''}`;
-            card.innerHTML = `<div onclick="openCustomerModal('${c.id}')"><div style="display:flex; justify-content:space-between"><strong>${c.name}</strong><strong>£${n(c.price).toFixed(2)}</strong></div><small style="opacity:0.6">${c.address}</small><div style="margin-top:5px;">${debtLabels}</div></div><div class="card-action-grid"><button class="icon-btn-small" onclick="window.open('http://maps.apple.com/?q=${encodeURIComponent(c.address)}')">📍 Map</button><button class="icon-btn-small" onclick="editCustomer('${c.id}')">⚙️ Edit</button><button class="icon-btn-small ${c.cleaned?'wa-btn':''}" onclick="markJobAsCleaned('${c.id}')">${c.cleaned?'Done ✅':'Clean'}</button><button class="btn-main" onclick="processPayment('${c.id}')">£${debt.toFixed(2)} Pay</button><button class="icon-btn-small wa-btn" onclick="sendReminder('${c.id}','whatsapp')">💬 WA</button><button class="icon-btn-small sms-btn" onclick="sendReminder('${c.id}','sms')">📱 SMS</button></div>`;
+            card.innerHTML = `
+                <div onclick="openCustomerModal('${c.id}')">
+                    <div style="display:flex; justify-content:space-between"><strong>${c.name}</strong><strong>£${n(c.price).toFixed(2)}</strong></div>
+                    <small style="opacity:0.6">${c.address}</small>
+                </div>
+                <div class="card-action-grid">
+                    <button class="icon-btn-small" onclick="window.open('http://maps.apple.com/?q=${encodeURIComponent(c.address)}')">📍 Map</button>
+                    <button class="icon-btn-small" onclick="editCustomer('${c.id}')">⚙️ Edit</button>
+                    <button class="icon-btn-small ${c.cleaned?'wa-btn':''}" onclick="markJobAsCleaned('${c.id}')">${c.cleaned?'Done ✅':'Clean'}</button>
+                    <button class="btn-main" onclick="processPayment('${c.id}')">£${debt.toFixed(2)} Pay</button>
+                    <button class="icon-btn-small wa-btn" onclick="sendReminder('${c.id}','whatsapp')">💬 WA</button>
+                    <button class="icon-btn-small sms-btn" onclick="sendReminder('${c.id}','sms')">📱 SMS</button>
+                </div>`;
             div.appendChild(card);
         });
     }
 };
 
+// MASTER LIST (Debt History hidden from front)
 window.renderMasterTable = function() {
     const body = document.getElementById('masterTableBody');
     if(!body) return; body.innerHTML = '';
@@ -90,11 +100,15 @@ window.renderMasterTable = function() {
     [...db.customers].sort((a,b) => a.name.localeCompare(b.name)).forEach(c => {
         if(search === "" || c.name.toLowerCase().includes(search) || c.address.toLowerCase().includes(search)) {
             const debt = calculateTrueDebt(c);
-            let debtLabels = "";
-            (c.debtHistory || []).forEach(d => { debtLabels += `<span class="debt-history-badge">${d.month}: £${n(d.amount).toFixed(2)}</span>`; });
             const tr = document.createElement('tr');
             tr.onclick = () => openCustomerModal(c.id);
-            tr.innerHTML = `<td style="padding:15px; border-bottom:1px solid rgba(0,0,0,0.03);"><strong>${c.name}</strong><br><small style="opacity:0.6;">${c.address}</small><div>${debtLabels}</div></td><td style="padding:15px; text-align:right; font-weight:900; color:${debt > 0 ? 'var(--danger)' : 'var(--accent)'}">£${debt.toFixed(2)}</td>`;
+            tr.innerHTML = `
+                <td style="padding:15px; border-bottom:1px solid rgba(0,0,0,0.03);">
+                    <strong>${c.name}</strong><br><small style="opacity:0.6;">${c.address}</small>
+                </td>
+                <td style="padding:15px; text-align:right; font-weight:900; color:${debt > 0 ? 'var(--danger)' : 'var(--accent)'}">
+                    £${debt.toFixed(2)}
+                </td>`;
             body.appendChild(tr);
         }
     });
@@ -200,7 +214,7 @@ window.sendReminder = function(id, type) {
 window.importCSV = function(e) {
     const r = new FileReader(); r.onload = (ev) => {
         const l = ev.target.result.split('\n'); if(l.length <= 1) return;
-        if(!confirm("Append to current list? (Cancel to overwrite)")) db.customers = [];
+        if(!confirm("Append to current list?")) db.customers = [];
         l.slice(1).forEach(line => {
             const cols = line.split(',').map(c => c.replace(/"/g, '').trim());
             if(cols.length >= 5) db.customers.push({ id: Date.now()+Math.random(), name: cols[0], address: cols[1], postcode: cols[2], phone: cols[3], price: n(cols[4]), week: cols[5]||'1', day: cols[6]||'Monday', notes: cols[7]||'', cleaned: false, paidThisMonth: 0, debtHistory: [] });
@@ -210,13 +224,26 @@ window.importCSV = function(e) {
     r.readAsText(e.target.files[0]);
 };
 
+// MODAL LOGIC (Where the debt is now displayed)
 window.openCustomerModal = function(id) {
     const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return;
     document.getElementById('modName').innerText = c.name;
     document.getElementById('modAddr').innerText = (c.address || "") + " " + (c.postcode || "");
     document.getElementById('modOwed').innerText = '£' + calculateTrueDebt(c).toFixed(2);
-    let histHtml = ""; (c.debtHistory || []).forEach(h => { histHtml += `<div>${h.month}: Owed £${n(h.amount).toFixed(2)}</div>`; });
-    document.getElementById('debtDetailsBox').innerHTML = histHtml || "No previous debt.";
+    
+    let histHtml = "";
+    if(c.debtHistory && c.debtHistory.length > 0) {
+        c.debtHistory.forEach(h => {
+            histHtml += `<div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid rgba(0,0,0,0.05);">
+                            <span>${h.month} Balance:</span>
+                            <strong>£${n(h.amount).toFixed(2)}</strong>
+                         </div>`;
+        });
+    } else {
+        histHtml = "<div style='opacity:0.5;'>No previous debt history.</div>";
+    }
+    
+    document.getElementById('debtDetailsBox').innerHTML = histHtml;
     document.getElementById('customerModal').style.display = 'flex';
 };
 
@@ -227,5 +254,9 @@ window.handleSearch = function() { renderMasterTable(); };
 window.deleteCustomer = function() { const id = document.getElementById('editId').value; if(id && confirm("Delete permanently?")) { db.customers = db.customers.filter(c => String(c.id) !== String(id)); clearForm(); saveData(); openTab(null, 'master'); } };
 window.toggleDarkMode = function() { const isDark = document.getElementById('darkModeToggle').checked; document.body.className = isDark ? 'dark-mode' : 'light-mode'; localStorage.setItem('Hydro_Dark_Pref', isDark); };
 window.exportCSV = function() { let csv = "Name,Address,Postcode,Phone,Price,Week,Day,Notes\n"; db.customers.forEach(c => { csv += `"${c.name}","${c.address}","${c.postcode}","${c.phone}",${n(c.price)},"${c.week}","${c.day}","${c.notes}"\n`; }); const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); link.download = "Hydro_Backup.csv"; link.click(); };
-function editFromModal() { const name = document.getElementById('modName').innerText; const c = db.customers.find(x => x.name === name); if(c) { closeCustomerModal(); editCustomer(c.id); } }
+function editFromModal() { 
+    const name = document.getElementById('modName').innerText; 
+    const c = db.customers.find(x => x.name === name); 
+    if(c) { closeCustomerModal(); editCustomer(c.id); } 
+}
 window.addExpense = function() { const v = n(document.getElementById('expAmount').value); if(v > 0) { if(!db.expenses) db.expenses = []; db.expenses.push({amt: v, name: document.getElementById('expName').value || 'Expense'}); saveData(); document.getElementById('expAmount').value=''; } };
