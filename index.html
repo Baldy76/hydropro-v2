@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v17.5</title>
-    <link rel="stylesheet" href="styles.css?v=175">
+    <title>Hydro Pro v17.6</title>
+    <link rel="stylesheet" href="styles.css?v=176">
 </head>
 <body class="light-mode">
 
@@ -17,15 +17,15 @@
 
     <div class="app-header" id="globalHeader">
         <img src="Logo.png" class="logo-img" alt="Hydro Pro">
+        <div class="home-hero">
+            <div id="greetingMsg" class="home-greeting">Good Morning</div>
+            <div id="headerDate" class="home-date"></div>
+        </div>
     </div>
 
     <div class="main-container">
         
         <div id="home" class="tab-content active">
-            <div class="home-hero">
-                <div id="greetingMsg" class="home-greeting">Good Morning</div>
-                <div id="headerDate" class="home-date"></div>
-            </div>
             <div class="home-grid">
                 <button class="tile tile-admin bounce-on-tap" onclick="openTab('admin')"><span>✨</span><small>Setup</small></button>
                 <button class="tile tile-admin bounce-on-tap" onclick="openTab('master')"><span>👥</span><small>Custs</small></button>
@@ -127,10 +127,13 @@
         </div>
 
         <div id="stats" class="tab-content"><div id="currProfit" class="hero-amount">£0.00</div><div id="monthlyHistoryContainer"></div></div>
-        <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
+        
+        <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div>
+        <div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div>
+        <div id="week5" class="tab-content"></div>
     </div>
 
-    <div class="page-version-footer">v17.5 - Action Engine Restored</div>
-    <script src="app.js?v=175"></script>
+    <div class="page-version-footer">v17.6 - Centered Branding</div>
+    <script src="app.js?v=176"></script>
 </body>
 </html>
