@@ -1,4 +1,4 @@
-// 1. DATE ENGINE
+// 1. DATE FORMATTING
 function getFullDate() {
     const d = new Date();
     const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -74,7 +74,9 @@ window.renderMasterTable = function() {
     const body = document.getElementById('masterTableBody');
     if(!body) return; 
     body.innerHTML = '';
-    [...db.customers].sort((a,b) => a.name.localeCompare(b.name)).forEach(c => {
+    
+    const sorted = [...db.customers].sort((a,b) => a.name.localeCompare(b.name));
+    sorted.forEach(c => {
         if(searchTerm === "" || c.name.toLowerCase().includes(searchTerm) || (c.address||"").toLowerCase().includes(searchTerm)) {
             const debt = calculateTrueDebt(c);
             const tr = document.createElement('tr');
@@ -86,22 +88,28 @@ window.renderMasterTable = function() {
 };
 
 window.renderStats = function() {
-    // Current Cycle Stats
+    // 1. Current Stats
     let collM = 0, owedM = 0, projM = 0;
-    db.customers.forEach(c => { projM += n(c.price); collM += n(c.paidThisMonth); if(c.cleaned) owedM += Math.max(0, n(c.price)-n(c.paidThisMonth)); });
+    db.customers.forEach(c => { 
+        projM += n(c.price); 
+        collM += n(c.paidThisMonth); 
+        if(c.cleaned) owedM += Math.max(0, n(c.price)-n(c.paidThisMonth)); 
+    });
+    
     document.getElementById('statCollMonth').innerText = '£' + collM.toFixed(2);
     document.getElementById('statOwedMonth').innerText = '£' + owedM.toFixed(2);
     document.getElementById('statPendingMonth').innerText = '£' + Math.max(0, projM - collM - owedM).toFixed(2);
 
-    // Lifetime Overall Stats
-    const historyTotal = (db.incomeHistory || []).reduce((s, h) => s + n(h.amount), 0);
+    // 2. Lifetime Stats
+    if (!db.incomeHistory) db.incomeHistory = [];
+    const historyTotal = db.incomeHistory.reduce((s, h) => s + n(h.amount), 0);
     const overallTotal = historyTotal + collM;
     document.getElementById('statFYTotal').innerText = '£' + overallTotal.toFixed(2);
 
     const histBody = document.getElementById('overallHistoryBody');
     if(histBody) {
         histBody.innerHTML = '';
-        [...(db.incomeHistory || [])].reverse().forEach(h => {
+        [...db.incomeHistory].reverse().forEach(h => {
             const row = document.createElement('tr');
             row.innerHTML = `<td style="padding:10px 0; border-bottom:1px solid rgba(0,0,0,0.05);">${h.month}</td><td style="padding:10px 0; text-align:right; font-weight:700; border-bottom:1px solid rgba(0,0,0,0.05);">£${n(h.amount).toFixed(2)}</td>`;
             histBody.appendChild(row);
@@ -109,7 +117,7 @@ window.renderStats = function() {
     }
 };
 
-// 5. ACTIONS
+// 5. SMART BANK TOGGLE
 window.handleBankAction = function() {
     const btn = document.getElementById('btnBankAction');
     const fields = ['bName', 'bSort', 'bAcc'];
@@ -127,6 +135,7 @@ window.handleBankAction = function() {
     }
 };
 
+// 6. CORE ACTIONS
 window.saveCustomer = function() {
     const id = document.getElementById('editId').value || Date.now();
     const name = document.getElementById('cName').value; if(!name) return;
@@ -158,10 +167,10 @@ window.onload = () => {
 };
 
 window.completeCycle = function() {
-    if(!confirm("Start New Month? This wipes 'Done' status and adds payments to History.")) return;
+    if(!confirm("Start New Month?")) return;
     const label = new Date().toLocaleDateString('en-GB', {month:'short', year:'2-digit'});
     const monthlyTotal = db.customers.reduce((s,c) => s + n(c.paidThisMonth), 0);
-    db.incomeHistory = db.incomeHistory || [];
+    if (!db.incomeHistory) db.incomeHistory = [];
     db.incomeHistory.push({ month: label, amount: monthlyTotal });
     db.customers.forEach(c => {
         const o = calculateTrueDebt(c);
