@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro v9.5</title>
-    <link rel="stylesheet" href="styles.css?v=95">
+    <title>Hydro Pro v10.0</title>
+    <link rel="stylesheet" href="styles.css?v=100">
 </head>
 <body class="light-mode">
 
@@ -16,11 +16,9 @@
                 <span class="slider"></span>
             </label>
         </div>
-        
         <div class="header-top">
             <img src="Logo.png" class="logo-img" alt="Hydro Pro Logo">
         </div>
-        
         <div class="tabs">
             <button class="tab active" onclick="openTab(event, 'admin')">Setup</button>
             <button class="tab" onclick="openTab(event, 'master')">Custs</button>
@@ -56,8 +54,7 @@
                 <div class="input-stack">
                     <input type="text" id="cName" placeholder="Full Name">
                     <input type="text" id="cAddr" placeholder="Address">
-                    <input type="text" id="cPostcode" placeholder="Postcode">
-                    <input type="tel" id="cPhone" placeholder="Mobile Number">
+                    <input type="tel" id="cPhone" placeholder="Mobile (for WhatsApp)">
                     <input type="number" id="cPrice" placeholder="Price £">
                 </div>
                 <div class="label-heading">Schedule</div>
@@ -72,12 +69,9 @@
                         <option value="Friday">Friday</option>
                     </select>
                 </div>
-                <select id="cFreq" style="margin-top:10px;">
-                    <option value="4">4 Weeks</option><option value="8">8 Weeks</option>
-                    <option value="12">12 Weeks</option>
-                </select>
+                <textarea id="cNotes" placeholder="Notes (Dogs, Gates, Parking...)" style="margin-top:10px;"></textarea>
                 <button class="btn-main full-width-btn" onclick="saveCustomer()">💾 Save Customer</button>
-                <div id="editActions" class="hidden" style="margin-top:15px; border-top:1px solid rgba(0,0,0,0.05); padding-top:15px;">
+                <div id="editActions" class="hidden" style="margin-top:10px;">
                     <button class="btn-danger full-width-btn" onclick="deleteCustomer()">🗑 Delete</button>
                     <button class="btn-neutral full-width-btn" style="margin-top:10px;" onclick="clearForm()">Cancel</button>
                 </div>
@@ -87,27 +81,15 @@
                 <button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button>
             </div>
 
-            <div class="card">
-                <h3 class="section-title">Database</h3>
-                <div class="grid-2">
-                    <button class="btn-export-blue full-width-btn" onclick="exportFullCSV()">💾 Export</button>
-                    <button class="btn-import-yellow full-width-btn" onclick="document.getElementById('csvFile').click()">📂 Import</button>
-                </div>
-                <input type="file" id="csvFile" style="display:none;" onchange="importFullCSV(event)">
-            </div>
-
             <div class="card action-card-red">
                 <button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL DATA</button>
             </div>
-
-            <div class="version-tag">v9.5 - Layout Rescue Build</div>
+            <div class="version-tag">v10.0 - Hybrid Hybrid Card</div>
         </div>
 
         <div id="master" class="tab-content">
             <div id="masterTableBody"></div>
         </div>
-        <div id="stats" class="tab-content"></div>
-        <div id="spend" class="tab-content"></div>
         <div id="week1" class="tab-content"></div>
         <div id="week2" class="tab-content"></div>
         <div id="week3" class="tab-content"></div>
@@ -116,15 +98,15 @@
 
     <div id="payModal" class="modal-overlay" onclick="if(event.target === this) this.style.display='none'">
         <div class="modal-content">
-            <h3 class="section-title">Payment</h3>
-            <p id="payCustName"></p>
+            <h3 class="section-title">Quick Pay</h3>
+            <p id="payCustName" style="font-weight:bold;"></p>
             <div class="grid-2">
-                <button class="btn-main full-width-btn" onclick="confirmQuickPay('full')">Full</button>
+                <button class="btn-main full-width-btn" onclick="confirmQuickPay('full')">Full Pay</button>
                 <button class="btn-ghost full-width-btn" onclick="confirmQuickPay('custom')">Custom</button>
             </div>
         </div>
     </div>
 
-    <script src="app.js?v=95"></script>
+    <script src="app.js?v=100"></script>
 </body>
 </html>
