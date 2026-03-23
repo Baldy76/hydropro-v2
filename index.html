@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro v10.9</title>
-    <link rel="stylesheet" href="styles.css?v=109">
+    <title>Hydro Pro v11.0</title>
+    <link rel="stylesheet" href="styles.css?v=110">
 </head>
 <body class="light-mode">
 
@@ -41,6 +41,15 @@
             <input type="text" id="mainSearch" class="search-input-sleek" placeholder="🔍 Search customers..." oninput="handleSearch()">
         </div>
 
+        <div id="dayFilterBar" class="day-filter-container hidden">
+            <button class="day-pill active" onclick="setDayFilter('All')">All</button>
+            <button class="day-pill" onclick="setDayFilter('Monday')">M</button>
+            <button class="day-pill" onclick="setDayFilter('Tuesday')">T</button>
+            <button class="day-pill" onclick="setDayFilter('Wednesday')">W</button>
+            <button class="day-pill" onclick="setDayFilter('Thursday')">T</button>
+            <button class="day-pill" onclick="setDayFilter('Friday')">F</button>
+        </div>
+
         <div id="admin" class="tab-content active">
             <div class="card">
                 <h3 class="section-title">New Customer</h3>
@@ -52,8 +61,6 @@
                     <input type="tel" id="cPhone" placeholder="Mobile Number">
                     <input type="number" id="cPrice" placeholder="Price £">
                 </div>
-                
-                <div class="label-heading">Schedule</div>
                 <div class="grid-1x2">
                     <select id="cWeek" class="large-select">
                         <option value="1">Week 1</option><option value="2">Week 2</option>
@@ -81,16 +88,18 @@
             <div class="card action-card-red">
                 <button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL DATA</button>
             </div>
-            <div class="version-tag">v10.9 - Recovery Stable</div>
+            <div class="version-tag">v11.0 - Navigation Fix</div>
         </div>
 
         <div id="master" class="tab-content"><div id="masterTableBody"></div></div>
+        <div id="stats" class="tab-content"><div class="card"><h3>Stats Coming Soon</h3></div></div>
+        <div id="spend" class="tab-content"><div class="card"><h3>Spend Log Coming Soon</h3></div></div>
         <div id="week1" class="tab-content"></div>
         <div id="week2" class="tab-content"></div>
         <div id="week3" class="tab-content"></div>
         <div id="week4" class="tab-content"></div>
     </div>
 
-    <script src="app.js?v=109"></script>
+    <script src="app.js?v=110"></script>
 </body>
 </html>
