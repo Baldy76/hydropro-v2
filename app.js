@@ -38,9 +38,11 @@ window.handleBackNavigation = () => {
     else openTab('home');
 };
 
+// --- SAVE & CLEAR LOGIC ---
 window.saveCustomer = () => {
     const name = document.getElementById('cName').value;
-    if(!name) return;
+    if(!name) { alert("Please enter a name! ✨"); return; }
+    
     const id = document.getElementById('editId').value || Date.now().toString();
     const idx = db.customers.findIndex(x => x.id === id);
     let ex = idx > -1 ? db.customers[idx] : null;
@@ -59,21 +61,21 @@ window.saveCustomer = () => {
     };
 
     if(idx > -1) db.customers[idx] = entry; else db.customers.push(entry);
-    saveData(); openTab('home');
+    saveData();
+    window.resetForm(); // Clears entry screen after save
+    alert("Customer Saved Successfully! ✅");
 };
 
-window.exportQBIncome = () => {
-    let csv = "Customer,Invoice Date,Invoice No,Service,Amount,Tax Amount\n";
-    db.customers.forEach(c => { (c.paymentLogs || []).forEach((log, idx) => {
-        csv += `"${c.name}",${log.date.replace(/\//g, '-')},INV-${c.id}-${idx},"Window Clean",${n(log.amount).toFixed(2)},0\n`;
-    }); });
-    const b = new Blob([csv], { type: 'text/csv' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `QB_Income.csv`; a.click();
-};
-
-window.exportQBExpenses = () => {
-    let csv = "Vendor,Date,Description,Amount,Account\n";
-    db.expenses.forEach(e => { csv += `"Vendor",${e.date.replace(/\//g, '-')},"${e.desc}",${n(e.amt).toFixed(2)},"Expenses"\n`; });
-    const b = new Blob([csv], { type: 'text/csv' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `QB_Expenses.csv`; a.click();
+window.resetForm = () => {
+    document.getElementById('editId').value = "";
+    document.getElementById('cName').value = "";
+    document.getElementById('cHouseNum').value = "";
+    document.getElementById('cStreet').value = "";
+    document.getElementById('cPostcode').value = "";
+    document.getElementById('cPrice').value = "";
+    document.getElementById('cWeek').value = "1";
+    document.getElementById('cDay').value = "Monday";
+    document.getElementById('cNotes').value = "";
 };
 
 window.addExpense = () => {
@@ -81,8 +83,11 @@ window.addExpense = () => {
     if(!d || a<=0) return;
     db.expenses.push({desc:d, amt:a, date:new Date().toLocaleDateString('en-GB')});
     saveData(); renderAll();
+    document.getElementById('expDesc').value = ""; // Clears description
+    document.getElementById('expAmt').value = ""; // Clears amount
 };
 
+// --- RENDER LOGIC ---
 window.renderWeekLists = () => {
     for (let i = 1; i <= 5; i++) {
         const container = document.getElementById(`week${i}`); if (!container) continue;
@@ -120,6 +125,21 @@ window.editCust = (id) => {
     document.getElementById('cWeek').value = c.week;
     document.getElementById('cDay').value = c.day;
     document.getElementById('cNotes').value = c.notes;
+};
+
+// --- EXPORTS & SYNC ---
+window.exportQBIncome = () => {
+    let csv = "Customer,Invoice Date,Invoice No,Service,Amount,Tax Amount\n";
+    db.customers.forEach(c => { (c.paymentLogs || []).forEach((log, idx) => {
+        csv += `"${c.name}",${log.date.replace(/\//g, '-')},INV-${c.id}-${idx},"Window Clean",${n(log.amount).toFixed(2)},0\n`;
+    }); });
+    const b = new Blob([csv], { type: 'text/csv' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `QB_Income.csv`; a.click();
+};
+
+window.exportQBExpenses = () => {
+    let csv = "Vendor,Date,Description,Amount,Account\n";
+    db.expenses.forEach(e => { csv += `"Vendor",${e.date.replace(/\//g, '-')},"${e.desc}",${n(e.amt).toFixed(2)},"Expenses"\n`; });
+    const b = new Blob([csv], { type: 'text/csv' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `QB_Expenses.csv`; a.click();
 };
 
 window.completeCycle = () => {
