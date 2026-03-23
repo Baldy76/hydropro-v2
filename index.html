@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro v6.8</title>
-    <link rel="stylesheet" href="styles.css?v=68">
+    <title>Hydro Pro v6.9</title>
+    <link rel="stylesheet" href="styles.css?v=69">
 </head>
 <body class="light-mode">
 
@@ -91,7 +91,7 @@
                 <button type="button" class="btn-uat full-width-btn" onclick="runUATClear()">🛠️ RESET ALL DATA</button>
             </div>
             
-            <div class="version-tag">v6.8 - Button UI Fix</div>
+            <div class="version-tag">v6.9 - Chart & Lifetime Build</div>
         </div>
 
         <div id="master" class="tab-content">
@@ -109,16 +109,27 @@
 
         <div id="stats" class="tab-content">
             <div class="card">
-                <h3 style="text-align:center;">This Month</h3>
+                <h3 style="text-align:center; margin-bottom: 20px;">Current Cycle Breakdown</h3>
+                <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 25px;">
+                    <svg width="200" height="200" viewBox="0 0 42 42" id="statPieSvg" style="transform: rotate(-90deg); border-radius: 50%;">
+                        <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#eee" stroke-width="6"></circle>
+                        <circle id="pieCollected" cx="21" cy="21" r="15.915" fill="transparent" stroke="var(--stat-collected)" stroke-width="6" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
+                        <circle id="pieOwed" cx="21" cy="21" r="15.915" fill="transparent" stroke="var(--stat-owed)" stroke-width="6" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
+                        <circle id="piePending" cx="21" cy="21" r="15.915" fill="transparent" stroke="var(--stat-pending)" stroke-width="6" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
+                    </svg>
+                </div>
+
                 <div class="stats-grid">
                     <div class="metric-tile tile-collected">Collected<br><strong id="statCollMonth">£0</strong></div>
                     <div class="metric-tile tile-owed">Owed<br><strong id="statOwedMonth">£0</strong></div>
                     <div class="metric-tile tile-pending">Pending<br><strong id="statPendingMonth">£0</strong></div>
                 </div>
             </div>
+
             <div class="card">
                 <h3 style="text-align:center;">Lifetime Performance</h3>
                 <div style="background: var(--primary); color: white; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px;">
+                    <small style="opacity:0.7; letter-spacing: 1px;">TOTAL REVENUE COLLECTED</small><br>
                     <span id="statFYTotal" style="font-size: 32px; font-weight: 900;">£0</span>
                 </div>
                 <table style="width:100%; border-collapse: collapse;">
@@ -147,12 +158,11 @@
         <div class="modal-content">
             <button class="modal-close" onclick="closeCustomerModal()">✖</button>
             <div id="modName" style="font-size:22px; font-weight:900; color:var(--primary);"></div>
-            <p id="modAddr" style="opacity:0.6; font-size:14px; margin-bottom: 15px;"></p>
+            <p id="modAddr" style="opacity:0.6; font-size:14px; margin-bottom: 10px;"></p>
             
             <div class="ledger-container">
                 <small class="ledger-title">Monthly Activity Ledger</small>
                 <div id="ledgerBox"></div>
-                
                 <div class="current-month-summary">
                     <span>Current Month:</span>
                     <span id="modCurrentStatus"></span>
@@ -171,6 +181,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=68"></script>
+    <script src="app.js?v=69"></script>
 </body>
 </html>
