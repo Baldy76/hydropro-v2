@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro - Production v5.2</title>
+    <title>Hydro Pro - Production v5.5</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="light-mode">
@@ -91,16 +91,16 @@
                 <button type="button" class="btn-uat full-width-btn" onclick="runUATClear()">🛠️ RESET ALL DATA</button>
             </div>
             
-            <div class="version-tag">v5.2 - Stable Production</div>
+            <div class="version-tag">v5.5 - Stable Production</div>
         </div>
 
         <div id="master" class="tab-content">
             <div class="card" style="padding:0; overflow:hidden;">
                 <div style="padding:15px; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                    <input type="text" id="mainSearch" placeholder="🔍 Search database..." oninput="handleSearch()" style="margin:0; width:100%;">
+                    <input type="text" id="mainSearch" placeholder="🔍 Search Name or Address..." oninput="handleSearch()" style="margin:0; width:100%;">
                 </div>
                 <table style="width:100%; border-collapse:collapse;">
-                    <thead><tr class="table-header-row"><th>Customer Details</th><th style="text-align:right">Owed</th></tr></thead>
+                    <thead><tr class="table-header-row"><th style="text-align:left; padding:15px;">CUSTOMER</th><th style="text-align:right; padding:15px;">OWED</th></tr></thead>
                     <tbody id="masterTableBody"></tbody>
                 </table>
             </div>
@@ -108,14 +108,25 @@
 
         <div id="stats" class="tab-content">
             <div class="card">
-                <h3 style="text-align:center; margin-bottom:15px;">Financials</h3>
+                <h3 style="text-align:center;">This Month's Cycle</h3>
                 <div class="stats-grid">
-                    <div class="metric-tile tile-collected">Revenue<br><strong id="statCollMonth">£0</strong></div>
+                    <div class="metric-tile tile-collected">Collected<br><strong id="statCollMonth">£0</strong></div>
                     <div class="metric-tile tile-owed">Owed<br><strong id="statOwedMonth">£0</strong></div>
                     <div class="metric-tile tile-pending">Pending<br><strong id="statPendingMonth">£0</strong></div>
                 </div>
-                <div id="pieMonth" class="pie" style="margin-top:25px;"></div>
-                <div id="legendMonth" class="legend"></div>
+            </div>
+
+            <div class="card">
+                <h3 style="text-align:center;">Lifetime Performance</h3>
+                <div class="fy-box" style="background: var(--primary); color: white; padding: 20px; border-radius: 15px; text-align: center;">
+                    <small style="opacity:0.8; text-transform: uppercase; letter-spacing: 1px;">Total Revenue Collected</small><br>
+                    <span id="statFYTotal" style="font-size: 32px; font-weight: 900;">£0</span>
+                </div>
+                <div style="margin-top: 20px;">
+                    <table style="width:100%; border-collapse: collapse;">
+                        <tbody id="overallHistoryBody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -129,10 +140,8 @@
             <div id="expenseList"></div>
         </div>
 
-        <div id="week1" class="tab-content"></div>
-        <div id="week2" class="tab-content"></div>
-        <div id="week3" class="tab-content"></div>
-        <div id="week4" class="tab-content"></div>
+        <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div>
+        <div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div>
     </div>
 
     <div id="customerModal" class="modal-overlay" onclick="if(event.target === this) closeCustomerModal()">
