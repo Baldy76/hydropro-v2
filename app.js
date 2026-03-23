@@ -25,11 +25,8 @@ window.openTab = (name) => {
     if(target) target.classList.add("active");
     
     const globalNav = document.getElementById('globalNav');
-    if (name === 'home') {
-        globalNav.classList.add('hidden');
-    } else {
-        globalNav.classList.remove('hidden');
-    }
+    if (name === 'home') globalNav.classList.add('hidden');
+    else globalNav.classList.remove('hidden');
 
     window.scrollTo({ top: 0, behavior: 'instant' });
     renderAll();
@@ -39,21 +36,6 @@ window.handleBackNavigation = () => {
     const active = document.querySelector('.tab-content.active').id;
     if (active.startsWith('week') && active !== 'weeksHub') openTab('weeksHub');
     else openTab('home');
-};
-
-window.renderMasterTable = () => {
-    const body = document.getElementById('masterTableBody'); if(!body) return;
-    body.innerHTML = '';
-    const search = (document.getElementById('mainSearch').value || "").toLowerCase();
-    db.customers.forEach(c => {
-        if(c.name.toLowerCase().includes(search) || (c.street || "").toLowerCase().includes(search)) {
-            const tile = document.createElement('div');
-            tile.className = 'customer-tile bounce-on-tap';
-            tile.onclick = () => editCust(c.id);
-            tile.innerHTML = `<div class="cust-info"><strong>${c.name}</strong><small>${c.houseNum} ${c.street}</small></div><div class="cust-price-pill">£${n(c.price).toFixed(2)}</div>`;
-            body.appendChild(tile);
-        }
-    });
 };
 
 window.saveCustomer = () => {
@@ -71,18 +53,27 @@ window.saveCustomer = () => {
     };
 
     if(idx > -1) db.customers[idx] = entry; else db.customers.push(entry);
-    saveData(); openTab('home');
+    saveData();
+    // Form Clear
+    document.getElementById('editId').value = ""; document.getElementById('cName').value = "";
+    document.getElementById('cHouseNum').value = ""; document.getElementById('cStreet').value = "";
+    document.getElementById('cPostcode').value = ""; document.getElementById('cPrice').value = "";
+    document.getElementById('cNotes').value = "";
+    openTab('home');
 };
 
-window.completeCycle = () => {
-    if(!confirm("Start New Month?")) return;
-    let inc = 0, exp = 0;
-    db.customers.forEach(c => inc += n(c.paidThisMonth));
-    db.expenses.forEach(e => exp += n(e.amt));
-    db.history.push({ month: new Date().toLocaleDateString('en-GB', {month:'long'}), year: new Date().getFullYear(), profit: (inc - exp) });
-    db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; });
-    db.expenses = [];
-    saveData(); location.reload();
+window.renderMasterTable = () => {
+    const body = document.getElementById('masterTableBody'); if(!body) return;
+    body.innerHTML = '';
+    const search = (document.getElementById('mainSearch').value || "").toLowerCase();
+    db.customers.forEach(c => {
+        if(c.name.toLowerCase().includes(search) || (c.street || "").toLowerCase().includes(search)) {
+            const tile = document.createElement('div'); tile.className = 'customer-tile bounce-on-tap';
+            tile.onclick = () => editCust(c.id);
+            tile.innerHTML = `<div class="cust-info"><strong>${c.name}</strong><small>${c.houseNum} ${c.street}</small></div><div class="cust-price-pill">£${n(c.price).toFixed(2)}</div>`;
+            body.appendChild(tile);
+        }
+    });
 };
 
 window.renderWeekLists = () => {
@@ -110,5 +101,6 @@ window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats()
 window.renderStats = () => { const p = document.getElementById('currProfit'); if (!p) return; let inc = 0, exp = 0; db.customers.forEach(c => inc += n(c.paidThisMonth)); db.expenses.forEach(e => exp += n(e.amt)); p.innerText = `£${(inc - exp).toFixed(2)}`; };
 window.renderLedger = () => { const l = document.getElementById('expenseList'); if(!l) return; l.innerHTML = '<h3 class="section-title">💸 Spend History</h3>'; db.expenses.forEach(e => { const d = document.createElement('div'); d.className = 'card'; d.innerHTML = `<div style="display:flex; justify-content:space-between"><div><strong>${e.desc}</strong><br><small>${e.date}</small></div><div style="color:var(--danger)">-£${n(e.amt).toFixed(2)}</div></div>`; l.appendChild(d); }); };
 window.addExpense = () => { const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value); if(!d || a<=0) return; db.expenses.push({desc:d, amt:a, date:new Date().toLocaleDateString('en-GB')}); saveData(); renderAll(); document.getElementById('expDesc').value = ""; document.getElementById('expAmt').value = ""; };
+window.completeCycle = () => { if(!confirm("Start New Month?")) return; db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload(); };
 window.updateGreeting = () => { const hr = new Date().getHours(); document.getElementById('greetingMsg').innerText = (hr < 12) ? "Good Morning, Jonathan! ☕" : (hr < 18) ? "Good Afternoon, Jonathan! ☀️" : "Good Evening, Jonathan! 🌙"; };
 window.toggleDarkMode = () => { const isDark = document.getElementById('darkModeToggle').checked; document.body.className = isDark ? 'dark-mode' : 'light-mode'; localStorage.setItem('Hydro_Dark_Pref', isDark); };
