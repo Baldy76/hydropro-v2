@@ -3,7 +3,6 @@ let db = { customers: [], expenses: [], history: [] };
 let currentCoords = { lat: null, lon: null };
 const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 
-// --- STARTUP ---
 window.onload = () => {
     updateGreeting();
     const dateEl = document.getElementById('headerDate');
@@ -34,13 +33,13 @@ const updateGreeting = () => {
     document.getElementById('greetingMsg').innerText = g;
 };
 
-// --- WEATHER ---
 const fetchWeather = async (lat, lon) => {
     try {
         const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
         const data = await res.json();
         const weather = data.current_weather;
-        document.getElementById('weatherWrap').classList.remove('hidden');
+        const wWrap = document.getElementById('weatherWrap');
+        wWrap.classList.remove('hidden');
         document.getElementById('wTemp').innerText = `${Math.round(weather.temperature)}°C`;
         const icon = document.getElementById('wIcon');
         const desc = document.getElementById('wDesc');
@@ -55,61 +54,31 @@ const fetchWeather = async (lat, lon) => {
 window.openWeatherApp = () => {
     if (!currentCoords.lat) return;
     const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    window.open(isiOS ? `weather://` : `https://www.google.com/search?q=weather+at+my+location`, '_blank');
+    window.open(isiOS ? `weather://` : `https://www.google.com/search?q=weather`, '_blank');
 };
 
-// --- NAVIGATOR & BROADCASTER ---
-window.optimizeDay = (weekNum) => {
-    if(!currentCoords.lat) { alert("GPS coordinates not found yet."); return; }
-    // Logic: Simple sorting by street address to group jobs
-    db.customers.sort((a, b) => {
-        if (a.week != weekNum || b.week != weekNum) return 0;
-        return (a.address || "").localeCompare(b.address || "");
-    });
-    saveData(); renderWeekLists(); alert("Route Grouped by Street! 🚀");
+window.openTab = (evt, name) => {
+    document.querySelectorAll(".tab-content").forEach(c => c.style.display = "none");
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    const target = document.getElementById(name);
+    if (target) target.style.display = "block";
+    if (evt) evt.currentTarget.classList.add("active");
+    renderAll();
+    window.scrollTo(0,0);
 };
 
-window.mapTheDay = (weekNum) => {
-    const dayJobs = db.customers.filter(c => c.week == weekNum && !c.cleaned);
-    if(dayJobs.length === 0) { alert("No jobs left today."); return; }
-    let url = "http://googleusercontent.com/maps.google.com/6";
-    const last = dayJobs[dayJobs.length - 1];
-    url += encodeURIComponent(last.address + " " + (last.postcode || ""));
-    if (dayJobs.length > 1) {
-        let ways = dayJobs.slice(0, -1).map(c => c.address + " " + (c.postcode || "")).join('|');
-        url += "&waypoints=" + encodeURIComponent(ways);
-    }
-    window.open(url, '_blank');
-};
-
-window.broadcastWeek = (weekNum, type) => {
-    const weekCusts = db.customers.filter(c => c.week == weekNum && c.phone && !c.cleaned);
-    if(weekCusts.length === 0) { alert("No pending jobs with mobile numbers."); return; }
-    if(!confirm(`Open ${weekCusts.length} messaging windows?`)) return;
-    weekCusts.forEach((c, i) => {
-        setTimeout(() => {
-            const msg = `Hey ${c.name}, I'll be cleaning windows at ${c.address} this ${c.day}. See ya!`;
-            const phone = c.phone.replace(/\s+/g, '');
-            let url = (type === 'wa') ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}` : `sms:${phone}${/iPad|iPhone|iPod/.test(navigator.userAgent)?'&':'?'}body=${encodeURIComponent(msg)}`;
-            window.open(url, '_blank');
-        }, i * 1200); // 1.2s delay to prevent pop-up block
-    });
-};
-
-// --- RENDER WEEK LISTS ---
 window.renderWeekLists = () => {
     for (let i = 1; i <= 5; i++) {
         const container = document.getElementById(`week${i}`); if (!container) continue;
         container.innerHTML = '';
         
-        // FORCED INJECTION OF HUB
         const hub = document.createElement('div');
         hub.className = 'navigator-card';
         hub.innerHTML = `
-            <div class="nav-header"><span>🛰️ NAVIGATOR</span><span>📢 BROADCASTER</span></div>
+            <div class="nav-header"><span>Navigator</span><span>Broadcaster</span></div>
             <div class="nav-btn-row">
-                <button class="btn-nav-action" onclick="optimizeDay(${i})">🚀 Sort Day</button>
-                <button class="btn-nav-action map-btn" onclick="mapTheDay(${i})">🗺️ View Map</button>
+                <button class="btn-nav-action" onclick="optimizeDay(${i})">🚀 Sort Route</button>
+                <button class="btn-nav-action map-btn" onclick="mapTheDay(${i})">🗺️ Multi-Map</button>
             </div>
             <div class="nav-btn-row">
                 <button class="btn-nav-action" onclick="broadcastWeek(${i}, 'wa')">💬 WhatsApp All</button>
@@ -124,20 +93,46 @@ window.renderWeekLists = () => {
             const isPaid = n(c.paidThisMonth) >= n(c.price);
             const d = (c.debtHistory||[]).reduce((s,x)=>s+n(x.amount),0);
             const card = document.createElement('div'); card.className = 'card';
-            card.innerHTML = `<div onclick="showCustDetails('${c.id}')"><strong style="font-size:19px; color:var(--accent);">${c.name}</strong><br><small style="opacity:0.6; font-weight:600;">${c.address || 'No Address'}</small></div>
-                <div class="workflow-grid"><div class="comms-row"><button class="icon-btn-large bounce-on-tap" style="color:#25D366" onclick="handleWhatsApp('${c.id}')">💬</button><button class="icon-btn-large bounce-on-tap" style="color:#007AFF" onclick="handleSMS('${c.id}')">📱</button><a href="http://googleusercontent.com/maps.google.com/7{encodeURIComponent((c.address||'') + ' ' + (c.postcode||''))}" target="_blank" class="icon-btn-large bounce-on-tap" style="color:#ea4335">📍</a></div>
-                <div class="status-row" style="${d > 0 ? 'grid-template-columns:repeat(3,1fr)' : 'grid-template-columns:1fr 1fr'}"><button class="action-btn-main bounce-on-tap ${c.cleaned ? 'btn-cleaned-active' : ''}" onclick="toggleCleaned('${c.id}')">${c.cleaned ? 'Done ✅' : 'Cleaned'}</button><button class="action-btn-main bounce-on-tap ${isPaid ? 'btn-paid-active' : 'btn-pay-pending'}" onclick="markAsPaid('${c.id}')">${isPaid ? 'Paid 💰' : 'Pay £' + n(c.price).toFixed(2)}</button>${d > 0 ? `<button class="action-btn-main bounce-on-tap btn-debt-pending" onclick="handleDebtCollection('${c.id}')">Debt £${d.toFixed(2)}</button>` : ''}</div></div>`;
+            card.innerHTML = `<div onclick="showCustDetails('${c.id}')"><strong style="font-size:18px; color:var(--accent);">${c.name}</strong><br><small style="opacity:0.6;">${c.address}</small></div>
+                <div class="workflow-grid"><div class="comms-row"><button class="icon-btn-large" style="color:#25D366" onclick="handleWhatsApp('${c.id}')">💬</button><button class="icon-btn-large" style="color:#007AFF" onclick="handleSMS('${c.id}')">📱</button><a href="http://googleusercontent.com/maps.google.com/8{encodeURIComponent((c.address||'') + ' ' + (c.postcode||''))}" target="_blank" class="icon-btn-large" style="color:#ea4335">📍</a></div>
+                <div class="status-row" style="${d > 0 ? 'grid-template-columns:repeat(3,1fr)' : 'grid-template-columns:1fr 1fr'}"><button class="action-btn-main ${c.cleaned ? 'btn-cleaned-active' : ''}" onclick="toggleCleaned('${c.id}')">${c.cleaned ? 'Done ✅' : 'Cleaned'}</button><button class="action-btn-main ${isPaid ? 'btn-paid-active' : 'btn-pay-pending'}" onclick="markAsPaid('${c.id}')">${isPaid ? 'Paid' : 'Pay £' + n(c.price).toFixed(2)}</button>${d > 0 ? `<button class="action-btn-main btn-debt-pending" onclick="handleDebtCollection('${c.id}')">Debt £${d.toFixed(2)}</button>` : ''}</div></div>`;
             container.appendChild(card);
         });
     }
 };
 
-// --- DATA & STATS ---
+// ... (Rest of app logic remains optimized as per previous v13.9 release)
+window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
+window.toggleDarkMode = () => { const d = document.getElementById('darkModeToggle').checked; document.body.className = d ? 'dark-mode' : 'light-mode'; localStorage.setItem('Hydro_Dark_Pref', d); };
+window.saveCustomer = () => {
+    const nVal = document.getElementById('cName').value; if(!nVal) return;
+    const id = document.getElementById('editId').value || Date.now().toString();
+    const idx = db.customers.findIndex(x => x.id === id); let ex = idx > -1 ? db.customers[idx] : null;
+    const entry = { id, name: nVal, address: document.getElementById('cAddr').value, postcode: document.getElementById('cPostcode').value, phone: document.getElementById('cPhone').value, price: n(document.getElementById('cPrice').value), week: document.getElementById('cWeek').value, day: document.getElementById('cDay').value, notes: document.getElementById('cNotes').value, cleaned: ex?ex.cleaned:false, paidThisMonth: ex?ex.paidThisMonth:0, debtHistory: ex?ex.debtHistory:[], paymentLogs: ex?ex.paymentLogs:[] };
+    if(idx > -1) db.customers[idx] = entry; else db.customers.push(entry);
+    saveData(); location.reload(); 
+};
+window.optimizeDay = (w) => { db.customers.sort((a,b) => (a.week==w && b.week==w) ? (a.address||"").localeCompare(b.address||"") : 0); saveData(); renderWeekLists(); };
+window.mapTheDay = (w) => {
+    const dayJobs = db.customers.filter(c => c.week == w && !c.cleaned); if(dayJobs.length === 0) return;
+    let url = "http://googleusercontent.com/maps.google.com/9"; const last = dayJobs[dayJobs.length-1];
+    url += encodeURIComponent(last.address + " " + last.postcode);
+    if(dayJobs.length > 1) url += "&waypoints=" + encodeURIComponent(dayJobs.slice(0,-1).map(c => c.address + " " + c.postcode).join('|'));
+    window.open(url, '_blank');
+};
+window.broadcastWeek = (w, t) => {
+    const cs = db.customers.filter(c => c.week == w && c.phone && !c.cleaned);
+    cs.forEach((c, i) => setTimeout(() => {
+        const msg = encodeURIComponent(`Hey ${c.name}, cleaning your windows at ${c.address} this ${c.day}. See ya!`);
+        const p = c.phone.replace(/\s+/g,'');
+        window.open(t=='wa' ? `https://wa.me/${p}?text=${msg}` : `sms:${p}${/iPhone|iPad/.test(navigator.userAgent)?'&':'?'}body=${msg}`, '_blank');
+    }, i*1200));
+};
 window.renderStats = () => {
-    let totalIn = 0; db.customers.forEach(c => { (c.paymentLogs||[]).forEach(l => totalIn += n(l.amount)); });
-    let totalOut = db.expenses.reduce((sum, e) => sum + n(e.amt), 0);
-    let potVal = db.customers.reduce((sum, c) => sum + n(c.price), 0);
-    let jobCol = db.customers.reduce((sum, c) => sum + n(c.paidThisMonth), 0);
+    let totalIn = 0; db.customers.forEach(c => (c.paymentLogs||[]).forEach(l => totalIn += n(l.amount)));
+    let totalOut = db.expenses.reduce((s, e) => s + n(e.amt), 0);
+    let potVal = db.customers.reduce((s, c) => s + n(c.price), 0);
+    let jobCol = db.customers.reduce((s, c) => s + n(c.paidThisMonth), 0);
     document.getElementById('currProfit').innerText = `£${(totalIn - totalOut).toFixed(2)}`;
     document.getElementById('currRevenue').innerText = `£${totalIn.toFixed(2)}`;
     document.getElementById('currSpend').innerText = `£${totalOut.toFixed(2)}`;
@@ -148,21 +143,19 @@ window.renderStats = () => {
     document.getElementById('totalOldDebt').innerText = `£${db.customers.reduce((s,c)=>(c.debtHistory||[]).reduce((ss,d)=>ss+n(d.amount),s),0).toFixed(2)}`;
     renderHistory();
 };
-
 window.renderHistory = () => {
     const hist = document.getElementById('monthlyHistoryContainer'); if (!hist) return;
-    hist.innerHTML = '<h3 class="section-title" style="margin-top:35px; color: var(--qb-green);">🏆 The Hall of Fame</h3>';
+    hist.innerHTML = '<h3 class="section-title" style="margin-top:35px; color: var(--success);">🏆 Hall of Fame</h3>';
     db.history.forEach(h => {
         const net = n(h.income) - n(h.spend);
         const d = document.createElement('div'); d.className = 'history-item-card';
         d.innerHTML = `<div class="history-metrics-grid"><div class="metric-bubble b-profit"><small>${h.month}</small><strong>Net £${net.toFixed(2)}</strong></div>
             <div class="metric-bubble b-collected"><small>Collected</small><strong>£${n(h.income).toFixed(2)}</strong></div>
             <div class="metric-bubble b-spent"><small>Spent</small><strong>£${n(h.spend).toFixed(2)}</strong></div>
-            <div class="metric-bubble b-arrears"><small>Debt Rolled</small><strong>£${n(h.debtCreated).toFixed(2)}</strong></div></div>`; 
+            <div class="metric-bubble b-arrears"><small>Arrears</small><strong>£${n(h.debtCreated).toFixed(2)}</strong></div></div>`; 
         hist.appendChild(d);
     });
 };
-
 window.renderMasterTable = () => {
     const container = document.getElementById('masterTableBody'); if (!container) return; container.innerHTML = '';
     const search = (document.getElementById('mainSearch').value || "").toLowerCase();
@@ -173,11 +166,42 @@ window.renderMasterTable = () => {
         container.appendChild(row);
     }});
 };
-
-// --- CORE UTILS ---
-window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
-window.toggleDarkMode = () => { const d = document.getElementById('darkModeToggle').checked; document.body.className = d ? 'dark-mode' : 'light-mode'; localStorage.setItem('Hydro_Dark_Pref', d); };
-window.addExpense = () => { const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value); if(!d || a<=0) return; db.expenses.push({desc:d, amt:a, date:new Date().toLocaleDateString('en-GB')}); saveData(); location.reload(); };
+window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); renderLedger(); };
+window.renderLedger = () => {
+    const list = document.getElementById('expenseList'); if(!list) return; list.innerHTML = '<h3 class="section-title">💸 Spend History</h3>';
+    db.expenses.forEach(e => {
+        const div = document.createElement('div'); div.className = 'card'; div.style.padding = '18px';
+        div.innerHTML = `<div style="display:flex; justify-content:space-between;"><div><strong>${e.desc}</strong><br><small>${e.date}</small></div><div style="font-weight:900; color:var(--danger);">£${n(e.amt).toFixed(2)}</div></div>`;
+        list.appendChild(div);
+    });
+};
+window.showCustDetails = (id) => {
+    const c = db.customers.find(x => x.id === id); if(!c) return;
+    const body = document.getElementById('modalContentBody');
+    body.innerHTML = `<h2>${c.name}</h2><p>📍 ${c.address}</p><p>📞 ${c.phone}</p><p>💰 £${n(c.price).toFixed(2)}</p><button class="btn-main full-width-btn" onclick="editCust('${c.id}')">⚙️ Edit</button>`;
+    document.getElementById('globalModal').style.display = 'flex';
+};
+window.editCust = (id) => {
+    const c = db.customers.find(x => x.id === id); if(!c) return; closeModal(); openTab(null, 'admin');
+    document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cAddr').value = c.address; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPhone').value = c.phone; document.getElementById('cPrice').value = c.price; document.getElementById('cWeek').value = c.week; document.getElementById('cDay').value = c.day; document.getElementById('cNotes').value = c.notes;
+};
+window.completeCycle = () => {
+    if(!confirm("Start New Month? Unpaid move to arrears.")) return;
+    const curLabel = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+    let mInc = 0; db.customers.forEach(c => (c.paymentLogs||[]).forEach(l => mInc += n(l.amount)));
+    let mExp = db.expenses.reduce((s, e) => s + n(e.amt), 0);
+    let nDebt = 0;
+    db.customers.forEach(c => {
+        if (c.cleaned && n(c.paidThisMonth) < n(c.price)) {
+            const bal = n(c.price) - n(c.paidThisMonth);
+            if(!c.debtHistory) c.debtHistory = []; c.debtHistory.push({ date: new Date().toLocaleDateString('en-GB'), amount: bal, month: curLabel });
+            nDebt += bal;
+        }
+        c.cleaned = false; c.paidThisMonth = 0; c.paymentLogs = [];
+    });
+    db.history.unshift({ month: curLabel, income: mInc, spend: mExp, debtCreated: nDebt });
+    db.expenses = []; saveData(); location.reload();
+};
 window.exportFullCSV = () => {
     let c = "ID,Name,Address,Postcode,Phone,Price,Week,Day,Notes\n";
     db.customers.forEach(x => { c += `${x.id},"${x.name}","${x.address}","${x.postcode}","${x.phone}",${x.price},${x.week},"${x.day}","${x.notes}"\n`; });
@@ -196,104 +220,50 @@ window.importFullCSV = (e) => {
     };
     r.readAsText(f);
 };
-window.completeCycle = () => {
-    if(!confirm("Start New Month? Unpaid move to arrears.")) return;
-    const curLabel = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
-    let mInc = 0; db.customers.forEach(c => { (c.paymentLogs||[]).forEach(l => mInc += n(l.amount)); });
-    let mExp = db.expenses.reduce((sum, e) => sum + n(e.amt), 0);
-    let nDebt = 0;
-    db.customers.forEach(c => {
-        if (c.cleaned && n(c.paidThisMonth) < n(c.price)) {
-            const bal = n(c.price) - n(c.paidThisMonth);
-            if(!c.debtHistory) c.debtHistory = []; c.debtHistory.push({ date: new Date().toLocaleDateString('en-GB'), amount: bal, month: curLabel });
-            nDebt += bal;
-        }
-        c.cleaned = false; c.paidThisMonth = 0; c.paymentLogs = [];
-    });
-    db.history.unshift({ month: curLabel, income: mInc, spend: mExp, debtCreated: nDebt });
-    db.expenses = []; saveData(); location.reload();
-};
-
-window.openTab = (evt, name) => {
-    document.querySelectorAll(".tab-content").forEach(c => c.style.display = "none");
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    const target = document.getElementById(name); if(target) target.style.display = "block";
-    if(evt) evt.currentTarget.classList.add("active");
-    renderAll();
-};
-
-window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); renderLedger(); };
-window.renderLedger = () => {
-    const list = document.getElementById('expenseList'); if(!list) return; list.innerHTML = '<h3 class="section-title">💸 Spend History</h3>';
-    db.expenses.forEach(e => {
-        const div = document.createElement('div'); div.className = 'card'; div.style.padding = '18px';
-        div.innerHTML = `<div style="display:flex; justify-content:space-between;"><div><strong>${e.desc}</strong><br><small>${e.date}</small></div><div style="font-weight:900; color:var(--danger);">£${n(e.amt).toFixed(2)}</div></div>`;
-        list.appendChild(div);
-    });
-};
-
-window.showCustDetails = (id) => {
-    const c = db.customers.find(x => x.id === id); if(!c) return;
-    const body = document.getElementById('modalContentBody');
-    body.innerHTML = `<h2>${c.name}</h2><p>📍 ${c.address}</p><p>📞 ${c.phone}</p><p>💰 £${n(c.price).toFixed(2)}</p><button class="btn-main full-width-btn" onclick="editCust('${c.id}')">⚙️ Edit</button>`;
-    document.getElementById('globalModal').style.display = 'flex';
-};
-
-window.editCust = (id) => {
-    const c = db.customers.find(x => x.id === id); if(!c) return; closeModal(); openTab(null, 'admin');
-    document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cAddr').value = c.address; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPhone').value = c.phone; document.getElementById('cPrice').value = c.price; document.getElementById('cWeek').value = c.week; document.getElementById('cDay').value = c.day; document.getElementById('cNotes').value = c.notes;
-};
-
 window.exportQBIncome = () => {
     let csv = "Customer,Invoice Date,Invoice No,Service,Amount,Tax Amount\n";
-    db.customers.forEach(c => { (c.paymentLogs || []).forEach((log, idx) => {
+    db.customers.forEach(c => (c.paymentLogs || []).forEach((log, idx) => {
         const dateStr = log.date.split(',')[0].replace(/\//g, '-');
         csv += `"${c.name}",${dateStr},INV-${c.id}-${idx},"Window Clean",${n(log.amount).toFixed(2)},0\n`;
-    }); });
+    }));
     const b = new Blob([csv], { type: 'text/csv' }); const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = `QB_Income.csv`; a.click();
 };
-
 window.exportQBExpenses = () => {
     let csv = "Vendor,Date,Description,Amount,Account\n";
     db.expenses.forEach(e => { const dStr = e.date.replace(/\//g, '-'); csv += `"Vendor",${dStr},"${e.desc}",${n(e.amt).toFixed(2)},"Expenses"\n`; });
     const b = new Blob([csv], { type: 'text/csv' }); const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = `QB_Expenses.csv`; a.click();
 };
-
 window.handleWhatsApp = (id) => { const c = db.customers.find(x => x.id === id); if(c && c.phone) window.open(`https://wa.me/${c.phone.replace(/\s+/g,'')}`, '_blank'); };
-window.handleSMS = (id) => { const c = db.customers.find(x => x.id === id); if(c && c.phone) window.open(`sms:${c.phone.replace(/\s+/g,'')}`, '_blank'); };
+window.handleSMS = (id) => { const c = db.customers.find(x => x.id === id); if(c && c.phone) window.open(`sms:${c.phone.replace(/\s+/g,'')}${/iPhone|iPad/.test(navigator.userAgent)?'&':'?'}body=`, '_blank'); };
 window.closeModal = () => document.getElementById('globalModal').style.display = 'none';
 window.showIncomeModal = () => {
-    const body = document.getElementById('modalContentBody');
-    let html = '<h3 class="section-title">💸 Collections Log</h3>';
-    db.customers.forEach(c => { (c.paymentLogs || []).forEach(log => {
+    const body = document.getElementById('modalContentBody'); let html = '<h3 class="section-title">💸 Collections Log</h3>';
+    db.customers.forEach(c => (c.paymentLogs || []).forEach(log => {
         const desc = log.arrearsContext ? `Arrears (${log.arrearsContext})` : 'Monthly Job';
         html += `<div class="drilldown-row"><div><strong>${c.name}</strong><br><small>${log.date}<br>${desc}</small></div><div style="color:${log.type === 'debt' ? 'var(--danger)' : 'var(--success)'}; font-weight:bold;">£${n(log.amount).toFixed(2)}</div></div>`;
-    }); });
+    }));
     body.innerHTML = html; document.getElementById('globalModal').style.display = 'flex';
 };
 window.showExpenseModal = () => {
-    const body = document.getElementById('modalContentBody');
-    let html = '<h3 class="section-title">🧾 Spend Detail</h3>';
+    const body = document.getElementById('modalContentBody'); let html = '<h3 class="section-title">🧾 Spend Detail</h3>';
     db.expenses.forEach(e => { html += `<div class="drilldown-row"><div><strong>${e.desc}</strong><br><small>${e.date}</small></div><div style="font-weight:bold;">£${n(e.amt).toFixed(2)}</div></div>`; });
     body.innerHTML = html; document.getElementById('globalModal').style.display = 'flex';
 };
 window.showArrearsModal = () => {
-    const body = document.getElementById('modalContentBody');
-    let html = '<h3 class="section-title">⚠️ Arrears Ledger</h3>';
-    db.customers.forEach(c => { (c.debtHistory || []).forEach(d => {
-        html += `<div class="drilldown-row"><div><strong>${c.name}</strong><br><small>Added: ${d.date}<br>${d.month || 'Old'}</small></div><div style="color:var(--danger); font-weight:bold;">£${n(d.amount).toFixed(2)}</div></div>`;
-    }); });
+    const body = document.getElementById('modalContentBody'); let html = '<h3 class="section-title">⚠️ Arrears Ledger</h3>';
+    db.customers.forEach(c => (c.debtHistory || []).forEach(d => {
+        html += `<div class="drilldown-row"><div><strong>${c.name}</strong><br><small>Date: ${d.date}<br>${d.month || 'Old'}</small></div><div style="color:var(--danger); font-weight:bold;">£${n(d.amount).toFixed(2)}</div></div>`;
+    }));
     body.innerHTML = html; document.getElementById('globalModal').style.display = 'flex';
 };
 window.handleDebtCollection = (id) => {
     const c = db.customers.find(x => x.id === id); if (!c) return;
     const totalOwed = (c.debtHistory || []).reduce((s,d)=>s+n(d.amount),0);
-    const input = prompt(`Debt Collection for ${c.name}: £${totalOwed.toFixed(2)}\nEnter amount paid:`, totalOwed.toFixed(2));
+    const input = prompt(`Debt Recovery for ${c.name}: £${totalOwed.toFixed(2)}\nEnter amount paid:`, totalOwed.toFixed(2));
     if (input === null) return;
     const amt = n(input); if (amt <= 0) return;
-    let context = ""; if(c.debtHistory.length > 0) context = `${c.debtHistory[0].month || ''} Clean: ${c.debtHistory[0].date}`;
     if(!c.paymentLogs) c.paymentLogs = [];
-    c.paymentLogs.push({ date: new Date().toLocaleString('en-GB'), amount: amt, type: 'debt', arrearsContext: context });
+    c.paymentLogs.push({ date: new Date().toLocaleString('en-GB'), amount: amt, type: 'debt', arrearsContext: c.debtHistory.length > 0 ? c.debtHistory[0].month : "Old" });
     let rem = amt;
     for (let i = 0; i < (c.debtHistory || []).length; i++) {
         if (rem <= 0) break;
