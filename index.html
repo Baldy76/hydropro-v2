@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v13.6</title>
-    <link rel="stylesheet" href="styles.css?v=136">
+    <title>Hydro Pro v13.7</title>
+    <link rel="stylesheet" href="styles.css?v=137">
 </head>
 <body class="light-mode">
 
@@ -21,7 +21,7 @@
         <div class="date-container">
             <div id="greetingMsg" class="greeting-txt">Hey there!</div>
             
-            <div id="weatherWrap" class="weather-pill hidden">
+            <div id="weatherWrap" class="weather-pill hidden bounce-on-tap" onclick="openWeatherApp()">
                 <span id="wIcon"></span> <span id="wTemp">--°C</span> | <small id="wDesc">Loading...</small>
             </div>
 
@@ -142,12 +142,12 @@
         <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
     </div>
 
-    <div class="global-footer">v13.6 - Production Ready</div>
+    <div class="global-footer">v13.7 - Complete Build</div>
 
     <div id="globalModal" class="modal-overlay" onclick="if(event.target === this) closeModal()">
         <div class="modal-content"><button class="close-btn" onclick="closeModal()">✕</button><div id="modalContentBody"></div></div>
     </div>
 
-    <script src="app.js?v=136"></script>
+    <script src="app.js?v=137"></script>
 </body>
 </html>
