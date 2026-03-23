@@ -75,71 +75,67 @@ window.handleDebtCollection = (id) => {
     const c = db.customers.find(x => x.id === id);
     if (!c) return;
     const currentTotal = calculateDebt(c);
-    
     const input = prompt(`Debt Collection for ${c.name}\nTotal Owed: £${currentTotal.toFixed(2)}\n\nEnter amount paid:`, currentTotal.toFixed(2));
-    
-    if (input === null) return; // User cancelled
+    if (input === null) return;
     const amountPaid = n(input);
     if (amountPaid <= 0) return;
-
     if (amountPaid >= currentTotal) {
         c.debtHistory = [];
-        alert("Debt cleared fully!");
     } else {
-        // Partial Payment Logic: Subtract from the oldest debt entries first
-        let remainingToSubtract = amountPaid;
-        // Sort debtHistory so we clear oldest first (optional, but standard)
+        let rem = amountPaid;
         for (let i = 0; i < c.debtHistory.length; i++) {
-            if (remainingToSubtract <= 0) break;
-            let debtEntry = c.debtHistory[i];
-            if (debtEntry.amount <= remainingToSubtract) {
-                remainingToSubtract -= debtEntry.amount;
-                c.debtHistory.splice(i, 1);
-                i--; // Adjust index due to splice
-            } else {
-                debtEntry.amount -= remainingToSubtract;
-                remainingToSubtract = 0;
-            }
+            if (rem <= 0) break;
+            if (c.debtHistory[i].amount <= rem) { rem -= c.debtHistory[i].amount; c.debtHistory.splice(i, 1); i--; }
+            else { c.debtHistory[i].amount -= rem; rem = 0; }
         }
-        alert(`Partial payment of £${amountPaid.toFixed(2)} recorded. £${calculateDebt(c).toFixed(2)} remains.`);
     }
-
     saveData();
     renderWeekLists();
 };
 
-const calculateDebt = (c) => {
-    if(!c.debtHistory) return 0;
-    return c.debtHistory.reduce((sum, d) => sum + n(d.amount), 0);
-};
+const calculateDebt = (c) => (c.debtHistory || []).reduce((sum, d) => sum + n(d.amount), 0);
 
-window.generateMessage = (customer) => {
-    const date = new Date().toLocaleDateString('en-GB');
-    const debt = calculateDebt(customer);
-    const total = n(customer.price) + debt;
-    let msg = `Hey ${customer.name}, just to let you know that your windows were cleaned today ${date} at ${customer.address}.`;
-    if(debt > 0) msg += ` Total including previous balance is £${total.toFixed(2)}.`;
-    else msg += ` Balance is £${n(customer.price).toFixed(2)}.`;
-    return `${msg}\n\nPlease find my bank details below:\n\nJonathan\n${BANK_DETAILS}`;
-};
+window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); };
 
-window.handleWhatsApp = (id) => {
-    const c = db.customers.find(x => x.id === id);
-    if(!c || !c.phone) return;
-    window.open(`https://wa.me/${c.phone.replace(/\s+/g, '')}?text=${encodeURIComponent(generateMessage(c))}`, '_blank');
-};
+window.renderStats = () => {
+    const curMonth = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+    if(document.getElementById('statsMonthTitle')) document.getElementById('statsMonthTitle').innerText = `${curMonth} Summary`;
 
-window.handleSMS = (id) => {
-    const c = db.customers.find(x => x.id === id);
-    if(!c || !c.phone) return;
-    const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    window.location.href = `sms:${c.phone.replace(/\s+/g, '')}${isiOS ? '&' : '?'}body=${encodeURIComponent(generateMessage(c))}`;
-};
+    let inc = db.customers.reduce((sum, c) => sum + n(c.paidThisMonth), 0);
+    let exp = db.expenses.reduce((sum, e) => sum + n(e.amt), 0);
+    let targetWorkVal = db.customers.reduce((sum, c) => sum + n(c.price), 0);
+    let pendingCollection = db.customers.reduce((sum, c) => sum + Math.max(0, n(c.price) - n(c.paidThisMonth)), 0);
+    let totalOwedDebt = db.customers.reduce((sum, c) => sum + calculateDebt(c), 0);
 
-window.renderAll = () => {
-    renderMasterTable();
-    renderWeekLists();
-    renderStats();
+    const netProfit = inc - exp;
+    const progress = targetWorkVal > 0 ? (inc / targetWorkVal) * 100 : 0;
+
+    // Hero Update
+    document.getElementById('currProfit').innerText = `£${netProfit.toFixed(2)}`;
+    
+    // Progress Update
+    document.getElementById('progressBar').style.width = `${progress}%`;
+    document.getElementById('collectionPercent').innerText = `${Math.round(progress)}%`;
+    
+    // Grid Updates
+    document.getElementById('targetWork').innerText = `£${targetWorkVal.toFixed(2)}`;
+    document.getElementById('stillToCollect').innerText = `£${pendingCollection.toFixed(2)}`;
+    document.getElementById('currRevenue').innerText = `£${inc.toFixed(2)}`;
+    document.getElementById('currSpend').innerText = `£${exp.toFixed(2)}`;
+    document.getElementById('totalOldDebt').innerText = `£${totalOwedDebt.toFixed(2)}`;
+
+    // History
+    const hist = document.getElementById('monthlyHistoryContainer');
+    if (hist) {
+        hist.innerHTML = '<h3 class="section-title" style="margin-top:25px;">History</h3>';
+        db.history.forEach(h => {
+            const d = document.createElement('div'); d.className = 'history-card';
+            d.innerHTML = `<div class="history-grid">
+                <div class="history-item"><small>${h.month}</small><strong>Inc: £${n(h.income).toFixed(2)}</strong></div>
+                <div class="history-item"><small>Debt Created</small><strong style="color:var(--danger)">£${n(h.debtCreated).toFixed(2)}</strong></div>
+            </div>`; hist.appendChild(d);
+        });
+    }
 };
 
 window.renderMasterTable = () => {
@@ -148,11 +144,10 @@ window.renderMasterTable = () => {
     const search = (document.getElementById('mainSearch').value || "").toLowerCase();
     db.customers.forEach(c => {
         if (c.name.toLowerCase().includes(search) || c.address.toLowerCase().includes(search)) {
-            const row = document.createElement('div');
-            row.className = 'master-row';
+            const row = document.createElement('div'); row.className = 'master-row';
             row.onclick = () => showCustDetails(c.id);
             const debt = calculateDebt(c);
-            row.innerHTML = `<div><strong>${c.name}</strong><br><small>${c.address}</small></div><div style="text-align:right">£${n(c.price).toFixed(2)}${debt > 0 ? '<br><small style="color:var(--danger)">Debt: £' + debt.toFixed(2) + '</small>' : ''}<br><small>${c.day}</small></div>`;
+            row.innerHTML = `<div><strong>${c.name}</strong><br><small>${c.address}</small></div><div style="text-align:right">£${n(c.price).toFixed(2)}${debt > 0 ? '<br><small style="color:var(--danger)">Debt: £' + debt.toFixed(2) + '</small>' : ''}</div>`;
             container.appendChild(row);
         }
     });
@@ -164,39 +159,26 @@ window.renderWeekLists = () => {
         if (!container) continue; container.innerHTML = '';
         const weekCusts = db.customers.filter(c => c.week == i);
         if (weekCusts.length === 0) { container.innerHTML = '<div class="card" style="text-align:center; opacity:0.5;">No jobs.</div>'; continue; }
-        
         weekCusts.forEach(c => {
             const isPaid = n(c.paidThisMonth) >= n(c.price);
             const debt = calculateDebt(c);
             const hasDebt = debt > 0;
-            const card = document.createElement('div');
-            card.className = 'card';
-            
+            const card = document.createElement('div'); card.className = 'card';
             const gridStyle = hasDebt ? 'grid-template-columns: repeat(3, 1fr);' : 'grid-template-columns: 1fr 1fr;';
-
             card.innerHTML = `
                 <div onclick="showCustDetails('${c.id}')">
-                    <strong style="font-size:18px;">${c.name}</strong><br>
-                    <small style="opacity:0.6;">${c.address}</small>
+                    <strong style="font-size:18px;">${c.name}</strong><br><small style="opacity:0.6;">${c.address}</small>
                 </div>
                 <div class="workflow-grid">
                     <div class="comms-row">
-                        <button class="icon-btn-large wa-color" onclick="handleWhatsApp('${c.id}')">💬</button>
-                        <button class="icon-btn-large sms-color" onclick="handleSMS('${c.id}')">📱</button>
-                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.address + ' ' + c.postcode)}" 
-                           target="_blank" class="icon-btn-large maps-color">📍</a>
+                        <button class="icon-btn-large" style="color:#25D366" onclick="handleWhatsApp('${c.id}')">💬</button>
+                        <button class="icon-btn-large" style="color:#007AFF" onclick="handleSMS('${c.id}')">📱</button>
+                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.address + ' ' + c.postcode)}" target="_blank" class="icon-btn-large" style="color:#ea4335">📍</a>
                     </div>
                     <div class="status-row" style="${gridStyle}">
-                        <button class="action-btn-main ${c.cleaned ? 'btn-cleaned-active' : ''}" onclick="toggleCleaned('${c.id}')">
-                            ${c.cleaned ? 'Cleaned ✅' : 'Cleaned'}
-                        </button>
-                        <button class="action-btn-main ${isPaid ? 'btn-paid-active' : 'btn-pay-pending'}" onclick="markAsPaid('${c.id}')">
-                            ${isPaid ? 'Paid ✅' : 'Pay £' + n(c.price).toFixed(2)}
-                        </button>
-                        ${hasDebt ? `
-                        <button class="action-btn-main btn-debt-pending" onclick="handleDebtCollection('${c.id}')">
-                            Debt £${debt.toFixed(2)}
-                        </button>` : ''}
+                        <button class="action-btn-main ${c.cleaned ? 'btn-cleaned-active' : ''}" onclick="toggleCleaned('${c.id}')">${c.cleaned ? 'Cleaned ✅' : 'Cleaned'}</button>
+                        <button class="action-btn-main ${isPaid ? 'btn-paid-active' : 'btn-pay-pending'}" onclick="markAsPaid('${c.id}')">${isPaid ? 'Paid ✅' : 'Pay £' + n(c.price).toFixed(2)}</button>
+                        ${hasDebt ? `<button class="action-btn-main btn-debt-pending" onclick="handleDebtCollection('${c.id}')">Debt £${debt.toFixed(2)}</button>` : ''}
                     </div>
                 </div>`;
             container.appendChild(card);
@@ -205,57 +187,20 @@ window.renderWeekLists = () => {
 };
 
 window.showCustDetails = (id) => {
-    const c = db.customers.find(x => x.id === id);
-    if(!c) return;
-    const modal = document.getElementById('custModal');
-    const body = document.getElementById('modalBody');
+    const c = db.customers.find(x => x.id === id); if(!c) return;
     const debt = calculateDebt(c);
-    body.innerHTML = `
-        <h2 style="margin-top:0; color:var(--accent);">${c.name}</h2>
-        <p>📍 ${c.address} ${c.postcode}</p>
-        <p>📞 ${c.phone || 'N/A'}</p>
-        <p>💰 Price: £${n(c.price).toFixed(2)}</p>
-        ${debt > 0 ? `<p style="color:var(--danger); font-weight:bold;">⚠️ Total Owed Debt: £${debt.toFixed(2)}</p>` : ''}
-        <p>📝 Notes: ${c.notes || 'No notes.'}</p>
-        <button class="btn-main full-width-btn" onclick="editCust('${c.id}')">⚙️ Edit Customer</button>`;
-    modal.style.display = 'flex';
+    const body = document.getElementById('modalBody');
+    body.innerHTML = `<h2 style="margin-top:0; color:var(--accent);">${c.name}</h2><p>📍 ${c.address} ${c.postcode}</p><p>📞 ${c.phone || 'N/A'}</p><p>💰 £${n(c.price).toFixed(2)}</p>${debt > 0 ? `<p style="color:var(--danger); font-weight:bold;">Debt: £${debt.toFixed(2)}</p>` : ''}<p>📝 ${c.notes || 'No notes.'}</p><button class="btn-main full-width-btn" onclick="editCust('${c.id}')">⚙️ Edit</button>`;
+    document.getElementById('custModal').style.display = 'flex';
 };
 
 window.editCust = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
-    document.getElementById('custModal').style.display='none';
-    openTab(null, 'admin');
-    document.getElementById('editId').value = c.id;
-    document.getElementById('cName').value = c.name;
-    document.getElementById('cAddr').value = c.address;
-    document.getElementById('cPostcode').value = c.postcode;
-    document.getElementById('cPhone').value = c.phone;
-    document.getElementById('cPrice').value = c.price;
-    document.getElementById('cWeek').value = c.week;
-    document.getElementById('cDay').value = c.day;
-    document.getElementById('cNotes').value = c.notes;
-};
-
-window.renderStats = () => {
-    const curMonth = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
-    const title = document.getElementById('statsMonthTitle');
-    if (title) title.innerText = `${curMonth} Summary`;
-    let inc = db.customers.reduce((sum, c) => sum + n(c.paidThisMonth), 0);
-    let exp = db.expenses.reduce((sum, e) => sum + n(e.amt), 0);
-    let dbt = db.customers.reduce((sum, c) => sum + (c.cleaned && n(c.paidThisMonth) < n(c.price) ? n(c.price) - n(c.paidThisMonth) : 0), 0);
-    if(document.getElementById('currRevenue')) document.getElementById('currRevenue').innerText = `£${inc.toFixed(2)}`;
-    if(document.getElementById('currSpend')) document.getElementById('currSpend').innerText = `£${exp.toFixed(2)}`;
-    if(document.getElementById('currDebt')) document.getElementById('currDebt').innerText = `£${dbt.toFixed(2)}`;
-    if(document.getElementById('currProfit')) document.getElementById('currProfit').innerText = `£${(inc - exp).toFixed(2)}`;
-    const hist = document.getElementById('monthlyHistoryContainer');
-    if (!hist) return; hist.innerHTML = '<h3 class="section-title" style="margin-top:25px;">History</h3>';
-    db.history.forEach(h => {
-        const d = document.createElement('div'); d.className = 'history-card';
-        d.innerHTML = `<div class="history-header"><span>${h.month}</span></div><div class="history-grid">
-            <div class="history-item"><small>Inc</small><strong>£${n(h.income).toFixed(2)}</strong></div>
-            <div class="history-item"><small>Debt</small><strong style="color:var(--danger)">£${n(h.debtCreated).toFixed(2)}</strong></div>
-        </div>`; hist.appendChild(d);
-    });
+    document.getElementById('custModal').style.display='none'; openTab(null, 'admin');
+    document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name;
+    document.getElementById('cAddr').value = c.address; document.getElementById('cPostcode').value = c.postcode;
+    document.getElementById('cPhone').value = c.phone; document.getElementById('cPrice').value = c.price;
+    document.getElementById('cWeek').value = c.week; document.getElementById('cDay').value = c.day; document.getElementById('cNotes').value = c.notes;
 };
 
 window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
@@ -274,7 +219,11 @@ window.completeCycle = () => {
     });
     db.expenses = []; saveData(); location.reload();
 };
-window.exportFullCSV = () => { let c = "ID,Name,Address,Postcode,Phone,Price,Week,Day,Notes\n"; db.customers.forEach(x => { c += `${x.id},"${x.name}","${x.address}","${x.postcode}","${x.phone}",${x.price},${x.week},"${x.day}","${x.notes}"\n`; }); const b = new Blob([c], { type: 'text/csv' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `Backup.csv`; a.click(); };
+window.exportFullCSV = () => {
+    let c = "ID,Name,Address,Postcode,Phone,Price,Week,Day,Notes\n";
+    db.customers.forEach(x => { c += `${x.id},"${x.name}","${x.address}","${x.postcode}","${x.phone}",${x.price},${x.week},"${x.day}","${x.notes}"\n`; });
+    const b = new Blob([c], { type: 'text/csv' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `Backup.csv`; a.click();
+};
 window.importFullCSV = (e) => {
     const f = e.target.files[0], r = new FileReader();
     r.onload = (ev) => {
