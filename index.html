@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v19.2</title>
-    <link rel="stylesheet" href="styles.css?v=192">
+    <title>Hydro Pro v19.3</title>
+    <link rel="stylesheet" href="styles.css?v=193">
 </head>
 <body class="light-mode">
 
@@ -44,27 +44,30 @@
                 <input type="hidden" id="editId">
                 <div class="fun-input-group">
                     <div class="fun-icon" style="background: rgba(0, 122, 255, 0.1);">👤</div>
-                    <div class="fun-field-stack"><label>Customer Name</label><input type="text" id="cName" class="creative-input"></div>
+                    <div class="fun-field-stack"><label>Customer Name</label><input type="text" id="cName" class="creative-input" placeholder="Full Name"></div>
                 </div>
                 <div class="fun-input-group">
                     <div class="fun-icon" style="background: rgba(255, 149, 0, 0.15);">🏠</div>
-                    <div class="fun-field-stack"><label>House Number</label><input type="text" id="cHouseNum" class="creative-input"></div>
+                    <div class="fun-field-stack"><label>House Number</label><input type="text" id="cHouseNum" class="creative-input" placeholder="e.g. 22"></div>
                 </div>
                 <div class="fun-input-group">
                     <div class="fun-icon" style="background: rgba(52, 199, 89, 0.15);">🛣️</div>
-                    <div class="fun-field-stack"><label>Street Name</label><input type="text" id="cStreet" class="creative-input"></div>
+                    <div class="fun-field-stack"><label>Street Name</label><input type="text" id="cStreet" class="creative-input" placeholder="Street Name"></div>
                 </div>
                 <div class="fun-input-group">
                     <div class="fun-icon" style="background: rgba(175, 82, 222, 0.15);">📍</div>
-                    <div class="fun-field-stack"><label>Postcode</label><input type="text" id="cPostcode" class="creative-input postcode-input"></div>
+                    <div class="fun-field-stack"><label>Postcode</label><input type="text" id="cPostcode" class="creative-input postcode-input" placeholder="NE1 1AA"></div>
                 </div>
                 <div class="fun-input-group">
                     <div class="fun-icon" style="background: rgba(255, 59, 48, 0.15);">💰</div>
-                    <div class="fun-field-stack"><label>Clean Price (£)</label><input type="number" id="cPrice" class="creative-input"></div>
+                    <div class="fun-field-stack"><label>Clean Price (£)</label><input type="number" id="cPrice" class="creative-input" placeholder="0.00"></div>
                 </div>
                 <div class="fun-input-group" style="border: none;">
                     <div class="fun-icon" style="background: rgba(142, 142, 147, 0.15);">📝</div>
-                    <div class="fun-field-stack"><label>Notes</label><textarea id="cNotes" class="creative-textarea"></textarea></div>
+                    <div class="fun-field-stack">
+                        <label>Private Notes</label>
+                        <textarea id="cNotes" class="creative-textarea" placeholder="Access codes, dogs, key info..."></textarea>
+                    </div>
                 </div>
                 <button class="btn-main full-width-btn creative-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
@@ -105,11 +108,12 @@
                 <button class="tile-week-blue tile-week-5" onclick="openTab('week5')">Week 5</button>
             </div>
         </div>
+
         <div id="spend" class="tab-content"><div id="expenseList"></div></div>
         <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
     </div>
 
-    <div class="page-version-footer">v19.2 - Final Alignment Lock</div>
-    <script src="app.js?v=192"></script>
+    <div class="page-version-footer">v19.3 - Interface Lockdown</div>
+    <script src="app.js?v=193"></script>
 </body>
 </html>
