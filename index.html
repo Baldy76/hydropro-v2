@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v13.3</title>
-    <link rel="stylesheet" href="styles.css?v=133">
+    <title>Hydro Pro v13.4</title>
+    <link rel="stylesheet" href="styles.css?v=134">
 </head>
 <body class="light-mode">
 
@@ -22,95 +22,74 @@
             <div id="greetingMsg" class="greeting-txt">Hello, Jonathan!</div>
             <div id="headerDate" class="date-txt"></div>
         </div>
-        <div class="tabs">
-            <button class="tab active" onclick="openTab(event, 'admin')">Setup</button>
-            <button class="tab" onclick="openTab(event, 'master')">Custs</button>
-            <button class="tab" onclick="openTab(event, 'stats')">Stats</button>
-            <button class="tab" onclick="openTab(event, 'spend')">Ledger</button>
-            <button class="tab" onclick="openTab(event, 'week1')">W1</button>
-            <button class="tab" onclick="openTab(event, 'week2')">W2</button>
-            <button class="tab" onclick="openTab(event, 'week3')">W3</button>
-            <button class="tab" onclick="openTab(event, 'week4')">W4</button>
-        </div>
     </div>
 
     <div class="main-container">
-        <div id="globalSearchContainer" class="search-outer hidden">
-            <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Find a customer..." oninput="renderMasterTable()">
-        </div>
-
-        <div id="admin" class="tab-content active">
-            <div id="setup-form-wrapper">
-                <div class="card">
-                    <h3 class="section-title">✨ Add New Client</h3>
-                    <input type="hidden" id="editId">
-                    <div class="input-stack force-stack">
-                        <input type="text" id="cName" placeholder="Full Name">
-                        <input type="text" id="cAddr" placeholder="Address">
-                        <input type="text" id="cPostcode" placeholder="Postcode">
-                        <input type="tel" id="cPhone" placeholder="Mobile Number">
-                        <input type="number" id="cPrice" placeholder="Price £">
-                    </div>
-                    <div class="grid-1x2">
-                        <select id="cWeek" class="large-select">
-                            <option value="1">Week 1</option><option value="2">Week 2</option>
-                            <option value="3">Week 3</option><option value="4">Week 4</option>
-                        </select>
-                        <select id="cDay" class="large-select">
-                            <option value="Monday">Monday</option><option value="Tuesday">Tuesday</option>
-                            <option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option>
-                            <option value="Friday">Friday</option>
-                        </select>
-                    </div>
-                    <textarea id="cNotes" placeholder="Notes..." class="premium-textarea"></textarea>
-                    <button class="btn-main full-width-btn bounce-on-tap" onclick="saveCustomer()">💾 Save Customer</button>
-                </div>
-                <div class="card action-card-green"><button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
-
-                <div class="card">
-                    <h3 class="section-title">📦 Database</h3>
-                    <div class="grid-1x2">
-                        <button id="exportBtn" class="pill-btn" onclick="exportFullCSV()">💾 Export</button>
-                        <button id="importBtn" class="pill-btn" onclick="document.getElementById('csvFile').click()">📂 Import</button>
-                    </div>
-                    <input type="file" id="csvFile" style="display:none;" onchange="importFullCSV(event)">
-                </div>
-                <div class="card action-card-red"><button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL DATA</button></div>
+        
+        <div id="home" class="tab-content active">
+            <div class="home-grid">
+                <button class="tile tile-main" onclick="openTab('admin')"><span>✨</span><small>Setup</small></button>
+                <button class="tile tile-main" onclick="openTab('master')"><span>👥</span><small>Customers</small></button>
+                <button class="tile tile-main" onclick="openTab('stats')"><span>📊</span><small>Statistics</small></button>
+                <button class="tile tile-main" onclick="openTab('spend')"><span>💸</span><small>Ledger</small></button>
+                <button class="tile tile-weekly-hub" onclick="openTab('weeklyHub')"><span>📅</span><small>Weekly Work</small></button>
             </div>
         </div>
 
-        <div id="master" class="tab-content"><div id="masterTableBody"></div></div>
+        <div id="weeklyHub" class="tab-content">
+            <button class="back-pill" onclick="openTab('home')">🏠 Back to Home</button>
+            <div class="home-grid">
+                <button class="tile tile-week" onclick="openTab('week1')"><span>1</span><small>Week 1</small></button>
+                <button class="tile tile-week" onclick="openTab('week2')"><span>2</span><small>Week 2</small></button>
+                <button class="tile tile-week" onclick="openTab('week3')"><span>3</span><small>Week 3</small></button>
+                <button class="tile tile-week" onclick="openTab('week4')"><span>4</span><small>Week 4</small></button>
+                <button class="tile tile-week" onclick="openTab('week5')"><span>5</span><small>Week 5</small></button>
+            </div>
+        </div>
+
+        <div id="globalBack" class="tab-content hidden">
+            <button class="back-pill" onclick="openTab('home')">🏠 Back to Home</button>
+        </div>
+
+        <div id="admin" class="tab-content">
+            <div class="card">
+                <h3 class="section-title">✨ Add New Client</h3>
+                <input type="hidden" id="editId">
+                <div class="input-stack force-stack">
+                    <input type="text" id="cName" placeholder="Full Name">
+                    <input type="text" id="cAddr" placeholder="Address">
+                    <input type="text" id="cPostcode" placeholder="Postcode">
+                    <input type="tel" id="cPhone" placeholder="Mobile Number">
+                    <input type="number" id="cPrice" placeholder="Price £">
+                </div>
+                <div class="grid-1x2">
+                    <select id="cWeek" class="large-select">
+                        <option value="1">Week 1</option><option value="2">Week 2</option>
+                        <option value="3">Week 3</option><option value="4">Week 4</option>
+                        <option value="5">Week 5</option> </select>
+                    <select id="cDay" class="large-select">
+                        <option value="Monday">Monday</option><option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                    </select>
+                </div>
+                <textarea id="cNotes" placeholder="Notes..." class="premium-textarea"></textarea>
+                <button class="btn-main full-width-btn" onclick="saveCustomer()">💾 Save Customer</button>
+            </div>
+            <div class="card action-card-green"><button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
+            <div class="card action-card-red"><button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL DATA</button></div>
+        </div>
+
+        <div id="master" class="tab-content">
+            <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()">
+            <div id="masterTableBody"></div>
+        </div>
 
         <div id="stats" class="tab-content">
             <div class="dashboard-hero">
                 <div class="hero-label" id="statsMonthTitle">Summary</div>
                 <div class="hero-amount" id="currProfit">£0.00</div>
                 <div class="hero-subtext">💰 Total Profit in Pocket</div>
-            </div>
-            <div class="card stat-card">
-                <div class="stat-header"><span>Monthly Progress</span><span id="collectionPercent">0%</span></div>
-                <div class="progress-container"><div id="progressBar" class="progress-fill"></div></div>
-                <div class="stat-line-item">
-                    <span>Target: <strong id="targetWork">£0.00</strong></span>
-                    <span>Remaining: <strong id="stillToCollect">£0.00</strong></span>
-                </div>
-            </div>
-            <div class="grid-1x2" style="margin-top:15px;">
-                <div class="card mini-card clickable-stat" onclick="showIncomeModal()">
-                    <div class="mini-card-content">
-                        <small>Month Income 🔍</small>
-                        <strong id="currRevenue" style="color:var(--success)">£0.00</strong>
-                    </div>
-                </div>
-                <div class="card mini-card clickable-stat" onclick="showExpenseModal()">
-                    <div class="mini-card-content">
-                        <small>Month Spend 🔍</small>
-                        <strong id="currSpend" style="color:var(--danger)">£0.00</strong>
-                    </div>
-                </div>
-            </div>
-            <div class="card debt-highlight-card clickable-stat" onclick="showArrearsModal()">
-                <div class="stat-row"><span>Arrears 🔍</span><strong id="totalOldDebt">£0.00</strong></div>
             </div>
             <div id="monthlyHistoryContainer"></div>
         </div>
@@ -119,26 +98,21 @@
             <div class="card">
                 <h3 class="section-title">💸 Log Expense</h3>
                 <div class="force-stack"><input type="text" id="expDesc" placeholder="Description" class="large-select" style="margin-bottom:10px;"><input type="number" id="expAmt" placeholder="Amount £" class="large-select" style="margin-bottom:10px;"></div>
-                <button class="btn-main full-width-btn bounce-on-tap" onclick="addExpense()">Add Expense</button>
-            </div>
-            <div class="card">
-                <h3 class="section-title">📊 QuickBooks Exports</h3>
-                <div class="grid-1x2">
-                    <button class="pill-btn qb-btn" onclick="exportQBIncome()">💹 QB Income</button>
-                    <button class="pill-btn qb-btn" onclick="exportQBExpenses()">🧾 QB Spend</button>
-                </div>
+                <button class="btn-main full-width-btn" onclick="addExpense()">Add Expense</button>
             </div>
             <div id="expenseList"></div>
         </div>
-        <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div>
-    </div>
 
-    <div class="global-footer">v13.3 - Production Verified</div>
+        <div id="week1" class="tab-content"></div>
+        <div id="week2" class="tab-content"></div>
+        <div id="week3" class="tab-content"></div>
+        <div id="week4" class="tab-content"></div>
+        <div id="week5" class="tab-content"></div> </div>
 
     <div id="globalModal" class="modal-overlay" onclick="if(event.target === this) closeModal()">
         <div class="modal-content"><button class="close-btn" onclick="closeModal()">✕</button><div id="modalContentBody"></div></div>
     </div>
 
-    <script src="app.js?v=133"></script>
+    <script src="app.js?v=134"></script>
 </body>
 </html>
