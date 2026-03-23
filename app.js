@@ -29,8 +29,13 @@ window.openTab = function(evt, name) {
     document.getElementById(name).classList.add("active");
     if (evt) evt.currentTarget.classList.add("active");
 
-    // Show/Hide Day Filter
+    // UI DYNAMICS: Toggle Search Bar and Day Filters
+    const searchBar = document.getElementById('globalSearchContainer');
     const filterBar = document.getElementById('dayFilterBar');
+    
+    if(name === 'master') searchBar.classList.remove('hidden');
+    else searchBar.classList.add('hidden');
+
     if(name.startsWith('week')) filterBar.classList.remove('hidden');
     else filterBar.classList.add('hidden');
 
@@ -43,8 +48,6 @@ window.setDayFilter = function(day) {
     const pills = document.getElementsByClassName('day-pill');
     for (let p of pills) {
         p.classList.remove('active');
-        if(p.innerText === day || (day === 'All' && p.innerText === 'All') || (day === 'Wednesday' && p.innerText === 'W')) p.classList.add('active');
-        // Simple letter mapping for pills
         const map = {"Monday":"M", "Tuesday":"T", "Wednesday":"W", "Thursday":"T", "Friday":"F", "All":"All"};
         if(map[day] === p.innerText || day === p.innerText) p.classList.add('active');
     }
@@ -84,50 +87,28 @@ window.renderWeeks = function() {
     }
 };
 
-window.initQuickPay = function(id) {
-    const c = db.customers.find(x => String(x.id) === String(id));
-    activePayId = id;
-    document.getElementById('payCustName').innerText = c.name + " (Balance: £" + calculateTrueDebt(c).toFixed(2) + ")";
-    document.getElementById('payModal').style.display = 'flex';
-};
-
-window.confirmQuickPay = function(type) {
-    const c = db.customers.find(x => String(x.id) === String(activePayId));
-    document.getElementById('payModal').style.display = 'none';
-    if(type === 'full') {
-        processActualPayment(activePayId, calculateTrueDebt(c));
-    } else {
-        const amt = prompt("Amount paid?", calculateTrueDebt(c).toFixed(2));
-        if(amt) processActualPayment(activePayId, n(amt));
-    }
-};
-
-function processActualPayment(id, amount) {
-    const c = db.customers.find(x => String(x.id) === String(id));
-    let pay = n(amount);
-    if(c.debtHistory) {
-        for(let i=0; i<c.debtHistory.length; i++) {
-            if(pay <= 0) break;
-            let owe = n(c.debtHistory[i].amount);
-            if(pay >= owe) { pay -= owe; c.debtHistory[i].amount = 0; }
-            else { c.debtHistory[i].amount = owe - pay; pay = 0; }
+window.renderMasterTable = function() {
+    const body = document.getElementById('masterTableBody');
+    if(!body) return; body.innerHTML = '';
+    const search = (document.getElementById('mainSearch').value || "").toLowerCase().trim();
+    db.customers.sort((a,b) => a.name.localeCompare(b.name)).forEach(c => {
+        if(search === "" || c.name.toLowerCase().includes(search) || c.address.toLowerCase().includes(search)) {
+            const debt = calculateTrueDebt(c);
+            const row = document.createElement('div');
+            row.style = "padding:15px 20px; border-bottom:1px solid rgba(0,0,0,0.05); display:flex; justify-content:space-between; align-items:center; background:var(--card-bg); margin-bottom:8px; border-radius:15px; box-shadow:var(--shadow);";
+            row.onclick = () => openCustomerModal(c.id);
+            row.innerHTML = `<div><div style="font-weight:700;">${c.name}</div><div style="font-size:12px; opacity:0.5;">${c.address}</div></div><div style="text-align:right;"><div style="font-weight:800; color:${debt > 0 ? 'var(--danger)' : 'var(--success)'};">£${debt.toFixed(2)}</div></div>`;
+            body.appendChild(row);
         }
-        c.debtHistory = c.debtHistory.filter(h => n(h.amount) > 0);
-    }
-    c.paidThisMonth += pay;
-    saveData();
-}
-
-window.saveCustomer = function() {
-    const id = document.getElementById('editId').value || Date.now();
-    const entry = { id: id, name: document.getElementById('cName').value, address: document.getElementById('cAddr').value, phone: document.getElementById('cPhone').value, price: n(document.getElementById('cPrice').value), week: document.getElementById('cWeek').value, day: document.getElementById('cDay').value, freq: document.getElementById('cFreq').value, cleaned: false, paidThisMonth: 0, debtHistory: [], paymentHistory: [] };
-    const idx = db.customers.findIndex(x => String(x.id) === String(id));
-    if(idx > -1) { 
-        const old = db.customers[idx];
-        entry.cleaned = old.cleaned; entry.paidThisMonth = old.paidThisMonth; entry.debtHistory = old.debtHistory || [];
-        db.customers[idx] = entry; 
-    } else { db.customers.push(entry); }
-    clearForm(); saveData(); openTab(null, 'master');
+    });
 };
 
-// ... Rest of the functions (renderMasterTable, editCustomer, calculateTrueDebt, etc.) remain unchanged ...
+// ... [Remainder of helper functions from v9.3 remain same] ...
+window.calculateTrueDebt = (c) => {
+    const past = (c.debtHistory || []).reduce((s, e) => s + n(e.amount), 0);
+    const current = c.cleaned ? (n(c.price) - n(c.paidThisMonth)) : (0 - n(c.paidThisMonth));
+    return Math.max(0, past + current);
+};
+window.saveData = () => { localStorage.setItem(MASTER_KEY, JSON.stringify(db)); renderAll(); };
+window.handleSearch = () => { renderMasterTable(); };
+window.closeCustomerModal = () => { document.getElementById('customerModal').style.display = 'none'; };
