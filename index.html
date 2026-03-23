@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro v9.0</title>
-    <link rel="stylesheet" href="styles.css?v=90">
+    <title>Hydro Pro v9.1</title>
+    <link rel="stylesheet" href="styles.css?v=91">
 </head>
 <body class="light-mode">
 
@@ -86,7 +86,7 @@
                 <button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL APP DATA</button>
             </div>
             
-            <div class="version-tag">v9.0 - Layout Pro</div>
+            <div class="version-tag">v9.1 - Date Visibility Fix</div>
         </div>
 
         <div id="master" class="tab-content">
@@ -97,6 +97,7 @@
                 <div id="masterTableBody"></div>
             </div>
         </div>
+
         <div id="stats" class="tab-content">
             <div class="card fade-in">
                 <h3 class="section-title" style="text-align:center;">Financial Performance</h3>
@@ -115,6 +116,7 @@
                 </div>
             </div>
         </div>
+
         <div id="spend" class="tab-content">
             <div class="card">
                 <h3 class="section-title">Log Expense</h3>
@@ -124,12 +126,35 @@
             </div>
             <div id="expenseList"></div>
         </div>
+
         <div id="week1" class="tab-content"></div>
         <div id="week2" class="tab-content"></div>
         <div id="week3" class="tab-content"></div>
         <div id="week4" class="tab-content"></div>
     </div>
 
-    <script src="app.js?v=90"></script>
+    <div id="customerModal" class="modal-overlay" onclick="if(event.target === this) closeCustomerModal()">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeCustomerModal()">✖</button>
+            <div id="modName" style="font-size:22px; font-weight:900; color:var(--accent);"></div>
+            <p id="modAddr" style="opacity:0.6; font-size:14px; margin-bottom:10px;"></p>
+            <div class="ledger-container"><div id="ledgerBox"></div></div>
+            <div class="total-owed-display"><small>TOTAL OWED:</small><br><span id="modOwed"></span></div>
+            <div class="modal-action-footer">
+                <button class="btn-alt full-width-btn" onclick="editFromModal()">⚙️ Edit Details</button>
+                <button class="btn-neutral full-width-btn" onclick="closeCustomerModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="msgModal" class="modal-overlay" style="z-index:11000;" onclick="if(event.target === this) this.style.display='none'">
+        <div class="modal-content">
+            <h3 class="section-title">Message Templates</h3>
+            <button class="btn-alt full-width-btn" style="margin-bottom:12px;" onclick="executeMessage('coming')">🗓 Coming Tomorrow</button>
+            <button class="btn-main full-width-btn" onclick="executeMessage('done')">✅ Job Done / Bank Info</button>
+        </div>
+    </div>
+
+    <script src="app.js?v=91"></script>
 </body>
 </html>
