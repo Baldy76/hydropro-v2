@@ -27,7 +27,7 @@ body { font-family: -apple-system, sans-serif; background: var(--bg); color: var
 .tab-content { display: none !important; visibility: hidden; height: 0; overflow: hidden; }
 .tab-content.active { display: block !important; visibility: visible; height: auto; overflow: visible; }
 
-/* BUTTONS */
+/* BUTTONS BASE */
 button { cursor: pointer; -webkit-appearance: none !important; border: none; font-weight: 800; border-radius: 12px; height: 52px; }
 .full-width-btn { width: 100% !important; display: flex !important; justify-content: center; align-items: center; }
 .btn-main { background: var(--accent); color: white; }
@@ -36,13 +36,12 @@ button { cursor: pointer; -webkit-appearance: none !important; border: none; fon
 .btn-neutral { background: #ddd; color: #333; }
 .btn-save-state { background-color: var(--stat-collected) !important; color: white !important; }
 
-/* DATA MANAGEMENT BUTTONS */
-.grid-2 { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 10px !important; width: 100% !important; }
-.btn-export { background-color: #27ae60 !important; color: white !important; box-shadow: 0 4px 0 #1e8449; }
-.btn-import { background-color: #f39c12 !important; color: white !important; box-shadow: 0 4px 0 #d68910; }
-.btn-export:active, .btn-import:active { transform: translateY(2px); box-shadow: none; }
+/* CUSTOM DATA MANAGEMENT BUTTONS */
+.grid-2-spaced { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 15px !important; width: 100% !important; }
+.btn-export-custom { background-color: #add8e6 !important; color: #000 !important; border: 1px solid rgba(0,0,0,0.1); }
+.btn-import-custom { background-color: #fff9c4 !important; color: #d32f2f !important; border: 1px solid rgba(0,0,0,0.1); }
 
-/* INPUTS */
+/* FORMS */
 input, select, textarea { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 12px; background: var(--card-bg); color: var(--text); font-size: 16px; -webkit-appearance: none !important; }
 
 /* CARDS & STATS */
@@ -72,7 +71,6 @@ input:checked + .slider:before { transform: translateX(22px); }
 .wa-btn { background: #25D366 !important; color: white !important; }
 .sms-btn { background: #3498db !important; color: white !important; }
 
+/* VERSION TAG */
+.version-tag { font-size: 10px; font-weight: 800; color: var(--text); opacity: 0.3; padding: 10px 0; text-align: left; text-transform: uppercase; letter-spacing: 1px; }
 .date-txt { text-align: center; font-weight: 900; color: var(--primary); margin: 15px 0; text-transform: uppercase; }
-.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; justify-content: center; align-items: center; }
-.modal-content { background: var(--card-bg); width: 90%; padding: 25px; border-radius: 20px; position: relative; }
-.modal-close { position: absolute; top: 10px; right: 10px; background: #eee; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; }
