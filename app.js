@@ -116,11 +116,8 @@ window.completeCycle = function() {
     const label = new Date().toLocaleDateString('en-GB', {month:'short', year:'2-digit'});
     db.incomeHistory.push({ month: label, amount: db.customers.reduce((s,c) => s + n(c.paidThisMonth), 0) });
     db.customers.forEach(c => {
-        // Record if paid
         if(!c.paymentHistory) c.paymentHistory = [];
-        if(n(c.paidThisMonth) >= n(c.price)) {
-             c.paymentHistory.push({ month: label, amount: n(c.paidThisMonth), status: 'PAID' });
-        }
+        if(n(c.paidThisMonth) > 0) c.paymentHistory.push({ month: label, amount: n(c.paidThisMonth) });
         
         const o = calculateTrueDebt(c);
         if(o > 0) {
@@ -156,28 +153,25 @@ window.openCustomerModal = function(id) {
     const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return;
     document.getElementById('modName').innerText = c.name;
     document.getElementById('modAddr').innerText = (c.address || "") + " " + (c.postcode || "");
+    
+    // NEW: Current Paid Display
+    document.getElementById('modPaidNow').innerText = '£' + n(c.paidThisMonth).toFixed(2);
+    
     const totalDebt = calculateTrueDebt(c);
     document.getElementById('modOwed').innerText = '£' + totalDebt.toFixed(2);
     document.getElementById('modOwed').style.color = totalDebt > 0 ? 'var(--danger)' : 'var(--stat-collected)';
     
     let ledgerHtml = "";
-    // Combine list of all months in history
     const allMonths = [...new Set([...(c.debtHistory||[]).map(d=>d.month), ...(c.paymentHistory||[]).map(p=>p.month)])];
     
     if(allMonths.length > 0) {
         allMonths.forEach(m => {
             const d = (c.debtHistory||[]).find(x => x.month === m);
             const p = (c.paymentHistory||[]).find(x => x.month === m);
-            
-            if(d) {
-                ledgerHtml += `<div class="ledger-row text-debt"><span>${m}: OWED</span><span>£${n(d.amount).toFixed(2)}</span></div>`;
-            } else if(p) {
-                ledgerHtml += `<div class="ledger-row text-paid"><span>${m}: PAID ✅</span><span>£${n(p.amount).toFixed(2)}</span></div>`;
-            }
+            if(d) { ledgerHtml += `<div class="ledger-row text-debt"><span>${m}: OWED</span><span>£${n(d.amount).toFixed(2)}</span></div>`; }
+            else if(p) { ledgerHtml += `<div class="ledger-row text-paid"><span>${m}: PAID ✅</span><span>£${n(p.amount).toFixed(2)}</span></div>`; }
         });
-    } else {
-        ledgerHtml = "<div style='opacity:0.5; text-align:center; padding:10px;'>No history yet.</div>";
-    }
+    } else { ledgerHtml = "<div style='opacity:0.5; text-align:center; padding:10px;'>No history yet.</div>"; }
 
     document.getElementById('ledgerBox').innerHTML = ledgerHtml;
     document.getElementById('customerModal').style.display = 'flex';
@@ -188,12 +182,8 @@ window.saveCustomer = function() {
     const name = document.getElementById('cName').value; if(!name) return;
     const entry = { id: id, name: name, address: document.getElementById('cAddr').value, postcode: document.getElementById('cPostcode').value, phone: document.getElementById('cPhone').value, price: n(document.getElementById('cPrice').value), week: document.getElementById('cWeek').value, day: document.getElementById('cDay').value, notes: document.getElementById('cNotes').value, cleaned: false, paidThisMonth: 0, debtHistory: [], paymentHistory: [] };
     const idx = db.customers.findIndex(x => String(x.id) === String(id));
-    if(idx > -1) { 
-        const old = db.customers[idx];
-        entry.cleaned = old.cleaned; entry.paidThisMonth = old.paidThisMonth; 
-        entry.debtHistory = old.debtHistory || []; entry.paymentHistory = old.paymentHistory || [];
-        db.customers[idx] = entry; 
-    } else { db.customers.push(entry); }
+    if(idx > -1) { const old = db.customers[idx]; entry.cleaned = old.cleaned; entry.paidThisMonth = old.paidThisMonth; entry.debtHistory = old.debtHistory || []; entry.paymentHistory = old.paymentHistory || []; db.customers[idx] = entry; } 
+    else { db.customers.push(entry); }
     clearForm(); saveData(); openTab(null, 'master');
 };
 
