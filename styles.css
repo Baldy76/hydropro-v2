@@ -7,9 +7,22 @@ body.dark-mode { --bg: #000000; --card-bg: #1c1c1e; --input-bg: #2c2c2e; --text:
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; position: relative; }
 
-/* ---------------------------------- */
-/* 🏠 HOME SECTION ID: NAMESPACED    */
-/* ---------------------------------- */
+/* 🔒 BRANDING SHIELD: HEADER LOCK */
+#branding-shield {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 25px 0 10px 0;
+    text-align: center;
+    width: 100%;
+}
+#branding-shield .logo-img { height: 120px !important; width: auto; max-width: 80%; object-fit: contain; margin: 0 auto; }
+#branding-shield .home-hero { width: 100%; margin-top: 10px; }
+#branding-shield .home-greeting { font-size: 12px !important; font-weight: 900 !important; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+#branding-shield .home-date { font-size: 22px !important; font-weight: 900 !important; color: var(--accent); letter-spacing: -0.5px; }
+
+/* 🏠 HOME SECTION: NAMESPACED */
 #home .home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
 #home .tile { height: 110px !important; border-radius: 28px; border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--card-bg); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
 #home .tile span { font-size: 36px !important; margin-bottom: 4px; }
@@ -17,18 +30,14 @@ body { font-family: -apple-system, sans-serif; background: var(--bg); color: var
 #home .tile-weekly-hub { background: var(--accent); grid-column: 1 / -1; height: 120px !important; }
 #home .tile-weekly-hub small { color: #fff !important; }
 
-/* ---------------------------------- */
-/* 📅 WEEKLY HUB ID: NAMESPACED      */
-/* ---------------------------------- */
+/* 📅 WEEKLY HUB: NAMESPACED */
 #weeksHub .weeks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
-#weeksHub .tile-week-blue { height: 100px !important; border-radius: 28px; border: none; background: #e1f5fe; color: #000; font-size: 18px !important; font-weight: 900; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+#weeksHub .tile-week-blue { height: 100px !important; border-radius: 28px; border: none; background: #e1f5fe; color: #000; font-size: 18px !important; font-weight: 900; display: flex; align-items: center; justify-content: center; width: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 body.dark-mode #weeksHub .tile-week-blue { background: #01579b; color: #fff; }
 #weeksHub .tile-week-5 { grid-column: 1 / -1; height: 90px !important; }
 
-/* ---------------------------------- */
-/* ✨ SETUP (ADMIN) ID: NAMESPACED   */
-/* ---------------------------------- */
-#admin .creative-form-card { background: var(--card-bg); border-radius: 30px; padding: 20px; margin: 0 15px; }
+/* ✨ SETUP (ADMIN): NAMESPACED */
+#admin .creative-form-card { background: var(--card-bg); border-radius: 30px; padding: 20px; margin: 0 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
 #admin .fun-input-group { display: flex; align-items: center; gap: 15px; padding: 16px 0; border-bottom: 2px solid rgba(0,0,0,0.05); width: 100%; }
 #admin .fun-icon { width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
 #admin .fun-field-stack { flex-grow: 1; }
@@ -37,26 +46,25 @@ body.dark-mode #weeksHub .tile-week-blue { background: #01579b; color: #fff; }
 #admin .creative-textarea { width: 100%; border: none; background: transparent; color: var(--text); font-size: 17px; font-weight: 600; min-height: 150px; outline: none; resize: none; }
 #admin .creative-save-btn { margin-top: 30px; background: linear-gradient(135deg, var(--accent), #5856d6); height: 64px; color: #fff; font-weight: 900; border-radius: 20px; width: 100%; border: none; font-size: 18px; box-shadow: 0 8px 20px rgba(0,122,255,0.3); }
 
-/* ---------------------------------- */
-/* 📊 STATS ID: NAMESPACED           */
-/* ---------------------------------- */
-#stats .stats-hero-card { background: var(--card-bg); margin: 15px; padding: 35px 20px; border-radius: 40px; text-align: center; border: 2px solid var(--accent); }
-#stats .stats-main-amount { font-size: 60px; font-weight: 900; }
+/* 📊 STATS: NAMESPACED (PIXEL PERFECT RESTORE) */
+#stats .stats-hero-card { background: var(--card-bg); margin: 15px; padding: 35px 20px; border-radius: 40px; text-align: center; border: 2px solid var(--accent); box-shadow: 0 10px 25px rgba(0,122,255,0.1); }
+#stats .stats-main-amount { font-size: 60px; font-weight: 900; margin-bottom: 8px; }
+#stats .stats-card { background: var(--card-bg); margin: 0 15px 15px; padding: 22px; border-radius: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+#stats .progress-bar-bg { background: #f2f2f7; height: 12px; border-radius: 6px; overflow: hidden; margin-bottom: 12px; }
+#stats .progress-bar-fill { background: var(--accent); height: 100%; transition: 0.8s ease; width: 0%; }
 #stats .stats-grid-2x1 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 15px 15px; }
 #stats .stats-mini-card { background: var(--card-bg); padding: 25px 10px; border-radius: 25px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+#stats .amt-green { color: var(--success); font-size: 24px; font-weight: 900; }
+#stats .amt-red { color: var(--danger); font-size: 24px; font-weight: 900; }
 #stats .arrears-pill { background: #ff453a; color: white; margin: 0 15px 25px; padding: 22px; border-radius: 25px; text-align: center; font-weight: 800; font-size: 20px; box-shadow: 0 8px 20px rgba(255,69,58,0.3); }
 
-/* ---------------------------------- */
-/* 👥 MASTER LIST ID: NAMESPACED     */
-/* ---------------------------------- */
+/* 👥 MASTER LIST: NAMESPACED */
 #master .search-container-full { width: 100%; padding: 0 15px 15px; }
 #master .search-input-pill { width: 100%; height: 64px; padding: 0 25px; border-radius: 32px; background: var(--card-bg); color: var(--text); font-size: 17px; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border: none; }
 #master .action-card-green { background: linear-gradient(135deg, #28a745, #34c759); border-radius: 26px; }
 #master .btn-clear { background: transparent; color: white; border: none; font-weight: 900; width: 100%; height: 64px; font-size: 17px; }
 
-/* ---------------------------------- */
-/* 🔒 GLOBAL UTILS (CAN'T BE LOCKED) */
-/* ---------------------------------- */
+/* GLOBAL SHARED CLASSES */
 .mode-switch-wrapper { position: fixed; right: 20px; top: 20px; z-index: 99999; }
 .ios-switch { position: relative; display: inline-block; width: 50px; height: 28px; }
 .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #8e8e93; border-radius: 34px; transition: 0.3s; }
@@ -64,15 +72,11 @@ body.dark-mode #weeksHub .tile-week-blue { background: #01579b; color: #fff; }
 input:checked + .slider { background-color: var(--success); }
 input:checked + .slider:before { transform: translateX(22px); }
 
-.logo-img { height: 120px !important; width: auto; max-width: 80%; object-fit: contain; }
 .subpage-nav { padding: 0 15px 10px; }
 .back-pill { width: 100%; height: 52px; border-radius: 26px; border: none; background: var(--card-bg); color: var(--accent); font-weight: 900; font-size: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.customer-pill-bubble { background: var(--card-bg); margin: 0 15px 15px; padding: 22px; border-radius: 35px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
 
 .tab-content { display: none; }
 .tab-content.active { display: block !important; }
 .hidden { display: none !important; }
-
-/* PILL BUBBLE (Shared between Week and Master) */
-.customer-pill-bubble { background: var(--card-bg); margin: 0 15px 15px; padding: 22px; border-radius: 35px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
-
 .page-version-footer { width: 100%; text-align: center; padding: 40px 0 20px; font-size: 7px; opacity: 0.15; font-weight: 900; text-transform: uppercase; }
