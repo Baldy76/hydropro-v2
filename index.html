@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro v6.7</title>
-    <link rel="stylesheet" href="styles.css?v=67">
+    <title>Hydro Pro v6.8</title>
+    <link rel="stylesheet" href="styles.css?v=68">
 </head>
 <body class="light-mode">
 
@@ -91,7 +91,7 @@
                 <button type="button" class="btn-uat full-width-btn" onclick="runUATClear()">🛠️ RESET ALL DATA</button>
             </div>
             
-            <div class="version-tag">v6.7 - Monthly Ledger Pro</div>
+            <div class="version-tag">v6.8 - Button UI Fix</div>
         </div>
 
         <div id="master" class="tab-content">
@@ -149,28 +149,28 @@
             <div id="modName" style="font-size:22px; font-weight:900; color:var(--primary);"></div>
             <p id="modAddr" style="opacity:0.6; font-size:14px; margin-bottom: 15px;"></p>
             
-            <div style="background: rgba(0,0,0,0.03); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.05);">
-                <small style="font-weight: 800; opacity: 0.5; text-transform: uppercase; display: block; margin-bottom: 10px;">Monthly Activity Ledger</small>
-                <div id="ledgerBox" style="font-size:14px;"></div>
+            <div class="ledger-container">
+                <small class="ledger-title">Monthly Activity Ledger</small>
+                <div id="ledgerBox"></div>
                 
-                <div id="currentMonthRow" style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(0,0,0,0.1); display: flex; justify-content: space-between; font-weight: 700;">
+                <div class="current-month-summary">
                     <span>Current Month:</span>
                     <span id="modCurrentStatus"></span>
                 </div>
             </div>
 
-            <div style="text-align:right; padding: 0 5px;">
-                <small style="font-weight:800; opacity:0.5;">TOTAL OWED:</small><br>
-                <span id="modOwed" style="font-size:32px; font-weight:900;"></span>
+            <div class="total-owed-display">
+                <small>TOTAL OWED:</small><br>
+                <span id="modOwed"></span>
             </div>
             
-            <div class="grid-2" style="margin-top:20px; gap: 10px;">
-                <button class="btn-alt" onclick="editFromModal()">⚙️ Edit</button>
-                <button class="btn-neutral" onclick="closeCustomerModal()">Close</button>
+            <div class="modal-action-footer">
+                <button class="btn-alt full-width-btn" onclick="editFromModal()">⚙️ Edit Details</button>
+                <button class="btn-neutral full-width-btn" onclick="closeCustomerModal()">Close</button>
             </div>
         </div>
     </div>
 
-    <script src="app.js?v=67"></script>
+    <script src="app.js?v=68"></script>
 </body>
 </html>
