@@ -91,7 +91,7 @@
                 <button type="button" class="btn-uat full-width-btn" onclick="runUATClear()">🛠️ RESET ALL DATA</button>
             </div>
             
-            <div class="version-tag">v6.6 - Final Ledger Build</div>
+            <div class="version-tag">v6.6 - Current Paid Build</div>
         </div>
 
         <div id="master" class="tab-content">
@@ -149,9 +149,14 @@
             <div id="modName" style="font-size:22px; font-weight:900; color:var(--primary);"></div>
             <p id="modAddr" style="opacity:0.6; font-size:14px; margin-bottom: 10px;"></p>
             
-            <div style="background: rgba(0,0,0,0.03); padding: 15px; border-radius: 12px; margin-bottom: 15px; max-height: 250px; overflow-y: auto;">
-                <small style="font-weight: 800; opacity: 0.5; text-transform: uppercase;">Payment Ledger</small>
-                <div id="ledgerBox" style="font-size:14px; margin-top: 5px;"></div>
+            <div style="background: rgba(0,0,0,0.03); padding: 15px; border-radius: 12px; margin-bottom: 15px;">
+                <small style="font-weight: 800; opacity: 0.5; text-transform: uppercase;">Payment & Debt Ledger</small>
+                <div id="ledgerBox" style="font-size:14px; margin-top: 8px;"></div>
+                
+                <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(0,0,0,0.1); display: flex; justify-content: space-between;">
+                    <span style="font-weight: 600;">Paid This Month:</span>
+                    <strong id="modPaidNow" class="text-paid">£0.00</strong>
+                </div>
             </div>
 
             <div style="text-align:right; padding: 0 5px;">
