@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v12.10</title>
-    <link rel="stylesheet" href="styles.css?v=1210">
+    <title>Hydro Pro v12.11</title>
+    <link rel="stylesheet" href="styles.css?v=1211">
 </head>
 <body class="light-mode">
 
@@ -23,8 +23,7 @@
             <button class="tab active" onclick="openTab(event, 'admin')">Setup</button>
             <button class="tab" onclick="openTab(event, 'master')">Custs</button>
             <button class="tab" onclick="openTab(event, 'stats')">Stats</button>
-            <button class="tab" onclick="openTab(event, 'spend')">Spend</button>
-            <button class="tab" onclick="openTab(event, 'week1')">W1</button>
+            <button class="tab" onclick="openTab(event, 'spend')">Ledger</button> <button class="tab" onclick="openTab(event, 'week1')">W1</button>
             <button class="tab" onclick="openTab(event, 'week2')">W2</button>
             <button class="tab" onclick="openTab(event, 'week3')">W3</button>
             <button class="tab" onclick="openTab(event, 'week4')">W4</button>
@@ -64,14 +63,6 @@
                 </div>
                 <div class="card action-card-green"><button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
                 
-                <div class="card">
-                    <h3 class="section-title">QuickBooks MTD Export</h3>
-                    <div class="grid-1x2">
-                        <button class="pill-btn qb-btn" onclick="exportQBIncome()">💹 QB Income</button>
-                        <button class="pill-btn qb-btn" onclick="exportQBExpenses()">🧾 QB Spend</button>
-                    </div>
-                </div>
-
                 <div class="card">
                     <h3 class="section-title">Database Management</h3>
                     <div class="grid-1x2">
@@ -117,15 +108,28 @@
         <div id="spend" class="tab-content">
             <div class="card">
                 <h3 class="section-title">Log Expense</h3>
-                <div class="force-stack"><input type="text" id="expDesc" placeholder="Description" class="large-select" style="margin-bottom:10px;"><input type="number" id="expAmt" placeholder="Amount £" class="large-select" style="margin-bottom:10px;"></div>
+                <div class="force-stack">
+                    <input type="text" id="expDesc" placeholder="Description" class="large-select" style="margin-bottom:10px;">
+                    <input type="number" id="expAmt" placeholder="Amount £" class="large-select" style="margin-bottom:10px;">
+                </div>
                 <button class="btn-main full-width-btn" onclick="addExpense()">Add Expense</button>
             </div>
+
+            <div class="card">
+                <h3 class="section-title">QuickBooks MTD Export</h3>
+                <div class="grid-1x2">
+                    <button class="pill-btn qb-btn" onclick="exportQBIncome()">💹 QB Income</button>
+                    <button class="pill-btn qb-btn" onclick="exportQBExpenses()">🧾 QB Spend</button>
+                </div>
+            </div>
+
             <div id="expenseList"></div>
         </div>
+
         <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div>
     </div>
 
-    <div class="global-footer">v12.10 - Ledger Calibrated</div>
+    <div class="global-footer">v12.11 - Ledger Hub Build</div>
 
     <div id="globalModal" class="modal-overlay" onclick="if(event.target === this) closeModal()">
         <div class="modal-content">
@@ -134,6 +138,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=1210"></script>
+    <script src="app.js?v=1211"></script>
 </body>
 </html>
