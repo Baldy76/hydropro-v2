@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v12.7</title>
-    <link rel="stylesheet" href="styles.css?v=127">
+    <title>Hydro Pro v12.8</title>
+    <link rel="stylesheet" href="styles.css?v=128">
 </head>
 <body class="light-mode">
 
@@ -81,27 +81,27 @@
             <div class="dashboard-hero">
                 <div class="hero-label" id="statsMonthTitle">Summary</div>
                 <div class="hero-amount" id="currProfit">£0.00</div>
-                <div class="hero-subtext">Cash in Hand (Total Income - Total Expenses)</div>
+                <div class="hero-subtext">Cash in Hand (Actual Bank Balance)</div>
             </div>
             <div class="card stat-card">
-                <div class="stat-header"><span>Monthly Work Progress</span><span id="collectionPercent">0%</span></div>
+                <div class="stat-header"><span>Monthly Collection Progress</span><span id="collectionPercent">0%</span></div>
                 <div class="progress-container"><div id="progressBar" class="progress-fill"></div></div>
                 <div class="stat-row-new">
-                    <div class="stat-block"><small>Month Potential</small><strong id="targetWork">£0.00</strong></div>
-                    <div class="stat-block" style="text-align:right;"><small>Remaining</small><strong id="stillToCollect">£0.00</strong></div>
+                    <div class="stat-block"><small>Cycle Potential</small><strong id="targetWork">£0.00</strong></div>
+                    <div class="stat-block" style="text-align:right;"><small>Still Owed</small><strong id="stillToCollect">£0.00</strong></div>
                 </div>
             </div>
             <div class="grid-1x2" style="margin-top:15px;">
                 <div class="card mini-card clickable-stat" onclick="showIncomeModal()">
-                    <small>Total Collected 🔍</small>
+                    <small>Income Drill-down 🔍</small>
                     <strong id="currRevenue" style="color:var(--success)">£0.00</strong>
                 </div>
                 <div class="card mini-card clickable-stat" onclick="showExpenseModal()">
-                    <small>Total Spent 🔍</small>
+                    <small>Spend Drill-down 🔍</small>
                     <strong id="currSpend" style="color:var(--danger)">£0.00</strong>
                 </div>
             </div>
-            <div class="card debt-highlight-card"><div class="stat-row"><span>Total Outstanding Old Debt</span><strong id="totalOldDebt">£0.00</strong></div></div>
+            <div class="card debt-highlight-card"><div class="stat-row"><span>Total Overdue Debt</span><strong id="totalOldDebt">£0.00</strong></div></div>
             <div id="monthlyHistoryContainer"></div>
         </div>
 
@@ -117,7 +117,7 @@
         <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div>
     </div>
 
-    <div class="global-footer">v12.7 - Operational Build</div>
+    <div class="global-footer">v12.8 - Data Integrity Build</div>
 
     <div id="globalModal" class="modal-overlay" onclick="if(event.target === this) closeModal()">
         <div class="modal-content">
@@ -126,6 +126,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=127"></script>
+    <script src="app.js?v=128"></script>
 </body>
 </html>
