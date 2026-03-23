@@ -10,7 +10,6 @@ window.onload = () => {
     if (saved) db = JSON.parse(saved);
     if (!db.customers) db.customers = [];
     if (!db.expenses) db.expenses = [];
-    if (!db.history) db.history = [];
     
     const isDark = localStorage.getItem('Hydro_Dark_Pref') === 'true';
     document.body.className = isDark ? 'dark-mode' : 'light-mode';
@@ -38,6 +37,32 @@ window.handleBackNavigation = () => {
     else openTab('home');
 };
 
+// --- MASTER TABLE RENDER (Full Width & Underline Address) ---
+window.renderMasterTable = () => {
+    const body = document.getElementById('masterTableBody'); if(!body) return;
+    body.innerHTML = '';
+    const search = (document.getElementById('mainSearch').value || "").toLowerCase();
+    
+    db.customers.forEach(c => {
+        if(c.name.toLowerCase().includes(search) || (c.street || "").toLowerCase().includes(search)) {
+            const tile = document.createElement('div');
+            tile.className = 'customer-tile bounce-on-tap';
+            tile.onclick = () => editCust(c.id);
+            // RESTORED: Address underneath name
+            tile.innerHTML = `
+                <div class="cust-info">
+                    <strong>${c.name}</strong>
+                    <small>${c.houseNum} ${c.street}</small>
+                </div>
+                <div class="cust-price-pill">
+                    £${n(c.price).toFixed(2)}
+                </div>
+            `;
+            body.appendChild(tile);
+        }
+    });
+};
+
 window.saveCustomer = () => {
     const name = document.getElementById('cName').value; if(!name) return;
     const id = document.getElementById('editId').value || Date.now().toString();
@@ -62,20 +87,22 @@ window.saveCustomer = () => {
     openTab('home');
 };
 
-window.renderMasterTable = () => {
-    const body = document.getElementById('masterTableBody'); if(!body) return;
-    body.innerHTML = '';
-    const search = (document.getElementById('mainSearch').value || "").toLowerCase();
-    db.customers.forEach(c => {
-        if(c.name.toLowerCase().includes(search) || (c.street || "").toLowerCase().includes(search)) {
-            const tile = document.createElement('div'); tile.className = 'customer-tile bounce-on-tap';
-            tile.onclick = () => editCust(c.id);
-            tile.innerHTML = `<div class="cust-info"><strong>${c.name}</strong><small>${c.houseNum} ${c.street}</small></div><div class="cust-price-pill">£${n(c.price).toFixed(2)}</div>`;
-            body.appendChild(tile);
-        }
-    });
+window.editCust = (id) => {
+    const c = db.customers.find(x => x.id === id); if(!c) return;
+    openTab('admin');
+    document.getElementById('editId').value = c.id;
+    document.getElementById('cName').value = c.name;
+    document.getElementById('cHouseNum').value = c.houseNum;
+    document.getElementById('cStreet').value = c.street;
+    document.getElementById('cPostcode').value = c.postcode;
+    document.getElementById('cPrice').value = c.price;
+    document.getElementById('cNotes').value = c.notes;
 };
 
+window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
+window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); renderLedger(); };
+
+// BASELINE ROUND ENGINE (PRESERVED)
 window.renderWeekLists = () => {
     for (let i = 1; i <= 5; i++) {
         const container = document.getElementById(`week${i}`); if (!container) continue;
@@ -95,9 +122,6 @@ window.renderWeekLists = () => {
 
 window.toggleCleaned = (id) => { const c = db.customers.find(x => x.id === id); if (c) { c.cleaned = !c.cleaned; saveData(); renderAll(); } };
 window.markAsPaid = (id) => { const c = db.customers.find(x => x.id === id); if (!c) return; const isPaid = n(c.paidThisMonth) >= n(c.price); c.paidThisMonth = isPaid ? 0 : c.price; saveData(); renderAll(); };
-window.editCust = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; openTab('admin'); document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cHouseNum').value = c.houseNum; document.getElementById('cStreet').value = c.street; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPrice').value = c.price; document.getElementById('cNotes').value = c.notes; };
-window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
-window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); renderLedger(); };
 window.renderStats = () => { const p = document.getElementById('currProfit'); if (!p) return; let inc = 0, exp = 0; db.customers.forEach(c => inc += n(c.paidThisMonth)); db.expenses.forEach(e => exp += n(e.amt)); p.innerText = `£${(inc - exp).toFixed(2)}`; };
 window.renderLedger = () => { const l = document.getElementById('expenseList'); if(!l) return; l.innerHTML = '<h3 class="section-title">💸 Spend History</h3>'; db.expenses.forEach(e => { const d = document.createElement('div'); d.className = 'card'; d.innerHTML = `<div style="display:flex; justify-content:space-between"><div><strong>${e.desc}</strong><br><small>${e.date}</small></div><div style="color:var(--danger)">-£${n(e.amt).toFixed(2)}</div></div>`; l.appendChild(d); }); };
 window.addExpense = () => { const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value); if(!d || a<=0) return; db.expenses.push({desc:d, amt:a, date:new Date().toLocaleDateString('en-GB')}); saveData(); renderAll(); document.getElementById('expDesc').value = ""; document.getElementById('expAmt').value = ""; };
