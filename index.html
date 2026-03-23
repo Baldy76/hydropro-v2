@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro v6.2</title>
-    <link rel="stylesheet" href="styles.css?v=6.2">
+    <title>Hydro Pro v6.3</title>
+    <link rel="stylesheet" href="styles.css?v=6.3">
 </head>
 <body class="light-mode">
 
@@ -91,7 +91,7 @@
                 <button type="button" class="btn-uat full-width-btn" onclick="runUATClear()">🛠️ RESET ALL DATA</button>
             </div>
             
-            <div class="version-tag">v6.2 - Cache Buster Build</div>
+            <div class="version-tag">v6.3 - Clean Front Build</div>
         </div>
 
         <div id="master" class="tab-content">
@@ -101,7 +101,7 @@
                     <button onclick="renderAll()" style="height:48px; width:48px; border-radius:10px; background:#eee;">🔄</button>
                 </div>
                 <table style="width:100%; border-collapse:collapse;">
-                    <thead><tr class="table-header-row"><th style="text-align:left; padding:15px;">CUSTOMER</th><th style="text-align:right; padding:15px;">OWED</th></tr></thead>
+                    <thead><tr class="table-header-row"><th style="text-align:left; padding:15px;">CUSTOMER</th><th style="text-align:right; padding:15px;">TOTAL</th></tr></thead>
                     <tbody id="masterTableBody"></tbody>
                 </table>
             </div>
@@ -146,18 +146,26 @@
     <div id="customerModal" class="modal-overlay" onclick="if(event.target === this) closeCustomerModal()">
         <div class="modal-content">
             <button class="modal-close" onclick="closeCustomerModal()">✖</button>
-            <div id="modName" style="font-size:20px; font-weight:900; color:var(--primary);"></div>
-            <p id="modAddr" style="opacity:0.6; font-size:14px;"></p>
-            <hr style="opacity:0.1; margin:15px 0;">
-            <div id="debtDetailsBox" style="font-size:12px; margin-bottom:15px;"></div>
-            <div style="text-align:right;">
-                <small style="font-weight:800; opacity:0.5;">TOTAL OUTSTANDING:</small><br>
-                <span id="modOwed" style="font-size:28px; font-weight:900;"></span>
+            <div id="modName" style="font-size:22px; font-weight:900; color:var(--primary);"></div>
+            <p id="modAddr" style="opacity:0.6; font-size:14px; margin-bottom: 10px;"></p>
+            
+            <div id="modHistorySection" style="background: rgba(0,0,0,0.03); padding: 15px; border-radius: 12px; margin-bottom: 15px;">
+                <small style="font-weight: 800; opacity: 0.5; text-transform: uppercase;">Debt Breakdown</small>
+                <div id="debtDetailsBox" style="font-size:14px; margin-top: 5px;"></div>
             </div>
-            <button class="btn-alt" style="margin-top:15px; width:100%;" onclick="editFromModal()">⚙️ Edit Customer Details</button>
+
+            <div style="text-align:right; padding: 0 5px;">
+                <small style="font-weight:800; opacity:0.5;">TOTAL OUTSTANDING:</small><br>
+                <span id="modOwed" style="font-size:32px; font-weight:900; color: var(--danger);"></span>
+            </div>
+            
+            <div class="grid-2" style="margin-top:20px; gap: 10px;">
+                <button class="btn-alt" onclick="editFromModal()">⚙️ Edit Details</button>
+                <button class="btn-neutral" onclick="closeCustomerModal()">Close</button>
+            </div>
         </div>
     </div>
 
-    <script src="app.js?v=6.2"></script>
+    <script src="app.js?v=6.3"></script>
 </body>
 </html>
