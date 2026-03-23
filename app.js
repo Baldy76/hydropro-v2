@@ -22,10 +22,10 @@ window.onload = () => {
 
 const updateGreeting = () => {
     const hr = new Date().getHours();
-    let g = "Hello, Jonathan!";
-    if (hr < 12) g = "Good Morning, Jonathan! ☕";
-    else if (hr < 18) g = "Good Afternoon, Jonathan! ☀️";
-    else g = "Good Evening, Jonathan! 🌙";
+    let g = "Hey There!";
+    if (hr < 12) g = "Good Morning! ☕";
+    else if (hr < 18) g = "Good Afternoon! ☀️";
+    else g = "Good Evening! 🌙";
     document.getElementById('greetingMsg').innerText = g;
 };
 
