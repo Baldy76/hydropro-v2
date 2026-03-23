@@ -6,28 +6,17 @@ window.onload = () => {
     updateGreeting();
     const dateEl = document.getElementById('headerDate');
     if (dateEl) dateEl.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' });
-    
     const saved = localStorage.getItem(MASTER_KEY);
     if (saved) db = JSON.parse(saved);
-    
-    // Baseline Integrity Checks
     if (!db.customers) db.customers = [];
     if (!db.expenses) db.expenses = [];
-    db.customers.forEach(c => { 
-        if(!c.paymentLogs) c.paymentLogs = []; 
-        if(!c.debtHistory) c.debtHistory = [];
-    });
-
-    const isDark = localStorage.getItem('Hydro_Dark_Pref') === 'true';
-    document.body.className = isDark ? 'dark-mode' : 'light-mode';
-    if(document.getElementById('darkModeToggle')) document.getElementById('darkModeToggle').checked = isDark;
-    
     renderAll();
 };
 
 window.openTab = (name) => {
     document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-    document.getElementById(name).classList.add("active");
+    const target = document.getElementById(name);
+    if(target) target.classList.add("active");
     
     const nav = document.getElementById('subpageNav');
     const hubPages = ['home', 'weeksHub'];
