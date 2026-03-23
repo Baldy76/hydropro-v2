@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v13.3</title>
-    <link rel="stylesheet" href="styles.css?v=133">
+    <title>Hydro Pro v13.4</title>
+    <link rel="stylesheet" href="styles.css?v=134">
 </head>
 <body class="light-mode">
 
@@ -31,6 +31,7 @@
             <button class="tab" onclick="openTab(event, 'week2')">W2</button>
             <button class="tab" onclick="openTab(event, 'week3')">W3</button>
             <button class="tab" onclick="openTab(event, 'week4')">W4</button>
+            <button class="tab" onclick="openTab(event, 'week5')">W5</button>
         </div>
     </div>
 
@@ -53,8 +54,11 @@
                     </div>
                     <div class="grid-1x2">
                         <select id="cWeek" class="large-select">
-                            <option value="1">Week 1</option><option value="2">Week 2</option>
-                            <option value="3">Week 3</option><option value="4">Week 4</option>
+                            <option value="1">Week 1</option>
+                            <option value="2">Week 2</option>
+                            <option value="3">Week 3</option>
+                            <option value="4">Week 4</option>
+                            <option value="5">Week 5</option>
                         </select>
                         <select id="cDay" class="large-select">
                             <option value="Monday">Monday</option><option value="Tuesday">Tuesday</option>
@@ -130,15 +134,20 @@
             </div>
             <div id="expenseList"></div>
         </div>
-        <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div>
+
+        <div id="week1" class="tab-content"></div>
+        <div id="week2" class="tab-content"></div>
+        <div id="week3" class="tab-content"></div>
+        <div id="week4" class="tab-content"></div>
+        <div id="week5" class="tab-content"></div>
     </div>
 
-    <div class="global-footer">v13.3 - Production Verified</div>
+    <div class="global-footer">v13.4 - Week 5 Extension</div>
 
     <div id="globalModal" class="modal-overlay" onclick="if(event.target === this) closeModal()">
         <div class="modal-content"><button class="close-btn" onclick="closeModal()">✕</button><div id="modalContentBody"></div></div>
     </div>
 
-    <script src="app.js?v=133"></script>
+    <script src="app.js?v=134"></script>
 </body>
 </html>
