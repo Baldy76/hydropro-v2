@@ -13,20 +13,54 @@ window.onload = () => {
     if (!db.customers) db.customers = [];
     if (!db.expenses) db.expenses = [];
     if (!db.history) db.history = [];
-    db.customers.forEach(c => { if(!c.paymentLogs) c.paymentLogs = []; if(!c.debtHistory) c.debtHistory = []; });
+    
+    db.customers.forEach(c => { 
+        if(!c.paymentLogs) c.paymentLogs = []; 
+        if(!c.debtHistory) c.debtHistory = [];
+    });
+
     const isDark = localStorage.getItem('Hydro_Dark_Pref') === 'true';
     document.body.className = isDark ? 'dark-mode' : 'light-mode';
     if(document.getElementById('darkModeToggle')) document.getElementById('darkModeToggle').checked = isDark;
+    
+    // Trigger Weather/GPS
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
+            (err) => console.log("Weather Location access denied")
+        );
+    }
+    
     renderAll();
 };
 
 const updateGreeting = () => {
     const hr = new Date().getHours();
-    let g = "Hey There!";
+    let g = "Hey there!";
     if (hr < 12) g = "Good Morning! ☕";
     else if (hr < 18) g = "Good Afternoon! ☀️";
     else g = "Good Evening! 🌙";
     document.getElementById('greetingMsg').innerText = g;
+};
+
+const fetchWeather = async (lat, lon) => {
+    try {
+        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+        const data = await res.json();
+        const weather = data.current_weather;
+        const wWrap = document.getElementById('weatherWrap');
+        wWrap.classList.remove('hidden');
+        document.getElementById('wTemp').innerText = `${Math.round(weather.temperature)}°C`;
+        const icon = document.getElementById('wIcon');
+        const desc = document.getElementById('wDesc');
+        const code = weather.weathercode;
+        if (code <= 1) { icon.innerText = "☀️"; desc.innerText = "Clear"; }
+        else if (code <= 3) { icon.innerText = "⛅"; desc.innerText = "Cloudy"; }
+        else if (code <= 48) { icon.innerText = "☁️"; desc.innerText = "Foggy"; }
+        else if (code <= 67) { icon.innerText = "🌧️"; desc.innerText = "Rainy"; }
+        else if (code <= 77) { icon.innerText = "❄️"; desc.innerText = "Snowy"; }
+        else { icon.innerText = "⛈️"; desc.innerText = "Stormy"; }
+    } catch (e) { console.log("Weather service error"); }
 };
 
 window.openTab = (evt, name) => {
@@ -42,7 +76,6 @@ window.openTab = (evt, name) => {
     window.scrollTo(0,0);
 };
 
-// --- DATA LOGIC ---
 window.saveCustomer = () => {
     const nameVal = document.getElementById('cName').value;
     if(!nameVal) { alert("Enter Name"); return; }
@@ -85,13 +118,12 @@ const downloadCSV = (csv, fn) => {
     const a = document.createElement('a'); a.href = u; a.download = fn; a.click();
 };
 
-// --- MODALS ---
 window.showIncomeModal = () => {
     const body = document.getElementById('modalContentBody');
     let html = '<h3 class="section-title">💸 Collections Log</h3>';
     let total = 0;
     db.customers.forEach(c => { (c.paymentLogs || []).forEach(log => {
-        const desc = log.arrearsContext ? `Arrears (${log.arrearsContext})` : 'Cycle Job Paid';
+        const desc = log.arrearsContext ? `Arrears (${log.arrearsContext})` : 'Monthly Job';
         html += `<div class="drilldown-row"><div><strong>${c.name}</strong><br><small>${log.date}<br>${desc}</small></div><div style="color:${log.type === 'debt' ? 'var(--danger)' : 'var(--success)'}; font-weight:bold;">£${n(log.amount).toFixed(2)}</div></div>`;
         total += n(log.amount);
     }); });
@@ -143,7 +175,7 @@ window.markAsPaid = (id) => {
 window.handleDebtCollection = (id) => {
     const c = db.customers.find(x => x.id === id); if (!c) return;
     const totalOwed = (c.debtHistory || []).reduce((s,d)=>s+n(d.amount),0);
-    const input = prompt(`Debt Collection for ${c.name}: £${totalOwed.toFixed(2)}\nEnter amount paid:`, totalOwed.toFixed(2));
+    const input = prompt(`Debt Recovery for ${c.name}: £${totalOwed.toFixed(2)}\nEnter amount paid:`, totalOwed.toFixed(2));
     if (input === null) return;
     const amt = n(input); if (amt <= 0) return;
     let context = ""; if(c.debtHistory.length > 0) context = `${c.debtHistory[0].month || ''} Clean: ${c.debtHistory[0].date}`;
@@ -158,7 +190,6 @@ window.handleDebtCollection = (id) => {
     saveData(); renderWeekLists(); renderStats();
 };
 
-// --- RENDER STATS (Full 5-Week Support) ---
 window.renderStats = () => {
     const curMonth = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
     if(document.getElementById('statsMonthTitle')) document.getElementById('statsMonthTitle').innerText = `${curMonth} Summary`;
@@ -182,14 +213,14 @@ window.renderStats = () => {
 window.renderHistory = () => {
     const hist = document.getElementById('monthlyHistoryContainer'); if (!hist) return;
     hist.innerHTML = '<h3 class="section-title" style="margin-top:35px; color: var(--qb-green); font-weight:800;">🏆 The Hall of Fame</h3>';
-    if(db.history.length === 0) { hist.innerHTML += '<div class="card" style="text-align:center; opacity:0.5;">Snapshots will appear here.</div>'; return; }
+    if(db.history.length === 0) { hist.innerHTML += '<div class="card" style="text-align:center; opacity:0.5;">Month-end snapshots will appear here.</div>'; return; }
     db.history.forEach(h => {
         const net = n(h.income) - n(h.spend);
         const d = document.createElement('div'); d.className = 'history-item-card';
         d.innerHTML = `<div class="history-metrics-grid"><div class="metric-bubble b-profit"><small>${h.month}</small><strong>Net Profit £${net.toFixed(2)}</strong></div>
             <div class="metric-bubble b-collected"><small>Collected</small><strong>£${n(h.income).toFixed(2)}</strong></div>
             <div class="metric-bubble b-spent"><small>Spent</small><strong>£${n(h.spend).toFixed(2)}</strong></div>
-            <div class="metric-bubble b-arrears"><small>Arrears Rolled</small><strong>£${n(h.debtCreated).toFixed(2)}</strong></div></div>`; 
+            <div class="metric-bubble b-arrears"><small>Arrears Added</small><strong>£${n(h.debtCreated).toFixed(2)}</strong></div></div>`; 
         hist.appendChild(d);
     });
 };
@@ -215,7 +246,7 @@ window.renderMasterTable = () => {
             const row = document.createElement('div'); row.className = 'master-row';
             row.onclick = () => showCustDetails(c.id);
             const d = (c.debtHistory||[]).reduce((s,x)=>s+n(x.amount),0);
-            row.innerHTML = `<div><strong>${c.name}</strong><br><small>${c.address || 'No Address'}</small></div><div style="text-align:right">£${n(c.price).toFixed(2)}${d > 0 ? '<br><small style="color:var(--danger); font-weight:800;">Debt: £' + d.toFixed(2) + '</small>' : ''}</div>`;
+            row.innerHTML = `<div><strong>${c.name}</strong><br><small>${c.address || 'No Address'}</small></div><div style="text-align:right">£${n(c.price).toFixed(2)}${d > 0 ? '<br><small style="color:var(--danger); font-weight:800;">ARREARS: £' + d.toFixed(2) + '</small>' : ''}</div>`;
             container.appendChild(row);
         }
     });
@@ -233,7 +264,7 @@ window.renderWeekLists = () => {
             const card = document.createElement('div'); card.className = 'card';
             card.innerHTML = `<div onclick="showCustDetails('${c.id}')"><strong style="font-size:19px; color:var(--accent);">${c.name}</strong><br><small style="opacity:0.6;">${c.address || 'No Address'}</small></div>
                 <div class="workflow-grid"><div class="comms-row"><button class="icon-btn-large bounce-on-tap" style="color:#25D366" onclick="handleWhatsApp('${c.id}')">💬</button><button class="icon-btn-large bounce-on-tap" style="color:#007AFF" onclick="handleSMS('${c.id}')">📱</button><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((c.address||'') + ' ' + (c.postcode||''))}" target="_blank" class="icon-btn-large bounce-on-tap" style="color:#ea4335">📍</a></div>
-                <div class="status-row" style="${d > 0 ? 'grid-template-columns:repeat(3,1fr)' : 'grid-template-columns:1fr 1fr'}"><button class="action-btn-main bounce-on-tap ${c.cleaned ? 'btn-cleaned-active' : ''}" onclick="toggleCleaned('${c.id}')">${c.cleaned ? 'Done ✅' : 'Cleaned'}</button><button class="action-btn-main bounce-on-tap ${isPaid ? 'btn-paid-active' : 'btn-pay-pending'}" onclick="markAsPaid('${c.id}')">${isPaid ? 'Paid 💰' : 'Pay £' + n(c.price).toFixed(2)}</button>${d > 0 ? `<button class="action-btn-main bounce-on-tap btn-debt-pending" onclick="handleDebtCollection('${c.id}')">Arrears £${d.toFixed(2)}</button>` : ''}</div></div>`;
+                <div class="status-row" style="${d > 0 ? 'grid-template-columns:repeat(3,1fr)' : 'grid-template-columns:1fr 1fr'}"><button class="action-btn-main bounce-on-tap ${c.cleaned ? 'btn-cleaned-active' : ''}" onclick="toggleCleaned('${c.id}')">${c.cleaned ? 'Done ✅' : 'Cleaned'}</button><button class="action-btn-main bounce-on-tap ${isPaid ? 'btn-paid-active' : 'btn-pay-pending'}" onclick="markAsPaid('${c.id}')">${isPaid ? 'Paid 💰' : 'Pay £' + n(c.price).toFixed(2)}</button>${d > 0 ? `<button class="action-btn-main bounce-on-tap btn-debt-pending" onclick="handleDebtCollection('${c.id}')">Debt £${d.toFixed(2)}</button>` : ''}</div></div>`;
             container.appendChild(card);
         });
     }
@@ -265,7 +296,7 @@ window.addExpense = () => {
 };
 
 window.completeCycle = () => {
-    if(!confirm("Archive Month? Jobs marked 'Cleaned' but not 'Paid' move to Arrears.")) return;
+    if(!confirm("Archive Month? Cleaned/Unpaid jobs move to Arrears.")) return;
     const curLabel = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
     let mInc = 0; db.customers.forEach(c => { (c.paymentLogs||[]).forEach(l => mInc += n(l.amount)); });
     let mExp = db.expenses.reduce((sum, e) => sum + n(e.amt), 0);
