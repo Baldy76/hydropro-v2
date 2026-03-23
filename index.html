@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v13.3</title>
-    <link rel="stylesheet" href="styles.css?v=133">
+    <title>Hydro Pro v13.4</title>
+    <link rel="stylesheet" href="styles.css?v=134">
 </head>
 <body class="light-mode">
 
@@ -22,15 +22,18 @@
             <div id="greetingMsg" class="greeting-txt">Hello, Jonathan!</div>
             <div id="headerDate" class="date-txt"></div>
         </div>
-        <div class="tabs">
+        <div class="tabs-grid">
             <button class="tab active" onclick="openTab(event, 'admin')">Setup</button>
             <button class="tab" onclick="openTab(event, 'master')">Custs</button>
             <button class="tab" onclick="openTab(event, 'stats')">Stats</button>
             <button class="tab" onclick="openTab(event, 'spend')">Ledger</button>
+        </div>
+        <div class="week-tabs-row">
             <button class="tab" onclick="openTab(event, 'week1')">W1</button>
             <button class="tab" onclick="openTab(event, 'week2')">W2</button>
             <button class="tab" onclick="openTab(event, 'week3')">W3</button>
             <button class="tab" onclick="openTab(event, 'week4')">W4</button>
+            <button class="tab" onclick="openTab(event, 'week5')">W5</button>
         </div>
     </div>
 
@@ -55,6 +58,7 @@
                         <select id="cWeek" class="large-select">
                             <option value="1">Week 1</option><option value="2">Week 2</option>
                             <option value="3">Week 3</option><option value="4">Week 4</option>
+                            <option value="5">Week 5</option>
                         </select>
                         <select id="cDay" class="large-select">
                             <option value="Monday">Monday</option><option value="Tuesday">Tuesday</option>
@@ -85,7 +89,7 @@
             <div class="dashboard-hero">
                 <div class="hero-label" id="statsMonthTitle">Summary</div>
                 <div class="hero-amount" id="currProfit">£0.00</div>
-                <div class="hero-subtext">💰 Total Profit in Pocket</div>
+                <div class="hero-subtext">💰 Net Profit (Income - Spend)</div>
             </div>
             <div class="card stat-card">
                 <div class="stat-header"><span>Monthly Progress</span><span id="collectionPercent">0%</span></div>
@@ -98,19 +102,19 @@
             <div class="grid-1x2" style="margin-top:15px;">
                 <div class="card mini-card clickable-stat" onclick="showIncomeModal()">
                     <div class="mini-card-content">
-                        <small>Month Income 🔍</small>
+                        <small>Income 🔍</small>
                         <strong id="currRevenue" style="color:var(--success)">£0.00</strong>
                     </div>
                 </div>
                 <div class="card mini-card clickable-stat" onclick="showExpenseModal()">
                     <div class="mini-card-content">
-                        <small>Month Spend 🔍</small>
+                        <small>Spend 🔍</small>
                         <strong id="currSpend" style="color:var(--danger)">£0.00</strong>
                     </div>
                 </div>
             </div>
             <div class="card debt-highlight-card clickable-stat" onclick="showArrearsModal()">
-                <div class="stat-row"><span>Arrears 🔍</span><strong id="totalOldDebt">£0.00</strong></div>
+                <div class="stat-row"><span>Arrears Ledger 🔍</span><strong id="totalOldDebt">£0.00</strong></div>
             </div>
             <div id="monthlyHistoryContainer"></div>
         </div>
@@ -130,15 +134,19 @@
             </div>
             <div id="expenseList"></div>
         </div>
-        <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div>
-    </div>
+        
+        <div id="week1" class="tab-content"></div>
+        <div id="week2" class="tab-content"></div>
+        <div id="week3" class="tab-content"></div>
+        <div id="week4" class="tab-content"></div>
+        <div id="week5" class="tab-content"></div> </div>
 
-    <div class="global-footer">v13.3 - Production Verified</div>
+    <div class="global-footer">v13.4 - Calendar Flexible</div>
 
     <div id="globalModal" class="modal-overlay" onclick="if(event.target === this) closeModal()">
         <div class="modal-content"><button class="close-btn" onclick="closeModal()">✕</button><div id="modalContentBody"></div></div>
     </div>
 
-    <script src="app.js?v=133"></script>
+    <script src="app.js?v=134"></script>
 </body>
 </html>
