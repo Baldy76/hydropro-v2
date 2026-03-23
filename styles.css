@@ -2,6 +2,7 @@
     --primary: #1c1c1e; --accent: #007aff; --danger: #ff3b30; --success: #34c759;
     --bg: #f2f2f7; --card-bg: #ffffff; --input-bg: #f2f2f7; --text: #000000;
     --export-blue: #add8e6; --import-yellow: #fff9c4; --qb-green: #2ca01c;
+    --h-gold: #FFD700; --h-collected: #emerald-green; --h-spent: #warm-amber; --h-arrears: #soft-crimson;
 }
 body.dark-mode { --bg: #000000; --card-bg: #1c1c1e; --input-bg: #2c2c2e; --text: #ffffff; }
 
@@ -75,10 +76,52 @@ input:checked + .slider { background-color: var(--success); }
     100% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0); }
 }
 
-/* HISTORY CARDS */
-.history-item-card { background: var(--card-bg); border-radius: 20px; margin-bottom: 12px; padding: 18px; border-left: 6px solid var(--accent); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-.history-badge-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-.h-badge { padding: 10px; border-radius: 12px; background: var(--input-bg); }
+/* REDESIGNED HALL OF FAME (Scoped v13.1) */
+#monthlyHistoryContainer { margin-top: 35px; }
+
+.history-item-card { 
+    background: var(--card-bg); 
+    border-radius: 28px; 
+    margin-bottom: 20px; 
+    padding: 25px; 
+    border: 1px solid rgba(0,0,0,0.03);
+    border-top: 5px solid var(--qb-green);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.history-header-row { display: flex; justify-content: space-between; align-items: center; }
+.history-title-txt { font-weight: 900; font-size: 16px; text-transform: uppercase; color: var(--text); letter-spacing: 0.5px; }
+
+/* The color-coded bubble grid */
+.history-metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+.metric-bubble { 
+    padding: 18px; 
+    border-radius: 18px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 5px;
+    backdrop-filter: blur(10px);
+}
+.metric-bubble small { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+.metric-bubble strong { font-size: 18px; font-weight: 900; }
+.metric-icon-row { display: flex; justify-content: space-between; align-items: center; width: 100%; opacity: 0.5; }
+
+/* EMERALD GREEN COLLECTED */
+.b-collected { background: rgba(52, 199, 89, 0.08); color: var(--success); border: 1px solid rgba(52, 199, 89, 0.15); }
+
+/* AMBER SPENT */
+.b-spent { background: rgba(255, 149, 0, 0.08); color: #FF9500; border: 1px solid rgba(255, 149, 0, 0.15); }
+
+/* ELECTRIC BLUE PROFIT */
+.b-profit { background: rgba(0, 122, 255, 0.08); color: var(--accent); border: 1px solid rgba(0, 122, 255, 0.15); grid-column: 1 / -1; padding: 25px 20px; }
+.b-profit strong { font-size: 24px; } /* PROFIT IS HERO */
+
+/* CRIMSON RED ARREARS */
+.b-arrears { background: rgba(255, 59, 48, 0.08); color: var(--danger); border: 1px solid rgba(255, 59, 48, 0.15); grid-column: 1 / -1; }
+
 
 /* MODALS */
 .modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index:10000; align-items:center; justify-content:center; padding: 20px; }
