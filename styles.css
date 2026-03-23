@@ -2,12 +2,14 @@
     --primary: #1c1c1e; --accent: #007aff; --danger: #ff3b30; --success: #34c759; --warning: #ffcc00;
     --bg: #f2f2f7; --card-bg: #ffffff; --input-bg: #f2f2f7; --text: #000000;
     --shadow: 0 4px 12px rgba(0,0,0,0.08);
+    --export-blue: #add8e6; --import-yellow: #fff9c4;
 }
 body.dark-mode { --bg: #000000; --card-bg: #1c1c1e; --input-bg: #2c2c2e; --text: #ffffff; }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
 
+/* HEADER FIX */
 .sticky-header { position: sticky; top: 0; background: var(--bg); z-index: 9999; padding: 15px 0; border-bottom: 1px solid rgba(0,0,0,0.1); pointer-events: none; }
 .header-top, .tabs, .mode-switch-wrapper { pointer-events: auto; }
 .header-top { display: flex; justify-content: center; align-items: center; height: 120px; margin-bottom: 10px; }
@@ -17,39 +19,47 @@ body { font-family: -apple-system, sans-serif; background: var(--bg); color: var
 .tab { background: rgba(0,0,0,0.06); border: none; height: 38px; border-radius: 10px; font-size: 11px; font-weight: 700; color: #8e8e93; }
 .tab.active { background: var(--accent); color: white; }
 
+/* DAY/SEARCH HIDDEN LOGIC */
+.hidden { display: none !important; }
+
+/* FORM RESCUE */
 .main-container { max-width: 500px; margin: 0 auto; padding: 10px 15px 120px 15px; }
 .tab-content { display: none; }
 .tab-content.active { display: block !important; }
 
-/* THE HYBRID CARD REVOLUTION */
-.customer-card { 
-    background: var(--card-bg); border-radius: 18px; margin-bottom: 15px; 
-    display: flex; position: relative; overflow: hidden; box-shadow: var(--shadow);
-    border-left: 6px solid var(--accent); /* Default Glow Bar */
+.input-stack input, select, textarea { 
+    display: block !important; 
+    width: 100% !important; 
+    background: var(--input-bg); 
+    border: 1px solid rgba(0,0,0,0.05); 
+    margin-bottom: 10px; 
+    padding: 14px; 
+    border-radius: 12px; 
+    font-size: 16px; 
+    color: var(--text);
+    -webkit-appearance: none;
 }
 
-/* Status Variants */
-.customer-card.status-done { border-left-color: var(--success); box-shadow: 0 4px 15px rgba(52, 199, 89, 0.2); }
-.customer-card.status-debt { border-left-color: var(--danger); box-shadow: 0 4px 15px rgba(255, 59, 48, 0.2); }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+.card { background: var(--card-bg); padding: 22px; border-radius: 20px; box-shadow: var(--shadow); margin-bottom: 15px; }
 
-.card-body { padding: 16px; width: 100%; }
-.card-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
-.card-name { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
-.card-price-pill { background: rgba(52, 199, 89, 0.1); color: var(--success); padding: 4px 10px; border-radius: 10px; font-weight: 900; font-size: 16px; }
-
-.card-addr-row { font-size: 13px; opacity: 0.6; margin-bottom: 12px; display: flex; align-items: center; gap: 4px; }
-
-.card-footer-icons { display: flex; gap: 12px; align-items: center; margin-top: 5px; }
-.icon-badge { font-size: 14px; display: flex; align-items: center; gap: 3px; font-weight: 700; }
-.debt-alert { color: var(--danger); animation: pulse 2s infinite; }
-
-@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
-.card-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0,0,0,0.05); }
-.btn-mini { height: 40px; border-radius: 10px; font-size: 13px; font-weight: 700; border: none; cursor: pointer; }
-
-/* Layout Fixes */
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.full-width-btn { width: 100%; height: 52px; border-radius: 14px; font-weight: 700; border: none; cursor: pointer; }
+/* BUTTONS */
+.full-width-btn { width: 100%; height: 52px; border-radius: 14px; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .btn-main { background: var(--accent); color: white; }
-.btn-ghost { background: rgba(0, 122, 255, 0.1); color: var(--accent); }
+.btn-danger { background: var(--danger); color: white; }
+.btn-neutral { background: #8e8e93; color: white; }
+.btn-export-blue { background-color: var(--export-blue); color: #000; }
+.btn-import-yellow { background-color: var(--import-yellow); color: #000; }
+
+.action-card-green { background: linear-gradient(135deg, #28a745, #34c759); padding: 8px; border: none; }
+.action-card-red { background: linear-gradient(135deg, #dc3545, #ff3b30); padding: 8px; border: none; }
+.btn-clear { background: transparent; color: white; font-weight: 900; }
+
+/* HYBRID CARDS */
+.customer-card { background: var(--card-bg); border-radius: 18px; margin-bottom: 15px; display: flex; overflow: hidden; box-shadow: var(--shadow); border-left: 6px solid var(--accent); }
+.customer-card.status-done { border-left-color: var(--success); }
+.customer-card.status-debt { border-left-color: var(--danger); }
+.card-body { padding: 16px; width: 100%; }
+.card-price-pill { background: rgba(52, 199, 89, 0.1); color: var(--success); padding: 4px 10px; border-radius: 10px; font-weight: 900; }
+
+.version-tag { text-align: center; font-size: 10px; opacity: 0.3; padding: 20px; }
