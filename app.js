@@ -3,47 +3,36 @@ const BANK_DETAILS = "Bank: Monzo\nAcc: 12345678\nSort: 00-00-00";
 let db = { customers: [], expenses: [], history: [] }; 
 const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 
-// --- STARTUP ---
 window.onload = () => {
     const dateEl = document.getElementById('headerDate');
     if (dateEl) dateEl.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-    
     const saved = localStorage.getItem(MASTER_KEY);
     if (saved) db = JSON.parse(saved);
     if (!db.customers) db.customers = [];
     if (!db.expenses) db.expenses = [];
     if (!db.history) db.history = [];
-    
     const isDark = localStorage.getItem('Hydro_Dark_Pref') === 'true';
     document.body.className = isDark ? 'dark-mode' : 'light-mode';
     if(document.getElementById('darkModeToggle')) document.getElementById('darkModeToggle').checked = isDark;
-    
     renderAll();
 };
 
-// --- NAVIGATION (ISOLATION) ---
 window.openTab = (evt, name) => {
     document.querySelectorAll(".tab-content").forEach(c => c.style.display = "none");
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    
     const sw = document.getElementById('setup-form-wrapper');
     if (sw) name === 'admin' ? sw.classList.remove('hidden') : sw.classList.add('hidden');
-    
     const search = document.getElementById('globalSearchContainer');
     if(search) name === 'master' ? search.classList.remove('hidden') : search.classList.add('hidden');
-    
     const target = document.getElementById(name);
     if (target) { target.style.display = "block"; if (evt) evt.currentTarget.classList.add("active"); }
-    
     renderAll();
     window.scrollTo(0, 0);
 };
 
-// --- DATA LOGIC ---
 window.saveCustomer = () => {
     const nameVal = document.getElementById('cName').value;
     if(!nameVal) { alert("Enter Name"); return; }
-    
     const id = document.getElementById('editId').value || Date.now().toString();
     const entry = {
         id, name: nameVal, address: document.getElementById('cAddr').value,
@@ -57,7 +46,6 @@ window.saveCustomer = () => {
     saveData(); alert("Saved!"); location.reload(); 
 };
 
-// --- WORKFLOW HANDLERS ---
 window.toggleCleaned = (id) => {
     const c = db.customers.find(x => x.id === id);
     if (!c) return;
@@ -92,7 +80,6 @@ window.handleSMS = (id) => {
     window.location.href = `sms:${c.phone.replace(/\s+/g, '')}${isiOS ? '&' : '?'}body=${encodeURIComponent(generateMessage(c))}`;
 };
 
-// --- RENDERING ---
 window.renderAll = () => {
     renderMasterTable();
     renderWeekLists();
@@ -120,7 +107,6 @@ window.renderWeekLists = () => {
         if (!container) continue; container.innerHTML = '';
         const weekCusts = db.customers.filter(c => c.week == i);
         if (weekCusts.length === 0) { container.innerHTML = '<div class="card" style="text-align:center; opacity:0.5;">No jobs.</div>'; continue; }
-        
         weekCusts.forEach(c => {
             const isPaid = n(c.paidThisMonth) >= n(c.price);
             const card = document.createElement('div');
@@ -132,10 +118,10 @@ window.renderWeekLists = () => {
                 </div>
                 <div class="workflow-grid">
                     <div class="comms-row">
-                        <button class="icon-btn-large wa-color" onclick="handleWhatsApp('${c.id}')">💬</button>
-                        <button class="icon-btn-large sms-color" onclick="handleSMS('${c.id}')">📱</button>
-                        <a href="http://maps.google.com/?q=${encodeURIComponent(c.address + ' ' + c.postcode)}" 
-                           target="_blank" class="icon-btn-large maps-color">📍</a>
+                        <button class="icon-btn-large" style="color:#25D366" onclick="handleWhatsApp('${c.id}')">💬</button>
+                        <button class="icon-btn-large" style="color:#007AFF" onclick="handleSMS('${c.id}')">📱</button>
+                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.address + ' ' + c.postcode)}" 
+                           target="_blank" class="icon-btn-large" style="color:#ea4335">📍</a>
                     </div>
                     <div class="status-row">
                         <button class="action-btn-main ${c.cleaned ? 'btn-cleaned-active' : ''}" onclick="toggleCleaned('${c.id}')">
@@ -156,7 +142,7 @@ window.showCustDetails = (id) => {
     if(!c) return;
     const modal = document.getElementById('custModal');
     const body = document.getElementById('modalBody');
-    body.innerHTML = `<h2 style="margin-top:0; color:var(--accent);">${c.name}</h2><p>📍 ${c.address} ${c.postcode}</p><p>📞 ${c.phone || 'N/A'}</p><p>📅 Week ${c.week} - ${c.day}</p><p>💰 Price: £${n(c.price).toFixed(2)}</p><p>📝 Notes: ${c.notes || 'No notes.'}</p><button class="btn-main full-width-btn" onclick="editCust('${c.id}')">⚙️ Edit</button>`;
+    body.innerHTML = `<h2 style="margin-top:0; color:var(--accent);">${c.name}</h2><p>📍 ${c.address} ${c.postcode}</p><p>📞 ${c.phone || 'N/A'}</p><p>💰 Price: £${n(c.price).toFixed(2)}</p><p>📝 Notes: ${c.notes || 'No notes.'}</p><button class="btn-main full-width-btn" onclick="editCust('${c.id}')">⚙️ Edit</button>`;
     modal.style.display = 'flex';
 };
 
@@ -179,35 +165,31 @@ window.renderStats = () => {
     const curMonth = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
     const title = document.getElementById('statsMonthTitle');
     if (title) title.innerText = `${curMonth} Summary`;
-    
     let inc = db.customers.reduce((sum, c) => sum + n(c.paidThisMonth), 0);
     let exp = db.expenses.reduce((sum, e) => sum + n(e.amt), 0);
     let dbt = db.customers.reduce((sum, c) => sum + (c.cleaned && n(c.paidThisMonth) < n(c.price) ? n(c.price) - n(c.paidThisMonth) : 0), 0);
-    
     if(document.getElementById('currRevenue')) document.getElementById('currRevenue').innerText = `£${inc.toFixed(2)}`;
     if(document.getElementById('currSpend')) document.getElementById('currSpend').innerText = `£${exp.toFixed(2)}`;
     if(document.getElementById('currDebt')) document.getElementById('currDebt').innerText = `£${dbt.toFixed(2)}`;
     if(document.getElementById('currProfit')) document.getElementById('currProfit').innerText = `£${(inc - exp).toFixed(2)}`;
-    
     const hist = document.getElementById('monthlyHistoryContainer');
     if (!hist) return; hist.innerHTML = '<h3 class="section-title" style="margin-top:25px;">History</h3>';
     db.history.forEach(h => {
         const d = document.createElement('div'); d.className = 'history-card';
-        d.innerHTML = `<div class="history-header"><span>${h.month}</span></div><div class="history-grid">
-            <div class="history-item"><small>Inc</small><strong>£${n(h.income).toFixed(2)}</strong></div>
+        d.innerHTML = `<div class="history-grid">
+            <div class="history-item"><small>${h.month}</small><strong>Inc: £${n(h.income).toFixed(2)}</strong></div>
             <div class="history-item"><small>Debt</small><strong style="color:var(--danger)">£${n(h.debtCreated).toFixed(2)}</strong></div>
         </div>`; hist.appendChild(d);
     });
 };
 
-// --- UTILS ---
 window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
 window.closeCustModal = () => document.getElementById('custModal').style.display = 'none';
 window.toggleDarkMode = () => { const d = document.getElementById('darkModeToggle').checked; document.body.className = d ? 'dark-mode' : 'light-mode'; localStorage.setItem('Hydro_Dark_Pref', d); };
-window.runUATClear = () => { if(confirm("Wipe all data?")) { localStorage.clear(); location.reload(); } };
+window.runUATClear = () => { if(confirm("Wipe?")) { localStorage.clear(); location.reload(); } };
 window.addExpense = () => { const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value); if(!d || a<=0) return; db.expenses.push({desc:d, amt:a, date:new Date().toLocaleDateString()}); saveData(); location.reload(); };
 window.completeCycle = () => {
-    if(!confirm("Archive Month & Reset?")) return;
+    if(!confirm("Archive Month?")) return;
     let mInc = db.customers.reduce((sum, c) => sum + n(c.paidThisMonth), 0), mExp = db.expenses.reduce((sum, e) => sum + n(e.amt), 0), nDebt = db.customers.reduce((sum, c) => sum + (c.cleaned ? Math.max(0, n(c.price) - n(c.paidThisMonth)) : 0), 0);
     db.history.unshift({ month: new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }), income: mInc, spend: mExp, debtCreated: nDebt });
     db.customers.forEach(c => {
@@ -217,23 +199,5 @@ window.completeCycle = () => {
     });
     db.expenses = []; saveData(); location.reload();
 };
-window.exportFullCSV = () => {
-    let c = "ID,Name,Address,Postcode,Phone,Price,Week,Day,Notes\n";
-    db.customers.forEach(x => { c += `${x.id},"${x.name}","${x.address}","${x.postcode}","${x.phone}",${x.price},${x.week},"${x.day}","${x.notes}"\n`; });
-    const b = new Blob([c], { type: 'text/csv' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `Backup.csv`; a.click();
-};
-window.importFullCSV = (e) => {
-    const f = e.target.files[0], r = new FileReader();
-    r.onload = (ev) => {
-        const rows = ev.target.result.split('\n').slice(1);
-        let imp = [];
-        rows.forEach(row => {
-            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-            if(cols.length > 5) {
-                imp.push({ id: cols[0], name: cols[1].replace(/"/g,''), address: cols[2].replace(/"/g,''), postcode: cols[3].replace(/"/g,''), phone: cols[4].replace(/"/g,''), price: n(cols[5]), week: cols[6], day: cols[7].replace(/"/g,''), notes: cols[8] ? cols[8].replace(/"/g,'') : "", cleaned: false, paidThisMonth: 0, debtHistory: [] });
-            }
-        });
-        db.customers = imp; saveData(); location.reload();
-    };
-    r.readAsText(f);
-};
+window.exportFullCSV = () => { let c = "ID,Name,Address,Postcode,Phone,Price,Week,Day,Notes\n"; db.customers.forEach(x => { c += `${x.id},"${x.name}","${x.address}","${x.postcode}","${x.phone}",${x.price},${x.week},"${x.day}","${x.notes}"\n`; }); const b = new Blob([c], { type: 'text/csv' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `Backup.csv`; a.click(); };
+window.importFullCSV = (e) => { const f = e.target.files[0], r = new FileReader(); r.onload = (ev) => { const rows = ev.target.result.split('\n').slice(1); let imp = []; rows.forEach(row => { const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); if(cols.length > 5) { imp.push({ id: cols[0], name: cols[1].replace(/"/g,''), address: cols[2].replace(/"/g,''), postcode: cols[3].replace(/"/g,''), phone: cols[4].replace(/"/g,''), price: n(cols[5]), week: cols[6], day: cols[7].replace(/"/g,''), notes: cols[8] ? cols[8].replace(/"/g,'') : "", cleaned: false, paidThisMonth: 0, debtHistory: [] }); } }); db.customers = imp; saveData(); location.reload(); }; r.readAsText(f); };
