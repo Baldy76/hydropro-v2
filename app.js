@@ -111,7 +111,6 @@ window.renderStats = function() {
     }
 };
 
-// NEW MODAL LEDGER LOGIC
 window.openCustomerModal = function(id) {
     const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return;
     document.getElementById('modName').innerText = c.name;
@@ -121,54 +120,36 @@ window.openCustomerModal = function(id) {
     document.getElementById('modOwed').innerText = '£' + totalOwed.toFixed(2);
     document.getElementById('modOwed').style.color = totalOwed > 0 ? 'var(--danger)' : 'var(--stat-collected)';
     
-    // Ledger Building
     let ledgerHtml = "";
-    // Get all unique months from both arrays
     const allMonths = [...new Set([...(c.debtHistory||[]).map(d=>d.month), ...(c.paymentHistory||[]).map(p=>p.month)])];
     
     if(allMonths.length > 0) {
         allMonths.forEach(m => {
-            const debt = (c.debtHistory||[]).find(x => x.month === m);
-            const paid = (c.paymentHistory||[]).find(x => x.month === m);
-            
-            if(debt) {
-                ledgerHtml += `<div class="ledger-row text-owed"><span>${m}: OWED</span><span>£${n(debt.amount).toFixed(2)}</span></div>`;
-            } else if(paid) {
-                ledgerHtml += `<div class="ledger-row text-paid"><span>${m}: PAID ✅</span><span>£${n(paid.amount).toFixed(2)}</span></div>`;
-            }
+            const d = (c.debtHistory||[]).find(x => x.month === m);
+            const p = (c.paymentHistory||[]).find(x => x.month === m);
+            if(d) ledgerHtml += `<div class="ledger-row text-owed"><span>${m}</span><span>£${n(d.amount).toFixed(2)}</span></div>`;
+            else if(p) ledgerHtml += `<div class="ledger-row text-paid"><span>${m} PAID ✅</span><span>£${n(p.amount).toFixed(2)}</span></div>`;
         });
-    } else {
-        ledgerHtml = "<div style='opacity:0.5; text-align:center; padding:10px;'>No payment history yet.</div>";
-    }
+    } else { ledgerHtml = "<div style='opacity:0.5; text-align:center; padding:10px;'>No payment history yet.</div>"; }
     document.getElementById('ledgerBox').innerHTML = ledgerHtml;
 
-    // Current Month Inline Status
     const statusBox = document.getElementById('modCurrentStatus');
-    if (n(c.paidThisMonth) >= n(c.price)) {
-        statusBox.innerHTML = `<span class="text-paid">PAID ✅ (£${n(c.paidThisMonth).toFixed(2)})</span>`;
-    } else {
-        const bal = n(c.price) - n(c.paidThisMonth);
-        statusBox.innerHTML = `<span class="text-owed">OWED (£${bal.toFixed(2)})</span>`;
-    }
+    if (n(c.paidThisMonth) >= n(c.price)) statusBox.innerHTML = `<span class="text-paid">PAID ✅</span>`;
+    else statusBox.innerHTML = `<span class="text-owed">OWED £${(n(c.price) - n(c.paidThisMonth)).toFixed(2)}</span>`;
 
     document.getElementById('customerModal').style.display = 'flex';
 };
 
 window.completeCycle = function() {
-    if(!confirm("Start New Month? Unpaid moved to Debt, Paid moved to History.")) return;
+    if(!confirm("Start New Month? Unpaid current moves to debt.")) return;
     const label = new Date().toLocaleDateString('en-GB', {month:'short', year:'2-digit'});
     db.incomeHistory.push({ month: label, amount: db.customers.reduce((s,c) => s + n(c.paidThisMonth), 0) });
     db.customers.forEach(c => {
         if(!c.paymentHistory) c.paymentHistory = [];
-        if(!c.debtHistory) c.debtHistory = [];
-        
-        // If fully or partially paid
-        if(n(c.paidThisMonth) > 0 && n(c.paidThisMonth) >= n(c.price)) {
-             c.paymentHistory.push({ month: label, amount: n(c.paidThisMonth) });
-        }
-        
+        if(n(c.paidThisMonth) > 0 && n(c.paidThisMonth) >= n(c.price)) c.paymentHistory.push({ month: label, amount: n(c.paidThisMonth) });
         const o = calculateTrueDebt(c);
         if(o > 0) {
+            c.debtHistory = c.debtHistory || [];
             const existing = c.debtHistory.find(h => h.month === label);
             if(existing) existing.amount = n(existing.amount) + o;
             else c.debtHistory.push({ month: label, amount: o });
@@ -178,6 +159,35 @@ window.completeCycle = function() {
     saveData();
 };
 
+window.saveCustomer = function() {
+    const id = document.getElementById('editId').value || Date.now();
+    const name = document.getElementById('cName').value; if(!name) return;
+    const entry = { id: id, name: name, address: document.getElementById('cAddr').value, postcode: document.getElementById('cPostcode').value, phone: document.getElementById('cPhone').value, price: n(document.getElementById('cPrice').value), week: document.getElementById('cWeek').value, day: document.getElementById('cDay').value, notes: document.getElementById('cNotes').value, cleaned: false, paidThisMonth: 0, debtHistory: [], paymentHistory: [] };
+    const idx = db.customers.findIndex(x => String(x.id) === String(id));
+    if(idx > -1) { 
+        const old = db.customers[idx];
+        entry.cleaned = old.cleaned; entry.paidThisMonth = old.paidThisMonth; 
+        entry.debtHistory = old.debtHistory || []; entry.paymentHistory = old.paymentHistory || [];
+        db.customers[idx] = entry; 
+    } else { db.customers.push(entry); }
+    clearForm(); saveData(); openTab(null, 'master');
+};
+
+window.editCustomer = function(id) { 
+    const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return; 
+    document.getElementById('editId').value = c.id; 
+    document.getElementById('cName').value = c.name; document.getElementById('cAddr').value = c.address; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPhone').value = c.phone; document.getElementById('cPrice').value = c.price; document.getElementById('cWeek').value = c.week; document.getElementById('cDay').value = c.day; document.getElementById('cNotes').value = c.notes; 
+    document.getElementById('editActions').classList.remove('hidden'); document.getElementById('formTitle').innerText = "Edit Customer"; 
+    window.openTab(null, 'admin'); 
+};
+
+window.clearForm = function() { ['editId','cName','cAddr','cPostcode','cPhone','cPrice','cNotes'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; }); document.getElementById('editActions').classList.add('hidden'); document.getElementById('formTitle').innerText = "Customer Entry"; };
+window.handleBankAction = function() {
+    const isLocked = document.getElementById('bName').disabled;
+    if (isLocked) { ['bName','bSort','bAcc'].forEach(id => document.getElementById(id).disabled = false); document.getElementById('btnBankAction').innerText = "🔒 Save & Lock Details"; } 
+    else { db.bank = { name: document.getElementById('bName').value, sort: document.getElementById('bSort').value, acc: document.getElementById('bAcc').value }; ['bName','bSort','bAcc'].forEach(id => document.getElementById(id).disabled = true); document.getElementById('btnBankAction').innerText = "🔓 Edit Bank Details"; saveData(); }
+};
+window.deleteCustomer = function() { const id = document.getElementById('editId').value; if(id && confirm("Delete permanently?")) { db.customers = db.customers.filter(c => String(c.id) !== String(id)); clearForm(); saveData(); openTab(null, 'master'); } };
 window.processPayment = function(id) {
     const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return;
     const amt = prompt("Payment amount?", calculateTrueDebt(c).toFixed(2));
@@ -195,46 +205,13 @@ window.processPayment = function(id) {
     c.paidThisMonth += pay;
     saveData();
 };
-
-window.saveCustomer = function() {
-    const id = document.getElementById('editId').value || Date.now();
-    const name = document.getElementById('cName').value; if(!name) return;
-    const entry = { id: id, name: name, address: document.getElementById('cAddr').value, postcode: document.getElementById('cPostcode').value, phone: document.getElementById('cPhone').value, price: n(document.getElementById('cPrice').value), week: document.getElementById('cWeek').value, day: document.getElementById('cDay').value, notes: document.getElementById('cNotes').value, cleaned: false, paidThisMonth: 0, debtHistory: [], paymentHistory: [] };
-    const idx = db.customers.findIndex(x => String(x.id) === String(id));
-    if(idx > -1) { const old = db.customers[idx]; entry.cleaned = old.cleaned; entry.paidThisMonth = old.paidThisMonth; entry.debtHistory = old.debtHistory || []; entry.paymentHistory = old.paymentHistory || []; db.customers[idx] = entry; } 
-    else { db.customers.push(entry); }
-    clearForm(); saveData(); openTab(null, 'master');
-};
-
-window.editCustomer = function(id) { 
-    const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return; 
-    document.getElementById('editId').value = c.id; 
-    document.getElementById('cName').value = c.name; document.getElementById('cAddr').value = c.address; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPhone').value = c.phone; document.getElementById('cPrice').value = c.price; document.getElementById('cWeek').value = c.week; document.getElementById('cDay').value = c.day; document.getElementById('cNotes').value = c.notes; 
-    document.getElementById('editActions').classList.remove('hidden'); document.getElementById('formTitle').innerText = "Edit Customer"; 
-    window.openTab(null, 'admin'); 
-};
-
-window.clearForm = function() { ['editId','cName','cAddr','cPostcode','cPhone','cPrice','cNotes'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; }); document.getElementById('editActions').classList.add('hidden'); document.getElementById('formTitle').innerText = "Customer Entry"; };
-window.handleBankAction = function() {
-    const isLocked = document.getElementById('bName').disabled;
-    if (isLocked) {
-        ['bName','bSort','bAcc'].forEach(id => document.getElementById(id).disabled = false);
-        document.getElementById('btnBankAction').innerText = "🔒 Save & Lock Details";
-    } else {
-        db.bank = { name: document.getElementById('bName').value, sort: document.getElementById('bSort').value, acc: document.getElementById('bAcc').value };
-        ['bName','bSort','bAcc'].forEach(id => document.getElementById(id).disabled = true);
-        document.getElementById('btnBankAction').innerText = "🔓 Edit Bank Details";
-        saveData();
-    }
-};
-window.deleteCustomer = function() { const id = document.getElementById('editId').value; if(id && confirm("Delete permanently?")) { db.customers = db.customers.filter(c => String(c.id) !== String(id)); clearForm(); saveData(); openTab(null, 'master'); } };
 window.sendReminder = function(id, type) {
     const c = db.customers.find(x => String(x.id) === String(id)); if(!c) return;
     const b = db.bank || {name:'', sort:'', acc:''};
-    const bankStr = b.name ? `\n\nBank: ${b.name}\nSort: ${b.sort}\nAcc: ${b.acc}` : "";
-    const msg = `Hey ${c.name}, windows washed at ${c.address}. Total: £${calculateTrueDebt(c).toFixed(2)}. Jonathan@Hydro${bankStr}`;
+    const msg = `Hey ${c.name}, windows washed at ${c.address}. Total: £${calculateTrueDebt(c).toFixed(2)}. Jonathan@Hydro\nBank: ${b.name}\nSort: ${b.sort}\nAcc: ${b.acc}`;
     const encoded = encodeURIComponent(msg), phone = c.phone.replace(/\s+/g, '');
-    if (type === 'whatsapp') { window.location.href = `https://wa.me/${phone}?text=${encoded}`; } else { window.location.href = `sms:${phone}${/iPhone/i.test(navigator.userAgent)?'&':'?'}body=${encoded}`; }
+    if (type === 'whatsapp') window.location.href = `https://wa.me/${phone}?text=${encoded}`;
+    else window.location.href = `sms:${phone}${/iPhone/i.test(navigator.userAgent)?'&':'?'}body=${encoded}`;
 };
 window.importCSV = function(e) {
     const r = new FileReader(); r.onload = (ev) => {
