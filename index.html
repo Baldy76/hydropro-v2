@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v18.9</title>
-    <link rel="stylesheet" href="styles.css?v=189">
+    <title>Hydro Pro v19.0</title>
+    <link rel="stylesheet" href="styles.css?v=190">
 </head>
 <body class="light-mode">
 
@@ -29,6 +29,47 @@
 
     <div class="main-container">
         
+        <div id="stats" class="tab-content">
+            <div class="stats-hero-card">
+                <div class="stats-summary-title" id="currentMonthYear">March 2026 Summary</div>
+                <div class="stats-main-amount" id="currProfit">£0.00</div>
+                <div class="stats-hero-sub">💰 Total Profit in Pocket</div>
+            </div>
+
+            <div class="stats-card">
+                <div class="progress-header">
+                    <span>Monthly Progress</span><span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div id="progressBarFill" class="progress-bar-fill" style="width: 0%;"></div>
+                </div>
+                <div class="progress-footer">
+                    <span>TARGET: <strong id="statsTarget">£0.00</strong></span>
+                    <span>REMAINING: <strong id="statsRemaining">£0.00</strong></span>
+                </div>
+            </div>
+
+            <div class="stats-grid-2x1">
+                <div class="stats-mini-card">
+                    <small>MONTH INCOME 🔍</small>
+                    <div class="amt-green" id="statsIncome">£0.00</div>
+                </div>
+                <div class="stats-mini-card">
+                    <small>MONTH SPEND 🔍</small>
+                    <div class="amt-red" id="statsSpend">£0.00</div>
+                </div>
+            </div>
+
+            <div class="arrears-pill">
+                Arrears 🔍 <span id="statsArrears">£0.00</span>
+            </div>
+
+            <h3 class="hall-of-fame-title">🏆 The Hall of Fame</h3>
+            <div id="monthlyHistoryContainer">
+                <div class="empty-history-msg">Month-end snapshots appear here.</div>
+            </div>
+        </div>
+
         <div id="home" class="tab-content active">
             <div class="home-grid">
                 <button class="tile tile-admin bounce-on-tap" onclick="openTab('admin')"><span>✨</span><small>Setup</small></button>
@@ -40,50 +81,29 @@
         </div>
 
         <div id="master" class="tab-content">
-            <div class="search-container-full">
-                <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()">
-            </div>
+            <div class="search-container-full"><input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search..." oninput="renderMasterTable()"></div>
             <div id="masterTableBody"></div>
-            <div class="full-width-action-area">
-                <div class="card action-card-green">
-                    <button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button>
-                </div>
-            </div>
+            <div class="full-width-action-area"><div class="card action-card-green"><button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button></div></div>
         </div>
 
         <div id="admin" class="tab-content">
             <div class="card creative-form-card">
                 <input type="hidden" id="editId">
-                <div class="fun-input-group">
-                    <div class="fun-icon" style="background: rgba(0, 122, 255, 0.1);">👤</div>
-                    <div class="fun-field-stack"><label>Customer Name</label><input type="text" id="cName" placeholder="Full Name" class="creative-input"></div>
-                </div>
-                <div class="fun-input-group">
-                    <div class="fun-icon" style="background: rgba(255, 149, 0, 0.15);">🏠</div>
-                    <div class="fun-field-stack"><label>House Number</label><input type="text" id="cHouseNum" placeholder="e.g. 22" class="creative-input"></div>
-                </div>
-                <div class="fun-input-group">
-                    <div class="fun-icon" style="background: rgba(52, 199, 89, 0.15);">🛣️</div>
-                    <div class="fun-field-stack"><label>Street Name</label><input type="text" id="cStreet" placeholder="Street Name" class="creative-input"></div>
-                </div>
-                <div class="fun-input-group">
-                    <div class="fun-icon" style="background: rgba(175, 82, 222, 0.15);">📍</div>
-                    <div class="fun-field-stack"><label>Postcode</label><input type="text" id="cPostcode" placeholder="Postcode" class="creative-input postcode-input"></div>
-                </div>
-                <div class="fun-input-group">
-                    <div class="fun-icon" style="background: rgba(255, 59, 48, 0.15);">💰</div>
-                    <div class="fun-field-stack"><label>Clean Price (£)</label><input type="number" id="cPrice" placeholder="0.00" class="creative-input"></div>
-                </div>
-                <div class="fun-input-group" style="border: none;">
-                    <div class="fun-icon" style="background: rgba(142, 142, 147, 0.15);">📝</div>
-                    <div class="fun-field-stack"><label>Private Notes</label><textarea id="cNotes" placeholder="Access codes..." class="creative-textarea"></textarea></div>
-                </div>
+                <div class="fun-input-group"><div class="fun-icon" style="background:rgba(0,122,255,0.1)">👤</div><div class="fun-field-stack"><label>Name</label><input type="text" id="cName" class="creative-input"></div></div>
+                <div class="fun-input-group"><div class="fun-icon" style="background:rgba(255,149,0,0.15)">🏠</div><div class="fun-field-stack"><label>House No.</label><input type="text" id="cHouseNum" class="creative-input"></div></div>
+                <div class="fun-input-group"><div class="fun-icon" style="background:rgba(52,199,89,0.15)">🛣️</div><div class="fun-field-stack"><label>Street</label><input type="text" id="cStreet" class="creative-input"></div></div>
+                <div class="fun-input-group"><div class="fun-icon" style="background:rgba(175,82,222,0.15)">📍</div><div class="fun-field-stack"><label>Postcode</label><input type="text" id="cPostcode" class="creative-input postcode-input"></div></div>
+                <div class="fun-input-group"><div class="fun-icon" style="background:rgba(255,59,48,0.15)">💰</div><div class="fun-field-stack"><label>Price £</label><input type="number" id="cPrice" class="creative-input"></div></div>
+                <div class="fun-input-group" style="border:none"><div class="fun-icon" style="background:rgba(142,142,147,0.15)">📝</div><div class="fun-field-stack"><label>Notes</label><textarea id="cNotes" class="creative-textarea"></textarea></div></div>
                 <button class="btn-main full-width-btn bounce-on-tap creative-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
         </div>
 
-        <div id="spend" class="tab-content"><div id="expenseList"></div></div>
-        <div id="stats" class="tab-content"><div class="dashboard-hero"><div id="currProfit" class="hero-amount">£0.00</div></div></div>
+        <div id="spend" class="tab-content">
+            <div class="card"><h3 class="section-title">💸 Log Expense</h3><input type="text" id="expDesc" placeholder="Description" class="creative-input"><input type="number" id="expAmt" placeholder="0.00" class="creative-input"><button class="btn-main full-width-btn" onclick="addExpense()">💾 Save Expense</button></div>
+            <div id="expenseList"></div>
+        </div>
+
         <div id="weeksHub" class="tab-content">
             <div class="home-grid">
                 <button class="tile tile-week bounce-on-tap" onclick="openTab('week1')"><span>1</span><small>Week 1</small></button>
@@ -96,7 +116,7 @@
         <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
     </div>
 
-    <div class="page-version-footer">v18.9 - Visual Match Build</div>
-    <script src="app.js?v=189"></script>
+    <div class="page-version-footer">v19.0 - Dashboard Restored</div>
+    <script src="app.js?v=190"></script>
 </body>
 </html>
