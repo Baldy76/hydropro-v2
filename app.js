@@ -25,8 +25,13 @@ window.openTab = (name) => {
     
     const nav = document.getElementById('subpageNav');
     const hubPages = ['home', 'weeksHub'];
-    if (hubPages.includes(name)) nav.classList.add('hidden');
-    else nav.classList.remove('hidden');
+    
+    // Manage Global Back Button and Branding View
+    if (hubPages.includes(name)) {
+        nav.classList.add('hidden');
+    } else {
+        nav.classList.remove('hidden');
+    }
 
     window.scrollTo({ top: 0, behavior: 'instant' });
     renderAll();
@@ -34,23 +39,18 @@ window.openTab = (name) => {
 
 window.handleBackNavigation = () => {
     const active = document.querySelector('.tab-content.active').id;
+    // Logic: If in a specific week, go to weeks hub. Otherwise go home.
     if (active.startsWith('week') && active !== 'weeksHub') openTab('weeksHub');
     else openTab('home');
 };
 
-// --- CORE ACTION ENGINE (Restored) ---
 window.toggleCleaned = (id) => {
     const c = db.customers.find(x => x.id === id);
-    if (c) {
-        c.cleaned = !c.cleaned;
-        saveData();
-        renderAll();
-    }
+    if (c) { c.cleaned = !c.cleaned; saveData(); renderAll(); }
 };
 
 window.markAsPaid = (id) => {
-    const c = db.customers.find(x => x.id === id);
-    if (!c) return;
+    const c = db.customers.find(x => x.id === id); if (!c) return;
     const isPaid = n(c.paidThisMonth) >= n(c.price);
     if (isPaid) {
         c.paidThisMonth = 0;
@@ -60,15 +60,15 @@ window.markAsPaid = (id) => {
         if(!c.paymentLogs) c.paymentLogs = [];
         c.paymentLogs.push({ amount: c.price, date: new Date().toLocaleString('en-GB'), month: new Date().getMonth() });
     }
-    saveData();
-    renderAll();
+    saveData(); renderAll();
 };
 
 window.renderWeekLists = () => {
     for (let i = 1; i <= 5; i++) {
         const container = document.getElementById(`week${i}`);
         if (!container) continue;
-        container.innerHTML = `<button class="back-pill" onclick="openTab('weeksHub')">⬅️ Back to Weeks Hub</button>`;
+        // DIRECT HOME BUTTON ADDED HERE
+        container.innerHTML = `<button class="back-pill" onclick="openTab('home')">🏠 Back to Home</button>`;
         
         db.customers.filter(c => c.week == i).forEach(c => {
             const isPaid = n(c.paidThisMonth) >= n(c.price);
@@ -95,8 +95,7 @@ window.renderWeekLists = () => {
 };
 
 window.saveCustomer = () => {
-    const name = document.getElementById('cName').value;
-    if(!name) return;
+    const name = document.getElementById('cName').value; if(!name) return;
     const id = document.getElementById('editId').value || Date.now().toString();
     const idx = db.customers.findIndex(x => x.id === id);
     let ex = idx > -1 ? db.customers[idx] : null;
@@ -147,6 +146,34 @@ window.editCust = (id) => {
     document.getElementById('cDay').value = c.day;
 };
 
+window.exportQBIncome = () => {
+    let csv = "Customer,Invoice Date,Invoice No,Service,Amount,Tax Amount\n";
+    db.customers.forEach(c => { (c.paymentLogs || []).forEach((log, idx) => {
+        csv += `"${c.name}",${log.date.split(',')[0].replace(/\//g, '-')},INV-${c.id}-${idx},"Window Clean",${n(log.amount).toFixed(2)},0\n`;
+    }); });
+    const b = new Blob([csv], { type: 'text/csv' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `QB_Income.csv`; a.click();
+};
+
+window.exportQBExpenses = () => {
+    let csv = "Vendor,Date,Description,Amount,Account\n";
+    db.expenses.forEach(e => { csv += `"Vendor",${e.date.replace(/\//g, '-')},"${e.desc}",${n(e.amt).toFixed(2)},"Expenses"\n`; });
+    const b = new Blob([csv], { type: 'text/csv' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `QB_Expenses.csv`; a.click();
+};
+
+window.addExpense = () => {
+    const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value);
+    if(!d || a<=0) return;
+    db.expenses.push({desc:d, amt:a, date:new Date().toLocaleDateString('en-GB')});
+    saveData(); renderAll();
+    document.getElementById('expDesc').value = ""; document.getElementById('expAmt').value = "";
+};
+
+window.completeCycle = () => {
+    if(!confirm("Start New Month? Cleaned status will reset.")) return;
+    db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; });
+    saveData(); location.reload();
+};
+
 window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
 window.renderAll = () => { renderWeekLists(); renderMasterTable(); renderLedger(); };
 window.renderLedger = () => {
@@ -160,7 +187,7 @@ window.renderLedger = () => {
 };
 window.updateGreeting = () => {
     const hr = new Date().getHours();
-    document.getElementById('greetingMsg').innerText = (hr < 12) ? "Good Morning! ☕" : (hr < 18) ? "Good Afternoon! ☀️" : "Good Evening! 🌙";
+    document.getElementById('greetingMsg').innerText = (hr < 12) ? "Good Morning, Jonathan! ☕" : (hr < 18) ? "Good Afternoon, Jonathan! ☀️" : "Good Evening, Jonathan! 🌙";
 };
 window.toggleDarkMode = () => {
     const isDark = document.getElementById('darkModeToggle').checked;
