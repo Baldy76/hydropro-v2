@@ -4,8 +4,9 @@ let currentCoords = { lat: null, lon: null };
 const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 
 window.onload = () => {
+    updateGreeting();
     const dateEl = document.getElementById('headerDate');
-    if (dateEl) dateEl.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+    if (dateEl) dateEl.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' });
     
     const saved = localStorage.getItem(MASTER_KEY);
     if (saved) db = JSON.parse(saved);
@@ -14,6 +15,7 @@ window.onload = () => {
     if (!db.history) db.history = [];
     db.customers.forEach(c => { if(!c.paymentLogs) c.paymentLogs = []; if(!c.debtHistory) c.debtHistory = []; });
     
+    // Sync Branding
     const isDark = localStorage.getItem('Hydro_Dark_Pref') === 'true';
     document.body.className = isDark ? 'dark-mode' : 'light-mode';
     const logoImg = document.getElementById('appLogo');
@@ -27,6 +29,21 @@ window.onload = () => {
             fetchWeather(currentCoords.lat, currentCoords.lon);
         });
     }
+    renderAll();
+};
+
+window.openTab = (name) => {
+    // Hide all
+    document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+    // Show target
+    document.getElementById(name).classList.add("active");
+    
+    // Show/Hide Navigation Bar
+    const nav = document.getElementById('subpageNav');
+    if (name === 'home') nav.classList.add('hidden');
+    else nav.classList.remove('hidden');
+    
+    window.scrollTo(0,0);
     renderAll();
 };
 
@@ -44,25 +61,22 @@ window.toggleDarkMode = () => {
     localStorage.setItem('Hydro_Dark_Pref', isDark);
 };
 
+const updateGreeting = () => {
+    const hr = new Date().getHours();
+    let g = (hr < 12) ? "Good Morning! ☕" : (hr < 18) ? "Good Afternoon! ☀️" : "Good Evening! 🌙";
+    document.getElementById('greetingMsg').innerText = g;
+};
+
 const fetchWeather = async (lat, lon) => {
     try {
         const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
         const data = await res.json();
+        const weather = data.current_weather;
         document.getElementById('weatherWrap').classList.remove('hidden');
-        document.getElementById('wTemp').innerText = `${Math.round(data.current_weather.temperature)}°C`;
-        const code = data.current_weather.weathercode;
+        document.getElementById('wTemp').innerText = `${Math.round(weather.temperature)}°C`;
+        const code = weather.weathercode;
         document.getElementById('wIcon').innerText = code <= 3 ? "☀️" : code <= 67 ? "🌧️" : "☁️";
     } catch (e) {}
-};
-
-window.openTab = (evt, name) => {
-    document.querySelectorAll(".tab-content").forEach(c => c.style.display = "none");
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    const target = document.getElementById(name); if(target) target.style.display = "block";
-    if(evt) evt.currentTarget.classList.add("active");
-    const search = document.getElementById('globalSearchContainer');
-    if(search) name === 'master' ? search.classList.remove('hidden') : search.classList.add('hidden');
-    window.scrollTo(0,0);
 };
 
 window.renderWeekLists = () => {
@@ -75,9 +89,9 @@ window.renderWeekLists = () => {
             const isPaid = n(c.paidThisMonth) >= n(c.price);
             const d = (c.debtHistory||[]).reduce((s,x)=>s+n(x.amount),0);
             const card = document.createElement('div'); card.className = 'card';
-            card.innerHTML = `<div onclick="showCustDetails('${c.id}')"><strong style="font-size:20px; color:var(--accent);">${c.name}</strong><br><small style="opacity:0.7;">${c.address}</small></div>
-                <div class="workflow-grid"><div class="comms-row"><button class="icon-btn-large bounce-on-tap" onclick="handleWhatsApp('${c.id}')">💬</button><button class="icon-btn-large bounce-on-tap" onclick="handleSMS('${c.id}')">📱</button><a href="http://googleusercontent.com/maps.google.com/9{encodeURIComponent((c.address||'') + ' ' + (c.postcode||''))}" target="_blank" class="icon-btn-large bounce-on-tap">📍</a></div>
-                <div class="status-row" style="display:grid; gap:8px; grid-template-columns:${d > 0 ? 'repeat(3,1fr)' : '1fr 1fr'}"><button class="action-btn-main bounce-on-tap ${c.cleaned ? 'btn-cleaned-active' : ''}" onclick="toggleCleaned('${c.id}')">${c.cleaned ? 'Done ✅' : 'Cleaned'}</button><button class="action-btn-main bounce-on-tap ${isPaid ? 'btn-paid-active' : ''}" onclick="markAsPaid('${c.id}')">${isPaid ? 'Paid' : 'Pay £'+n(c.price)}</button>${d > 0 ? `<button class="action-btn-main" onclick="handleDebtCollection('${c.id}')" style="background:var(--danger); color:white;">Debt £${d}</button>` : ''}</div></div>`;
+            card.innerHTML = `<div onclick="showCustDetails('${c.id}')"><strong style="font-size:20px; color:var(--accent);">${c.name}</strong><br><small style="opacity:0.7; font-weight:600;">${c.address}</small></div>
+                <div class="workflow-grid"><div class="comms-row"><button class="icon-btn-large" onclick="handleWhatsApp('${c.id}')">💬</button><button class="icon-btn-large" onclick="handleSMS('${c.id}')">📱</button><a href="https://www.google.com/maps/dir/Current+Loc/Stop1/Stop2/1{encodeURIComponent((c.address||'') + ' ' + (c.postcode||''))}" target="_blank" class="icon-btn-large">📍</a></div>
+                <div class="status-row" style="display:grid; gap:8px; grid-template-columns:${d > 0 ? 'repeat(3,1fr)' : '1fr 1fr'}"><button class="action-btn-main bounce-on-tap ${c.cleaned ? 'btn-cleaned-active' : ''}" onclick="toggleCleaned('${c.id}')">${c.cleaned ? 'Done' : 'Cleaned'}</button><button class="action-btn-main bounce-on-tap ${isPaid ? 'btn-paid-active' : ''}" onclick="markAsPaid('${c.id}')">${isPaid ? 'Paid' : 'Pay £'+n(c.price)}</button>${d > 0 ? `<button class="action-btn-main bounce-on-tap" onclick="handleDebtCollection('${c.id}')" style="background:var(--danger); color:white;">Debt £${d}</button>` : ''}</div></div>`;
             container.appendChild(card);
         });
     }
@@ -103,26 +117,9 @@ window.saveCustomer = () => {
     saveData(); location.reload(); 
 };
 
-window.renderStats = () => {
-    let totalIn = 0; db.customers.forEach(c => (c.paymentLogs||[]).forEach(l => totalIn += n(l.amount)));
-    let totalOut = db.expenses.reduce((s, e) => s + n(e.amt), 0);
-    let potVal = db.customers.reduce((s, c) => s + n(c.price), 0);
-    let jobCol = db.customers.reduce((s, c) => s + n(c.paidThisMonth), 0);
-    document.getElementById('currProfit').innerText = `£${(totalIn - totalOut).toFixed(2)}`;
-    document.getElementById('progressBar').style.width = `${potVal > 0 ? (jobCol/potVal)*100 : 0}%`;
-    document.getElementById('totalOldDebt').innerText = `£${db.customers.reduce((s,c)=>(c.debtHistory||[]).reduce((ss,d)=>ss+n(d.amount),s),0).toFixed(2)}`;
-};
-
-window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); };
+window.renderAll = () => { renderMasterTable(); renderWeekLists(); };
 window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
 window.handleWhatsApp = (id) => { const c = db.customers.find(x => x.id === id); if(c && c.phone) window.open(`https://wa.me/${c.phone.replace(/\s+/g,'')}`, '_blank'); };
 window.handleSMS = (id) => { const c = db.customers.find(x => x.id === id); if(c && c.phone) window.open(`sms:${c.phone.replace(/\s+/g,'')}`, '_blank'); };
 window.closeModal = () => document.getElementById('globalModal').style.display = 'none';
 window.toggleCleaned = (id) => { const c = db.customers.find(x => x.id === id); if (!c) return; c.cleaned = !c.cleaned; saveData(); renderWeekLists(); };
-window.markAsPaid = (id) => {
-    const c = db.customers.find(x => x.id === id); if (!c || n(c.paidThisMonth) >= n(c.price)) return;
-    const amt = n(c.price); c.paidThisMonth = amt;
-    if(!c.paymentLogs) c.paymentLogs = [];
-    c.paymentLogs.push({ date: new Date().toLocaleString('en-GB'), amount: amt, type: 'income' });
-    saveData(); renderAll();
-};
