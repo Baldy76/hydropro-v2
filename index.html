@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v16.8</title>
-    <link rel="stylesheet" href="styles.css?v=168">
+    <title>Hydro Pro v16.9</title>
+    <link rel="stylesheet" href="styles.css?v=169">
 </head>
 <body class="light-mode">
 
@@ -102,22 +102,27 @@
                     </div>
                 </div>
 
-                <div class="grid-1x2">
-                    <div class="fun-input-group-compact">
-                        <label>📅 Week</label>
+                <div class="fun-input-group">
+                    <div class="fun-icon" style="background: rgba(90, 200, 250, 0.15);">📅</div>
+                    <div class="fun-field-stack">
+                        <label>Rotational Week</label>
                         <select id="cWeek" class="creative-select">
                             <option value="1">Week 1</option><option value="2">Week 2</option>
                             <option value="3">Week 3</option><option value="4">Week 4</option>
                             <option value="5">Week 5</option>
                         </select>
                     </div>
-                    <div class="fun-input-group-compact">
-                        <label>☀️ Day</label>
+                </div>
+
+                <div class="fun-input-group">
+                    <div class="fun-icon" style="background: rgba(255, 204, 0, 0.15);">☀️</div>
+                    <div class="fun-field-stack">
+                        <label>Scheduled Day</label>
                         <select id="cDay" class="creative-select">
-                            <option value="Monday">Mon</option><option value="Tuesday">Tue</option>
-                            <option value="Wednesday">Wed</option><option value="Thursday">Thu</option>
-                            <option value="Friday">Fri</option><option value="Saturday">Sat</option>
-                            <option value="Sunday">Sun</option>
+                            <option value="Monday">Monday</option><option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option><option value="Saturday">Saturday</option>
+                            <option value="Sunday">Sunday</option>
                         </select>
                     </div>
                 </div>
@@ -126,7 +131,7 @@
                     <div class="fun-icon" style="background: rgba(142, 142, 147, 0.15);">📝</div>
                     <div class="fun-field-stack">
                         <label>Private Notes</label>
-                        <textarea id="cNotes" placeholder="Access codes..." class="creative-textarea"></textarea>
+                        <textarea id="cNotes" placeholder="Codes, dogs, or specific requests..." class="creative-textarea"></textarea>
                     </div>
                 </div>
 
@@ -140,25 +145,16 @@
             </div>
         </div>
 
-        <div id="master" class="tab-content">
-            <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search..." oninput="renderMasterTable()">
-            <div id="masterTableBody"></div>
-        </div>
-
-        <div id="stats" class="tab-content">
-            <div class="dashboard-hero"><div id="currProfit" class="hero-amount">£0.00</div></div>
-        </div>
-
+        <div id="master" class="tab-content"><div id="masterTableBody"></div></div>
+        <div id="stats" class="tab-content"><div class="dashboard-hero"><div id="currProfit" class="hero-amount">£0.00</div></div></div>
         <div id="spend" class="tab-content"><div id="expenseList"></div></div>
 
-        <div id="week1" class="tab-content"></div>
-        <div id="week2" class="tab-content"></div>
-        <div id="week3" class="tab-content"></div>
-        <div id="week4" class="tab-content"></div>
+        <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div>
+        <div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div>
         <div id="week5" class="tab-content"></div>
     </div>
 
-    <div class="page-version-footer">v16.8 - Final Logo Polish</div>
-    <script src="app.js?v=168"></script>
+    <div class="page-version-footer">v16.9 - Smooth Portal UI</div>
+    <script src="app.js?v=169"></script>
 </body>
 </html>
