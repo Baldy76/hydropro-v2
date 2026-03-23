@@ -3,7 +3,7 @@ const BANK_DETAILS = "Bank: Monzo\nAcc: 12345678\nSort: 00-00-00";
 let db = { customers: [], expenses: [], history: [] }; 
 const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 
-// --- STARTUP ---
+// --- STARTUP AUDIT ---
 window.onload = () => {
     updateGreeting();
     const dateEl = document.getElementById('headerDate');
@@ -46,7 +46,7 @@ window.openTab = (evt, name) => {
     renderAll();
 };
 
-// --- DATA LOGIC ---
+// --- DATA INTEGRITY FIX: SAVE CUSTOMER ---
 window.saveCustomer = () => {
     const nameVal = document.getElementById('cName').value;
     if(!nameVal) { alert("Enter Name"); return; }
@@ -55,7 +55,7 @@ window.saveCustomer = () => {
     let ex = idx > -1 ? db.customers[idx] : null;
 
     const entry = {
-        id, name: nameVal, address: document.getElementById('cAddr').value,
+        id, name: nameVal, address: (document.getElementById('cAddr').value || ""),
         postcode: document.getElementById('cPostcode').value, phone: document.getElementById('cPhone').value,
         price: n(document.getElementById('cPrice').value), week: document.getElementById('cWeek').value,
         day: document.getElementById('cDay').value, notes: document.getElementById('cNotes').value,
@@ -64,81 +64,57 @@ window.saveCustomer = () => {
         debtHistory: ex ? ex.debtHistory : [], 
         paymentLogs: ex ? ex.paymentLogs : []
     };
-    if(idx > -1) db.customers[idx] = entry; else db.customers.push(entry);
-    saveData(); location.reload(); 
-};
 
-// --- QUICKBOOKS HUB ---
-window.exportQBIncome = () => {
-    let csv = "Customer,Invoice Date,Invoice No,Service,Amount,Tax Amount\n";
-    db.customers.forEach(c => {
-        (c.paymentLogs || []).forEach((log, idx) => {
-            const dateStr = log.date.split(',')[0].replace(/\//g, '-');
-            csv += `"${c.name}",${dateStr},INV-${c.id}-${idx},"Window Clean",${n(log.amount).toFixed(2)},0\n`;
-        });
-    });
-    downloadCSV(csv, "QB_Income.csv");
-};
-
-window.exportQBExpenses = () => {
-    let csv = "Vendor,Date,Description,Amount,Account\n";
-    db.expenses.forEach(e => {
-        const dateStr = e.date.split(',')[0].replace(/\//g, '-');
-        csv += `"Vendor",${dateStr},"${e.desc}",${n(e.amt).toFixed(2)},"Supplies"\n`;
-    });
-    downloadCSV(csv, "QB_Expenses.csv");
-};
-
-const downloadCSV = (csv, fn) => {
-    const b = new Blob([csv], { type: 'text/csv' });
-    const u = URL.createObjectURL(b);
-    const a = document.createElement('a'); a.href = u; a.download = fn; a.click();
+    if(idx > -1) {
+        db.customers[idx] = entry; // Direct replacement to prevent duplicates
+    } else {
+        db.customers.push(entry);
+    }
+    
+    saveData(); alert("Saved!"); location.reload(); 
 };
 
 // --- MODALS ---
 window.showIncomeModal = () => {
     const body = document.getElementById('modalContentBody');
-    let html = '<h3 class="section-title">💸 Income Drill-down</h3>';
+    let html = '<h3 class="section-title">💸 Collections Log</h3>';
     let total = 0;
-    db.customers.forEach(c => {
-        (c.paymentLogs || []).forEach(log => {
-            html += `<div class="drilldown-row"><div><strong>${c.name}</strong><br><small>${log.date}</small></div><div style="color:${log.type === 'debt' ? 'var(--danger)' : 'var(--success)'}; font-weight:bold;">£${n(log.amount).toFixed(2)}</div></div>`;
-            total += n(log.amount);
-        });
-    });
-    html += `<div class="drilldown-total"><span>Collected</span><span>£${total.toFixed(2)}</span></div>`;
+    db.customers.forEach(c => { (c.paymentLogs || []).forEach(log => {
+        const desc = log.arrearsContext ? `Arrears (${log.arrearsContext})` : 'Cycle Job Paid';
+        html += `<div class="drilldown-row"><div><strong>${c.name}</strong><br><small>${log.date}<br>${desc}</small></div><div style="color:${log.type === 'debt' ? 'var(--danger)' : 'var(--success)'}; font-weight:bold;">£${n(log.amount).toFixed(2)}</div></div>`;
+        total += n(log.amount);
+    }); });
+    html += `<div class="drilldown-total"><span>Total Collected</span><span>£${total.toFixed(2)}</span></div>`;
     body.innerHTML = html; document.getElementById('globalModal').style.display = 'flex';
 };
 
 window.showExpenseModal = () => {
     const body = document.getElementById('modalContentBody');
-    let html = '<h3 class="section-title">🧾 Expense Log</h3>';
+    let html = '<h3 class="section-title">🧾 Spend Detail</h3>';
     let total = 0;
     db.expenses.forEach(e => {
         html += `<div class="drilldown-row"><div><strong>${e.desc}</strong><br><small>${e.date}</small></div><div style="font-weight:bold;">£${n(e.amt).toFixed(2)}</div></div>`;
         total += n(e.amt);
     });
-    html += `<div class="drilldown-total"><span>Spent</span><span>£${total.toFixed(2)}</span></div>`;
+    html += `<div class="drilldown-total"><span>Total Spent</span><span>£${total.toFixed(2)}</span></div>`;
     body.innerHTML = html; document.getElementById('globalModal').style.display = 'flex';
 };
 
 window.showArrearsModal = () => {
     const body = document.getElementById('modalContentBody');
-    let html = '<h3 class="section-title">⚠️ Arrears Breakdown</h3>';
+    let html = '<h3 class="section-title">⚠️ Arrears Ledger</h3>';
     let total = 0;
-    db.customers.forEach(c => {
-        (c.debtHistory || []).forEach(d => {
-            html += `<div class="drilldown-row"><div><strong>${c.name}</strong><br><small>Added: ${d.date}</small></div><div style="color:var(--danger); font-weight:bold;">£${n(d.amount).toFixed(2)}</div></div>`;
-            total += n(d.amount);
-        });
-    });
-    html += `<div class="drilldown-total"><span>Total Debt</span><span>£${total.toFixed(2)}</span></div>`;
+    db.customers.forEach(c => { (c.debtHistory || []).forEach(d => {
+        html += `<div class="drilldown-row"><div><strong>${c.name}</strong><br><small>Month: ${d.month || 'Old'}<br>Cleaned: ${d.date}</small></div><div style="color:var(--danger); font-weight:bold;">£${n(d.amount).toFixed(2)}</div></div>`;
+        total += n(d.amount);
+    }); });
+    html += `<div class="drilldown-total"><span>Total Owed</span><span>£${total.toFixed(2)}</span></div>`;
     body.innerHTML = html; document.getElementById('globalModal').style.display = 'flex';
 };
 
 window.closeModal = () => document.getElementById('globalModal').style.display = 'none';
 
-// --- WORKFLOW ---
+// --- WORKFLOW HANDLERS ---
 window.toggleCleaned = (id) => {
     const c = db.customers.find(x => x.id === id); if (!c) return;
     c.cleaned = !c.cleaned; saveData(); renderWeekLists();
@@ -150,18 +126,23 @@ window.markAsPaid = (id) => {
     const amt = n(c.price);
     c.paidThisMonth = amt;
     if(!c.paymentLogs) c.paymentLogs = [];
-    c.paymentLogs.push({ date: new Date().toLocaleString('en-GB'), amount: amt, type: 'income' });
+    c.paymentLogs.push({ date: new Date().toLocaleString('en-GB'), amount: amt, type: 'income', arrearsContext: null });
     saveData(); renderWeekLists(); renderStats();
 };
 
 window.handleDebtCollection = (id) => {
     const c = db.customers.find(x => x.id === id); if (!c) return;
     const totalOwed = (c.debtHistory || []).reduce((s,d)=>s+n(d.amount),0);
-    const input = prompt(`Collection for ${c.name}: £${totalOwed.toFixed(2)}`, totalOwed.toFixed(2));
+    const input = prompt(`Debt Collection for ${c.name}: £${totalOwed.toFixed(2)}\nEnter amount paid:`, totalOwed.toFixed(2));
     if (input === null) return;
     const amt = n(input); if (amt <= 0) return;
+    
+    let context = "";
+    if(c.debtHistory.length > 0) context = `${c.debtHistory[0].month || ''} Clean: ${c.debtHistory[0].date}`;
+
     if(!c.paymentLogs) c.paymentLogs = [];
-    c.paymentLogs.push({ date: new Date().toLocaleString('en-GB'), amount: amt, type: 'debt' });
+    c.paymentLogs.push({ date: new Date().toLocaleString('en-GB'), amount: amt, type: 'debt', arrearsContext: context });
+
     let rem = amt;
     for (let i = 0; i < (c.debtHistory || []).length; i++) {
         if (rem <= 0) break;
@@ -171,57 +152,47 @@ window.handleDebtCollection = (id) => {
     saveData(); renderWeekLists(); renderStats();
 };
 
-const calculateDebt = (c) => (c.debtHistory || []).reduce((sum, d) => sum + n(d.amount), 0);
-
-// --- REDESIGNED RENDER HISTORY (v13.1 Scoped) ---
-window.renderHistory = () => {
-    const hist = document.getElementById('monthlyHistoryContainer');
-    if (!hist) return;
-    hist.innerHTML = '<h3 class="section-title" style="margin-top:35px; color: var(--qb-green); font-weight:800;">🏆 The Hall of Fame Timeline</h3>';
-    if(db.history.length === 0) { hist.innerHTML += '<div class="card" style="text-align:center; opacity:0.5; padding:40px;">SNAPSHOTS APPEAR HERE AT MONTH-END.</div>'; return; }
-    db.history.forEach(h => {
-        const net = n(h.income) - n(h.spend);
-        const d = document.createElement('div'); 
-        d.className = 'history-item-card';
-        d.innerHTML = `
-            <div class="history-header-row"><span class="history-title-txt">${h.month}</span><span style="font-size:18px;">🔥</span></div>
-            <div class="history-metrics-grid">
-                <div class="metric-bubble b-profit"><small>Net Monthly Profit</small><strong>£${net.toFixed(2)}</strong><div class="metric-icon-row"><span>Net Take-home</span><span>💎</span></div></div>
-                
-                <div class="metric-bubble b-collected"><small>Cash Collected</small><strong>£${n(h.income).toFixed(2)}</strong><div class="metric-icon-row"><span>Inflow</span><span>💰</span></div></div>
-                
-                <div class="metric-bubble b-spent"><small>Supplies/Costs</small><strong>£${n(h.spend).toFixed(2)}</strong><div class="metric-icon-row"><span>Outflow</span><span>🚚</span></div></div>
-                
-                <div class="metric-bubble b-arrears"><small>Arrears Rolled Over</small><strong>£${n(h.debtCreated).toFixed(2)}</strong><div class="metric-icon-row"><span>Debt Added</span><span>⚠️</span></div></div>
-            </div>`; 
-        hist.appendChild(d);
-    });
-};
-
+// --- STATS CALIBRATION ---
 window.renderStats = () => {
     const curMonth = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
     if(document.getElementById('statsMonthTitle')) document.getElementById('statsMonthTitle').innerText = `${curMonth} Summary`;
     let totalIn = 0; db.customers.forEach(c => { (c.paymentLogs||[]).forEach(l => totalIn += n(l.amount)); });
     let totalOut = db.expenses.reduce((sum, e) => sum + n(e.amt), 0);
-    let potentialVal = db.customers.reduce((sum, c) => sum + n(c.price), 0);
+    let targetVal = db.customers.reduce((sum, c) => sum + n(c.price), 0);
     let jobCollected = db.customers.reduce((sum, c) => sum + n(c.paidThisMonth), 0);
-    let overdueVal = db.customers.reduce((sum, c) => sum + calculateDebt(c), 0);
-    let progress = potentialVal > 0 ? (jobCollected / potentialVal) * 100 : 0;
-    if(document.getElementById('currProfit')) document.getElementById('currProfit').innerText = `£${(totalIn - totalOut).toFixed(2)}`;
-    if(document.getElementById('currRevenue')) document.getElementById('currRevenue').innerText = `£${totalIn.toFixed(2)}`;
-    if(document.getElementById('currSpend')) document.getElementById('currSpend').innerText = `£${totalOut.toFixed(2)}`;
-    if(document.getElementById('progressBar')) document.getElementById('progressBar').style.width = `${progress}%`;
-    if(document.getElementById('collectionPercent')) document.getElementById('collectionPercent').innerText = `${Math.round(progress)}%`;
-    if(document.getElementById('targetWork')) document.getElementById('targetWork').innerText = `£${potentialVal.toFixed(2)}`;
-    if(document.getElementById('stillToCollect')) document.getElementById('stillToCollect').innerText = `£${Math.max(0, potentialVal - jobCollected).toFixed(2)}`;
-    if(document.getElementById('totalOldDebt')) document.getElementById('totalOldDebt').innerText = `£${overdueVal.toFixed(2)}`;
+    let overdueVal = db.customers.reduce((sum, c) => sum + (c.debtHistory||[]).reduce((s,d)=>s+n(d.amount),0), 0);
+    let progress = targetVal > 0 ? (jobCollected / targetVal) * 100 : 0;
+
+    document.getElementById('currProfit').innerText = `£${(totalIn - totalOut).toFixed(2)}`;
+    document.getElementById('currRevenue').innerText = `£${totalIn.toFixed(2)}`;
+    document.getElementById('currSpend').innerText = `£${totalOut.toFixed(2)}`;
+    document.getElementById('progressBar').style.width = `${progress}%`;
+    document.getElementById('collectionPercent').innerText = `${Math.round(progress)}%`;
+    document.getElementById('targetWork').innerText = `£${targetVal.toFixed(2)}`;
+    document.getElementById('stillToCollect').innerText = `£${Math.max(0, targetVal - jobCollected).toFixed(2)}`;
+    document.getElementById('totalOldDebt').innerText = `£${overdueVal.toFixed(2)}`;
     renderHistory();
+};
+
+window.renderHistory = () => {
+    const hist = document.getElementById('monthlyHistoryContainer'); if (!hist) return;
+    hist.innerHTML = '<h3 class="section-title" style="margin-top:35px; color: var(--qb-green); font-weight:800;">🏆 The Hall of Fame</h3>';
+    if(db.history.length === 0) { hist.innerHTML += '<div class="card" style="text-align:center; opacity:0.5;">Month-end snapshots appear here.</div>'; return; }
+    db.history.forEach(h => {
+        const net = n(h.income) - n(h.spend);
+        const d = document.createElement('div'); d.className = 'history-item-card';
+        d.innerHTML = `<div class="history-metrics-grid"><div class="metric-bubble b-profit"><small>${h.month}</small><strong>Net Profit £${net.toFixed(2)}</strong></div>
+            <div class="metric-bubble b-collected"><small>Collected</small><strong>£${n(h.income).toFixed(2)}</strong></div>
+            <div class="metric-bubble b-spent"><small>Spent</small><strong>£${n(h.spend).toFixed(2)}</strong></div>
+            <div class="metric-bubble b-arrears"><small>Arrears Rolled</small><strong>£${n(h.debtCreated).toFixed(2)}</strong></div></div>`; 
+        hist.appendChild(d);
+    });
 };
 
 window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); renderLedger(); };
 window.renderLedger = () => {
     const list = document.getElementById('expenseList'); if(!list) return;
-    list.innerHTML = '<h3 class="section-title">💸 Expense Timeline</h3>';
+    list.innerHTML = '<h3 class="section-title">💸 Spend History</h3>';
     db.expenses.forEach(e => {
         const div = document.createElement('div'); div.className = 'card'; div.style.padding = '18px'; div.style.marginBottom = '10px';
         div.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><div><strong>${e.desc}</strong><br><small>${e.date}</small></div><div style="font-weight:900; color:var(--danger);">£${n(e.amt).toFixed(2)}</div></div>`;
@@ -233,12 +204,13 @@ window.renderMasterTable = () => {
     const container = document.getElementById('masterTableBody'); if (!container) return;
     container.innerHTML = '';
     const search = (document.getElementById('mainSearch').value || "").toLowerCase();
-    db.customers.forEach(c => {
-        if (c.name.toLowerCase().includes(search) || c.address.toLowerCase().includes(search)) {
+    db.customers.forEach(c => { 
+        const addr = (c.address || "").toLowerCase();
+        if (c.name.toLowerCase().includes(search) || addr.includes(search)) {
             const row = document.createElement('div'); row.className = 'master-row';
             row.onclick = () => showCustDetails(c.id);
-            const d = calculateDebt(c);
-            row.innerHTML = `<div><strong>${c.name}</strong><br><small>${c.address}</small></div><div style="text-align:right">£${n(c.price).toFixed(2)}${d > 0 ? '<br><small style="color:var(--danger); font-weight:800;">ARREARS: £' + d.toFixed(2) + '</small>' : ''}</div>`;
+            const d = (c.debtHistory||[]).reduce((s,x)=>s+n(x.amount),0);
+            row.innerHTML = `<div><strong>${c.name}</strong><br><small>${c.address || 'No Address'}</small></div><div style="text-align:right">£${n(c.price).toFixed(2)}${d > 0 ? '<br><small style="color:var(--danger); font-weight:800;">ARREARS: £' + d.toFixed(2) + '</small>' : ''}</div>`;
             container.appendChild(row);
         }
     });
@@ -249,13 +221,13 @@ window.renderWeekLists = () => {
         const container = document.getElementById(`week${i}`); if (!container) continue;
         container.innerHTML = '';
         const weekCusts = db.customers.filter(c => c.week == i);
-        if (weekCusts.length === 0) { container.innerHTML = '<div class="card" style="text-align:center; opacity:0.5; padding:40px;">🍹 Week complete! Relax.</div>'; continue; }
+        if (weekCusts.length === 0) { container.innerHTML = '<div class="card" style="text-align:center; opacity:0.5; padding:40px;">🍹 Week complete!</div>'; continue; }
         weekCusts.forEach(c => {
             const isPaid = n(c.paidThisMonth) >= n(c.price);
-            const d = calculateDebt(c);
+            const d = (c.debtHistory||[]).reduce((s,x)=>s+n(x.amount),0);
             const card = document.createElement('div'); card.className = 'card';
-            card.innerHTML = `<div onclick="showCustDetails('${c.id}')"><strong style="font-size:19px; color:var(--accent);">${c.name}</strong><br><small style="opacity:0.6; font-weight:600;">${c.address}</small></div>
-                <div class="workflow-grid"><div class="comms-row"><button class="icon-btn-large bounce-on-tap" style="color:#25D366" onclick="handleWhatsApp('${c.id}')">💬</button><button class="icon-btn-large bounce-on-tap" style="color:#007AFF" onclick="handleSMS('${c.id}')">📱</button><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.address + ' ' + c.postcode)}" target="_blank" class="icon-btn-large bounce-on-tap" style="color:#ea4335">📍</a></div>
+            card.innerHTML = `<div onclick="showCustDetails('${c.id}')"><strong style="font-size:19px; color:var(--accent);">${c.name}</strong><br><small style="opacity:0.6;">${c.address || 'No Address'}</small></div>
+                <div class="workflow-grid"><div class="comms-row"><button class="icon-btn-large bounce-on-tap" style="color:#25D366" onclick="handleWhatsApp('${c.id}')">💬</button><button class="icon-btn-large bounce-on-tap" style="color:#007AFF" onclick="handleSMS('${c.id}')">📱</button><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((c.address||'') + ' ' + (c.postcode||''))}" target="_blank" class="icon-btn-large bounce-on-tap" style="color:#ea4335">📍</a></div>
                 <div class="status-row" style="${d > 0 ? 'grid-template-columns:repeat(3,1fr)' : 'grid-template-columns:1fr 1fr'}"><button class="action-btn-main bounce-on-tap ${c.cleaned ? 'btn-cleaned-active' : ''}" onclick="toggleCleaned('${c.id}')">${c.cleaned ? 'Done ✅' : 'Cleaned'}</button><button class="action-btn-main bounce-on-tap ${isPaid ? 'btn-paid-active' : 'btn-pay-pending'}" onclick="markAsPaid('${c.id}')">${isPaid ? 'Paid 💰' : 'Pay £' + n(c.price).toFixed(2)}</button>${d > 0 ? `<button class="action-btn-main bounce-on-tap btn-debt-pending" onclick="handleDebtCollection('${c.id}')">Arrears £${d.toFixed(2)}</button>` : ''}</div></div>`;
             container.appendChild(card);
         });
@@ -265,8 +237,8 @@ window.renderWeekLists = () => {
 window.showCustDetails = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
     const body = document.getElementById('modalContentBody');
-    const d = calculateDebt(c);
-    body.innerHTML = `<h2 style="margin-top:0; color:var(--accent);">${c.name}</h2><p>📍 ${c.address} ${c.postcode}</p><p>📞 ${c.phone || 'N/A'}</p><p>💰 Price: £${n(c.price).toFixed(2)}</p>${d > 0 ? `<p style="color:var(--danger); font-weight:bold; background:rgba(255,59,48,0.1); padding:10px; border-radius:10px;">Arrears: £${d.toFixed(2)}</p>` : ''}<p>📝 Notes: ${c.notes || 'No notes.'}</p><button class="btn-main full-width-btn" onclick="editCust('${c.id}')">⚙️ Edit Customer</button>`;
+    const d = (c.debtHistory||[]).reduce((s,x)=>s+n(x.amount),0);
+    body.innerHTML = `<h2 style="margin-top:0; color:var(--accent);">${c.name}</h2><p>📍 ${c.address || 'N/A'} ${c.postcode || ''}</p><p>📞 ${c.phone || 'N/A'}</p><p>💰 Price: £${n(c.price).toFixed(2)}</p>${d > 0 ? `<p style="color:var(--danger); font-weight:bold; background:rgba(255,59,48,0.1); padding:10px; border-radius:10px;">Arrears: £${d.toFixed(2)}</p>` : ''}<p>📝 Notes: ${c.notes || 'No notes.'}</p><button class="btn-main full-width-btn" onclick="editCust('${c.id}')">⚙️ Edit</button>`;
     document.getElementById('globalModal').style.display = 'flex';
 };
 
@@ -284,26 +256,54 @@ window.toggleDarkMode = () => { const d = document.getElementById('darkModeToggl
 window.runUATClear = () => { if(confirm("Wipe all data?")) { localStorage.clear(); location.reload(); } };
 window.addExpense = () => { 
     const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value); 
-    if(!d || a<=0) return; db.expenses.push({desc:d, amt:a, date:new Date().toLocaleString('en-GB')}); saveData(); location.reload(); 
+    if(!d || a<=0) return; db.expenses.push({desc:d, amt:a, date:new Date().toLocaleDateString('en-GB')}); saveData(); location.reload(); 
 };
+
 window.completeCycle = () => {
-    if(!confirm("Archive Month?")) return;
+    if(!confirm("Archive Month? Jobs marked 'Cleaned' but not 'Paid' move to Arrears.")) return;
+    const curLabel = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
     let mInc = 0; db.customers.forEach(c => { (c.paymentLogs||[]).forEach(l => mInc += n(l.amount)); });
     let mExp = db.expenses.reduce((sum, e) => sum + n(e.amt), 0);
-    let nDebt = db.customers.reduce((sum, c) => sum + (c.cleaned && n(c.paidThisMonth) < n(c.price) ? n(c.price) - n(c.paidThisMonth) : 0), 0);
-    db.history.unshift({ month: new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }), income: mInc, spend: mExp, debtCreated: nDebt });
+    let nDebt = 0;
+
     db.customers.forEach(c => {
-        const bal = c.cleaned ? (n(c.price) - n(c.paidThisMonth)) : (0 - n(c.paidThisMonth));
-        if (bal > 0) { if(!c.debtHistory) c.debtHistory = []; c.debtHistory.push({ date: new Date().toLocaleDateString(), amount: bal }); }
+        if (c.cleaned && n(c.paidThisMonth) < n(c.price)) {
+            const bal = n(c.price) - n(c.paidThisMonth);
+            if(!c.debtHistory) c.debtHistory = [];
+            c.debtHistory.push({ date: new Date().toLocaleDateString('en-GB'), amount: bal, month: curLabel });
+            nDebt += bal;
+        }
         c.cleaned = false; c.paidThisMonth = 0; c.paymentLogs = [];
     });
+
+    db.history.unshift({ month: curLabel, income: mInc, spend: mExp, debtCreated: nDebt });
     db.expenses = []; saveData(); location.reload();
 };
+
 window.exportFullCSV = () => {
     let c = "ID,Name,Address,Postcode,Phone,Price,Week,Day,Notes\n";
     db.customers.forEach(x => { c += `${x.id},"${x.name}","${x.address}","${x.postcode}","${x.phone}",${x.price},${x.week},"${x.day}","${x.notes}"\n`; });
-    downloadCSV(c, "HydroBackup.csv");
+    const b = new Blob([c], { type: 'text/csv' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `HydroBackup.csv`; a.click();
 };
+
+window.exportQBIncome = () => {
+    let csv = "Customer,Invoice Date,Invoice No,Service,Amount,Tax Amount\n";
+    db.customers.forEach(c => { (c.paymentLogs || []).forEach((log, idx) => {
+        const dateStr = log.date.split(',')[0].replace(/\//g, '-');
+        csv += `"${c.name}",${dateStr},INV-${c.id}-${idx},"Window Clean",${n(log.amount).toFixed(2)},0\n`;
+    }); });
+    const b = new Blob([csv], { type: 'text/csv' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `QB_Income.csv`; a.click();
+};
+
+window.exportQBExpenses = () => {
+    let csv = "Vendor,Date,Description,Amount,Account\n";
+    db.expenses.forEach(e => {
+        const dateStr = e.date.replace(/\//g, '-');
+        csv += `"Vendor",${dateStr},"${e.desc}",${n(e.amt).toFixed(2)},"Expenses"\n`;
+    });
+    const b = new Blob([csv], { type: 'text/csv' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `QB_Expenses.csv`; a.click();
+};
+
 window.importFullCSV = (e) => {
     const f = e.target.files[0], r = new FileReader();
     r.onload = (ev) => {
