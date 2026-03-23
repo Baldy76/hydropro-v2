@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro v8.9</title>
-    <link rel="stylesheet" href="styles.css?v=89">
+    <title>Hydro Pro v9.0</title>
+    <link rel="stylesheet" href="styles.css?v=90">
 </head>
 <body class="light-mode">
 
@@ -61,37 +61,32 @@
                     </select>
                 </div>
                 
-                <select id="cDay" style="margin-top:10px;">
-                    <option value="Monday">Monday</option><option value="Tuesday">Tuesday</option>
-                    <option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option>
-                    <option value="Friday">Friday</option>
-                </select>
-
-                <textarea id="cNotes" placeholder="Special Notes..."></textarea>
-                
                 <button class="btn-main full-width-btn" onclick="saveCustomer()">💾 Save Customer</button>
                 
-                <div id="editActions" class="hidden">
-                    <button class="btn-danger full-width-btn" style="margin-top:10px;" onclick="deleteCustomer()">🗑 Delete</button>
-                    <button class="btn-neutral full-width-btn" style="margin-top:10px;" onclick="clearForm()">Cancel</button>
+                <div id="editActions" class="hidden" style="margin-top:15px; border-top:1px solid rgba(0,0,0,0.05); padding-top:15px;">
+                    <button class="btn-danger full-width-btn" onclick="deleteCustomer()">🗑 Delete Customer</button>
+                    <button class="btn-neutral full-width-btn" style="margin-top:10px;" onclick="clearForm()">Cancel Changes</button>
                 </div>
             </div>
 
-            <div class="card start-month-card">
+            <div class="card action-card-green">
                 <button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button>
             </div>
 
             <div class="card">
                 <h3 class="section-title">Database</h3>
                 <div class="grid-2">
-                    <button class="btn-ghost full-width-btn" onclick="exportFullCSV()">💾 Export</button>
-                    <button class="btn-ghost full-width-btn" onclick="document.getElementById('csvFile').click()">📂 Import</button>
+                    <button class="btn-export-blue full-width-btn" onclick="exportFullCSV()">💾 Export</button>
+                    <button class="btn-import-yellow full-width-btn" onclick="document.getElementById('csvFile').click()">📂 Import</button>
                 </div>
                 <input type="file" id="csvFile" accept=".csv" onchange="importFullCSV(event)" style="display:none;">
             </div>
 
-            <button type="button" class="btn-uat-link" onclick="runUATClear()">Reset All App Data</button>
-            <div class="version-tag">v8.9 - Production Stable</div>
+            <div class="card action-card-red">
+                <button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL APP DATA</button>
+            </div>
+            
+            <div class="version-tag">v9.0 - Layout Pro</div>
         </div>
 
         <div id="master" class="tab-content">
@@ -102,7 +97,6 @@
                 <div id="masterTableBody"></div>
             </div>
         </div>
-
         <div id="stats" class="tab-content">
             <div class="card fade-in">
                 <h3 class="section-title" style="text-align:center;">Financial Performance</h3>
@@ -120,12 +114,7 @@
                     </svg>
                 </div>
             </div>
-            <div class="card">
-                <h3 class="section-title">History</h3>
-                <div id="overallHistoryBody"></div>
-            </div>
         </div>
-
         <div id="spend" class="tab-content">
             <div class="card">
                 <h3 class="section-title">Log Expense</h3>
@@ -135,37 +124,12 @@
             </div>
             <div id="expenseList"></div>
         </div>
-
         <div id="week1" class="tab-content"></div>
         <div id="week2" class="tab-content"></div>
         <div id="week3" class="tab-content"></div>
         <div id="week4" class="tab-content"></div>
     </div>
 
-    <div id="customerModal" class="modal-overlay" onclick="if(event.target === this) closeCustomerModal()">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeCustomerModal()">✖</button>
-            <div id="modName" style="font-size:22px; font-weight:900; color:var(--accent);"></div>
-            <p id="modAddr" style="opacity:0.6; font-size:14px; margin-bottom:10px;"></p>
-            <div class="ledger-container">
-                <div id="ledgerBox"></div>
-            </div>
-            <div class="total-owed-display"><small>TOTAL OWED:</small><br><span id="modOwed"></span></div>
-            <div class="modal-action-footer">
-                <button class="btn-alt full-width-btn" onclick="editFromModal()">⚙️ Edit Details</button>
-                <button class="btn-neutral full-width-btn" onclick="closeCustomerModal()">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="msgModal" class="modal-overlay" style="z-index:11000;" onclick="if(event.target === this) this.style.display='none'">
-        <div class="modal-content">
-            <h3 class="section-title">Message Templates</h3>
-            <button class="btn-alt full-width-btn" style="margin-bottom:12px;" onclick="executeMessage('coming')">🗓 Coming Tomorrow</button>
-            <button class="btn-main full-width-btn" onclick="executeMessage('done')">✅ Job Done / Bank Info</button>
-        </div>
-    </div>
-
-    <script src="app.js?v=89"></script>
+    <script src="app.js?v=90"></script>
 </body>
 </html>
