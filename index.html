@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v13.8</title>
-    <link rel="stylesheet" href="styles.css?v=138">
+    <title>Hydro Pro v14.1</title>
+    <link rel="stylesheet" href="styles.css?v=141">
 </head>
 <body class="light-mode">
 
@@ -25,13 +25,10 @@
             </div>
             <div id="headerDate" class="date-txt"></div>
         </div>
-        <div class="tabs-grid">
+        <div class="tabs">
             <button class="tab active" onclick="openTab(event, 'admin')">Setup</button>
-            <button class="tab" onclick="openTab(event, 'master')">Custs</button>
-            <button class="tab" onclick="openTab(event, 'stats')">Stats</button>
+            <button class="tab" onclick="openTab(event, 'plan')">Plan</button> <button class="tab" onclick="openTab(event, 'stats')">Stats</button>
             <button class="tab" onclick="openTab(event, 'spend')">Ledger</button>
-        </div>
-        <div class="week-tabs-row">
             <button class="tab" onclick="openTab(event, 'week1')">W1</button>
             <button class="tab" onclick="openTab(event, 'week2')">W2</button>
             <button class="tab" onclick="openTab(event, 'week3')">W3</button>
@@ -85,6 +82,31 @@
             </div>
         </div>
 
+        <div id="plan" class="tab-content">
+            <div class="card">
+                <h3 class="section-title">🛰️ Smart Routing</h3>
+                <p style="font-size:12px; opacity:0.7; margin-bottom:15px;">Select a week to group jobs by street and generate a driving map.</p>
+                <div class="grid-1x2">
+                    <select id="planWeekSelect" class="large-select">
+                        <option value="1">Week 1</option><option value="2">Week 2</option>
+                        <option value="3">Week 3</option><option value="4">Week 4</option>
+                        <option value="5">Week 5</option>
+                    </select>
+                    <button class="btn-main bounce-on-tap" style="margin-top:0;" onclick="optimizeDay(document.getElementById('planWeekSelect').value)">🚀 Sort Week</button>
+                </div>
+                <button class="btn-main full-width-btn bounce-on-tap" style="background:var(--success); margin-top:10px;" onclick="mapTheDay(document.getElementById('planWeekSelect').value)">🗺️ Open Multi-Stop Map</button>
+            </div>
+
+            <div class="card">
+                <h3 class="section-title">📢 Weekly Broadcaster</h3>
+                <p style="font-size:12px; opacity:0.7; margin-bottom:15px;">Send a heads-up message to all pending customers for the selected week.</p>
+                <div class="grid-1x2">
+                    <button class="btn-main bounce-on-tap" style="margin-top:0; background:#25D366" onclick="broadcastWeek(document.getElementById('planWeekSelect').value, 'wa')">💬 WhatsApp All</button>
+                    <button class="btn-main bounce-on-tap" style="margin-top:0; background:var(--accent)" onclick="broadcastWeek(document.getElementById('planWeekSelect').value, 'sms')">📱 SMS All</button>
+                </div>
+            </div>
+        </div>
+
         <div id="master" class="tab-content"><div id="masterTableBody"></div></div>
 
         <div id="stats" class="tab-content">
@@ -102,7 +124,7 @@
                 </div>
             </div>
             <div class="grid-1x2" style="margin-top:15px;">
-                <div class="card mini-card clickable-stat" onclick="showIncomeModal()"><div class="mini-card-content"><small>Income 🔍</small><strong id="currRevenue" style="color:var(--success)">£0.00</strong></div></div>
+                <div class="card mini-card clickable-stat" onclick="showIncomeModal()"><div class="mini-card-content"><small>Revenue 🔍</small><strong id="currRevenue" style="color:var(--success)">£0.00</strong></div></div>
                 <div class="card mini-card clickable-stat" onclick="showExpenseModal()"><div class="mini-card-content"><small>Spend 🔍</small><strong id="currSpend" style="color:var(--danger)">£0.00</strong></div></div>
             </div>
             <div class="card debt-highlight-card clickable-stat" onclick="showArrearsModal()">
@@ -126,7 +148,7 @@
             </div>
             <div id="expenseList"></div>
         </div>
-        
+
         <div id="week1" class="tab-content"></div>
         <div id="week2" class="tab-content"></div>
         <div id="week3" class="tab-content"></div>
@@ -134,12 +156,12 @@
         <div id="week5" class="tab-content"></div>
     </div>
 
-    <div class="global-footer">v13.8 - Broadcaster Edition</div>
+    <div class="global-footer">v14.1 - Planner Pro Edition</div>
 
     <div id="globalModal" class="modal-overlay" onclick="if(event.target === this) closeModal()">
         <div class="modal-content"><button class="close-btn" onclick="closeModal()">✕</button><div id="modalContentBody"></div></div>
     </div>
 
-    <script src="app.js?v=138"></script>
+    <script src="app.js?v=141"></script>
 </body>
 </html>
