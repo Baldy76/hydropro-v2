@@ -1,25 +1,16 @@
-window.renderMasterTable = function() {
-    const body = document.getElementById('masterTableBody');
-    if(!body) return; body.innerHTML = '';
-    const search = (document.getElementById('mainSearch').value || "").toLowerCase().trim();
+// Ensure this specific line is in your openTab function to handle the active state visually
+window.openTab = function(evt, name) {
+    const contents = document.getElementsByClassName("tab-content");
+    const tabs = document.getElementsByClassName("tab");
+    for (let i = 0; i < contents.length; i++) contents[i].classList.remove("active");
+    for (let i = 0; i < tabs.length; i++) tabs[i].classList.remove("active");
     
-    [...db.customers].sort((a,b) => a.name.localeCompare(b.name)).forEach(c => {
-        if(search === "" || c.name.toLowerCase().includes(search) || c.address.toLowerCase().includes(search)) {
-            const debt = calculateTrueDebt(c);
-            const row = document.createElement('div');
-            row.className = 'master-row-card';
-            row.onclick = () => openCustomerModal(c.id);
-            row.innerHTML = `
-                <div>
-                    <div style="font-weight: 700; font-size: 16px;">${c.name}</div>
-                    <div style="font-size: 13px; opacity: 0.5;">${c.address}</div>
-                </div>
-                <div style="text-align: right;">
-                    <div style="font-weight: 800; color: ${debt > 0 ? 'var(--danger)' : 'var(--success)'}; font-size: 17px;">£${debt.toFixed(2)}</div>
-                    <small style="font-size: 10px; opacity: 0.4; font-weight: 700;">BALANCE</small>
-                </div>
-            `;
-            body.appendChild(row);
-        }
-    });
+    document.getElementById(name).classList.add("active");
+    if (evt) evt.currentTarget.classList.add("active");
+    
+    // Refresh data for the tab
+    renderAll();
+    window.scrollTo(0,0);
 };
+
+// ... [Remainder of app.js from v8.5 is identical] ...
