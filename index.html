@@ -59,7 +59,8 @@
                 </div>
                 <textarea id="cNotes" placeholder="Notes (Gates, Dogs etc)"></textarea>
                 <button class="btn-main full-width-btn" onclick="saveCustomer()">💾 Save Customer</button>
-                <button id="btnDeleteCust" class="btn-danger full-width-btn" style="display:none; margin-top:10px;" onclick="deleteCustomer()">🗑 Delete</button>
+                
+                <button id="btnDeleteCust" class="btn-danger full-width-btn" style="display:none; margin-top:10px;" onclick="deleteCustomer()">🗑 Delete Customer</button>
                 <button id="cancelEdit" class="btn-neutral full-width-btn" style="display:none; margin-top:10px;" onclick="clearForm()">Cancel Edit</button>
             </div>
 
@@ -117,7 +118,7 @@
                 <div id="pieOverall" class="pie"></div>
                 <div id="legendOverall" class="legend"></div>
                 <div class="fy-box">
-                    <div style="display:flex; justify-content:space-between"><span>FY TOTAL REVENUE</span><strong id="statFYTotal">£0</strong></div>
+                    <div style="display:flex; justify-content:space-between"><span>FY REVENUE</span><strong id="statFYTotal">£0</strong></div>
                     <table style="width:100%; margin-top:10px;"><tbody id="quarterlyTableBody"></tbody></table>
                 </div>
             </div>
