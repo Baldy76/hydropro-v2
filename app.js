@@ -74,7 +74,7 @@ window.renderWeekLists = () => {
         db.customers.filter(c => c.week == i).forEach(c => {
             const isPaid = n(c.paidThisMonth) >= n(c.price);
             const card = document.createElement('div'); card.className = 'customer-pill-bubble';
-            card.innerHTML = `<div onclick="editCust('${c.id}')"><strong style="color:var(--accent)">${c.name} ${c.cleaned ? '✅' : ''}</strong><br><small>${c.houseNum} ${c.street}</small></div>
+            card.innerHTML = `<div onclick="editCust('${c.id}')"><strong style="color:var(--accent); display:block; font-size:19px;">${c.name} ${c.cleaned ? '✅' : ''}</strong><small style="display:block; margin-top:2px;">${c.houseNum} ${c.street}</small></div>
                 <div style="display:flex; gap:10px;">
                     <button class="tile" style="height:44px; padding:0 12px; font-weight:800; background:var(--input-bg); border:none; border-radius:15px; ${c.cleaned ? 'background:var(--success); color:white;' : ''}" onclick="toggleCleaned('${c.id}')">Clean</button>
                     <button class="tile" style="height:44px; padding:0 12px; font-weight:800; background:var(--input-bg); border:none; border-radius:15px; ${isPaid ? 'background:var(--accent); color:white;' : ''}" onclick="markAsPaid('${c.id}')">Pay</button>
@@ -93,6 +93,7 @@ window.renderStats = () => {
         if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth));
     });
     db.expenses.forEach(e => spend += n(e.amt));
+    const profit = paid - spend;
     const progress = target > 0 ? (paid / target) * 100 : 0;
     const map = { 'currProfit': `£${(paid - spend).toFixed(2)}`, 'statsIncome': `£${paid.toFixed(2)}`, 'statsSpend': `£${spend.toFixed(2)}`, 'statsArrears': `£${arrears.toFixed(2)}`, 'statsTarget': `£${target.toFixed(2)}`, 'statsRemaining': `£${(target - paid).toFixed(2)}`, 'progressPercent': `${Math.round(progress)}%` };
     for (let [id, val] of Object.entries(map)) { const el = document.getElementById(id); if(el) el.innerText = val; }
@@ -114,9 +115,14 @@ window.renderMasterTable = () => {
     const search = (document.getElementById('mainSearch').value || "").toLowerCase();
     db.customers.forEach(c => {
         if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
-            const tile = document.createElement('div'); tile.className = 'customer-pill-bubble';
+            const tile = document.createElement('div'); tile.className = 'customer-pill-bubble bounce-on-tap';
             tile.onclick = () => editCust(c.id);
-            tile.innerHTML = `<div><strong>${c.name}</strong><small>${c.houseNum} ${c.street}</small></div><div style="font-weight:900; color:var(--success)">£${n(c.price).toFixed(2)}</div>`;
+            tile.innerHTML = `
+                <div>
+                    <strong style="display:block; font-size:19px;">${c.name}</strong>
+                    <small style="display:block; margin-top:2px;">${c.houseNum} ${c.street}</small>
+                </div>
+                <div style="font-weight:900; color:var(--success); font-size:16px;">£${n(c.price).toFixed(2)}</div>`;
             body.appendChild(tile);
         }
     });
