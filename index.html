@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Hydro Pro v8.4</title>
-    <link rel="stylesheet" href="styles.css?v=84">
+    <title>Hydro Pro v8.5</title>
+    <link rel="stylesheet" href="styles.css?v=85">
 </head>
 <body class="light-mode">
 
@@ -17,9 +17,7 @@
             </label>
         </div>
         <div class="header-top">
-            <div class="brand-container">
-                <img src="Logo.png" id="mainLogo" class="logo-img" alt="Hydro Logo">
-            </div>
+            <img src="Logo.png" id="mainLogo" class="logo-img" alt="Hydro Logo">
         </div>
         <div class="tabs">
             <button class="tab active" onclick="openTab(event, 'admin')">Setup</button>
@@ -38,99 +36,71 @@
 
         <div id="admin" class="tab-content active">
             <div class="card fade-in">
-                <h3 class="section-title">Quick Entry</h3>
+                <h3 class="section-title">Customer Details</h3>
                 <input type="hidden" id="editId">
-                <div class="input-group">
-                    <input type="text" id="cName" placeholder="Customer Name">
+                
+                <div class="input-stack">
+                    <input type="text" id="cName" placeholder="Full Name">
                     <input type="text" id="cAddr" placeholder="Address">
                     <input type="text" id="cPostcode" placeholder="Postcode">
                     <input type="tel" id="cPhone" placeholder="Mobile Number">
                     <input type="number" id="cPrice" placeholder="Price £">
                 </div>
                 
+                <div class="label-heading">Schedule & Frequency</div>
                 <div class="grid-2">
                     <select id="cWeek">
                         <option value="1">Week 1</option><option value="2">Week 2</option>
                         <option value="3">Week 3</option><option value="4">Week 4</option>
                     </select>
                     <select id="cFreq">
-                        <option value="4">Every 4 Weeks</option>
-                        <option value="8">Every 8 Weeks</option>
+                        <option value="4">4 Weeks</option><option value="8">8 Weeks</option>
                     </select>
                 </div>
                 
-                <select id="cDay" style="margin-top:12px;">
+                <select id="cDay" style="margin-top:10px;">
                     <option value="Monday">Monday</option><option value="Tuesday">Tuesday</option>
                     <option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option>
                     <option value="Friday">Friday</option>
                 </select>
 
-                <textarea id="cNotes" placeholder="Gates, Dogs, Special Instructions..."></textarea>
-                <button class="btn-main full-width-btn shadow-btn" onclick="saveCustomer()">💾 Save Customer</button>
+                <textarea id="cNotes" placeholder="Notes (Gates, dogs, etc...)"></textarea>
+                
+                <button class="btn-main full-width-btn" onclick="saveCustomer()">💾 Save Customer</button>
                 
                 <div id="editActions" class="hidden">
-                    <button id="btnDeleteCust" class="btn-danger full-width-btn" style="margin-top:10px;" onclick="deleteCustomer()">🗑 Delete</button>
-                    <button id="cancelEdit" class="btn-neutral full-width-btn" style="margin-top:10px;" onclick="clearForm()">Cancel</button>
+                    <button class="btn-danger full-width-btn" style="margin-top:10px;" onclick="deleteCustomer()">🗑 Delete</button>
+                    <button class="btn-neutral full-width-btn" style="margin-top:10px;" onclick="clearForm()">Cancel Edit</button>
                 </div>
             </div>
 
-            <div class="card fade-in" style="background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);">
-                <button class="btn-clear full-width-btn" style="color:white; font-weight:900;" onclick="completeCycle()">🚀 START NEW MONTH</button>
+            <div class="card fade-in start-month-card">
+                <button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button>
             </div>
 
             <div class="card fade-in">
                 <h3 class="section-title">Data Management</h3>
-                <div class="grid-2-spaced">
-                    <button class="btn-export-custom full-width-btn" onclick="exportFullCSV()">💾 Export</button>
-                    <button class="btn-import-custom full-width-btn" onclick="document.getElementById('csvFile').click()">📂 Import</button>
+                <div class="grid-2">
+                    <button class="btn-ghost full-width-btn" onclick="exportFullCSV()">💾 Export</button>
+                    <button class="btn-ghost full-width-btn" onclick="document.getElementById('csvFile').click()">📂 Import</button>
                 </div>
                 <input type="file" id="csvFile" accept=".csv" onchange="importFullCSV(event)" style="display:none;">
             </div>
 
-            <div style="margin-top:30px;">
-                <button type="button" class="btn-uat full-width-btn" onclick="runUATClear()">🛠️ RESET ALL DATA</button>
-            </div>
-            
-            <div class="version-tag">v8.4 - Sleek Design Build</div>
+            <button type="button" class="btn-uat-link" onclick="runUATClear()">Reset All Data</button>
+            <div class="version-tag">v8.5 - Pro Design Refined</div>
         </div>
 
         <div id="master" class="tab-content">
             <div class="card no-padding overflow-hidden fade-in">
-                <div class="search-bar-container">
-                    <input type="text" id="mainSearch" placeholder="Search database..." oninput="handleSearch()">
+                <div class="search-container">
+                    <input type="text" id="mainSearch" placeholder="🔍 Search customers..." oninput="handleSearch()">
                 </div>
                 <div id="masterTableBody"></div>
             </div>
         </div>
 
-        <div id="stats" class="tab-content">
-            <div class="card fade-in">
-                <h3 class="section-title center">Financial Summary</h3>
-                <div class="profit-card">
-                    <div class="profit-stat">
-                        <small>Revenue</small>
-                        <strong id="statGross" class="text-paid">£0</strong>
-                    </div>
-                    <div class="profit-stat">
-                        <small>Expenses</small>
-                        <strong id="statExp" class="text-owed">£0</strong>
-                    </div>
-                    <div class="profit-stat total">
-                        <small>Net Profit</small>
-                        <strong id="statNet">£0</strong>
-                    </div>
-                </div>
-                <div class="chart-container">
-                    <svg width="160" height="160" viewBox="0 0 42 42" id="statPieSvg">
-                        <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#e0e0e0" stroke-width="5"></circle>
-                        <circle id="pieCollected" cx="21" cy="21" r="15.915" fill="transparent" stroke="var(--stat-collected)" stroke-width="5" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
-                        <circle id="pieOwed" cx="21" cy="21" r="15.915" fill="transparent" stroke="var(--stat-owed)" stroke-width="5" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
-                        <circle id="piePending" cx="21" cy="21" r="15.915" fill="transparent" stroke="var(--stat-pending)" stroke-width="5" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
-                    </svg>
-                </div>
-            </div>
-            </div>
-
+        <div id="stats" class="tab-content"></div>
         <div id="spend" class="tab-content"></div>
         <div id="week1" class="tab-content"></div>
         <div id="week2" class="tab-content"></div>
@@ -138,6 +108,6 @@
         <div id="week4" class="tab-content"></div>
     </div>
 
-    <script src="app.js?v=84"></script>
+    <script src="app.js?v=85"></script>
 </body>
 </html>
