@@ -1,171 +1,136 @@
-const MASTER_KEY = 'HydroPro_App_Production';
-let db = { customers: [], expenses: [], history: [] }; 
-const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Hydro Pro v17.5</title>
+    <link rel="stylesheet" href="styles.css?v=175">
+</head>
+<body class="light-mode">
 
-window.onload = () => {
-    updateGreeting();
-    const dateEl = document.getElementById('headerDate');
-    if (dateEl) dateEl.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' });
-    const saved = localStorage.getItem(MASTER_KEY);
-    if (saved) db = JSON.parse(saved);
-    if (!db.customers) db.customers = [];
-    if (!db.expenses) db.expenses = [];
-    
-    const isDark = localStorage.getItem('Hydro_Dark_Pref') === 'true';
-    document.body.className = isDark ? 'dark-mode' : 'light-mode';
-    if(document.getElementById('darkModeToggle')) document.getElementById('darkModeToggle').checked = isDark;
-    
-    renderAll();
-};
+    <div class="mode-switch-wrapper">
+        <label class="ios-switch">
+            <input type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()">
+            <span class="slider"></span>
+        </label>
+    </div>
 
-window.openTab = (name) => {
-    document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-    const target = document.getElementById(name);
-    if(target) target.classList.add("active");
-    
-    const nav = document.getElementById('subpageNav');
-    const hubPages = ['home', 'weeksHub'];
-    if (hubPages.includes(name)) nav.classList.add('hidden');
-    else nav.classList.remove('hidden');
+    <div class="app-header" id="globalHeader">
+        <img src="Logo.png" class="logo-img" alt="Hydro Pro">
+    </div>
 
-    window.scrollTo({ top: 0, behavior: 'instant' });
-    renderAll();
-};
+    <div class="main-container">
+        
+        <div id="home" class="tab-content active">
+            <div class="home-hero">
+                <div id="greetingMsg" class="home-greeting">Good Morning</div>
+                <div id="headerDate" class="home-date"></div>
+            </div>
+            <div class="home-grid">
+                <button class="tile tile-admin bounce-on-tap" onclick="openTab('admin')"><span>✨</span><small>Setup</small></button>
+                <button class="tile tile-admin bounce-on-tap" onclick="openTab('master')"><span>👥</span><small>Custs</small></button>
+                <button class="tile tile-admin bounce-on-tap" onclick="openTab('stats')"><span>📊</span><small>Stats</small></button>
+                <button class="tile tile-admin bounce-on-tap" onclick="openTab('spend')"><span>💸</span><small>Ledger</small></button>
+                <button class="tile tile-weekly-hub bounce-on-tap" onclick="openTab('weeksHub')"><span>📅</span><small>Weekly Work</small></button>
+            </div>
+        </div>
 
-window.handleBackNavigation = () => {
-    const active = document.querySelector('.tab-content.active').id;
-    if (active.startsWith('week') && active !== 'weeksHub') openTab('weeksHub');
-    else openTab('home');
-};
+        <div id="weeksHub" class="tab-content">
+            <button class="back-pill bounce-on-tap" onclick="openTab('home')">🏠 Back to Home</button>
+            <div class="home-grid">
+                <button class="tile tile-week bounce-on-tap" onclick="openTab('week1')"><span>1</span><small>Week 1</small></button>
+                <button class="tile tile-week bounce-on-tap" onclick="openTab('week2')"><span>2</span><small>Week 2</small></button>
+                <button class="tile tile-week bounce-on-tap" onclick="openTab('week3')"><span>3</span><small>Week 3</small></button>
+                <button class="tile tile-week bounce-on-tap" onclick="openTab('week4')"><span>4</span><small>Week 4</small></button>
+                <button class="tile tile-week bounce-on-tap" onclick="openTab('week5')"><span>5</span><small>Week 5</small></button>
+            </div>
+        </div>
 
-// --- SAVE & CLEAR LOGIC ---
-window.saveCustomer = () => {
-    const name = document.getElementById('cName').value;
-    if(!name) { alert("Please enter a name! ✨"); return; }
-    
-    const id = document.getElementById('editId').value || Date.now().toString();
-    const idx = db.customers.findIndex(x => x.id === id);
-    let ex = idx > -1 ? db.customers[idx] : null;
+        <div id="subpageNav" class="subpage-nav hidden">
+            <button class="back-pill bounce-on-tap" onclick="handleBackNavigation()">🏠 Back to Home</button>
+        </div>
 
-    // Added .toUpperCase() to ensure postcode data is always saved in capitals
-    const entry = {
-        id, name,
-        houseNum: document.getElementById('cHouseNum').value,
-        street: document.getElementById('cStreet').value,
-        postcode: document.getElementById('cPostcode').value.toUpperCase(),
-        price: n(document.getElementById('cPrice').value),
-        week: document.getElementById('cWeek').value,
-        day: document.getElementById('cDay').value,
-        notes: document.getElementById('cNotes').value,
-        cleaned: ex ? ex.cleaned : false,
-        paidThisMonth: ex ? ex.paidThisMonth : 0
-    };
+        <div id="admin" class="tab-content">
+            <div class="card creative-form-card">
+                <input type="hidden" id="editId">
+                <div class="fun-input-group">
+                    <div class="fun-icon">👤</div>
+                    <div class="fun-field-stack"><label>Name</label><input type="text" id="cName" class="creative-input"></div>
+                </div>
+                <div class="fun-input-group">
+                    <div class="fun-icon">🏠</div>
+                    <div class="fun-field-stack"><label>House No.</label><input type="text" id="cHouseNum" class="creative-input"></div>
+                </div>
+                <div class="fun-input-group">
+                    <div class="fun-icon">🛣️</div>
+                    <div class="fun-field-stack"><label>Street</label><input type="text" id="cStreet" class="creative-input"></div>
+                </div>
+                <div class="fun-input-group">
+                    <div class="fun-icon">📍</div>
+                    <div class="fun-field-stack"><label>Postcode</label><input type="text" id="cPostcode" class="creative-input postcode-input"></div>
+                </div>
+                <div class="fun-input-group">
+                    <div class="fun-icon">💰</div>
+                    <div class="fun-field-stack"><label>Price £</label><input type="number" id="cPrice" class="creative-input"></div>
+                </div>
+                <div class="fun-input-group">
+                    <div class="fun-icon">📅</div>
+                    <div class="fun-field-stack">
+                        <label>Week</label>
+                        <select id="cWeek" class="creative-select">
+                            <option value="1">Week 1</option><option value="2">Week 2</option>
+                            <option value="3">Week 3</option><option value="4">Week 4</option>
+                            <option value="5">Week 5</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="fun-input-group">
+                    <div class="fun-icon">☀️</div>
+                    <div class="fun-field-stack">
+                        <label>Day</label>
+                        <select id="cDay" class="creative-select">
+                            <option value="Monday">Monday</option><option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn-main full-width-btn creative-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
+            </div>
+        </div>
 
-    if(idx > -1) db.customers[idx] = entry; else db.customers.push(entry);
-    saveData();
-    window.resetForm(); 
-    alert("Customer Saved Successfully! ✅");
-};
+        <div id="master" class="tab-content">
+            <div class="search-container-full">
+                <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()">
+            </div>
+            <div id="masterTableBody"></div>
+            <div class="card action-card-green">
+                <button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button>
+            </div>
+        </div>
 
-window.resetForm = () => {
-    document.getElementById('editId').value = "";
-    document.getElementById('cName').value = "";
-    document.getElementById('cHouseNum').value = "";
-    document.getElementById('cStreet').value = "";
-    document.getElementById('cPostcode').value = "";
-    document.getElementById('cPrice').value = "";
-    document.getElementById('cWeek').value = "1";
-    document.getElementById('cDay').value = "Monday";
-    document.getElementById('cNotes').value = "";
-};
+        <div id="spend" class="tab-content">
+            <div class="card">
+                <h3 class="section-title">💸 Log Expense</h3>
+                <input type="text" id="expDesc" placeholder="Fuel, Tools etc" class="creative-input" style="background:var(--input-bg); border-radius:10px; padding:10px; margin-bottom:10px;">
+                <input type="number" id="expAmt" placeholder="0.00" class="creative-input" style="background:var(--input-bg); border-radius:10px; padding:10px;">
+                <button class="btn-main full-width-btn" onclick="addExpense()" style="margin-top:15px;">Add Expense</button>
+            </div>
+            <div class="card">
+                <h3 class="section-title">📊 QuickBooks</h3>
+                <div class="grid-1x2">
+                    <button class="pill-btn qb-btn" onclick="exportQBIncome()">💹 Income</button>
+                    <button class="pill-btn qb-btn" onclick="exportQBExpenses()">🧾 Spend</button>
+                </div>
+            </div>
+            <div id="expenseList"></div>
+        </div>
 
-window.addExpense = () => {
-    const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value);
-    if(!d || a<=0) return;
-    db.expenses.push({desc:d, amt:a, date:new Date().toLocaleDateString('en-GB')});
-    saveData(); renderAll();
-    document.getElementById('expDesc').value = "";
-    document.getElementById('expAmt').value = "";
-};
+        <div id="stats" class="tab-content"><div id="currProfit" class="hero-amount">£0.00</div><div id="monthlyHistoryContainer"></div></div>
+        <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
+    </div>
 
-// --- RENDER LOGIC ---
-window.renderWeekLists = () => {
-    for (let i = 1; i <= 5; i++) {
-        const container = document.getElementById(`week${i}`); if (!container) continue;
-        container.innerHTML = `<button class="back-pill" onclick="openTab('weeksHub')">⬅️ Back to Weeks Hub</button>`;
-        db.customers.filter(c => c.week == i).forEach(c => {
-            const card = document.createElement('div'); card.className = 'card';
-            card.innerHTML = `<div onclick="editCust('${c.id}')"><strong style="color:var(--accent); font-size:18px;">${c.name}</strong><br><small>${c.houseNum} ${c.street}</small></div>`;
-            container.appendChild(card);
-        });
-    }
-};
-
-window.renderMasterTable = () => {
-    const body = document.getElementById('masterTableBody'); if(!body) return;
-    body.innerHTML = '';
-    const search = (document.getElementById('mainSearch').value || "").toLowerCase();
-    db.customers.forEach(c => {
-        if(c.name.toLowerCase().includes(search)) {
-            const div = document.createElement('div'); div.className = 'card'; div.style.display = 'flex'; div.style.justifyContent = 'space-between';
-            div.innerHTML = `<div onclick="editCust('${c.id}')"><strong>${c.name}</strong><br><small>${c.houseNum} ${c.street}</small></div><div>£${n(c.price).toFixed(2)}</div>`;
-            body.appendChild(div);
-        }
-    });
-};
-
-window.editCust = (id) => {
-    const c = db.customers.find(x => x.id === id); if(!c) return;
-    openTab('admin');
-    document.getElementById('editId').value = c.id;
-    document.getElementById('cName').value = c.name;
-    document.getElementById('cHouseNum').value = c.houseNum;
-    document.getElementById('cStreet').value = c.street;
-    document.getElementById('cPostcode').value = c.postcode;
-    document.getElementById('cPrice').value = c.price;
-    document.getElementById('cWeek').value = c.week;
-    document.getElementById('cDay').value = c.day;
-    document.getElementById('cNotes').value = c.notes;
-};
-
-// --- EXPORTS & SYNC ---
-window.exportQBIncome = () => {
-    let csv = "Customer,Invoice Date,Invoice No,Service,Amount,Tax Amount\n";
-    db.customers.forEach(c => { (c.paymentLogs || []).forEach((log, idx) => {
-        csv += `"${c.name}",${log.date.replace(/\//g, '-')},INV-${c.id}-${idx},"Window Clean",${n(log.amount).toFixed(2)},0\n`;
-    }); });
-    const b = new Blob([csv], { type: 'text/csv' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `QB_Income.csv`; a.click();
-};
-
-window.exportQBExpenses = () => {
-    let csv = "Vendor,Date,Description,Amount,Account\n";
-    db.expenses.forEach(e => { csv += `"Vendor",${e.date.replace(/\//g, '-')},"${e.desc}",${n(e.amt).toFixed(2)},"Expenses"\n`; });
-    const b = new Blob([csv], { type: 'text/csv' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `QB_Expenses.csv`; a.click();
-};
-
-window.completeCycle = () => {
-    if(!confirm("Start New Month?")) return;
-    db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; });
-    saveData(); location.reload();
-};
-
-window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
-window.renderAll = () => { renderWeekLists(); renderMasterTable(); renderLedger(); };
-window.renderLedger = () => {
-    const list = document.getElementById('expenseList'); if(!list) return;
-    list.innerHTML = '<h3 class="section-title">💸 Spend History</h3>';
-    db.expenses.forEach(e => {
-        const div = document.createElement('div'); div.className = 'card';
-        div.innerHTML = `<div style="display:flex; justify-content:space-between"><div><strong>${e.desc}</strong><br><small>${e.date}</small></div><div style="color:var(--danger)">-£${n(e.amt).toFixed(2)}</div></div>`;
-        list.appendChild(div);
-    });
-};
-window.updateGreeting = () => {
-    const hr = new Date().getHours();
-    document.getElementById('greetingMsg').innerText = (hr < 12) ? "Good Morning! ☕" : (hr < 18) ? "Good Afternoon! ☀️" : "Good Evening! 🌙";
-};
-window.toggleDarkMode = () => {
-    const isDark = document.getElementById('darkModeToggle').checked;
-    document.body.className = isDark ? 'dark-mode' : 'light-mode';
-    localStorage.setItem('Hydro_Dark_Pref', isDark);
-};
+    <div class="page-version-footer">v17.5 - Action Engine Restored</div>
+    <script src="app.js?v=175"></script>
+</body>
+</html>
