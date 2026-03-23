@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v12.12</title>
-    <link rel="stylesheet" href="styles.css?v=1212">
+    <title>Hydro Pro v12.13</title>
+    <link rel="stylesheet" href="styles.css?v=1213">
 </head>
 <body class="light-mode">
 
@@ -82,23 +82,24 @@
             <div class="dashboard-hero">
                 <div class="hero-label" id="statsMonthTitle">Summary</div>
                 <div class="hero-amount" id="currProfit">£0.00</div>
-                <div class="hero-subtext">Net Cash (Total Income - Total Expenses)</div>
+                <div class="hero-subtext">Net Cash (Income - Expenses)</div>
             </div>
             <div class="card stat-card">
                 <div class="stat-header"><span>Job Completion</span><span id="collectionPercent">0%</span></div>
                 <div class="progress-container"><div id="progressBar" class="progress-fill"></div></div>
                 <div class="stat-line-item">
-                    <span>Monthly Potential: <strong id="targetWork">£0.00</strong></span>
-                    <span>To Be Collected: <strong id="stillToCollect">£0.00</strong></span>
+                    <span>Potential: <strong id="targetWork">£0.00</strong></span>
+                    <span>Owed: <strong id="stillToCollect">£0.00</strong></span>
                 </div>
             </div>
             <div class="grid-1x2" style="margin-top:15px;">
-                <div class="card mini-card clickable-stat" onclick="showIncomeModal()"><small>Total Income Collected 🔍</small><strong id="currRevenue" style="color:var(--success)">£0.00</strong></div>
-                <div class="card mini-card clickable-stat" onclick="showExpenseModal()"><small>Total Expenses Paid 🔍</small><strong id="currSpend" style="color:var(--danger)">£0.00</strong></div>
+                <div class="card mini-card clickable-stat" onclick="showIncomeModal()"><small>Total Income 🔍</small><strong id="currRevenue" style="color:var(--success)">£0.00</strong></div>
+                <div class="card mini-card clickable-stat" onclick="showExpenseModal()"><small>Total Spend 🔍</small><strong id="currSpend" style="color:var(--danger)">£0.00</strong></div>
             </div>
             <div class="card debt-highlight-card clickable-stat" onclick="showArrearsModal()">
-                <div class="stat-row"><span>Overdue Arrears / Debt 🔍</span><strong id="totalOldDebt">£0.00</strong></div>
+                <div class="stat-row"><span>Arrears / Debt Ledger 🔍</span><strong id="totalOldDebt">£0.00</strong></div>
             </div>
+            
             <div id="monthlyHistoryContainer"></div>
         </div>
 
@@ -117,18 +118,16 @@
             </div>
             <div id="expenseList"></div>
         </div>
+
         <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div>
     </div>
 
-    <div class="global-footer">v12.12 - Precision Calibration</div>
+    <div class="global-footer">v12.13 - hall of fame edition</div>
 
     <div id="globalModal" class="modal-overlay" onclick="if(event.target === this) closeModal()">
-        <div class="modal-content">
-            <button class="close-btn" onclick="closeModal()">✕</button>
-            <div id="modalContentBody"></div>
-        </div>
+        <div class="modal-content"><button class="close-btn" onclick="closeModal()">✕</button><div id="modalContentBody"></div></div>
     </div>
 
-    <script src="app.js?v=1212"></script>
+    <script src="app.js?v=1213"></script>
 </body>
 </html>
