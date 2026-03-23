@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v12.5</title>
-    <link rel="stylesheet" href="styles.css?v=125">
+    <title>Hydro Pro v12.6</title>
+    <link rel="stylesheet" href="styles.css?v=126">
 </head>
 <body class="light-mode">
 
@@ -62,25 +62,17 @@
                     <textarea id="cNotes" placeholder="Notes..." class="premium-textarea"></textarea>
                     <button class="btn-main full-width-btn" onclick="saveCustomer()">💾 Save Customer</button>
                 </div>
-
-                <div class="card action-card-green">
-                    <button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button>
-                </div>
-
+                <div class="card action-card-green"><button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
                 <div class="card">
-                    <h3 class="section-title">Database Management</h3>
+                    <h3 class="section-title">Database</h3>
                     <div class="grid-1x2">
                         <button id="exportBtn" class="pill-btn" onclick="exportFullCSV()">💾 Export</button>
                         <button id="importBtn" class="pill-btn" onclick="document.getElementById('csvFile').click()">📂 Import</button>
                     </div>
                     <input type="file" id="csvFile" style="display:none;" onchange="importFullCSV(event)">
                 </div>
-
-                <div class="card action-card-red">
-                    <button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL DATA</button>
-                </div>
+                <div class="card action-card-red"><button class="btn-clear full-width-btn" onclick="runUATClear()">🗑️ RESET ALL DATA</button></div>
             </div>
-            <div class="version-tag">v12.5 - Iron-Clad Lockdown</div>
         </div>
 
         <div id="master" class="tab-content"><div id="masterTableBody"></div></div>
@@ -100,8 +92,14 @@
                 </div>
             </div>
             <div class="grid-1x2" style="margin-top:15px;">
-                <div class="card mini-card"><small>Month Income</small><strong id="currRevenue" style="color:var(--success)">£0.00</strong></div>
-                <div class="card mini-card"><small>Month Expenses</small><strong id="currSpend" style="color:var(--danger)">£0.00</strong></div>
+                <div class="card mini-card clickable-stat" onclick="showIncomeModal()">
+                    <small>Month Income 🔍</small>
+                    <strong id="currRevenue" style="color:var(--success)">£0.00</strong>
+                </div>
+                <div class="card mini-card clickable-stat" onclick="showExpenseModal()">
+                    <small>Month Expenses 🔍</small>
+                    <strong id="currSpend" style="color:var(--danger)">£0.00</strong>
+                </div>
             </div>
             <div class="card debt-highlight-card"><div class="stat-row"><span>Outstanding Old Debt</span><strong id="totalOldDebt">£0.00</strong></div></div>
             <div id="monthlyHistoryContainer"></div>
@@ -119,10 +117,15 @@
         <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div>
     </div>
 
-    <div id="custModal" class="modal-overlay" onclick="if(event.target === this) closeCustModal()">
-        <div class="modal-content"><button class="close-btn" onclick="closeCustModal()">✕</button><div id="modalBody"></div></div>
+    <div class="global-footer">v12.6 - Operational Audit Build</div>
+
+    <div id="globalModal" class="modal-overlay" onclick="if(event.target === this) closeModal()">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">✕</button>
+            <div id="modalContentBody"></div>
+        </div>
     </div>
 
-    <script src="app.js?v=125"></script>
+    <script src="app.js?v=126"></script>
 </body>
 </html>
