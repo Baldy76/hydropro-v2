@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v16.7</title>
-    <link rel="stylesheet" href="styles.css?v=167">
+    <title>Hydro Pro v16.8</title>
+    <link rel="stylesheet" href="styles.css?v=168">
 </head>
 <body class="light-mode">
 
@@ -31,7 +31,6 @@
                 <button class="tile tile-admin bounce-on-tap" onclick="openTab('master')"><span>👥</span><small>Custs</small></button>
                 <button class="tile tile-admin bounce-on-tap" onclick="openTab('stats')"><span>📊</span><small>Stats</small></button>
                 <button class="tile tile-admin bounce-on-tap" onclick="openTab('spend')"><span>💸</span><small>Ledger</small></button>
-                
                 <button class="tile tile-weekly-hub bounce-on-tap" onclick="openTab('weeksHub')"><span>📅</span><small>Weekly Work</small></button>
             </div>
         </div>
@@ -135,10 +134,21 @@
                     ✨ Save Customer
                 </button>
             </div>
+            
+            <div class="card action-card-green" style="margin-top:20px;">
+                <button class="btn-clear full-width-btn" onclick="completeCycle()">🚀 START NEW MONTH</button>
+            </div>
         </div>
 
-        <div id="master" class="tab-content"><div id="masterTableBody"></div></div>
-        <div id="stats" class="tab-content"><div class="dashboard-hero"><div id="currProfit" class="hero-amount">£0.00</div></div></div>
+        <div id="master" class="tab-content">
+            <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search..." oninput="renderMasterTable()">
+            <div id="masterTableBody"></div>
+        </div>
+
+        <div id="stats" class="tab-content">
+            <div class="dashboard-hero"><div id="currProfit" class="hero-amount">£0.00</div></div>
+        </div>
+
         <div id="spend" class="tab-content"><div id="expenseList"></div></div>
 
         <div id="week1" class="tab-content"></div>
@@ -148,7 +158,7 @@
         <div id="week5" class="tab-content"></div>
     </div>
 
-    <div class="page-version-footer">v16.7 - Fresh Hub Architecture</div>
-    <script src="app.js?v=167"></script>
+    <div class="page-version-footer">v16.8 - Final Logo Polish</div>
+    <script src="app.js?v=168"></script>
 </body>
 </html>
