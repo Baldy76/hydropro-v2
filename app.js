@@ -112,12 +112,15 @@ window.renderStats = function() {
 };
 
 window.completeCycle = function() {
-    if(!confirm("Start New Month? Unpaid moved to Debt, Paid moved to History.")) return;
+    if(!confirm("Start New Month? Unpaid current moves to debt.")) return;
     const label = new Date().toLocaleDateString('en-GB', {month:'short', year:'2-digit'});
     db.incomeHistory.push({ month: label, amount: db.customers.reduce((s,c) => s + n(c.paidThisMonth), 0) });
     db.customers.forEach(c => {
+        // Record if paid
         if(!c.paymentHistory) c.paymentHistory = [];
-        if(n(c.paidThisMonth) > 0) c.paymentHistory.push({ month: label, amount: n(c.paidThisMonth) });
+        if(n(c.paidThisMonth) >= n(c.price)) {
+             c.paymentHistory.push({ month: label, amount: n(c.paidThisMonth), status: 'PAID' });
+        }
         
         const o = calculateTrueDebt(c);
         if(o > 0) {
@@ -158,21 +161,22 @@ window.openCustomerModal = function(id) {
     document.getElementById('modOwed').style.color = totalDebt > 0 ? 'var(--danger)' : 'var(--stat-collected)';
     
     let ledgerHtml = "";
-    const months = [...new Set([...(c.debtHistory||[]).map(d=>d.month), ...(c.paymentHistory||[]).map(p=>p.month)])];
+    // Combine list of all months in history
+    const allMonths = [...new Set([...(c.debtHistory||[]).map(d=>d.month), ...(c.paymentHistory||[]).map(p=>p.month)])];
     
-    if(months.length > 0) {
-        months.forEach(m => {
-            const debt = (c.debtHistory||[]).find(d => d.month === m);
-            const paid = (c.paymentHistory||[]).find(p => p.month === m);
+    if(allMonths.length > 0) {
+        allMonths.forEach(m => {
+            const d = (c.debtHistory||[]).find(x => x.month === m);
+            const p = (c.paymentHistory||[]).find(x => x.month === m);
             
-            if (debt) {
-                ledgerHtml += `<div class="ledger-row text-debt"><span>${m}: OWED</span><span>£${n(debt.amount).toFixed(2)}</span></div>`;
-            } else if (paid) {
-                ledgerHtml += `<div class="ledger-row text-paid"><span>${m}: PAID ✅</span><span>£${n(paid.amount).toFixed(2)}</span></div>`;
+            if(d) {
+                ledgerHtml += `<div class="ledger-row text-debt"><span>${m}: OWED</span><span>£${n(d.amount).toFixed(2)}</span></div>`;
+            } else if(p) {
+                ledgerHtml += `<div class="ledger-row text-paid"><span>${m}: PAID ✅</span><span>£${n(p.amount).toFixed(2)}</span></div>`;
             }
         });
     } else {
-        ledgerHtml = "<div style='opacity:0.5; text-align:center; padding:20px;'>New customer. No history recorded yet.</div>";
+        ledgerHtml = "<div style='opacity:0.5; text-align:center; padding:10px;'>No history yet.</div>";
     }
 
     document.getElementById('ledgerBox').innerHTML = ledgerHtml;
@@ -244,9 +248,5 @@ window.runUATClear = function() { if(confirm("WIPE EVERYTHING?")) { localStorage
 window.handleSearch = function() { renderMasterTable(); };
 window.toggleDarkMode = function() { const isDark = document.getElementById('darkModeToggle').checked; document.body.className = isDark ? 'dark-mode' : 'light-mode'; localStorage.setItem('Hydro_Dark_Pref', isDark); };
 window.exportCSV = function() { let csv = "Name,Address,Postcode,Phone,Price,Week,Day,Notes\n"; db.customers.forEach(c => { csv += `"${c.name}","${c.address}","${c.postcode}","${c.phone}",${n(c.price)},"${c.week}","${c.day}","${c.notes}"\n`; }); const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); link.download = "Hydro_Backup.csv"; link.click(); };
-function editFromModal() { 
-    const name = document.getElementById('modName').innerText; 
-    const c = db.customers.find(x => x.name === name); 
-    if(c) { closeCustomerModal(); editCustomer(c.id); } 
-}
+function editFromModal() { const name = document.getElementById('modName').innerText; const c = db.customers.find(x => x.name === name); if(c) { closeCustomerModal(); editCustomer(c.id); } }
 window.addExpense = function() { const v = n(document.getElementById('expAmount').value); if(v > 0) { if(!db.expenses) db.expenses = []; db.expenses.push({amt: v, name: document.getElementById('expName').value || 'Expense'}); saveData(); document.getElementById('expAmount').value=''; } };
