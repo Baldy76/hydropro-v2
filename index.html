@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v32.3</title>
-    <link rel="stylesheet" href="styles.css?v=323">
+    <title>Hydro Pro v33.0</title>
+    <link rel="stylesheet" href="styles.css?v=330">
 </head>
 <body class="light-mode">
 
@@ -75,18 +75,13 @@
 
         <section id="ledger-root" class="tab-content">
             <button class="nav-back-large" onclick="openTab('home-root')">🏠 Home</button>
-            <div class="ledger-hero-box">
-                <small>MONTH SPEND</small>
-                <div id="ledgerTotalDisplay">£0.00</div>
-            </div>
+            <div class="ledger-hero-red"><small>MONTH SPEND</small><div id="ledgerTotalDisplay">£0.00</div></div>
             <div class="ledger-input-card">
-                <input type="text" id="expDesc" placeholder="Description">
-                <input type="number" id="expAmt" placeholder="Amount £">
+                <input type="text" id="expDesc" placeholder="Description"><input type="number" id="expAmt" placeholder="Amount £">
                 <button onclick="addExpense()">Add Expense</button>
             </div>
-            <div class="ledger-csv-grid">
-                <button onclick="exportCSV('income')">💹 Income CSV</button>
-                <button onclick="exportCSV('spend')">📋 Spend CSV</button>
+            <div class="ledger-csv-row">
+                <button onclick="exportCSV('income')">💹 Income CSV</button><button onclick="exportCSV('spend')">📋 Spend CSV</button>
             </div>
             <div id="ledger-list-container"></div>
         </section>
@@ -117,8 +112,6 @@
         </section>
     </div>
 
-    <footer id="global-version-footer">v32.3 - Final Restoration</footer>
-
     <div id="msgModal" class="modal-overlay hidden">
         <div class="modal-content">
             <h3>Send Invoice?</h3>
@@ -127,6 +120,14 @@
         </div>
     </div>
 
-    <script src="app.js?v=323"></script>
+    <div id="briefingModal" class="modal-overlay hidden" onclick="closeBriefing()">
+        <div class="modal-content briefing-content" onclick="event.stopPropagation()">
+            <div id="briefingData"></div>
+            <button class="btn-briefing-edit" id="briefEditBtn">⚙️ Edit Customer Info</button>
+            <button class="btn-briefing-close" onclick="closeBriefing()">CLOSE</button>
+        </div>
+    </div>
+
+    <script src="app.js?v=330"></script>
 </body>
 </html>
