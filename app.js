@@ -1,7 +1,7 @@
 const DB_KEY = 'HydroPro_Gold_V36';
 const W_API_KEY = "4c00e61833ea94d3c4a1bff9d2c32969"; 
 
-let db = { customers: [], expenses: [], bank: { name: '', sort: '', acc: '' }, history: [] };
+let db = { customers: [], expenses: [], history: [] };
 const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 let curWeek = 1;
 let workingDay = 'Mon';
@@ -14,12 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const isDark = localStorage.getItem('HP_Theme') === 'true';
         document.body.classList.toggle('dark-mode', isDark);
         document.getElementById('themeCheckbox').checked = isDark;
-        updateLogo(isDark);
+        
         document.getElementById('themeCheckbox').addEventListener('change', (e) => {
             const dark = e.target.checked;
             document.body.classList.toggle('dark-mode', dark);
             localStorage.setItem('HP_Theme', dark);
-            updateLogo(dark);
         });
         updateHeader(); renderAll();
         initWeather();
@@ -42,33 +41,44 @@ async function initWeather() {
 }
 
 window.launchWeatherApp = () => {
-    if (navigator.userAgent.match(/(iPhone|iPod|iPad)/)) {
+    const isIOS = navigator.userAgent.match(/(iPhone|iPod|iPad)/);
+    if (isIOS) {
         window.location.href = "weather://";
         setTimeout(() => window.open("https://weather.com/", "_blank"), 500);
     } else { window.open("https://www.google.com/search?q=weather", "_blank"); }
 };
 
-/* --- 📄 RECEIPT ENGINE --- */
+/* --- 📄 NEW SAFE RECEIPT ENGINE (V38.5) --- */
 window.generateReceipt = (id) => {
     const c = db.customers.find(x => x.id === id); if (!c) return;
     const date = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-    document.getElementById('receipt-zone').innerHTML = `
-        <div style="text-align:center; padding:40px; background:white; color:black; font-family:sans-serif;">
-            <img src="Logo.png" style="width:200px; margin-bottom:20px;">
-            <h2 style="margin:0;">Payment Receipt</h2>
+    
+    // Open a new window for the receipt so it doesn't shrink the main app
+    const receiptWindow = window.open('', '_blank');
+    receiptWindow.document.write(`
+        <html><head><title>Receipt - ${c.name}</title>
+        <style>
+            body { font-family: sans-serif; padding: 40px; text-align: center; color: #333; }
+            .paid-stamp { border: 5px solid #34C759; color: #34C759; display: inline-block; padding: 10px 30px; font-weight: 900; transform: rotate(-5deg); font-size: 32px; margin: 30px 0; border-radius: 15px; text-transform: uppercase; }
+            .details { text-align: left; line-height: 2; font-size: 18px; max-width: 500px; margin: 0 auto; border-top: 1px solid #eee; padding-top: 20px; }
+            .btn-print { background: #007aff; color: white; padding: 15px 30px; border-radius: 10px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 40px; }
+            @media print { .btn-print { display: none; } }
+        </style></head><body>
+            <h1>HYDRO PRO</h1>
             <div class="paid-stamp">PAID IN FULL</div>
-            <div style="text-align:left; line-height:2; border-top:1px solid #eee; padding-top:20px;">
+            <div class="details">
                 <p><strong>Date:</strong> ${date}</p>
                 <p><strong>Customer:</strong> ${c.name}</p>
                 <p><strong>Property:</strong> ${c.houseNum} ${c.street}, ${c.postcode}</p>
-                <p style="font-size:24px; border-top:2px solid #000; padding-top:10px;"><strong>TOTAL PAID: £${n(c.price).toFixed(2)}</strong></p>
+                <p style="font-size:24px; border-top: 2px solid #333; margin-top: 20px;"><strong>TOTAL PAID: £${n(c.price).toFixed(2)}</strong></p>
             </div>
-            <p style="margin-top:40px; font-style:italic;">Thank you for your business!</p>
-        </div>`;
-    window.print();
+            <a href="#" class="btn-print" onclick="window.print()">PRINT / SAVE AS PDF</a>
+        </body></html>
+    `);
+    receiptWindow.document.close();
 };
 
-/* --- 📅 WEEKS LOGIC --- */
+/* --- 📅 WEEKS --- */
 window.viewWeek = (w) => { curWeek = w; openTab('week-view-root'); renderWeek(); };
 window.setWorkingDay = (day, btn) => { 
     workingDay = day; 
@@ -79,7 +89,7 @@ window.setWorkingDay = (day, btn) => {
 window.renderWeek = () => {
     const list = document.getElementById('week-list-container'); if(!list) return; list.innerHTML = '';
     const jobs = db.customers.filter(c => c.week == curWeek && c.day == workingDay);
-    if(jobs.length === 0) { list.innerHTML = '<p style="text-align:center; padding:40px; opacity:0.4;">No jobs today.</p>'; return; }
+    if(jobs.length === 0) { list.innerHTML = '<p style="text-align:center; padding:60px; opacity:0.3; font-weight:900;">NO JOBS TODAY</p>'; return; }
     jobs.forEach(c => {
         const div = document.createElement('div'); div.className = 'JOB-CARD';
         div.onclick = () => showJobBriefing(c.id);
@@ -95,14 +105,23 @@ window.renderWeek = () => {
     });
 };
 
-/* --- CORE DATABASE FUNCTIONS --- */
+/* --- CORE LOGIC --- */
 window.showJobBriefing = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
     const history = (db.history || []).filter(h => h.custId === id).slice(-3).reverse();
-    let histHtml = history.length > 0 ? '' : '<p style="opacity:0.4; font-size:13px; font-weight:600;">No recent activity.</p>';
-    history.forEach(h => { histHtml += `<div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid rgba(0,0,0,0.05); font-weight:800;"><span>${h.date}</span><span style="color:var(--success)">+£${n(h.amt).toFixed(2)}</span></div>`; });
-    document.getElementById('briefingData').innerHTML = `<div style="font-size:28px; font-weight:900; color:var(--accent); margin-bottom:5px;">${c.name}</div><div style="margin:15px 0; display:flex; flex-direction:column; gap:10px;"><div style="background:var(--bg); padding:10px; border-radius:12px; font-weight:700;">🏠 ${c.houseNum} ${c.street}</div><div style="background:var(--bg); padding:10px; border-radius:12px; font-weight:700;">💰 Rate: £${n(c.price).toFixed(2)}</div></div><div class="MD-HIST-WRAP"><small style="text-transform:uppercase; font-weight:900; opacity:0.5;">Recent Payments</small>${histHtml}</div>`;
-    document.getElementById('receiptButtonContainer').innerHTML = n(c.paidThisMonth) > 0 ? `<button style="width:100%; height:60px; background:#5856d6; color:white; border:none; border-radius:18px; font-weight:900; margin-bottom:10px;" onclick="generateReceipt('${c.id}')">📄 Share Receipt</button>` : '';
+    let histHtml = history.length > 0 ? '' : '<p style="opacity:0.4; font-size:14px; font-weight:700;">No history yet.</p>';
+    history.forEach(h => { histHtml += `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(0,0,0,0.05); font-weight:800; font-size:16px;"><span>${h.date}</span><span style="color:var(--success)">+£${n(h.amt).toFixed(2)}</span></div>`; });
+    
+    document.getElementById('briefingData').innerHTML = `
+        <div style="font-size:32px; font-weight:900; color:var(--accent); margin-bottom:10px;">${c.name}</div>
+        <div style="margin:20px 0; display:flex; flex-direction:column; gap:12px;">
+            <div style="background:var(--bg); padding:15px; border-radius:15px; font-weight:800;">🏠 ${c.houseNum} ${c.street}</div>
+            <div style="background:var(--bg); padding:15px; border-radius:15px; font-weight:800; color:var(--success);">💰 Rate: £${n(c.price).toFixed(2)}</div>
+        </div>
+        <div class="MD-HIST-WRAP"><small style="text-transform:uppercase; font-weight:900; opacity:0.5; font-size:11px;">Recent Payments</small>${histHtml}</div>
+    `;
+    
+    document.getElementById('receiptButtonContainer').innerHTML = n(c.paidThisMonth) > 0 ? `<button style="width:100%; height:65px; background:#5856d6; color:white; border:none; border-radius:20px; font-weight:900; margin-bottom:15px; font-size:18px;" onclick="generateReceipt('${c.id}')">📄 SHARE RECEIPT</button>` : '';
     document.getElementById('briefEditBtn').onclick = () => { closeBriefing(); editCust(id); };
     document.getElementById('briefingModal').classList.remove('hidden');
 };
@@ -117,10 +136,10 @@ window.saveCustomer = () => {
 
 window.editCust = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return; openTab('setup-root');
-    document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cPhone').value = c.phone; document.getElementById('cHouseNum').value = c.houseNum; document.getElementById('cStreet').value = c.street; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cDay').value = c.day || 'Mon'; document.getElementById('cWeek').value = c.week || '1'; document.getElementById('cPrice').value = c.price; document.getElementById('cNotes').value = c.notes;
+    document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cPhone').value = c.phone; document.getElementById('cHouseNum').value = c.houseNum; document.getElementById('cStreet').value = c.street; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cDay').value = c.day; document.getElementById('cWeek').value = c.week; document.getElementById('cPrice').value = c.price; document.getElementById('cNotes').value = c.notes;
 };
 
-/* --- 💾 MASTER CSV ENGINE --- */
+/* --- 💾 MASTER CSV --- */
 window.exportData = () => {
     const date = new Date().toLocaleDateString().replace(/\//g, '-');
     let csv = "\ufeff--- CUSTOMERS ---\nName,Phone,HouseNum,Street,Postcode,Day,Price,Week,Notes,Cleaned,PaidThisMonth\n";
@@ -139,7 +158,7 @@ window.importData = (event) => {
     const reader = new FileReader();
     reader.onload = (e) => {
         const lines = e.target.result.split('\n');
-        if(!confirm("Import this data?")) return;
+        if(!confirm("Restore data?")) return;
         let section = "";
         lines.forEach(line => {
             const trim = line.trim(); if(!trim) return;
@@ -163,9 +182,26 @@ window.handleClean = (id) => { const c = db.customers.find(x => x.id === id); if
 window.markAsPaid = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; const amt = prompt(`Paid for ${c.name}:`, c.price); if(amt) { c.paidThisMonth = n(amt); db.history.push({ custId: id, amt: n(amt), date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) }); saveData(); renderWeek(); renderStats(); } };
 window.addExpense = () => { const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value), c = document.getElementById('expCat').value; if(!d || a <= 0) return alert("Required"); db.expenses.push({ id: Date.now(), desc: d, amt: a, cat: c, date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) }); saveData(); renderLedger(); renderStats(); document.getElementById('expDesc').value=''; document.getElementById('expAmt').value=''; };
 window.renderLedger = () => { const container = document.getElementById('ledger-list-container'); if(!container) return; container.innerHTML = ''; let total = 0; db.expenses.forEach(e => total += n(e.amt)); document.getElementById('ledgerTotalDisplay').innerText = `£${total.toFixed(2)}`; db.expenses.slice().reverse().forEach(e => { const div = document.createElement('div'); div.className = 'LD-PILL'; div.innerHTML = `<div><strong>${e.cat||'📦'} ${e.desc}</strong><br><small>${e.date}</small></div><div style="color:var(--danger); font-weight:900;">-£${n(e.amt).toFixed(2)}</div>`; container.appendChild(div); }); };
-window.renderStats = () => { const container = document.getElementById('stats-container'); if(!container) return; let targetIncome = 0, paid = 0, totalSpend = 0; db.customers.forEach(c => { targetIncome += n(c.price); paid += n(c.paidThisMonth); }); db.expenses.forEach(e => { totalSpend += n(e.amt); }); const progressPercent = targetIncome > 0 ? Math.min(Math.round((paid / targetIncome) * 100), 100) : 0; container.innerHTML = `<div class="ST-HERO"><div>£${(paid - totalSpend).toFixed(2)}</div><small>NET PROFIT</small></div><div class="ST-GRID"><div class="ST-BUBBLE">INCOME<strong>£${paid.toFixed(2)}</strong></div><div class="ST-BUBBLE">SPEND<strong>£${totalSpend.toFixed(2)}</strong></div></div><div class="ST-PROG-CARD"><strong>Round Progress: ${progressPercent}%</strong><div class="ST-PROG-TRACK"><div class="ST-PROG-FILL" style="width:${progressPercent}%"></div></div></div>`; };
-window.renderMaster = () => { const container = document.getElementById('master-list-container'); if(!container) return; container.innerHTML = ''; const search = (document.getElementById('mainSearch').value || "").toLowerCase(); db.customers.forEach(c => { if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) { const div = document.createElement('div'); div.className = 'CT-PILL'; div.onclick = () => editCust(c.id); div.innerHTML = `<div class="CT-TEXT-STACK"><strong>${c.name}</strong><small>${c.houseNum} ${c.street}</small></div><div style="font-weight:900; color:var(--success); font-size:18px;">£${n(c.price).toFixed(2)}</div>`; container.appendChild(div); } }); };
-window.updateLogo = (isDark) => { const logoImg = document.getElementById('mainLogo'); if(logoImg) logoImg.src = isDark ? 'Logo-Dark.png' : 'Logo.png'; };
+window.renderStats = () => {
+    const container = document.getElementById('stats-container'); if(!container) return;
+    let targetIncome = 0, paid = 0, totalSpend = 0;
+    db.customers.forEach(c => { targetIncome += n(c.price); paid += n(c.paidThisMonth); });
+    db.expenses.forEach(e => { totalSpend += n(e.amt); });
+    const progressPercent = targetIncome > 0 ? Math.min(Math.round((paid / targetIncome) * 100), 100) : 0;
+    container.innerHTML = `<div class="ST-HERO"><div>£${(paid - totalSpend).toFixed(2)}</div><small>NET PROFIT</small></div><div class="ST-GRID"><div class="ST-BUBBLE">INCOME<strong>£${paid.toFixed(2)}</strong></div><div class="ST-BUBBLE">SPEND<strong>£${totalSpend.toFixed(2)}</strong></div></div><div class="ST-PROG-CARD"><strong>Round Progress: ${progressPercent}%</strong><div class="ST-PROG-TRACK"><div class="ST-PROG-FILL" style="width:${progressPercent}%"></div></div></div>`;
+};
+window.renderMaster = () => {
+    const container = document.getElementById('master-list-container'); if(!container) return; container.innerHTML = '';
+    const search = (document.getElementById('mainSearch').value || "").toLowerCase();
+    db.customers.forEach(c => {
+        if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
+            const div = document.createElement('div'); div.className = 'CT-PILL';
+            div.onclick = () => editCust(c.id);
+            div.innerHTML = `<div class="CT-TEXT-STACK"><strong>${c.name}</strong><small>${c.houseNum} ${c.street}</small></div><div style="font-weight:900; color:var(--success); font-size:22px;">£${n(c.price).toFixed(2)}</div>`;
+            container.appendChild(div);
+        }
+    });
+};
 window.saveData = () => localStorage.setItem(DB_KEY, JSON.stringify(db));
 window.openTab = (id) => { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); renderAll(); };
 window.renderAll = () => { renderMaster(); renderLedger(); renderStats(); renderWeek(); };
