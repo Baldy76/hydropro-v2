@@ -11,26 +11,17 @@ body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, sans-serif; }
 body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; }
 
-/* 4. GLOBAL HEADER (v34.1 FIXED) */
+/* 4. GLOBAL HEADER */
 #global-shield { padding: 40px 20px 10px; }
-.header-nav-top { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    max-width: 440px; /* Locked to thumb-reach width */
-    margin: 0 auto; 
-}
-.logo-container { flex: 1; display: flex; justify-content: flex-start; }
+.header-nav-top { display: flex; justify-content: space-between; align-items: center; max-width: 440px; margin: 0 auto; }
 .logo-container img { height: 70px; width: auto; object-fit: contain; }
-
-.theme-container { flex: 0 0 auto; margin-left: 15px; } /* Prevents falling off edge */
+.theme-container { flex: 0 0 auto; margin-left: 15px; }
 .theme-slider { position: relative; width: 60px; height: 34px; display: block; }
 .theme-slider input { opacity: 0; width: 0; height: 0; }
 .slider-round { position: absolute; top:0; left:0; right:0; bottom:0; background-color: #ccc; border-radius: 34px; cursor: pointer; transition: 0.4s; }
 .slider-round:before { position: absolute; content: "‚òÄÔ∏è"; height: 26px; width: 26px; left: 4px; bottom: 4px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.4s; }
 input:checked + .slider-round { background-color: var(--accent); }
 input:checked + .slider-round:before { transform: translateX(26px); content: "üåô"; }
-
 .header-text { text-align: center; margin-top: 25px; }
 #greetText { display: block; font-size: 13px; font-weight: 800; opacity: 0.6; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; }
 #dateText { font-size: 26px; font-weight: 900; color: var(--accent); display: block; }
@@ -50,9 +41,9 @@ input:checked + .slider-round:before { transform: translateX(26px); content: "ü
 #setup-root .form-row { display: flex; align-items: center; height: 75px !important; border-bottom: 1px solid rgba(0,0,0,0.05); gap: 15px; }
 #setup-root .form-row span { font-size: 24px; width: 35px; text-align: center; }
 #setup-root input { color: var(--text); font-size: 18px; width: 100%; border:none; background:transparent; outline:none; }
+#setup-root .custom-select-pro { flex: 1; border: none; background: transparent; color: var(--accent); font-size: 18px; font-weight: 800; outline: none; -webkit-appearance: none; }
 #setup-root textarea { width: 100%; min-height: 140px; background: var(--bg); border: none; border-radius: 20px; padding: 15px; color: var(--text); margin-top: 15px; font-size: 16px; }
-
-.btn-action-primary { width: 100%; height: 75px !important; border-radius: 25px; border: none; background: var(--accent); color: white; font-weight: 900; font-size: 20px; margin-top: 15px; display: block; }
+.btn-action-primary { width: 100%; height: 75px !important; border-radius: 25px; border: none; background: var(--accent); color: white; font-weight: 900; font-size: 20px; display: block; }
 
 /* 8. BANK VAULT MODULE */
 .vault-card { background: var(--card); margin: 0 20px var(--gap); padding: 30px; border-radius: 35px; border: 2px solid rgba(0,122,255,0.15); }
@@ -62,8 +53,6 @@ input:checked + .slider-round:before { transform: translateX(26px); content: "ü
 .vault-copy { background: #8e8e93; }
 .vault-lock { background: var(--accent); }
 .bank-field { width: 100%; height: 60px !important; background: var(--bg); border-radius: 15px; margin-bottom: 10px; padding: 0 15px; color: var(--text); border:none; font-size: 16px; font-weight: 600; display: block; }
-.bank-top-gap { margin-top: 20px !important; }
-
 .btn-danger-large { width: 100%; height: 75px !important; border-radius: 25px; border: none; background: var(--danger); color: white; font-weight: 900; font-size: 18px; }
 .reset-container { margin: 0 20px 50px; text-align: center; }
 
@@ -87,19 +76,27 @@ input:checked + .slider-round:before { transform: translateX(26px); content: "ü
 .stats-hero div { font-size: 55px; font-weight: 900; }
 .stats-split-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 20px var(--gap); }
 .stats-card { background: var(--card); padding: 25px 15px; border-radius: 30px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
-.stats-card span { font-size: 30px; display: block; margin-bottom: 8px; }
 .stats-card strong { font-size: 24px; font-weight: 900; display: block; }
 .stats-progress-card { background: var(--card); margin: 0 20px var(--gap); padding: 25px; border-radius: 35px; }
 .progress-bar-track { background: #eee; height: 12px; border-radius: 6px; margin: 15px 0; overflow: hidden; }
 .progress-bar-fill { background: var(--accent); height: 100%; transition: width 0.8s ease; }
 .arrears-banner { background: var(--danger); color: white; padding: 25px; border-radius: 30px; text-align: center; font-weight: 900; font-size: 24px; margin: 0 20px 50px; }
 
-/* 12. WEEK VIEW MODULE */
+/* 12. WEEK VIEW v35.0 NAVIGATOR */
+.day-picker-container { display: flex; justify-content: space-between; padding: 0 20px; margin-bottom: 20px; }
+.day-btn { flex: 1; height: 50px; border: none; background: var(--card); color: var(--text); font-weight: 800; border-radius: 12px; margin: 0 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.day-btn.active { background: var(--accent); color: white; }
+
+.planning-action-row { padding: 0 20px var(--gap); }
+.btn-plan-route { width: 100%; height: 65px !important; border-radius: 20px; border: none; background: #5856d6; color: white; font-weight: 900; font-size: 16px; box-shadow: 0 4px 12px rgba(88,86,214,0.3); }
+
 .weeks-grid-master { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 0 20px; }
 .week-tile { height: 110px !important; border-radius: 25px; border: none; background: #1c1c1e; color: white; font-weight: 900; font-size: 22px; display: flex; align-items: center; justify-content: center; }
 .week-tile-full { grid-column: 1 / -1; }
-.nav-spread-row { display: flex; justify-content: space-between; padding: 0 20px; margin-bottom: var(--gap); }
-.nav-spread-row button { height: 65px !important; width: calc(50% - 10px) !important; border-radius: 20px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+
+.nav-spread-row { display: flex; justify-content: space-between; padding: 0 20px; margin-bottom: 20px; }
+.nav-spread-row button { height: 60px !important; width: calc(50% - 10px) !important; border-radius: 20px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+
 .bulk-container { padding: 0 20px; margin-bottom: 35px !important; }
 .job-card { background: var(--card); padding: 25px; border-radius: 35px; margin: 0 20px var(--gap); box-shadow: 0 4px 12px rgba(0,0,0,0.04); position: relative; }
 .job-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
@@ -111,8 +108,6 @@ input:checked + .slider-round:before { transform: translateX(26px); content: "ü
 .modal-content { background:var(--card); padding:35px; border-radius:40px; width:100%; max-width: 400px; text-align: center; }
 .briefing-box { text-align: left !important; max-height: 85vh; overflow-y: auto; padding: 30px !important; }
 .briefing-title { font-size: 26px; font-weight: 900; color: var(--accent); }
-.briefing-addr { font-size: 16px; font-weight: 700; opacity: 0.8; margin-top: 5px; }
-.briefing-meta { font-size: 14px; opacity: 0.5; margin-bottom: 20px; font-weight: 600; }
 .briefing-item { background: var(--bg); padding: 20px; border-radius: 20px; margin-bottom: 15px; }
 .briefing-item h4 { margin: 0 0 10px; font-size: 11px; text-transform: uppercase; opacity: 0.5; }
 .btn-brief-edit { width: 100%; height: 60px; background: var(--bg); border: 2px solid var(--accent); color: var(--accent); border-radius: 18px; font-weight: 800; margin-bottom: 10px; }
