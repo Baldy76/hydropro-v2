@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v25.0</title>
-    <link rel="stylesheet" href="styles.css?v=250">
+    <title>Hydro Pro v25.1</title>
+    <link rel="stylesheet" href="styles.css?v=251">
 </head>
 <body class="light-mode">
 
     <header id="global-header-shield">
-        <div class="logo-area"><img src="Logo.png" class="oblong-logo" alt="Logo"></div>
+        <div class="header-top-row">
+            <div class="logo-area"><img src="Logo.png" class="oblong-logo" alt="Logo"></div>
+            <button id="themeToggleBtn" class="header-theme-btn" onclick="toggleDarkMode()">🌙</button>
+        </div>
         <div class="greeting-area">
             <span id="greetText">GOOD MORNING, PARTNER! ☕</span>
             <span id="dateText"></span>
@@ -29,22 +32,27 @@
         </section>
 
         <section id="fence-stats" class="tab-content">
-            <div id="stats-dashboard-container">
-                </div>
+            <div id="stats-dashboard-container"></div>
+            <button class="back-home-pill" onclick="openTab('fence-home')">🏠 Back to Home</button>
         </section>
 
-        <section id="fence-setup" class="tab-content"></section>
-        <section id="fence-master" class="tab-content"></section>
-        <section id="fence-ledger" class="tab-content"></section>
-        <section id="fence-weeks" class="tab-content"></section>
+        <section id="fence-setup" class="tab-content">
+             <button class="back-home-pill" onclick="openTab('fence-home')">🏠 Back to Home</button>
+        </section>
+        <section id="fence-master" class="tab-content">
+             <button class="back-home-pill" onclick="openTab('fence-home')">🏠 Back to Home</button>
+        </section>
+        <section id="fence-ledger" class="tab-content">
+             <button class="back-home-pill" onclick="openTab('fence-home')">🏠 Back to Home</button>
+        </section>
+        <section id="fence-weeks" class="tab-content">
+             <button class="back-home-pill" onclick="openTab('fence-home')">🏠 Back to Home</button>
+        </section>
 
     </div>
 
-    <footer id="global-footer-nav">
-        <button id="themeToggleBtn" class="mini-pill-toggle" onclick="toggleDarkMode()">🌙 DARK</button>
-        <div class="ver-tag">v25.0 - Namespace Lockdown</div>
-    </footer>
+    <footer id="footer-version">v25.1 - Header Integrated Toggle</footer>
 
-    <script src="app.js?v=250"></script>
+    <script src="app.js?v=251"></script>
 </body>
 </html>
