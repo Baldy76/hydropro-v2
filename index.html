@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v33.2</title>
-    <link rel="stylesheet" href="styles.css?v=332">
+    <title>Hydro Pro v32.5</title>
+    <link rel="stylesheet" href="styles.css?v=325">
 </head>
 <body class="light-mode">
 
@@ -77,11 +77,13 @@
             <button class="nav-back-large" onclick="openTab('home-root')">🏠 Home</button>
             <div class="ledger-hero-red"><small>MONTH SPEND</small><div id="ledgerTotalDisplay">£0.00</div></div>
             <div class="ledger-input-card">
-                <input type="text" id="expDesc" placeholder="Description"><input type="number" id="expAmt" placeholder="Amount £">
-                <button onclick="addExpense()">Add Expense</button>
+                <input type="text" id="expDesc" placeholder="Description">
+                <input type="number" id="expAmt" placeholder="Amount £">
+                <button id="ledgerAddBtn" onclick="addExpense()">Add Expense</button>
             </div>
             <div class="ledger-csv-row">
-                <button onclick="exportCSV('income')">💹 Income CSV</button><button onclick="exportCSV('spend')">📋 Spend CSV</button>
+                <button onclick="exportCSV('income')">💹 Income CSV</button>
+                <button onclick="exportCSV('spend')">📋 Spend CSV</button>
             </div>
             <div id="ledger-list-container"></div>
         </section>
@@ -128,6 +130,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=332"></script>
+    <script src="app.js?v=325"></script>
 </body>
 </html>
