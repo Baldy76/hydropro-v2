@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v31.4</title>
-    <link rel="stylesheet" href="styles.css?v=314">
+    <title>Hydro Pro v31.5</title>
+    <link rel="stylesheet" href="styles.css?v=315">
 </head>
 <body class="light-mode">
 
@@ -49,14 +49,14 @@
             <button class="nav-back" onclick="openTab('home-root')">🏠 Home</button>
             <div class="setup-card">
                 <input type="hidden" id="editId">
-                <div class="entry-row-surgical"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
-                <div class="entry-row-surgical"><span>📱</span><input type="tel" id="cPhone" placeholder="Phone"></div>
-                <div class="entry-row-surgical"><span>🏠</span><input type="text" id="cHouseNum" placeholder="House No."></div>
-                <div class="entry-row-surgical"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
-                <div class="entry-row-surgical"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
-                <div class="entry-row-surgical"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
+                <div class="setup-entry-row"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
+                <div class="setup-entry-row"><span>📱</span><input type="tel" id="cPhone" placeholder="Phone"></div>
+                <div class="setup-entry-row"><span>🏠</span><input type="text" id="cHouseNum" placeholder="House No."></div>
+                <div class="setup-entry-row"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
+                <div class="setup-entry-row"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
+                <div class="setup-entry-row"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
                 <textarea id="cNotes" placeholder="Private Notes..."></textarea>
-                <button class="btn-primary-large" style="margin-top: 20px;" onclick="saveCustomer()">✨ Save Customer</button>
+                <button class="setup-btn-save" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
             
             <div class="bank-vault">
@@ -69,7 +69,7 @@
                 <input type="text" id="bankName" class="bank-field-fixed bank-airgap" readonly placeholder="Account Name">
                 <input type="text" id="bankSort" class="bank-field-fixed" readonly placeholder="Sort Code">
                 <input type="text" id="bankAcc" class="bank-field-fixed" readonly placeholder="Account Number">
-                <button id="bankSaveBtn" class="hidden btn-primary-large" style="background:var(--success); margin-top:15px;" onclick="saveBankDetails()">💾 Save Bank Info</button>
+                <button id="bankSaveBtn" class="hidden setup-btn-save" style="background:var(--success); margin-top:15px;" onclick="saveBankDetails()">💾 Save Bank Info</button>
             </div>
 
             <div class="reset-area-surgical">
@@ -79,29 +79,34 @@
 
         <section id="ledger-root" class="tab-content">
             <button class="nav-back" onclick="openTab('home-root')">🏠 Home</button>
-            <div class="ledger-hero-display"><small>MONTH SPEND</small><div id="ledgerTotalDisplay">£0.00</div></div>
-            <div class="ledger-entry-card">
+            <div class="ledger-hero">
+                <small>MONTH SPEND</small>
+                <div id="ledgerTotalDisplay">£0.00</div>
+            </div>
+            <div class="ledger-input-box">
                 <input type="text" id="expDesc" placeholder="Description">
                 <input type="number" id="expAmt" placeholder="Amount £">
                 <button onclick="addExpense()">Add Expense</button>
             </div>
-            <div class="ledger-actions-row">
+            <div class="ledger-actions">
                 <button onclick="exportCSV('income')">💹 Income CSV</button>
                 <button onclick="exportCSV('spend')">📋 Spend CSV</button>
             </div>
-            <div id="ledger-list-container" style="padding: 0 20px 100px;"></div>
+            <div id="ledger-list-container"></div>
         </section>
 
         <section id="stats-root" class="tab-content">
             <button class="nav-back" onclick="openTab('home-root')">🏠 Home</button>
-            <div id="stats-container" style="padding: 0 20px;"></div>
+            <div id="stats-container"></div>
         </section>
 
         <section id="weeks-root" class="tab-content">
             <button class="nav-back" onclick="openTab('home-root')">🏠 Home</button>
             <div class="weeks-hub-grid">
-                <button onclick="viewWeek(1)">Week 1</button><button onclick="viewWeek(2)">Week 2</button>
-                <button onclick="viewWeek(3)">Week 3</button><button onclick="viewWeek(4)">Week 4</button>
+                <button onclick="viewWeek(1)">Week 1</button>
+                <button onclick="viewWeek(2)">Week 2</button>
+                <button onclick="viewWeek(3)">Week 3</button>
+                <button onclick="viewWeek(4)">Week 4</button>
                 <button class="full" onclick="viewWeek(5)">Week 5</button>
             </div>
         </section>
@@ -116,16 +121,16 @@
         </section>
     </div>
 
-    <footer id="global-version-footer">v31.4 - Setup Re-Scaled</footer>
+    <footer id="global-version-footer">v31.5 - Isolated Pages</footer>
 
     <div id="msgModal" class="modal-overlay hidden">
         <div class="modal-content">
             <h3>Send Invoice?</h3>
-            <p id="msgPreview" style="white-space: pre-wrap; text-align: left; font-size: 13px; background: var(--bg); padding: 15px; border-radius: 15px; margin-bottom: 20px; color: var(--text);"></p>
+            <p id="msgPreview"></p>
             <div id="modalButtons"></div>
         </div>
     </div>
 
-    <script src="app.js?v=314"></script>
+    <script src="app.js?v=315"></script>
 </body>
 </html>
