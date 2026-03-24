@@ -26,13 +26,15 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch(e) { console.error("Boot Error", e); }
 });
 
-/* --- 🌦️ UPDATED WEATHER SERVICE v38.0 --- */
+/* --- 🌦️ WEATHER SERVICE (v38.2 api.openweathermap.org) --- */
 async function initWeather() {
     const options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
     navigator.geolocation.getCurrentPosition(async (pos) => {
         const { latitude, longitude } = pos.coords;
         try {
-            const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${W_API_KEY}&units=metric`);
+            // Verified endpoint string
+            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${W_API_KEY}&units=metric`;
+            const res = await fetch(url);
             const data = await res.json();
             const iconMap = { "Clear": "☀️", "Clouds": "☁️", "Rain": "🌧️", "Drizzle": "🌦️", "Thunderstorm": "⛈️", "Snow": "❄️", "Mist": "🌫️" };
             const icon = iconMap[data.weather[0].main] || "🌤️";
@@ -40,10 +42,7 @@ async function initWeather() {
             document.getElementById('w-text').innerText = `${Math.round(data.main.temp)}°C ${data.weather[0].main.toUpperCase()}`;
         } catch (err) { document.getElementById('w-text').innerText = "API Offline"; }
     }, (err) => {
-        let msg = "GPS Offline";
-        if (err.code === 1) msg = "Enable GPS";
-        if (err.code === 3) msg = "GPS Timeout";
-        document.getElementById('w-text').innerText = msg;
+        document.getElementById('w-text').innerText = "GPS Offline";
     }, options);
 }
 
@@ -115,7 +114,7 @@ window.showJobBriefing = (id) => {
     document.getElementById('briefingModal').classList.remove('hidden');
 };
 
-/* --- 💾 MASTER CSV ENGINE --- */
+/* --- 💾 MASTER CSV MONOLITH ENGINE --- */
 window.exportData = () => {
     const date = new Date().toLocaleDateString().replace(/\//g, '-');
     let csv = "\ufeff--- CUSTOMERS ---\nName,Phone,HouseNum,Street,Postcode,Day,Price,Week,Notes,Cleaned,PaidThisMonth\n";
@@ -153,7 +152,7 @@ window.importData = (event) => {
     reader.readAsText(file);
 };
 
-/* --- CORE UTILS --- */
+/* --- SHARED CORE --- */
 window.nuclearReset = () => { if(confirm("☢️ DELETE EVERYTHING?")) { if(confirm("FINAL WARNING?")) { localStorage.removeItem(DB_KEY); location.reload(); } } };
 window.quickSettle = (id, amt) => { const c = db.customers.find(x => x.id === id); c.paidThisMonth = n(c.price); db.history.push({ custId: id, amt: n(amt), date: 'Debt-Settle' }); saveData(); closeBriefing(); renderWeek(); renderStats(); };
 window.addExpense = () => { const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value), c = document.getElementById('expCat').value; if(!d || a <= 0) return alert("Required"); db.expenses.push({ id: Date.now(), desc: d, amt: a, cat: c, date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) }); saveData(); renderLedger(); renderStats(); document.getElementById('expDesc').value=''; document.getElementById('expAmt').value=''; };
