@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v26.9</title>
-    <link rel="stylesheet" href="styles.css?v=269">
+    <title>Hydro Pro v27.0</title>
+    <link rel="stylesheet" href="styles.css?v=270">
 </head>
 <body class="light-mode">
 
@@ -74,7 +74,10 @@
                 <button class="setup-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
             <div class="setup-card vault-border">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h3 class="setup-label">🏦 Bank Vault</h3><button id="bankLockBtn" class="vault-unlock-btn" onclick="toggleBankLock()">🔓 UNLOCK</button></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h3 class="setup-label" style="margin:0">🏦 Bank Vault</h3>
+                    <button id="bankLockBtn" class="vault-unlock-btn" onclick="toggleBankLock()">🔓 UNLOCK</button>
+                </div>
                 <div class="setup-row"><div class="setup-icon">🏷️</div><div class="setup-stack"><label>Account Name</label><input type="text" id="bankName" class="setup-input bank-field" readonly></div></div>
                 <div class="setup-row"><div class="setup-icon">🔢</div><div class="setup-stack"><label>Sort Code</label><input type="text" id="bankSort" class="setup-input bank-field" readonly maxlength="8"></div></div>
                 <div class="setup-row" style="border:none"><div class="setup-icon">💳</div><div class="setup-stack"><label>Account Number</label><input type="number" id="bankAcc" class="setup-input bank-field" readonly></div></div>
@@ -118,7 +121,7 @@
         </div>
     </div>
 
-    <footer id="footer-version">v26.9 - Spacing Lockdown</footer>
-    <script src="app.js?v=269"></script>
+    <footer id="footer-version">v27.0 - Bank Vault Lockdown</footer>
+    <script src="app.js?v=270"></script>
 </body>
 </html>
