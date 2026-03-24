@@ -92,7 +92,10 @@ window.renderStats = () => {
     const monthYearEl = document.getElementById('currentMonthYear');
     if (monthYearEl) monthYearEl.innerText = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) + " Summary";
     let target = 0, paid = 0, arrears = 0, spend = 0;
-    db.customers.forEach(c => { target += n(c.price); paid += n(c.paidThisMonth); if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth)); });
+    db.customers.forEach(c => {
+        target += n(c.price); paid += n(c.paidThisMonth);
+        if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth));
+    });
     db.expenses.forEach(e => spend += n(e.amt));
     const profit = paid - spend; const progress = target > 0 ? (paid / target) * 100 : 0;
     const map = { 'currProfit': `£${profit.toFixed(2)}`, 'statsIncome': `£${paid.toFixed(2)}`, 'statsSpend': `£${spend.toFixed(2)}`, 'statsArrears': `£${arrears.toFixed(2)}`, 'statsTarget': `£${target.toFixed(2)}`, 'statsRemaining': `£${(target - paid).toFixed(2)}`, 'progressPercent': `${Math.round(progress)}%` };
@@ -101,7 +104,7 @@ window.renderStats = () => {
     const histBox = document.getElementById('monthlyHistoryContainer');
     if(histBox) {
         histBox.innerHTML = '';
-        if (db.history.length === 0) histBox.innerHTML = '<div class="empty-history-msg">Month-end snapshots appear here.</div>';
+        if (db.history.length === 0) histBox.innerHTML = '<div class="customer-pill-bubble" style="justify-content:center; opacity:0.5">Month-end snapshots appear here.</div>';
         else [...db.history].reverse().forEach(h => {
             const div = document.createElement('div'); div.className = 'customer-pill-bubble';
             div.innerHTML = `<div><strong>${h.month} ${h.year}</strong><small>SNAPSHOT</small></div><div style="font-weight:900; color:var(--success)">£${n(h.profit).toFixed(2)}</div>`;
@@ -111,8 +114,7 @@ window.renderStats = () => {
 };
 
 window.addExpense = () => {
-    const desc = document.getElementById('expDesc').value;
-    const amt = n(document.getElementById('expAmt').value);
+    const desc = document.getElementById('expDesc').value, amt = n(document.getElementById('expAmt').value);
     if(!desc || amt <= 0) return;
     db.expenses.push({ id: Date.now(), desc, amt, date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) });
     saveData(); renderAll();
