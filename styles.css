@@ -30,41 +30,48 @@ input:checked + .slider-round:before { transform: translateX(26px); content: "�
 .home-grid button small { font-size: 16px; font-weight: 900; text-transform: uppercase; }
 .full-tile { grid-column: 1 / -1; background: var(--accent) !important; color: white !important; height: 130px !important; }
 
-/* 🛠️ NAVIGATION - v31.3 RESTORED SCALING */
+/* 🛠️ NAVIGATION */
 .nav-back { width: calc(100% - 40px); height: 60px; border-radius: 30px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px; margin: 0 20px 25px; display: block; }
 .dual-nav-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px 25px; }
+.nav-half-surgical { height: 60px !important; border-radius: 20px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px !important; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
 
-/* New Surgical class to prevent button shrinkage */
-.nav-half-surgical { 
-    height: 60px !important; 
-    border-radius: 20px; 
-    border: none; 
-    background: var(--card); 
-    color: var(--accent); 
-    font-weight: 900; 
-    font-size: 18px !important; 
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+/* ✨ SETUP v31.4 FIXED SCALING */
+.setup-card { background: var(--card); margin: 0 20px 25px; padding: 25px; border-radius: 35px; box-shadow: 0 10px 20px rgba(0,0,0,0.04); }
+.entry-row-surgical { 
+    display: flex; 
+    align-items: center; 
+    height: 75px !important; /* Forced Scale */
+    border-bottom: 1px solid rgba(0,0,0,0.05); 
+    gap: 15px; 
 }
+.entry-row-surgical span { font-size: 22px; width: 30px; text-align: center; }
+.entry-row-surgical input { color: var(--text); font-size: 18px; width: 100%; border:none; background:transparent; outline:none; }
+#cNotes { width: 100%; min-height: 150px !important; background: var(--bg); border: none; border-radius: 20px; padding: 15px; color: var(--text); font-size: 16px; margin-top: 15px; }
 
-.search-box-surgical { width: 100%; padding: 0 20px; margin-bottom: 25px; }
-.search-box-surgical input { width: 100%; height: 65px; border-radius: 20px; border: none; background: var(--card); padding: 0 25px; font-size: 18px; color: var(--text); }
-
-.ledger-hero-display { background: var(--card); border: 2px solid var(--danger); margin: 0 20px 25px; padding: 30px; border-radius: 35px; text-align: center; }
-.ledger-hero-display div { font-size: 45px; font-weight: 900; }
-.exp-pill { background: var(--card); padding: 20px; border-radius: 25px; display: flex; justify-content: space-between; margin-bottom: 12px; border-left: 5px solid var(--danger); }
-
-.stats-hero-surgical { background: var(--card); border: 3px solid var(--accent); padding: 35px 20px; border-radius: 40px; text-align: center; margin-bottom: 20px; }
-.stats-hero-surgical div { font-size: 50px; font-weight: 900; }
-
+/* 🏦 BANK VAULT */
 .bank-vault { background: var(--card); margin: 0 20px 40px; padding: 30px; border-radius: 35px; border: 2.5px solid rgba(0,122,255,0.15); }
+.vault-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .vault-button-stack { display: flex; flex-direction: column; gap: 8px; }
 .vault-btn-common { min-width: 120px; height: 42px; border-radius: 12px; font-weight: 900; font-size: 11px; border: none; text-transform: uppercase; }
+.vault-unlock-surgical { background: var(--accent); color: white; }
+.vault-copy-btn { background: #8e8e93; color: white; }
 .bank-field-fixed { width: 100%; height: 55px; background: var(--bg); border-radius: 15px; margin-bottom: 10px; padding: 0 15px; color: var(--text); border:none; display:block; font-weight: 600; }
 .bank-airgap { margin-top: 30px !important; }
 
 .btn-reset-surgical { width: 100%; height: 75px; border-radius: 25px; border: none; background: var(--danger); color: white; font-weight: 900; font-size: 18px; }
-.cust-pill { background: var(--card); padding: 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 15px; position: relative; }
+
+/* 👥 LISTS */
+.search-box-surgical { width: 100%; padding: 0 20px; margin-bottom: 25px; }
+.search-box-surgical input { width: 100%; height: 65px; border-radius: 20px; border: none; background: var(--card); padding: 0 25px; font-size: 18px; color: var(--text); }
+.cust-pill { background: var(--card); padding: 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 15px; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
 .arrears-badge { background: var(--danger); color: white; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 8px; position: absolute; top: -5px; right: 20px; }
+
+/* LEDGER & STATS */
+.ledger-hero-display { background: var(--card); border: 2px solid var(--danger); margin: 0 20px 25px; padding: 30px; border-radius: 35px; text-align: center; }
+.ledger-hero-display div { font-size: 45px; font-weight: 900; }
+.exp-pill { background: var(--card); padding: 20px; border-radius: 25px; display: flex; justify-content: space-between; margin-bottom: 12px; border-left: 5px solid var(--danger); }
+.stats-hero-surgical { background: var(--card); border: 3px solid var(--accent); padding: 35px 20px; border-radius: 40px; text-align: center; margin-bottom: 20px; }
+.stats-hero-surgical div { font-size: 50px; font-weight: 900; }
 
 .weeks-hub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
 .weeks-hub-grid button { height: 110px; border-radius: 25px; border: none; background: #1c1c1e; color: white; font-weight: 900; font-size: 22px; }
@@ -77,4 +84,5 @@ input:checked + .slider-round:before { transform: translateX(26px); content: "�
 .modal-overlay.hidden { display: none !important; }
 .modal-content { background:var(--card); padding:30px; border-radius:35px; width:90%; text-align: center; }
 .btn-primary-large { width: 100%; height: 75px; border-radius: 25px; border: none; background: var(--accent); color: white; font-weight: 900; font-size: 20px; }
+.hidden { display: none !important; }
 #global-version-footer { width: 100%; text-align: center; padding: 30px 0; font-size: 10px; font-weight: 900; opacity: 0.3; text-transform: uppercase; }
