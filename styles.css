@@ -1,4 +1,4 @@
-/* 🧱 ARCHITECTURE QUARANTINE v37.6 */
+/* 🧱 ARCHITECTURE QUARANTINE v37.7 */
 :root { 
     --accent: #007aff; --bg: #f2f2f7; --card: #ffffff; --text: #000; 
     --success: #34C759; --danger: #ff453a; 
@@ -12,13 +12,11 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-hei
 .tab-content.active { display: flex !important; flex-direction: column; width: 100%; }
 
 /* 🛡️ HEADER */
-#G-HEADER { width: 100%; background: transparent; }
+#G-HEADER { width: 100%; }
 .G-LOGO-WRAP { width: 100%; display: flex; justify-content: center; padding: 15px 0; }
 .G-LOGO-WRAP img { width: 100%; height: auto; display: block; object-fit: contain; }
 .G-NAV-ZONE { text-align: center; padding-bottom: 20px; }
 #dateText { font-size: 26px; font-weight: 900; color: var(--accent); }
-
-/* iOS SWITCH */
 .G-SWITCH-WRAP { margin-top: 15px; display: flex; justify-content: center; }
 .ios-switch { position: relative; display: inline-block; width: 51px; height: 31px; }
 .ios-switch input { opacity: 0; width: 0; height: 0; }
@@ -27,7 +25,7 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-hei
 input:checked + .ios-slider { background-color: var(--success); }
 input:checked + .ios-slider:before { transform: translateX(20px); }
 
-/* 🏠 HOME HUB & SYNC */
+/* 🏠 HOME & SYNC */
 .HM-GRID { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
 .HM-GRID button { height: 125px; border-radius: 30px; background: var(--card); border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 15px rgba(0,0,0,0.05); color: var(--text); }
 .HM-GRID span { font-size: 40px; color: var(--accent); }
@@ -81,17 +79,15 @@ input:checked + .ios-slider:before { transform: translateX(20px); }
 .LD-ADD-BTN { height: 65px; background: var(--accent); color: white; border-radius: 15px; border: none; font-weight: 900; font-size: 18px; }
 .LD-PILL { background: var(--card); padding: 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 15px; border-left: 6px solid var(--danger); }
 
-/* 📅 WEEKLY */
+/* 📅 WEEKLY & DAY PICKER */
 .WK-HUB-GRID { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 0 20px; }
 .WK-TILE { height: 115px !important; border-radius: 25px; border: none; background: var(--grad); color: white; font-weight: 900; font-size: 24px; }
 .WK-FULL { grid-column: 1 / -1; }
 .WK-NAV-ROW { display: flex; justify-content: space-between; padding: 0 20px 15px; }
 .WK-NAV-ROW button { height: 60px; width: calc(50% - 10px); border-radius: 20px; border: none; background: var(--card); color: var(--accent); font-weight: 900; }
-
 .WK-DAY-PICKER { display: flex; justify-content: space-between; padding: 0 10px; margin-bottom: 15px; gap: 4px; }
 .DAY-BTN { flex: 1; height: 50px; border: none; background: var(--card); color: var(--text); font-weight: 800; border-radius: 10px; font-size: 13px; }
 .DAY-BTN.active { background: var(--accent); color: white; }
-
 .WK-PLAN-BTN { width: calc(100% - 40px); height: 65px; margin: 0 20px 20px; border-radius: 20px; border: none; background: #5856d6; color: white; font-weight: 900; }
 .WK-LEGEND { display: flex; justify-content: center; gap: 15px; padding-bottom: 20px; font-size: 11px; font-weight: 800; opacity: 0.6; }
 
