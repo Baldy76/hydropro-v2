@@ -133,21 +133,16 @@ window.showJobBriefing = (id) => {
     document.getElementById('briefingModal').classList.remove('hidden');
 };
 
-/* --- 🍏 CSV BACKUP ENGINE v37.5 --- */
+/* --- 💾 CSV BACKUP ENGINE --- */
 window.exportData = () => {
-    // Customers CSV
     let cCSV = "Name,Phone,HouseNum,Street,Postcode,Day,Price,Week,Notes\n";
     db.customers.forEach(c => {
         cCSV += `"${c.name}","${c.phone||''}","${c.houseNum||''}","${c.street||''}","${c.postcode||''}","${c.day}","${c.price}","${c.week}","${(c.notes||'').replace(/\n/g,' ')}"\n`;
     });
     downloadCSV(cCSV, `HydroPro_Customers_${new Date().toLocaleDateString()}.csv`);
-
-    // Expenses CSV
     if(db.expenses.length > 0) {
         let eCSV = "Date,Category,Description,Amount\n";
-        db.expenses.forEach(e => {
-            eCSV += `"${e.date}","${e.cat}","${e.desc}","${e.amt}"\n`;
-        });
+        db.expenses.forEach(e => { eCSV += `"${e.date}","${e.cat}","${e.desc}","${e.amt}"\n`; });
         downloadCSV(eCSV, `HydroPro_Expenses_${new Date().toLocaleDateString()}.csv`);
     }
 };
@@ -178,7 +173,7 @@ window.importData = (event) => {
                 });
             }
         });
-        if(newCusts.length > 0 && confirm(`Found ${newCusts.length} customers. Restore them?`)) {
+        if(newCusts.length > 0 && confirm(`Restore ${newCusts.length} customers?`)) {
             db.customers = [...db.customers, ...newCusts]; saveData(); location.reload();
         }
     };
@@ -187,7 +182,7 @@ window.importData = (event) => {
 
 window.nuclearReset = () => {
     if(confirm("☢️ NUCLEAR OPTION: Delete EVERYTHING?")) {
-        if(confirm("FINAL WARNING: This wipes all customers, history and ledger. Proceed?")) {
+        if(confirm("FINAL WARNING: This cannot be undone. Proceed?")) {
             localStorage.removeItem(DB_KEY); location.reload();
         }
     }
@@ -228,4 +223,4 @@ window.markAsPaid = (id) => { const c = db.customers.find(x => x.id === id); if(
 window.updateHeader = () => { document.getElementById('dateText').innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }); };
 window.launchRoutePlanner = () => { const list = db.customers.filter(c => c.week == curWeek && c.day == workingDay && !c.cleaned); if(list.length === 0) return alert("Done!"); const baseUrl = "https://www.google.com/maps/dir/"; const stops = list.map(c => encodeURIComponent(`${c.houseNum} ${c.street} ${c.postcode}`)).join('/'); window.open(`${baseUrl}${stops}`, '_blank'); };
 window.closeBriefing = () => document.getElementById('briefingModal').classList.add('hidden');
-window.completeCycle = () => { if(confirm("Clear month?")) { db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload(); } };
+window.completeCycle = () => { if(confirm("Clear month? Statuses reset but history is kept.")) { db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload(); } };
