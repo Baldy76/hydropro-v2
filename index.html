@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v25.6</title>
-    <link rel="stylesheet" href="styles.css?v=256">
+    <title>Hydro Pro v25.7</title>
+    <link rel="stylesheet" href="styles.css?v=257">
 </head>
 <body class="light-mode">
 
@@ -33,19 +33,17 @@
 
         <section id="fence-master" class="tab-content">
             <button class="back-home-pill-top" onclick="openTab('fence-home')">🏠 Back to Home</button>
-            
             <div class="search-container-fixed">
                 <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterFence()">
             </div>
-            
             <div id="master-list-container" class="iron-list-stack"></div>
-
             <div class="fixed-action-footer">
                 <button class="btn-new-month" onclick="completeCycle()">🚀 START NEW MONTH</button>
             </div>
         </section>
 
         <section id="fence-setup" class="tab-content">
+            <button class="back-home-pill-top" onclick="openTab('fence-home')">🏠 Back to Home</button>
             <div class="setup-card">
                 <h3 class="setup-label">👤 Add/Edit Customer</h3>
                 <input type="hidden" id="editId">
@@ -61,17 +59,20 @@
                 </div>
                 <button class="setup-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
-            <button class="back-home-pill" onclick="openTab('fence-home')">🏠 Back to Home</button>
         </section>
 
-        <section id="fence-stats" class="tab-content"><div id="stats-dashboard-container"></div><button class="back-home-pill" onclick="openTab('fence-home')">🏠 Back to Home</button></section>
-        <section id="fence-ledger" class="tab-content"></section>
-        <section id="fence-weeks" class="tab-content"></section>
+        <section id="fence-stats" class="tab-content">
+            <button class="back-home-pill-top" onclick="openTab('fence-home')">🏠 Back to Home</button>
+            <div id="stats-dashboard-container"></div>
+        </section>
+
+        <section id="fence-ledger" class="tab-content"><button class="back-home-pill-top" onclick="openTab('fence-home')">🏠 Back to Home</button></section>
+        <section id="fence-weeks" class="tab-content"><button class="back-home-pill-top" onclick="openTab('fence-home')">🏠 Back to Home</button></section>
 
     </div>
 
-    <footer id="footer-version">v25.6 - Data Recovery Engine Active</footer>
+    <footer id="footer-version">v25.7 - Top Navigation Standardized</footer>
 
-    <script src="app.js?v=256"></script>
+    <script src="app.js?v=257"></script>
 </body>
 </html>
