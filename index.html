@@ -3,132 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v36.7</title>
-    <link rel="stylesheet" href="styles.css?v=367">
+    <title>Hydro Pro v36.8</title>
+    <link rel="stylesheet" href="styles.css?v=368">
 </head>
 <body class="light-mode">
 
-    <header id="global-shield">
-        <div class="logo-hero-container">
-            <img src="Logo.png" id="mainLogo" alt="HydroPro">
-        </div>
-        <div class="header-content-stack">
-            <span id="greetText"></span>
+    <header id="G-HEADER">
+        <div class="G-LOGO-WRAP"><img src="Logo.png" id="mainLogo"></div>
+        <div class="G-NAV-ZONE">
             <span id="dateText"></span>
-            <div class="slider-wrapper">
+            <div class="G-SWITCH-WRAP">
                 <label class="ios-switch">
                     <input type="checkbox" id="themeCheckbox">
-                    <span class="ios-track"></span>
+                    <span class="ios-slider"></span>
                 </label>
             </div>
         </div>
     </header>
 
-    <main id="app-viewport">
+    <main id="G-VIEWPORT">
         <section id="home-root" class="tab-content active">
-            <div class="main-hub-grid">
-                <button class="hub-tile" onclick="openTab('setup-root')"><span>✨</span><small>Setup</small></button>
-                <button class="hub-tile" onclick="openTab('master-root')"><span>👥</span><small>Custs</small></button>
-                <button class="hub-tile" onclick="openTab('stats-root')"><span>📊</span><small>Stats</small></button>
-                <button class="hub-tile" onclick="openTab('ledger-root')"><span>💸</span><small>Ledger</small></button>
-                <button class="hub-tile tile-full" onclick="openTab('weeks-root')"><span>📅</span><small>Weekly Work</small></button>
+            <div class="HM-GRID">
+                <button onclick="openTab('setup-root')"><span>✨</span><small>Setup</small></button>
+                <button onclick="openTab('master-root')"><span>👥</span><small>Custs</small></button>
+                <button onclick="openTab('stats-root')"><span>📊</span><small>Stats</small></button>
+                <button onclick="openTab('ledger-root')"><span>💸</span><small>Ledger</small></button>
+                <button class="HM-FULL" onclick="openTab('weeks-root')"><span>📅</span><small>Weekly Work</small></button>
             </div>
         </section>
 
         <section id="master-root" class="tab-content">
-            <button class="btn-back-global" onclick="openTab('home-root')">🏠 Home</button>
-            <div class="search-box-wrap">
-                <input type="text" id="mainSearch" placeholder="🔍 Search customers..." oninput="renderMaster()">
-            </div>
+            <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home</button>
+            <div class="CT-SEARCH-WRAP"><input type="text" id="mainSearch" placeholder="🔍 Search customers..." oninput="renderMaster()"></div>
             <div id="master-list-container"></div>
         </section>
 
         <section id="setup-root" class="tab-content">
-            <button class="btn-back-global" onclick="openTab('home-root')">🏠 Home</button>
-            <div class="setup-form-card">
+            <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home</button>
+            <div class="SU-CARD">
                 <input type="hidden" id="editId">
-                <div class="setup-form-row"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
-                <div class="setup-form-row"><span>📱</span><input type="tel" id="cPhone" placeholder="Phone"></div>
-                <div class="setup-form-row"><span>🏠</span><input type="text" id="cHouseNum" placeholder="House No."></div>
-                <div class="setup-form-row"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
-                <div class="setup-form-row"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
-                <div class="setup-form-row">
-                    <span>📅</span>
-                    <select id="cDay" class="setup-select">
+                <div class="SU-ROW"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
+                <div class="SU-ROW"><span>📱</span><input type="tel" id="cPhone" placeholder="Phone"></div>
+                <div class="SU-ROW"><span>🏠</span><input type="text" id="cHouseNum" placeholder="House No."></div>
+                <div class="SU-ROW"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
+                <div class="SU-ROW"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
+                <div class="SU-ROW"><span>📅</span>
+                    <select id="cDay" class="SU-SELECT">
                         <option value="Mon">Monday</option><option value="Tue">Tuesday</option>
                         <option value="Wed">Wednesday</option><option value="Thu">Thursday</option>
                         <option value="Fri">Friday</option>
                     </select>
                 </div>
-                <div class="setup-form-row"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
-                <textarea id="cNotes" placeholder="Private Notes..."></textarea>
-                <button class="btn-setup-save" onclick="saveCustomer()">✨ Save Customer</button>
+                <div class="SU-ROW"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
+                <textarea id="cNotes" class="SU-NOTES" placeholder="Private Notes..."></textarea>
+                <button class="SU-SAVE-BTN" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
-            <div class="reset-area"><button class="btn-reset-month" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
+            <div class="SU-RESET-ZONE"><button class="SU-RESET-BTN" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
+        </section>
+
+        <section id="stats-root" class="tab-content">
+            <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home</button>
+            <div id="stats-container"></div>
         </section>
 
         <section id="ledger-root" class="tab-content">
-            <button class="btn-back-global" onclick="openTab('home-root')">🏠 Home</button>
-            <div class="ledger-hero-box">
+            <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home</button>
+            <div class="LD-HERO">
                 <small>MONTH SPEND</small>
                 <div id="ledgerTotalDisplay">£0.00</div>
             </div>
-            <div class="ledger-input-card">
-                <input type="text" id="expDesc" class="heavy-input" placeholder="Description">
-                <input type="number" id="expAmt" class="heavy-input" placeholder="Amount £">
-                <select id="expCat" class="heavy-select">
+            <div class="LD-INPUT-CARD">
+                <input type="text" id="expDesc" class="LD-FIELD" placeholder="Description">
+                <input type="number" id="expAmt" class="LD-FIELD" placeholder="Amount £">
+                <select id="expCat" class="LD-SELECT">
                     <option value="⛽ Fuel">⛽ Fuel</option>
                     <option value="🛠️ Gear">🛠️ Gear</option>
                     <option value="🍔 Food">🍔 Food</option>
                     <option value="📦 Misc">📦 Misc</option>
                 </select>
-                <button class="btn-ledger-add" onclick="addExpense()">Add Expense</button>
+                <button class="LD-ADD-BTN" onclick="addExpense()">Add Expense</button>
             </div>
             <div id="ledger-list-container"></div>
         </section>
 
-        <section id="stats-root" class="tab-content">
-            <button class="btn-back-global" onclick="openTab('home-root')">🏠 Home</button>
-            <div id="stats-container"></div>
-        </section>
-
         <section id="weeks-root" class="tab-content">
-            <button class="btn-back-global" onclick="openTab('home-root')">🏠 Home</button>
-            <div class="weeks-grid-master">
-                <button class="week-tile" onclick="viewWeek(1)">Week 1</button>
-                <button class="week-tile" onclick="viewWeek(2)">Week 2</button>
-                <button class="week-tile" onclick="viewWeek(3)">Week 3</button>
-                <button class="week-tile" onclick="viewWeek(4)">Week 4</button>
-                <button class="week-tile week-tile-full" onclick="viewWeek(5)">Week 5</button>
+            <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home</button>
+            <div class="WK-HUB-GRID">
+                <button class="WK-TILE" onclick="viewWeek(1)">Week 1</button>
+                <button class="WK-TILE" onclick="viewWeek(2)">Week 2</button>
+                <button class="WK-TILE" onclick="viewWeek(3)">Week 3</button>
+                <button class="WK-TILE" onclick="viewWeek(4)">Week 4</button>
+                <button class="WK-TILE WK-FULL" onclick="viewWeek(5)">Week 5</button>
             </div>
         </section>
 
         <section id="week-view-root" class="tab-content">
-            <div class="nav-spread-row"><button onclick="openTab('weeks-root')">⬅️ Back</button><button onclick="openTab('home-root')">🏠 Home</button></div>
-            <div class="day-picker-container">
-                <button class="day-btn active" onclick="setWorkingDay('Mon', this)">M</button>
-                <button class="day-btn" onclick="setWorkingDay('Tue', this)">T</button>
-                <button class="day-btn" onclick="setWorkingDay('Wed', this)">W</button>
-                <button class="day-btn" onclick="setWorkingDay('Thu', this)">T</button>
-                <button class="day-btn" onclick="setWorkingDay('Fri', this)">F</button>
+            <div class="WK-NAV-ROW"><button onclick="openTab('weeks-root')">⬅️ Back</button><button onclick="openTab('home-root')">🏠 Home</button></div>
+            <div class="WK-DAY-PICKER">
+                <button class="DAY-BTN active" onclick="setWorkingDay('Mon', this)">M</button>
+                <button class="DAY-BTN" onclick="setWorkingDay('Tue', this)">T</button>
+                <button class="DAY-BTN" onclick="setWorkingDay('Wed', this)">W</button>
+                <button class="DAY-BTN" onclick="setWorkingDay('Thu', this)">T</button>
+                <button class="DAY-BTN" onclick="setWorkingDay('Fri', this)">F</button>
             </div>
-            <div class="planning-action-row"><button class="btn-plan-route" onclick="launchRoutePlanner()">🗺️ Plan Route</button></div>
-            <div class="legend-pill-wrap"><div class="legend-pill"><span>📱 Call</span><span>📍 Map</span><span>🧼 Clean</span><span>£ Paid</span></div></div>
+            <div class="WK-PLAN-ROW"><button class="WK-PLAN-BTN" onclick="launchRoutePlanner()">🗺️ Plan Route</button></div>
+            <div class="WK-LEGEND"><span>📱 Call</span><span>📍 Map</span><span>🧼 Clean</span><span>£ Pay</span></div>
             <div id="week-list-container"></div>
         </section>
     </main>
 
     <div id="briefingModal" class="modal-overlay hidden" onclick="closeBriefing()">
-        <div class="modal-content briefing-box" onclick="event.stopPropagation()">
+        <div class="modal-content" onclick="event.stopPropagation()">
             <div id="briefingData"></div>
             <div id="quickSettleContainer"></div>
-            <div class="briefing-footer">
-                <button class="btn-brief-edit" id="briefEditBtn">⚙️ Edit Info</button>
-                <button class="btn-brief-close" onclick="closeBriefing()">CLOSE</button>
-            </div>
+            <button class="MD-EDIT" id="briefEditBtn">⚙️ Edit Info</button>
+            <button class="MD-CLOSE" onclick="closeBriefing()">CLOSE</button>
         </div>
     </div>
 
-    <script src="app.js?v=367"></script>
+    <script src="app.js?v=368"></script>
 </body>
 </html>
