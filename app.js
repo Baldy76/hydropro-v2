@@ -11,12 +11,13 @@ window.onload = () => {
     document.body.classList.toggle('dark-mode', isDark);
     document.getElementById('themeToggleBtn').innerText = isDark ? '☀️' : '🌙';
 
-    // Mask for Sort Code on Setup page
-    const bSort = document.getElementById('bankSort');
-    if(bSort) {
-        bSort.addEventListener('input', (e) => {
-            let val = e.target.value.replace(/\D/g, '');
-            if (val.length > 6) val = val.substring(0, 6);
+    // Bank Detail Loader
+    const bN = document.getElementById('bankName'), bS = document.getElementById('bankSort'), bA = document.getElementById('bankAcc');
+    if(bN) bN.value = db.bank.name; if(bA) bA.value = db.bank.acc;
+    if(bS) {
+        bS.value = db.bank.sort;
+        bS.addEventListener('input', (e) => {
+            let val = e.target.value.replace(/\D/g, ''); if (val.length > 6) val = val.substring(0, 6);
             e.target.value = val.match(/.{1,2}/g)?.join('-') || val;
         });
     }
@@ -38,14 +39,13 @@ window.openTab = (fenceId) => {
     renderAll();
 };
 
-/* --- FENCE: SETUP ROBOTS --- */
+/* --- FENCE: SETUP LOGIC --- */
 
 window.toggleBankLock = () => {
     const fields = document.querySelectorAll('.bank-field');
     const lockBtn = document.getElementById('bankLockBtn');
     const saveBtn = document.getElementById('bankSaveBtn');
     const isLocked = fields[0].readOnly;
-
     fields.forEach(f => f.readOnly = !isLocked);
     lockBtn.innerText = isLocked ? "🔒 LOCK" : "🔓 UNLOCK";
     saveBtn.classList.toggle('hidden', !isLocked);
@@ -57,15 +57,12 @@ window.saveBankDetails = () => {
         sort: document.getElementById('bankSort').value,
         acc: document.getElementById('bankAcc').value
     };
-    saveData();
-    toggleBankLock();
-    alert("Bank Details Secured! 🏦");
+    saveData(); toggleBankLock(); alert("Bank Details Locked! 🏦");
 };
 
 window.saveCustomer = () => {
     const name = document.getElementById('cName').value;
-    if(!name) return alert("Please enter a name");
-    
+    if(!name) return alert("Name is required!");
     const id = document.getElementById('editId').value || Date.now().toString();
     const entry = {
         id, name,
@@ -77,25 +74,17 @@ window.saveCustomer = () => {
         notes: document.getElementById('cNotes').value,
         week: "1", cleaned: false, paidThisMonth: 0
     };
-
     const idx = db.customers.findIndex(c => c.id === id);
-    if(idx > -1) db.customers[idx] = entry; else db.customers.push(entry);
-    
-    saveData();
-    alert("Customer Saved! ✨");
-    openTab('fence-home');
-    // Clear fields
-    ['editId', 'cName', 'cPhone', 'cHouseNum', 'cStreet', 'cPostcode', 'cPrice', 'cNotes'].forEach(id => {
-        document.getElementById(id).value = '';
-    });
+    if(idx > -1) db.customers[idx] = {...db.customers[idx], ...entry}; 
+    else db.customers.push(entry);
+    saveData(); alert("Saved! ✨"); openTab('fence-home');
 };
 
-/* --- FENCE: STATS ROBOTS --- */
+/* --- FENCE: STATS RENDERER --- */
 
 window.renderStatsFence = () => {
     const container = document.getElementById('stats-dashboard-container');
     if (!container) return;
-
     let target = 0, paid = 0, arrears = 0, spend = 0;
     db.customers.forEach(c => {
         target += (parseFloat(c.price) || 0);
@@ -107,47 +96,18 @@ window.renderStatsFence = () => {
     db.expenses.forEach(e => spend += (parseFloat(e.amt) || 0));
     const profit = paid - spend;
     const progress = target > 0 ? Math.round((paid / target) * 100) : 0;
-
     container.innerHTML = `
-        <div class="stats-hero">
-            <small style="font-weight:700; opacity:0.6;">Summary</small>
-            <span class="main-amt">£${profit.toFixed(2)}</span>
-            <small style="font-weight:600; opacity:0.7">💰 Total Profit in Pocket</small>
-        </div>
-        <div class="progress-bubble">
-            <strong style="font-size:18px;">Monthly Progress ${progress}%</strong>
-            <div class="bar-bg"><div class="bar-fill" style="width:${progress}%"></div></div>
-            <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700; opacity:0.5;">
-                <span>TARGET: £${target.toFixed(2)}</span>
-                <span>REMAINING: £${(target - paid).toFixed(2)}</span>
-            </div>
-        </div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; padding:0 20px 20px;">
-            <div class="progress-bubble" style="margin:0; text-align:center; padding:20px 10px;">
-                <small style="font-size:11px; display:block; margin-bottom:5px;">INCOME 🔍</small>
-                <div style="color:var(--success); font-size:24px; font-weight:800">£${paid.toFixed(2)}</div>
-            </div>
-            <div class="progress-bubble" style="margin:0; text-align:center; padding:20px 10px;">
-                <small style="font-size:11px; display:block; margin-bottom:5px;">SPEND 🔍</small>
-                <div style="color:var(--danger); font-size:24px; font-weight:800">£${spend.toFixed(2)}</div>
-            </div>
-        </div>
+        <div class="stats-hero"><small style="font-weight:700; opacity:0.6;">Summary</small><span class="main-amt">£${profit.toFixed(2)}</span><small style="font-weight:600; opacity:0.7">💰 Total Profit in Pocket</small></div>
+        <div class="progress-bubble"><strong style="font-size:18px;">Monthly Progress ${progress}%</strong><div class="bar-bg"><div class="bar-fill" style="width:${progress}%"></div></div><div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700; opacity:0.5;"><span>TARGET: £${target.toFixed(2)}</span><span>REMAINING: £${(target - paid).toFixed(2)}</span></div></div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; padding:0 20px 20px;"><div class="progress-bubble" style="margin:0; text-align:center; padding:20px 10px;"><small style="font-size:11px; display:block; margin-bottom:5px;">INCOME 🔍</small><div style="color:var(--success); font-size:24px; font-weight:800">£${paid.toFixed(2)}</div></div><div class="progress-bubble" style="margin:0; text-align:center; padding:20px 10px;"><small style="font-size:11px; display:block; margin-bottom:5px;">SPEND 🔍</small><div style="color:var(--danger); font-size:24px; font-weight:800">£${spend.toFixed(2)}</div></div></div>
         <div class="arrears-bubble">Arrears 🔍 £${arrears.toFixed(2)}</div>
     `;
 };
 
-/* --- GLOBAL TOOLS --- */
+/* --- GLOBAL CORE --- */
 
 window.saveData = () => localStorage.setItem(DB_KEY, JSON.stringify(db));
-
-window.renderAll = () => {
-    renderStatsFence();
-    // Load existing bank data into setup fields
-    document.getElementById('bankName').value = db.bank.name || '';
-    document.getElementById('bankSort').value = db.bank.sort || '';
-    document.getElementById('bankAcc').value = db.bank.acc || '';
-};
-
+window.renderAll = () => { renderStatsFence(); };
 window.updateHeader = () => {
     const dt = new Date();
     document.getElementById('dateText').innerText = dt.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' });
