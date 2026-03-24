@@ -24,7 +24,6 @@ window.renderAll = () => {
     renderLedger();
     renderStats();
     renderWeek();
-    // Sync bank fields
     if(document.getElementById('bankName')) {
         document.getElementById('bankName').value = db.bank.name || '';
         document.getElementById('bankSort').value = db.bank.sort || '';
@@ -32,39 +31,7 @@ window.renderAll = () => {
     }
 };
 
-/* --- ROBOT: MASTER --- */
-window.renderMaster = () => {
-    const container = document.getElementById('master-list-container');
-    if(!container) return; container.innerHTML = '';
-    const search = (document.getElementById('mainSearch').value || "").toLowerCase();
-    db.customers.forEach(c => {
-        if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
-            const div = document.createElement('div'); div.className = 'cust-pill';
-            div.onclick = () => editCust(c.id);
-            div.innerHTML = `<div><strong style="font-size:20px;">${c.name}</strong><br><small style="color:var(--accent);font-weight:700;">${c.houseNum} ${c.street}</small></div>
-                             <div style="font-weight:900; color:var(--success);">£${n(c.price).toFixed(2)}</div>`;
-            container.appendChild(div);
-        }
-    });
-};
-
-/* --- ROBOT: LEDGER --- */
-window.renderLedger = () => {
-    const container = document.getElementById('ledger-list-container');
-    const totalEl = document.getElementById('ledgerTotal');
-    if(!container) return; container.innerHTML = '';
-    let total = 0;
-    db.expenses.forEach(e => total += n(e.amt));
-    if(totalEl) totalEl.innerText = `£${total.toFixed(2)}`;
-    db.expenses.slice().reverse().forEach(e => {
-        const div = document.createElement('div'); div.className = 'exp-pill';
-        div.innerHTML = `<div><strong>${e.desc}</strong><br><small>${e.date}</small></div>
-                         <div style="color:var(--danger); font-weight:900;">-£${n(e.amt).toFixed(2)}</div>`;
-        container.appendChild(div);
-    });
-};
-
-/* --- ROBOT: STATS --- */
+/* --- STATS ROBOT (RESTORED) --- */
 window.renderStats = () => {
     const container = document.getElementById('stats-container');
     if(!container) return;
@@ -75,14 +42,33 @@ window.renderStats = () => {
     });
     db.expenses.forEach(e => spend += n(e.amt));
     const profit = paid - spend, progress = target > 0 ? Math.round((paid/target)*100) : 0;
+    
     container.innerHTML = `
         <div class="stats-hero"><div>£${profit.toFixed(2)}</div><small>PROFIT IN POCKET</small></div>
-        <div class="progress-bubble"><strong>Progress ${progress}%</strong><div class="bar-bg"><div class="bar-fill" style="width:${progress}%"></div></div>
-        <div style="display:flex; justify-content:space-between; font-size:12px; opacity:0.6; font-weight:700;"><span>TARGET £${target.toFixed(2)}</span><span>PAID £${paid.toFixed(2)}</span></div></div>
+        
+        <div class="stats-grid-2x1">
+            <div class="stats-mini-card">
+                <small>MONTH INCOME</small>
+                <div style="color:var(--success)">£${paid.toFixed(2)}</div>
+            </div>
+            <div class="stats-mini-card">
+                <small>MONTH SPEND</small>
+                <div style="color:var(--danger)">£${spend.toFixed(2)}</div>
+            </div>
+        </div>
+
+        <div class="progress-bubble">
+            <strong>Progress ${progress}%</strong>
+            <div class="bar-bg"><div class="bar-fill" style="width:${progress}%"></div></div>
+            <div style="display:flex; justify-content:space-between; font-size:12px; opacity:0.6; font-weight:700;">
+                <span>TARGET £${target.toFixed(2)}</span>
+                <span>REMAINING £${(target - paid).toFixed(2)}</span>
+            </div>
+        </div>
         <div class="arrears-bubble">ARREARS: £${arrears.toFixed(2)}</div>`;
 };
 
-/* --- ROBOT: WEEKS --- */
+/* --- WEEKLY ROBOT --- */
 window.viewWeek = (w) => { curWeek = w; openTab('week-view-root'); };
 window.renderWeek = () => {
     const bulk = document.getElementById('bulk-box'), list = document.getElementById('week-list-container');
@@ -100,7 +86,31 @@ window.renderWeek = () => {
     });
 };
 
-/* --- ACTIONS --- */
+/* --- PRESERVED ACTIONS --- */
+window.renderMaster = () => {
+    const container = document.getElementById('master-list-container'); if(!container) return; container.innerHTML = '';
+    const search = (document.getElementById('mainSearch').value || "").toLowerCase();
+    db.customers.forEach(c => {
+        if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
+            const div = document.createElement('div'); div.className = 'cust-pill';
+            div.onclick = () => editCust(c.id);
+            div.innerHTML = `<div><strong style="font-size:20px;">${c.name}</strong><br><small style="color:var(--accent);font-weight:700;">${c.houseNum} ${c.street}</small></div><div style="font-weight:900; color:var(--success);">£${n(c.price).toFixed(2)}</div>`;
+            container.appendChild(div);
+        }
+    });
+};
+
+window.renderLedger = () => {
+    const container = document.getElementById('ledger-list-container'), totalEl = document.getElementById('ledgerTotal');
+    if(!container) return; container.innerHTML = ''; let total = 0;
+    db.expenses.forEach(e => total += n(e.amt)); if(totalEl) totalEl.innerText = `£${total.toFixed(2)}`;
+    db.expenses.slice().reverse().forEach(e => {
+        const div = document.createElement('div'); div.className = 'exp-pill';
+        div.innerHTML = `<div><strong>${e.desc}</strong><br><small>${e.date}</small></div><div style="color:var(--danger); font-weight:900;">-£${n(e.amt).toFixed(2)}</div>`;
+        container.appendChild(div);
+    });
+};
+
 window.handleClean = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
     c.cleaned = !c.cleaned; saveData(); renderWeek();
@@ -108,16 +118,10 @@ window.handleClean = (id) => {
         const msg = `Hi ${c.name}, windows cleaned at ${c.houseNum}. Price £${n(c.price).toFixed(2)}. \n\nBank: ${db.bank.name} \nSort: ${db.bank.sort} \nAcc: ${db.bank.acc}`;
         document.getElementById('msgPreview').innerText = msg;
         document.getElementById('msgModal').classList.remove('hidden');
-        document.getElementById('modalButtons').innerHTML = `<button class="btn-wa" style="width:100%;margin-bottom:10px" onclick="sendMsg('${c.phone}','wa','${encodeURIComponent(msg)}')">Send WhatsApp</button>
-            <button class="btn-sms" style="width:100%;margin-bottom:10px" onclick="sendMsg('${c.phone}','sms','${encodeURIComponent(msg)}')">Send SMS</button>
+        document.getElementById('modalButtons').innerHTML = `<button class="btn-wa" style="width:100%;margin-bottom:10px;height:55px;border-radius:15px;border:none;color:white;font-weight:900;" onclick="sendMsg('${c.phone}','wa','${encodeURIComponent(msg)}')">Send WhatsApp</button>
+            <button class="btn-sms" style="width:100%;margin-bottom:10px;height:55px;border-radius:15px;border:none;color:white;font-weight:900;" onclick="sendMsg('${c.phone}','sms','${encodeURIComponent(msg)}')">Send SMS</button>
             <button onclick="closeMsgModal()" style="width:100%;height:50px;border-radius:15px;border:none;background:#8e8e93;color:white;font-weight:900;">Skip</button>`;
     }
-};
-
-window.sendMsg = (phone, method, msg) => {
-    const clean = (phone||"").replace(/\s+/g,'');
-    window.open(method==='wa' ? `https://wa.me/${clean}?text=${msg}` : `sms:${clean}?body=${msg}`, '_blank');
-    closeMsgModal();
 };
 
 window.saveCustomer = () => {
@@ -145,11 +149,12 @@ window.toggleBankLock = () => {
     const isLocked = fields[0].readOnly; fields.forEach(f => f.readOnly = !isLocked);
     lockBtn.innerText = isLocked ? "🔒 LOCK" : "🔓 UNLOCK"; saveBtn.classList.toggle('hidden', !isLocked);
 };
-window.saveBankDetails = () => { db.bank = { name: document.getElementById('bankName').value, sort: document.getElementById('bankSort').value, acc: document.getElementById('bankAcc').value }; saveData(); toggleBankLock(); alert("Saved!"); };
+window.saveBankDetails = () => { db.bank = { name: document.getElementById('bankName').value, sort: document.getElementById('bankSort').value, acc: document.getElementById('bankAcc').value }; saveData(); toggleBankLock(); alert("Bank Details Secured!"); };
 window.markAsPaid = (id) => { const c = db.customers.find(x => x.id === id); if(c) { c.paidThisMonth = (n(c.paidThisMonth)>0)?0:c.price; saveData(); renderWeek(); renderStats(); } };
 window.toggleDarkMode = () => { const d = document.body.classList.toggle('dark-mode'); localStorage.setItem('HP_Theme', d); };
 window.closeMsgModal = () => document.getElementById('msgModal').classList.add('hidden');
 window.saveData = () => localStorage.setItem(DB_KEY, JSON.stringify(db));
+window.sendMsg = (phone, method, msg) => { const clean = (phone||"").replace(/\s+/g,''); window.open(method==='wa' ? `https://wa.me/${clean}?text=${msg}` : `sms:${clean}?body=${msg}`, '_blank'); closeMsgModal(); };
 window.updateHeader = () => { 
     const hr = new Date().getHours(), g = (hr < 12) ? "GOOD MORNING" : (hr < 18) ? "GOOD AFTERNOON" : "GOOD EVENING";
     document.getElementById('greetText').innerText = `${g}, PARTNER! ☕`;
