@@ -13,7 +13,7 @@ body { font-family: -apple-system, sans-serif; background: var(--bg); color: var
 .home-greeting { font-size: 12px !important; font-weight: 900; opacity: 0.6; text-transform: uppercase; margin-top: 10px; }
 .home-date { font-size: 22px !important; font-weight: 900; color: var(--accent); }
 
-/* 🏠 HOME HUB: ABSOLUTE DIMENSION LOCK */
+/* 🏠 HOME HUB LOCKDOWN */
 #home .home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
 #home .tile { height: 115px !important; width: 100% !important; border-radius: 28px; border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--card-bg); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
 #home .tile span { font-size: 36px !important; }
@@ -21,26 +21,14 @@ body { font-family: -apple-system, sans-serif; background: var(--bg); color: var
 #home .tile-weekly-hub { background: var(--accent); grid-column: 1 / -1; height: 125px !important; }
 #home .tile-weekly-hub small { color: #fff !important; }
 
-/* 👥 MASTER LIST: BLEED-RESET FIX */
+/* 👥 MASTER BLEED LOCK */
 .search-shield { padding: 0 15px 15px; width: 100%; box-sizing: border-box; }
-.search-input-pill { 
-    width: 100% !important; 
-    height: 64px !important; 
-    padding: 0 25px !important; 
-    border-radius: 32px; 
-    background: var(--card-bg); 
-    color: var(--text); 
-    font-size: 17px; 
-    font-weight: 600; 
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08); 
-    border: none; 
-}
-
+.search-input-pill { width: 100% !important; height: 64px !important; padding: 0 25px !important; border-radius: 32px; background: var(--card-bg); color: var(--text); font-size: 17px; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border: none; }
 .fixed-bottom-shield { padding: 15px; width: 100%; box-sizing: border-box; }
 .action-card-green { background: linear-gradient(135deg, #28a745, #34c759); border-radius: 26px; width: 100%; }
 .btn-clear-large { background: transparent; color: white; border: none; font-weight: 900; width: 100% !important; height: 70px !important; font-size: 18px; cursor: pointer; }
 
-/* ✏️ MODAL: FONT LOCKDOWN */
+/* ✏️ MODAL FONT LOCK */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 200000; display: flex; align-items: center; justify-content: center; }
 .modal-content { background: var(--card-bg); width: 88%; max-width: 400px; border-radius: 35px; padding: 35px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
 .modal-title-locked { font-size: 24px !important; font-weight: 900 !important; margin-bottom: 8px; color: var(--text); }
@@ -49,7 +37,7 @@ body { font-family: -apple-system, sans-serif; background: var(--bg); color: var
 .btn-edit { background: var(--accent); color: white; }
 .btn-cancel { background: var(--input-bg); color: var(--text); }
 
-/* 📊 STATS UI: HARD PIXEL LOCK */
+/* 📊 STATS UI PIXEL LOCK */
 #stats .stats-hero-card { background: var(--card-bg); margin: 15px; padding: 35px 20px; border-radius: 40px; text-align: center; border: 2px solid var(--accent); }
 #stats .stats-main-amount { font-size: 60px !important; font-weight: 900; }
 .stats-progress-bubble { flex-direction: column !important; align-items: stretch !important; padding: 25px !important; }
@@ -61,7 +49,7 @@ body { font-family: -apple-system, sans-serif; background: var(--bg); color: var
 #stats .stats-mini-card { background: var(--card-bg); width: 48%; padding: 25px 10px; border-radius: 25px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
 #stats .arrears-pill { background: #ff453a; color: white; margin: 0 15px 25px; padding: 22px; border-radius: 25px; text-align: center; font-weight: 800; font-size: 20px; box-shadow: 0 8px 20px rgba(255,69,58,0.3); }
 
-/* ✨ SETUP SECTION: LOCKDOWN */
+/* ✨ SETUP LOCKDOWN */
 #admin .creative-form-card { background: var(--card-bg); border-radius: 30px; padding: 20px; margin: 0 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
 #admin .fun-input-group { display: flex; align-items: center; gap: 15px; padding: 16px 0; border-bottom: 2px solid rgba(0,0,0,0.05); width: 100%; }
 #admin .fun-icon { width: 52px !important; height: 52px !important; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px !important; flex-shrink: 0; background: rgba(0,122,255,0.05); }
@@ -75,8 +63,17 @@ body { font-family: -apple-system, sans-serif; background: var(--bg); color: var
 body.dark-mode #weeksHub .tile-week-blue { background: #01579b; color: #fff; }
 #weeksHub .tile-week-5 { grid-column: 1 / -1; height: 100px !important; }
 
-/* GLOBAL SHARED */
-.customer-pill-bubble { background: var(--card-bg); margin: 0 15px 15px; padding: 22px; border-radius: 35px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+/* GLOBAL ELEMENTS */
+.customer-pill-bubble { background: var(--card-bg); margin: 0 15px 15px 15px; padding: 22px; border-radius: 35px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+.mode-switch-wrapper { position: fixed; right: 20px; top: 20px; z-index: 99999; }
+.ios-switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #8e8e93; border-radius: 34px; transition: 0.3s; }
+.slider:before { position: absolute; content: ""; height: 24px; width: 24px; left: 2px; bottom: 2px; background-color: white; border-radius: 50%; transition: 0.3s; }
+input:checked + .slider { background-color: var(--success); }
+input:checked + .slider:before { transform: translateX(22px); }
+
+.subpage-nav { padding: 0 15px 10px; }
+.back-pill { width: calc(100% - 30px); height: 52px; border-radius: 26px; border: none; background: var(--card-bg); color: var(--accent); font-weight: 900; font-size: 16px; margin: 0 15px 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
 .tab-content { display: none; }
 .tab-content.active { display: block !important; }
 .hidden { display: none !important; }
