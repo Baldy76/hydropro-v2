@@ -26,13 +26,12 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch(e) { console.error("Boot Error", e); }
 });
 
-/* --- 🌦️ WEATHER SERVICE (v38.2 api.openweathermap.org) --- */
+/* --- 🌦️ WEATHER SERVICE --- */
 async function initWeather() {
     const options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
     navigator.geolocation.getCurrentPosition(async (pos) => {
         const { latitude, longitude } = pos.coords;
         try {
-            // Verified endpoint string
             const url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${W_API_KEY}&units=metric`;
             const res = await fetch(url);
             const data = await res.json();
@@ -68,6 +67,7 @@ window.openTab = (id) => {
 
 window.renderAll = () => { renderMaster(); renderLedger(); renderStats(); renderWeek(); };
 
+/* --- 📊 STATS ENGINE (Green 100% update) --- */
 window.renderStats = () => {
     const container = document.getElementById('stats-container'); if(!container) return;
     let targetIncome = 0, paid = 0, arrears = 0, fuel = 0, gear = 0, food = 0, misc = 0;
@@ -75,7 +75,31 @@ window.renderStats = () => {
     db.expenses.forEach(e => { const cat = (e.cat||"").toLowerCase(); if(cat.includes('fuel')) fuel += n(e.amt); else if(cat.includes('gear')) gear += n(e.amt); else if(cat.includes('food')) food += n(e.amt); else misc += n(e.amt); });
     const totalSpend = fuel + gear + food + misc;
     const progressPercent = targetIncome > 0 ? Math.min(Math.round((paid / targetIncome) * 100), 100) : 0;
-    container.innerHTML = `<div class="ST-HERO"><div>£${(paid - totalSpend).toFixed(2)}</div><small>NET PROFIT</small></div><div class="ST-GRID"><div class="ST-BUBBLE" style="border-bottom: 5px solid var(--success);"><small>INCOME</small><strong>£${paid.toFixed(2)}</strong></div><div class="ST-BUBBLE" style="border-bottom: 5px solid var(--danger);"><small>SPEND</small><strong>£${totalSpend.toFixed(2)}</strong></div></div><div class="ST-PROG-CARD"><div class="ST-PROG-HEADER"><span>Monthly Target</span><span>${progressPercent}%</span></div><div class="ST-PROG-TRACK"><div class="ST-PROG-FILL" style="width:${progressPercent}%"></div></div><div class="ST-PROG-FOOTER"><span>GOAL: £${targetIncome.toFixed(0)}</span><span>REMAINING: £${Math.max(0, targetIncome - paid).toFixed(0)}</span></div></div><div class="ST-LIST-CARD"><div class="ST-ITEM"><span>⛽ Fuel</span><span>£${fuel.toFixed(2)}</span></div><div class="ST-ITEM"><span>🛠️ Gear</span><span>£${gear.toFixed(2)}</span></div><div class="ST-ITEM"><span>🍔 Food</span><span>£${food.toFixed(2)}</span></div><div class="ST-ITEM"><span>📦 Misc</span><span>£${misc.toFixed(2)}</span></div><div class="ST-TOTAL"><span>TOTAL SPEND</span><span>£${totalSpend.toFixed(2)}</span></div></div>${arrears > 0 ? `<div class="ST-ARREARS"><small style="display:block; font-size:12px; opacity:0.8;">UNPAID DEBT</small>£${arrears.toFixed(2)}</div>` : ''}`;
+    
+    // Dynamic Color Logic
+    const barColor = progressPercent >= 100 ? 'var(--success)' : 'var(--accent)';
+
+    container.innerHTML = `
+        <div class="ST-HERO"><div>£${(paid - totalSpend).toFixed(2)}</div><small>NET PROFIT</small></div>
+        <div class="ST-GRID">
+            <div class="ST-BUBBLE" style="border-bottom: 5px solid var(--success);"><small>INCOME</small><strong>£${paid.toFixed(2)}</strong></div>
+            <div class="ST-BUBBLE" style="border-bottom: 5px solid var(--danger);"><small>SPEND</small><strong>£${totalSpend.toFixed(2)}</strong></div>
+        </div>
+        <div class="ST-PROG-CARD">
+            <div class="ST-PROG-HEADER"><span>Monthly Target</span><span>${progressPercent}%</span></div>
+            <div class="ST-PROG-TRACK">
+                <div class="ST-PROG-FILL" style="width:${progressPercent}%; background:${barColor};"></div>
+            </div>
+            <div class="ST-PROG-FOOTER"><span>GOAL: £${targetIncome.toFixed(0)}</span><span>REMAINING: £${Math.max(0, targetIncome - paid).toFixed(0)}</span></div>
+        </div>
+        <div class="ST-LIST-CARD">
+            <div class="ST-ITEM"><span>⛽ Fuel</span><span>£${fuel.toFixed(2)}</span></div>
+            <div class="ST-ITEM"><span>🛠️ Gear</span><span>£${gear.toFixed(2)}</span></div>
+            <div class="ST-ITEM"><span>🍔 Food</span><span>£${food.toFixed(2)}</span></div>
+            <div class="ST-ITEM"><span>📦 Misc</span><span>£${misc.toFixed(2)}</span></div>
+            <div class="ST-TOTAL"><span>TOTAL SPEND</span><span>£${totalSpend.toFixed(2)}</span></div>
+        </div>
+        ${arrears > 0 ? `<div class="ST-ARREARS"><small style="display:block; font-size:12px; opacity:0.8;">UNPAID DEBT</small>£${arrears.toFixed(2)}</div>` : ''}`;
 };
 
 window.renderMaster = () => {
@@ -114,7 +138,7 @@ window.showJobBriefing = (id) => {
     document.getElementById('briefingModal').classList.remove('hidden');
 };
 
-/* --- 💾 MASTER CSV MONOLITH ENGINE --- */
+/* --- 💾 IO ENGINE --- */
 window.exportData = () => {
     const date = new Date().toLocaleDateString().replace(/\//g, '-');
     let csv = "\ufeff--- CUSTOMERS ---\nName,Phone,HouseNum,Street,Postcode,Day,Price,Week,Notes,Cleaned,PaidThisMonth\n";
@@ -152,7 +176,7 @@ window.importData = (event) => {
     reader.readAsText(file);
 };
 
-/* --- SHARED CORE --- */
+/* --- SHARED --- */
 window.nuclearReset = () => { if(confirm("☢️ DELETE EVERYTHING?")) { if(confirm("FINAL WARNING?")) { localStorage.removeItem(DB_KEY); location.reload(); } } };
 window.quickSettle = (id, amt) => { const c = db.customers.find(x => x.id === id); c.paidThisMonth = n(c.price); db.history.push({ custId: id, amt: n(amt), date: 'Debt-Settle' }); saveData(); closeBriefing(); renderWeek(); renderStats(); };
 window.addExpense = () => { const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value), c = document.getElementById('expCat').value; if(!d || a <= 0) return alert("Required"); db.expenses.push({ id: Date.now(), desc: d, amt: a, cat: c, date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) }); saveData(); renderLedger(); renderStats(); document.getElementById('expDesc').value=''; document.getElementById('expAmt').value=''; };
@@ -162,6 +186,7 @@ window.editCust = (id) => { const c = db.customers.find(x => x.id === id); if(!c
 window.handleClean = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; c.cleaned = !c.cleaned; saveData(); renderWeek(); };
 window.markAsPaid = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; const amt = prompt(`Paid for ${c.name}:`, c.price); if(amt) { c.paidThisMonth = n(amt); db.history.push({ custId: id, amt: n(amt), date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) }); saveData(); renderWeek(); renderStats(); } };
 window.updateHeader = () => { document.getElementById('dateText').innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }); };
-window.launchRoutePlanner = () => { const list = db.customers.filter(c => c.week == curWeek && c.day == workingDay && !c.cleaned); if(list.length === 0) return alert("Done!"); const baseUrl = "https://www.google.com/maps/dir/"; const stops = list.map(c => encodeURIComponent(`${c.houseNum} ${c.street} ${c.postcode}`)).join('/'); window.open(`${baseUrl}${stops}`, '_blank'); };
+window.viewWeek = (w) => { curWeek = w; openTab('week-view-root'); renderWeek(); };
+window.setWorkingDay = (day, btn) => { workingDay = day; document.querySelectorAll('.DAY-BTN').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderWeek(); };
 window.closeBriefing = () => document.getElementById('briefingModal').classList.add('hidden');
-window.completeCycle = () => { if(confirm("Clear month?")) { db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload(); } };
+window.completeCycle = () => { if(confirm("Clear month? Status resets but history stays.")) { db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload(); } };
