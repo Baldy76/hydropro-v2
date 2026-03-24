@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v25.7</title>
-    <link rel="stylesheet" href="styles.css?v=257">
+    <title>Hydro Pro v25.9</title>
+    <link rel="stylesheet" href="styles.css?v=259">
 </head>
 <body class="light-mode">
 
@@ -13,14 +13,13 @@
             <div class="logo-area"><img src="Logo.png" class="oblong-logo" alt="Logo"></div>
             <button id="themeToggleBtn" class="header-theme-btn" onclick="toggleDarkMode()">🌙</button>
         </div>
-        <div class="greeting-area">
+        <div class="greeting-area-centered">
             <span id="greetText">GOOD MORNING, PARTNER! ☕</span>
             <span id="dateText"></span>
         </div>
     </header>
 
     <div class="main-viewport-container">
-        
         <section id="fence-home" class="tab-content active">
             <div class="home-grid-lockdown">
                 <button class="lock-tile" onclick="openTab('fence-setup')"><span>✨</span><small>Setup</small></button>
@@ -31,48 +30,36 @@
             </div>
         </section>
 
-        <section id="fence-master" class="tab-content">
-            <button class="back-home-pill-top" onclick="openTab('fence-home')">🏠 Back to Home</button>
-            <div class="search-container-fixed">
-                <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterFence()">
-            </div>
-            <div id="master-list-container" class="iron-list-stack"></div>
-            <div class="fixed-action-footer">
-                <button class="btn-new-month" onclick="completeCycle()">🚀 START NEW MONTH</button>
-            </div>
-        </section>
+        <section id="fence-setup" class="tab-content"></section>
+        <section id="fence-master" class="tab-content"></section>
+        <section id="fence-stats" class="tab-content"></section>
 
-        <section id="fence-setup" class="tab-content">
+        <section id="fence-ledger" class="tab-content">
             <button class="back-home-pill-top" onclick="openTab('fence-home')">🏠 Back to Home</button>
-            <div class="setup-card">
-                <h3 class="setup-label">👤 Add/Edit Customer</h3>
-                <input type="hidden" id="editId">
-                <div class="setup-row"><div class="setup-icon">👤</div><div class="setup-stack"><label>Name</label><input type="text" id="cName" class="setup-input"></div></div>
-                <div class="setup-row"><div class="setup-icon">📱</div><div class="setup-stack"><label>Phone</label><input type="tel" id="cPhone" class="setup-input"></div></div>
-                <div class="setup-row"><div class="setup-icon">🏠</div><div class="setup-stack"><label>House No.</label><input type="text" id="cHouseNum" class="setup-input"></div></div>
-                <div class="setup-row"><div class="setup-icon">🛣️</div><div class="setup-stack"><label>Street</label><input type="text" id="cStreet" class="setup-input"></div></div>
-                <div class="setup-row"><div class="setup-icon">📍</div><div class="setup-stack"><label>Postcode</label><input type="text" id="cPostcode" class="setup-input"></div></div>
-                <div class="setup-row" style="border:none;"><div class="setup-icon">💰</div><div class="setup-stack"><label>Price £</label><input type="number" id="cPrice" class="setup-input"></div></div>
-                <div class="notes-area-lockdown">
-                    <label class="notes-label-fixed">📝 PRIVATE NOTES</label>
-                    <textarea id="cNotes" class="setup-textarea-expanded"></textarea>
+            
+            <div class="ledger-card">
+                <h3 class="ledger-label">💸 Log Expense</h3>
+                <input type="text" id="expDesc" placeholder="Description (e.g. Fuel)" class="ledger-input">
+                <input type="number" id="expAmt" placeholder="Amount £" class="ledger-input">
+                <button class="ledger-save-btn" onclick="addExpense()">Add Expense</button>
+            </div>
+
+            <div class="ledger-card">
+                <h3 class="ledger-label">📊 QuickBooks Exports</h3>
+                <div class="qb-grid-dual">
+                    <button class="btn-qb" onclick="exportToCSV('income')">💹 QB Income</button>
+                    <button class="btn-qb" onclick="exportToCSV('spend')">📋 QB Spend</button>
                 </div>
-                <button class="setup-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
+
+            <h3 class="history-label">💸 Spend History</h3>
+            <div id="expense-list-container" class="iron-list-stack"></div>
         </section>
 
-        <section id="fence-stats" class="tab-content">
-            <button class="back-home-pill-top" onclick="openTab('fence-home')">🏠 Back to Home</button>
-            <div id="stats-dashboard-container"></div>
-        </section>
-
-        <section id="fence-ledger" class="tab-content"><button class="back-home-pill-top" onclick="openTab('fence-home')">🏠 Back to Home</button></section>
-        <section id="fence-weeks" class="tab-content"><button class="back-home-pill-top" onclick="openTab('fence-home')">🏠 Back to Home</button></section>
-
+        <section id="fence-weeks" class="tab-content"></section>
     </div>
 
-    <footer id="footer-version">v25.7 - Top Navigation Standardized</footer>
-
-    <script src="app.js?v=257"></script>
+    <footer id="footer-version">v25.9 - Ledger Namespace Lockdown</footer>
+    <script src="app.js?v=259"></script>
 </body>
 </html>
