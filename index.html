@@ -3,20 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v23.0</title>
-    <link rel="stylesheet" href="styles.css?v=230">
+    <title>Hydro Pro v23.1</title>
+    <link rel="stylesheet" href="styles.css?v=231">
 </head>
 <body class="light-mode">
 
-    <div class="mode-switch-wrapper">
-        <label class="ios-switch">
-            <input type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()">
-            <span class="slider"></span>
-        </label>
-    </div>
-
     <header id="branding-shield">
-        <img src="Logo.png" class="logo-img" alt="Hydro Pro">
+        <div class="header-top-row">
+            <img src="Logo.png" class="logo-img" alt="Hydro Pro">
+            <button id="themeToggleBtn" class="theme-icon-btn" onclick="toggleDarkMode()">🌙</button>
+        </div>
         <div class="home-hero">
             <div id="greetingMsg" class="home-greeting-ironclad">GOOD MORNING, PARTNER! ☕</div>
             <div id="headerDate" class="home-date-ironclad"></div>
@@ -83,9 +79,7 @@
             </div>
 
             <h3 class="hall-of-fame-title">🏆 The Hall of Fame</h3>
-            <div id="monthlyHistoryContainer" class="history-list-box">
-                <div class="empty-history-msg">Month-end snapshots appear here.</div>
-            </div>
+            <div id="monthlyHistoryContainer" class="history-list-box"></div>
         </div>
 
         <div id="spend" class="tab-content">
@@ -103,7 +97,6 @@
                     <button class="btn-qb-export-iron" onclick="exportToCSV('spend')">📋 QB Spend</button>
                 </div>
             </div>
-
             <h3 class="ledger-section-label">💸 Spend History</h3>
             <div id="expenseList" class="iron-spaced-stack"></div>
         </div>
@@ -154,7 +147,7 @@
         <div id="week5" class="tab-content"></div>
     </div>
 
-    <footer class="centered-version-footer">v23.0 - UI Absolute Recovery Build</footer>
-    <script src="app.js?v=230"></script>
+    <footer class="centered-version-footer">v23.1 - Master Integrated Build</footer>
+    <script src="app.js?v=231"></script>
 </body>
 </html>
