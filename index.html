@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v42.5</title>
+    <title>Hydro Pro v42.6</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="AppIcon.png">
-    <link rel="stylesheet" href="styles.css?v=425">
+    <link rel="stylesheet" href="styles.css?v=426">
 </head>
 <body class="light-mode">
 
     <header id="G-HEADER">
         <div class="G-LOGO-WRAP"><img src="Logo.png" id="mainLogo" alt="HydroPro"></div>
-        <div class="G-NAV-ZONE">
+        
+        <div class="CENTRAL-STATUS-POD">
             <div id="weather-pill" class="G-WEATHER-PILL" onclick="launchWeatherApp()">
-                <span id="w-icon">🌤️</span><small id="w-text">GPS SYNC...</small>
+                <span id="w-icon">🌤️</span><small id="w-text">GPS...</small>
             </div>
             <div class="G-SWITCH-WRAP">
                 <label class="ios-switch">
@@ -24,18 +25,26 @@
                 </label>
             </div>
         </div>
+        
         <div class="DATE-CONTAINER"><span id="dateText"></span></div>
     </header>
 
     <main id="G-VIEWPORT">
         <section id="home-root" class="tab-content active">
-            <div class="IRON-HUB-WRAPPER">
-                <button class="IRON-BTN" onclick="openTab('setup-root')"><span class="I-LOCK">✨</span><small class="T-LOCK">Setup</small></button>
-                <button class="IRON-BTN" onclick="openTab('master-root')"><span class="I-LOCK">👥</span><small class="T-LOCK">Custs</small></button>
-                <button class="IRON-BTN" onclick="openTab('stats-root')"><span class="I-LOCK">📊</span><small class="T-LOCK">Stats</small></button>
-                <button class="IRON-BTN" onclick="openTab('ledger-root')"><span class="I-LOCK">💸</span><small class="T-LOCK">Ledger</small></button>
-                <button class="IRON-BTN IRON-FULL" onclick="openTab('weeks-root')"><span class="I-LOCK">📅</span><small class="T-LOCK">Weekly Work</small></button>
+            <div class="HUB-LOCK-CONTAINER">
+                <div class="GRID-ROW">
+                    <button class="BLOCK-BTN" onclick="openTab('setup-root')"><span class="I-LOCK">✨</span><small class="T-LOCK">Setup</small></button>
+                    <button class="BLOCK-BTN" onclick="openTab('master-root')"><span class="I-LOCK">👥</span><small class="T-LOCK">Custs</small></button>
+                </div>
+                <div class="GRID-ROW">
+                    <button class="BLOCK-BTN" onclick="openTab('stats-root')"><span class="I-LOCK">📊</span><small class="T-LOCK">Stats</small></button>
+                    <button class="BLOCK-BTN" onclick="openTab('ledger-root')"><span class="I-LOCK">💸</span><small class="T-LOCK">Ledger</small></button>
+                </div>
+                <div class="GRID-ROW">
+                    <button class="BLOCK-BTN FULL-W" onclick="openTab('weeks-root')"><span class="I-LOCK">📅</span><small class="T-LOCK">Weekly Work</small></button>
+                </div>
             </div>
+            
             <div class="SYNC-AREA">
                 <button class="SYNC-BTN-LOCKED" onclick="location.reload(true)">🔄 SYNC UPDATES</button>
             </div>
@@ -45,33 +54,19 @@
             <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
             <div id="stats-dashboard-container"></div>
         </section>
-
+        
         <section id="setup-root" class="tab-content">
             <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
             <div class="VAULT-CARD">
                 <div class="VAULT-ROW"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
-                <div class="VAULT-ROW"><span>📱</span><input type="tel" id="cPhone" placeholder="Phone"></div>
-                <div class="VAULT-ROW"><span>🏠</span><input type="text" id="cHouseNum" placeholder="House No."></div>
-                <div class="VAULT-ROW"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
-                <div class="VAULT-ROW"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
                 <div class="VAULT-ROW"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
-                <textarea id="cNotes" class="VAULT-NOTES-XL" placeholder="Detailed job notes..."></textarea>
+                <textarea id="cNotes" class="VAULT-NOTES-XL" placeholder="Notes..."></textarea>
                 <button class="VAULT-SAVE-BTN" onclick="saveCustomer()">✨ SAVE CUSTOMER</button>
             </div>
-            <div class="ADMIN-VAULT">
-                <button class="ADMIN-BTN-BLUE" onclick="completeCycle()">🚀 START NEW MONTH</button>
-                <div class="ADMIN-ROW">
-                    <button class="ADMIN-BTN-GREY" onclick="exportData()">📤 Backup</button>
-                    <button class="ADMIN-BTN-GREY" onclick="document.getElementById('importFile').click()">📥 Restore</button>
-                    <input type="file" id="importFile" hidden onchange="importData(event)" accept=".csv">
-                </div>
-                <button class="ADMIN-BTN-RED" onclick="nuclearReset()">☢️ FACTORY RESET DATA</button>
-            </div>
         </section>
+    </main>
 
-        </main>
-
-    <footer id="version-label">v42.5 IRON FOUNDATION</footer>
-    <script src="app.js?v=425"></script>
+    <footer id="version-label">v42.6 PRECISION CENTER</footer>
+    <script src="app.js?v=426"></script>
 </body>
 </html>
