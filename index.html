@@ -12,13 +12,13 @@
     <link rel="apple-touch-icon" href="AppIcon.png">
     <link rel="icon" type="image/png" href="AppIcon.png">
 
-    <link rel="stylesheet" href="styles.css?v=373">
+    <link rel="stylesheet" href="styles.css?v=375">
 </head>
 <body class="light-mode">
 
     <header id="G-HEADER">
         <div class="G-LOGO-WRAP">
-            <img src="Logo.png" id="mainLogo" alt="HydroPro">
+            <img src="Logo.png" id="mainLogo" alt="HydroPro Banner">
         </div>
         <div class="G-NAV-ZONE">
             <span id="dateText"></span>
@@ -45,7 +45,7 @@
         <section id="master-root" class="tab-content">
             <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home</button>
             <div class="CT-SEARCH-WRAP">
-                <input type="text" id="mainSearch" placeholder="🔍 Search customers..." oninput="renderMaster()">
+                <input type="text" id="mainSearch" placeholder="🔍 Search customers or streets..." oninput="renderMaster()">
             </div>
             <div id="master-list-container"></div>
         </section>
@@ -54,10 +54,10 @@
             <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home</button>
             <div class="SU-CARD">
                 <input type="hidden" id="editId">
-                <div class="SU-ROW"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
-                <div class="SU-ROW"><span>📱</span><input type="tel" id="cPhone" placeholder="Phone"></div>
+                <div class="SU-ROW"><span>👤</span><input type="text" id="cName" placeholder="Customer Name"></div>
+                <div class="SU-ROW"><span>📱</span><input type="tel" id="cPhone" placeholder="Phone Number"></div>
                 <div class="SU-ROW"><span>🏠</span><input type="text" id="cHouseNum" placeholder="House No."></div>
-                <div class="SU-ROW"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
+                <div class="SU-ROW"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street Name"></div>
                 <div class="SU-ROW"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
                 <div class="SU-ROW"><span>📅</span>
                     <select id="cDay" class="SU-SELECT">
@@ -68,11 +68,20 @@
                     </select>
                 </div>
                 <div class="SU-ROW"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
-                <textarea id="cNotes" class="SU-NOTES" placeholder="Private Notes..."></textarea>
+                <textarea id="cNotes" class="SU-NOTES" placeholder="Private Notes (Access codes, etc)..."></textarea>
                 <button class="SU-SAVE-BTN" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
-            <div class="SU-RESET-ZONE">
+
+            <div class="SU-ADMIN-ZONE">
                 <button class="SU-RESET-BTN" onclick="completeCycle()">🚀 START NEW MONTH</button>
+                
+                <div class="SU-BACKUP-ROW">
+                    <button class="SU-IO-BTN" onclick="exportData()">📤 Backup CSV</button>
+                    <button class="SU-IO-BTN" onclick="document.getElementById('importFile').click()">📥 Restore CSV</button>
+                    <input type="file" id="importFile" hidden onchange="importData(event)" accept=".csv">
+                </div>
+
+                <button class="SU-DANGER-BTN" onclick="nuclearReset()">⚠️ RESET ALL DATA</button>
             </div>
         </section>
 
@@ -83,10 +92,7 @@
 
         <section id="ledger-root" class="tab-content">
             <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home</button>
-            <div class="LD-HERO">
-                <small>MONTH SPEND</small>
-                <div id="ledgerTotalDisplay">£0.00</div>
-            </div>
+            <div class="LD-HERO"><small>MONTH SPEND</small><div id="ledgerTotalDisplay">£0.00</div></div>
             <div class="LD-INPUT-CARD">
                 <input type="text" id="expDesc" class="LD-FIELD" placeholder="Description">
                 <input type="number" id="expAmt" class="LD-FIELD" placeholder="Amount £">
@@ -138,7 +144,7 @@
         </div>
     </div>
 
-    <footer id="version-label">v37.3 GOLD</footer>
-    <script src="app.js?v=373"></script>
+    <footer id="version-label">v37.5 GOLD</footer>
+    <script src="app.js?v=375"></script>
 </body>
 </html>
