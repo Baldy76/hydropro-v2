@@ -18,9 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const dark = e.target.checked;
             document.body.classList.toggle('dark-mode', dark);
             localStorage.setItem('HP_Theme', dark);
-            document.getElementById('mainLogo').src = dark ? 'Logo-Dark.png' : 'Logo.png';
         });
-        document.getElementById('mainLogo').src = isDark ? 'Logo-Dark.png' : 'Logo.png';
         updateHeader(); renderAll();
     } catch(e) { console.error("Restore Error", e); }
 });
@@ -34,75 +32,77 @@ window.openTab = (id) => {
 
 window.renderAll = () => { renderMaster(); renderLedger(); renderStats(); renderWeek(); };
 
-/* --- 📊 STATS (Restored Arrears & Bubbles) --- */
+/* --- 📊 STATS (Isolated) --- */
 window.renderStats = () => {
     const container = document.getElementById('stats-container'); if(!container) return;
-    let paid = 0, arrears = 0, totalSpend = 0;
+    let paid = 0, arrears = 0, fuel = 0, gear = 0, food = 0, misc = 0;
     db.customers.forEach(c => { 
         paid += n(c.paidThisMonth); 
         if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth)); 
     });
-    db.expenses.forEach(e => totalSpend += n(e.amt));
+    db.expenses.forEach(e => {
+        const cat = (e.cat||"").toLowerCase();
+        if(cat.includes('fuel')) fuel += n(e.amt);
+        else if(cat.includes('gear')) gear += n(e.amt);
+        else if(cat.includes('food')) food += n(e.amt);
+        else misc += n(e.amt);
+    });
+    const totalSpend = fuel + gear + food + misc;
     const profit = paid - totalSpend;
-    
     container.innerHTML = `
-        <div class="stats-hero-card"><div>£${profit.toFixed(2)}</div><small>NET PROFIT</small></div>
-        <div class="stats-split-grid">
-            <div class="stats-bubble" style="border-bottom: 5px solid var(--success);">
-                <small>Income</small><strong>£${paid.toFixed(2)}</strong>
-            </div>
-            <div class="stats-bubble" style="border-bottom: 5px solid var(--danger);">
-                <small>Spend</small><strong>£${totalSpend.toFixed(2)}</strong>
-            </div>
+        <div class="ST-HERO"><div>£${profit.toFixed(2)}</div><small>NET PROFIT</small></div>
+        <div class="ST-GRID">
+            <div class="ST-BUBBLE" style="border-bottom: 5px solid var(--success);"><small>INCOME</small><strong>£${paid.toFixed(2)}</strong></div>
+            <div class="ST-BUBBLE" style="border-bottom: 5px solid var(--danger);"><small>SPEND</small><strong>£${totalSpend.toFixed(2)}</strong></div>
         </div>
-        ${arrears > 0 ? `<div class="arrears-banner"><small style="display:block; font-size:12px; opacity:0.8;">UNPAID DEBT</small>£${arrears.toFixed(2)}</div>` : ''}
+        <div class="ST-LIST-CARD">
+            <div class="ST-ITEM"><span>⛽ Fuel</span><span>£${fuel.toFixed(2)}</span></div>
+            <div class="ST-ITEM"><span>🛠️ Gear</span><span>£${gear.toFixed(2)}</span></div>
+            <div class="ST-ITEM"><span>🍔 Food</span><span>£${food.toFixed(2)}</span></div>
+            <div class="ST-ITEM"><span>📦 Misc</span><span>£${misc.toFixed(2)}</span></div>
+            <div class="ST-TOTAL"><span>TOTAL SPEND</span><span>£${totalSpend.toFixed(2)}</span></div>
+        </div>
+        ${arrears > 0 ? `<div class="ST-ARREARS"><small style="display:block; font-size:12px; opacity:0.8;">UNPAID DEBT</small>£${arrears.toFixed(2)}</div>` : ''}
     `;
 };
 
-/* --- 👥 MASTER LIST (Fixed Text Stack) --- */
+/* --- 👥 MASTER LIST (Isolated) --- */
 window.renderMaster = () => {
     const container = document.getElementById('master-list-container'); if(!container) return; container.innerHTML = '';
     const search = (document.getElementById('mainSearch').value || "").toLowerCase();
     db.customers.forEach(c => {
         if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
-            const div = document.createElement('div'); div.className = 'customer-pill';
+            const div = document.createElement('div'); div.className = 'CT-PILL';
             div.onclick = () => editCust(c.id);
             const isOwed = (c.cleaned && n(c.paidThisMonth) < n(c.price));
             let badge = isOwed ? `<div class="arrears-badge">UNPAID 🚩</div>` : "";
-            div.innerHTML = `
-                ${badge}
-                <div class="pill-text-wrap">
-                    <strong>${c.name}</strong>
-                    <small>${c.houseNum} ${c.street}</small>
-                </div>
-                <div style="font-weight:900; color:var(--success); font-size:18px;">£${n(c.price).toFixed(2)}</div>
-            `;
+            div.innerHTML = `${badge}<div class="CT-TEXT-STACK"><strong>${c.name}</strong><small>${c.houseNum} ${c.street}</small></div><div style="font-weight:900; color:var(--success); font-size:18px;">£${n(c.price).toFixed(2)}</div>`;
             container.appendChild(div);
         }
     });
 };
 
-/* --- 📅 WEEKLY WORK --- */
+/* --- 📅 WEEKLY ENGINE --- */
 window.viewWeek = (w) => { curWeek = w; openTab('week-view-root'); };
-window.setWorkingDay = (day, btn) => { workingDay = day; document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderWeek(); };
+window.setWorkingDay = (day, btn) => { workingDay = day; document.querySelectorAll('.DAY-BTN').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderWeek(); };
 window.renderWeek = () => {
     const list = document.getElementById('week-list-container'); if(!list) return; list.innerHTML = '';
     db.customers.filter(c => c.week == curWeek && c.day == workingDay).forEach(c => {
-        const div = document.createElement('div'); div.className = 'job-card';
+        const div = document.createElement('div'); div.className = 'JOB-CARD';
         div.onclick = () => showJobBriefing(c.id);
         div.innerHTML = `
-            <div><strong style="font-size:20px;">${c.name} ${c.cleaned?'✅':''}</strong><br><small style="color:var(--accent); font-weight:700;">${c.houseNum} ${c.street}</small></div>
-            <div class="job-actions-grid" onclick="event.stopPropagation()">
-                <button class="btn-job-mini" style="background:var(--accent)" onclick="window.open('tel:${c.phone}')">📱</button>
-                <button class="btn-job-mini" style="background:#ffeb3b; color:#333" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.houseNum+' '+c.street+' '+c.postcode)}')">📍</button>
-                <button class="btn-job-mini" style="background:${c.cleaned?'var(--success)':'#aaa'}" onclick="handleClean('${c.id}')">🧼</button>
-                <button class="btn-job-mini" style="background:${n(c.paidThisMonth)>0?'var(--accent)':'#aaa'}" onclick="markAsPaid('${c.id}')">£</button>
+            <div class="CT-TEXT-STACK"><strong>${c.name} ${c.cleaned?'✅':''}</strong><small>${c.houseNum} ${c.street}</small></div>
+            <div class="JOB-ACTIONS" onclick="event.stopPropagation()">
+                <button class="BTN-ACTION" style="background:var(--accent)" onclick="window.open('tel:${c.phone}')">📱</button>
+                <button class="BTN-ACTION" style="background:#ffeb3b; color:#333" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.houseNum+' '+c.street+' '+c.postcode)}')">📍</button>
+                <button class="BTN-ACTION" style="background:${c.cleaned?'var(--success)':'#aaa'}" onclick="handleClean('${c.id}')">🧼</button>
+                <button class="BTN-ACTION" style="background:${n(c.paidThisMonth)>0?'var(--accent)':'#aaa'}" onclick="markAsPaid('${c.id}')">£</button>
             </div>`;
         list.appendChild(div);
     });
 };
 
-/* --- CORE FUNCTIONS --- */
+/* --- SHARED UTILS --- */
 window.addExpense = () => {
     const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value), c = document.getElementById('expCat').value;
     if(!d || a <= 0) return alert("Details Required");
@@ -114,7 +114,8 @@ window.renderLedger = () => {
     let total = 0; db.expenses.forEach(e => total += n(e.amt));
     document.getElementById('ledgerTotalDisplay').innerText = `£${total.toFixed(2)}`;
     db.expenses.slice().reverse().forEach(e => {
-        const div = document.createElement('div'); div.className = 'expense-pill';
+        const div = document.createElement('div'); div.className = 'LD-PILL';
+        div.ondblclick = () => { if(confirm("Delete?")) { db.expenses = db.expenses.filter(x => x.id !== e.id); saveData(); renderLedger(); renderStats(); } };
         div.innerHTML = `<div><strong>${e.cat||'📦'} ${e.desc}</strong><br><small>${e.date}</small></div><div style="color:var(--danger); font-weight:900;">-£${n(e.amt).toFixed(2)}</div>`;
         container.appendChild(div);
     });
@@ -131,9 +132,18 @@ window.editCust = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return; openTab('setup-root');
     document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cPhone').value = c.phone; document.getElementById('cHouseNum').value = c.houseNum; document.getElementById('cStreet').value = c.street; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cDay').value = c.day || 'Mon'; document.getElementById('cPrice').value = c.price; document.getElementById('cNotes').value = c.notes;
 };
+window.showJobBriefing = (id) => {
+    const c = db.customers.find(x => x.id === id); if(!c) return;
+    const currentOwed = c.cleaned ? (n(c.price) - n(c.paidThisMonth)) : 0;
+    document.getElementById('briefingData').innerHTML = `<div style="font-size:26px; font-weight:900; color:var(--accent);">${c.name}</div><div style="font-size:16px; font-weight:700; opacity:0.8;">${c.houseNum} ${c.street}</div><div style="font-size:14px; opacity:0.5; margin-bottom:20px;">📍 ${c.postcode} | 📱 ${c.phone}</div>`;
+    const settleBox = document.getElementById('quickSettleContainer'); settleBox.innerHTML = currentOwed > 0 ? `<button style="width:100%; height:70px; background:var(--success); color:white; border:none; border-radius:20px; font-weight:900; margin-bottom:15px;" onclick="quickSettle('${c.id}', ${currentOwed})">💰 Settle £${currentOwed.toFixed(2)}</button>` : '';
+    document.getElementById('briefEditBtn').onclick = () => { closeBriefing(); editCust(id); };
+    document.getElementById('briefingModal').classList.remove('hidden');
+};
+window.quickSettle = (id, amt) => { const c = db.customers.find(x => x.id === id); c.paidThisMonth = n(c.price); db.history.push({ custId: id, amt: n(amt), date: 'Debt-Settle' }); saveData(); closeBriefing(); renderWeek(); renderStats(); };
 window.handleClean = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; c.cleaned = !c.cleaned; saveData(); renderWeek(); };
 window.markAsPaid = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; const amt = prompt(`Paid for ${c.name}:`, c.price); if(amt) { c.paidThisMonth = n(amt); db.history.push({ custId: id, amt: n(amt), date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) }); saveData(); renderWeek(); renderStats(); } };
-window.updateHeader = () => { const hr = new Date().getHours(), g = (hr < 12) ? "MORNING" : (hr < 18) ? "AFTERNOON" : "EVENING"; document.getElementById('greetText').innerText = `GOOD ${g}, PARTNER! ☕`; document.getElementById('dateText').innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }); };
+window.updateHeader = () => { document.getElementById('dateText').innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }); };
 window.launchRoutePlanner = () => { const list = db.customers.filter(c => c.week == curWeek && c.day == workingDay && !c.cleaned); if(list.length === 0) return alert("Done!"); const baseUrl = "https://www.google.com/maps/dir/"; const stops = list.map(c => encodeURIComponent(`${c.houseNum} ${c.street} ${c.postcode}`)).join('/'); window.open(`${baseUrl}${stops}`, '_blank'); };
 window.closeBriefing = () => document.getElementById('briefingModal').classList.add('hidden');
 window.completeCycle = () => { if(confirm("Clear month?")) { db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload(); } };
