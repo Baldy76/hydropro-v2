@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v21.8</title>
-    <link rel="stylesheet" href="styles.css?v=218">
+    <title>Hydro Pro v21.9</title>
+    <link rel="stylesheet" href="styles.css?v=219">
 </head>
 <body class="light-mode">
 
@@ -69,7 +69,6 @@
                     <h3 class="setup-section-label" style="margin:0">🏦 Bank Details</h3>
                     <button id="bankLockBtn" class="bank-toggle-btn" onclick="toggleBankLock()">🔓 Unlock</button>
                 </div>
-                
                 <div class="fun-input-group">
                     <div class="fun-icon" style="background:rgba(52,199,89,0.1)">🏷️</div>
                     <div class="fun-field-stack"><label>Account Name</label><input type="text" id="bankName" class="creative-input bank-field" readonly></div>
@@ -82,9 +81,54 @@
                     <div class="fun-icon" style="background:rgba(255,149,0,0.1)">💳</div>
                     <div class="fun-field-stack"><label>Account Number</label><input type="number" id="bankAcc" class="creative-input bank-field" readonly></div>
                 </div>
-                
                 <button id="bankSaveBtn" class="creative-save-btn hidden" onclick="saveBankDetails()" style="background:var(--success); margin-top:15px;">💾 Save Bank Details</button>
             </div>
+        </div>
+
+        <div id="master" class="tab-content">
+            <div class="search-shield"><input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()"></div>
+            <div id="masterTableBody"></div>
+            <div class="fixed-bottom-shield"><div class="action-card-green"><button class="btn-clear-large" onclick="completeCycle()">🚀 START NEW MONTH</button></div></div>
+        </div>
+
+        <div id="stats" class="tab-content">
+            <div class="stats-hero-card">
+                <div id="currentMonthYear" class="stats-summary-title">Summary</div>
+                <div id="currProfit" class="stats-main-amount">£0.00</div>
+                <div class="stats-hero-sub">💰 Total Profit in Pocket</div>
+            </div>
+            <div class="customer-pill-bubble stats-progress-bubble">
+                <div class="progress-header-centered"><small>MONTHLY PROGRESS</small><div id="progressPercent" class="amt-blue-bold">0%</div></div>
+                <div class="progress-bar-bg"><div id="progressBarFill" class="progress-bar-fill"></div></div>
+                <div class="progress-footer"><span>TARGET: <strong id="statsTarget">£0.00</strong></span><span>REMAINING: <strong id="statsRemaining">£0.00</strong></span></div>
+            </div>
+            <div class="stats-grid-2x1">
+                <div class="customer-pill-bubble stats-mini-bubble"><small>MONTH INCOME 🔍</small><div class="amt-green-bold" id="statsIncome">£0.00</div></div>
+                <div class="customer-pill-bubble stats-mini-bubble"><small>MONTH SPEND 🔍</small><div class="amt-red-bold" id="statsSpend">£0.00</div></div>
+            </div>
+            <div class="arrears-pill-container"><div class="arrears-pill-bubble">Arrears 🔍 <span id="statsArrears">£0.00</span></div></div>
+            <h3 class="hall-of-fame-title">🏆 The Hall of Fame</h3>
+            <div id="monthlyHistoryContainer"></div>
+        </div>
+
+        <div id="spend" class="tab-content">
+            <div class="card ledger-card">
+                <h3 class="ledger-title">💸 Log Expense</h3>
+                <div class="ledger-input-stack">
+                    <input type="text" id="expDesc" placeholder="Description" class="ledger-input">
+                    <input type="number" id="expAmt" placeholder="Amount £" class="ledger-input">
+                    <button class="btn-ledger-add" onclick="addExpense()">Add Expense</button>
+                </div>
+            </div>
+            <div class="card ledger-card">
+                <h3 class="ledger-title">📊 QuickBooks Exports</h3>
+                <div class="ledger-grid-2x1">
+                    <button class="btn-qb-export" onclick="exportToCSV('income')">💹 QB Income</button>
+                    <button class="btn-qb-export" onclick="exportToCSV('spend')">📋 QB Spend</button>
+                </div>
+            </div>
+            <h3 class="ledger-section-label">💸 Spend History</h3>
+            <div id="expenseList"></div>
         </div>
 
         <div id="weeksHub" class="tab-content">
@@ -98,12 +142,9 @@
         </div>
 
         <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
-        <div id="master" class="tab-content">...</div>
-        <div id="stats" class="tab-content">...</div>
-        <div id="spend" class="tab-content">...</div>
     </div>
 
-    <div class="page-version-footer">v21.8 - Bank Details Vault Active</div>
-    <script src="app.js?v=218"></script>
+    <div class="page-version-footer">v21.9 - Complete Baseline</div>
+    <script src="app.js?v=219"></script>
 </body>
 </html>
