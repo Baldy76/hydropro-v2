@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v20.8</title>
-    <link rel="stylesheet" href="styles.css?v=208">
+    <title>Hydro Pro v20.9</title>
+    <link rel="stylesheet" href="styles.css?v=209">
 </head>
 <body class="light-mode">
 
@@ -22,6 +22,10 @@
             <div id="headerDate" class="home-date"></div>
         </div>
     </header>
+
+    <div id="globalNav" class="subpage-nav hidden">
+        <button class="back-pill" onclick="openTab('home')">🏠 Back to Home</button>
+    </div>
 
     <div id="actionModal" class="modal-overlay hidden">
         <div class="modal-content">
@@ -50,9 +54,7 @@
             <div class="search-shield">
                 <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()">
             </div>
-            
             <div id="masterTableBody"></div>
-
             <div class="fixed-bottom-shield">
                 <div class="action-card-green">
                     <button class="btn-clear-large" onclick="completeCycle()">🚀 START NEW MONTH</button>
@@ -126,11 +128,12 @@
                 <button class="tile-week-blue tile-week-5" onclick="openTab('week5')">Week 5</button>
             </div>
         </div>
+
         <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
         <div id="spend" class="tab-content"><div id="expenseList"></div></div>
     </div>
 
-    <div class="page-version-footer">v20.8 - Ultra Lockdown Build</div>
-    <script src="app.js?v=208"></script>
+    <div class="page-version-footer">v20.9 - Smart Nav Restoration</div>
+    <script src="app.js?v=209"></script>
 </body>
 </html>
