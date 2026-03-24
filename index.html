@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v32.2</title>
-    <link rel="stylesheet" href="styles.css?v=322">
+    <title>Hydro Pro v32.3</title>
+    <link rel="stylesheet" href="styles.css?v=323">
 </head>
 <body class="light-mode">
 
@@ -56,7 +56,6 @@
                 <textarea id="cNotes" placeholder="Private Notes..."></textarea>
                 <button class="btn-primary-heavy" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
-            
             <div class="bank-vault">
                 <div class="vault-header"><h3>🏦 Bank Vault</h3>
                     <div class="vault-button-stack">
@@ -71,21 +70,21 @@
                     <button id="bankSaveBtn" class="hidden btn-primary-heavy" style="background:var(--success); margin-top:15px;" onclick="saveBankDetails()">💾 Save Bank Info</button>
                 </div>
             </div>
-
-            <div class="reset-area">
-                <button class="btn-reset-heavy" onclick="completeCycle()">🚀 START NEW MONTH</button>
-            </div>
+            <div class="reset-area"><button class="btn-reset-heavy" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
         </section>
 
         <section id="ledger-root" class="tab-content">
             <button class="nav-back-large" onclick="openTab('home-root')">🏠 Home</button>
-            <div class="ledger-hero-red"><small>MONTH SPEND</small><div id="ledgerTotalDisplay">£0.00</div></div>
+            <div class="ledger-hero-box">
+                <small>MONTH SPEND</small>
+                <div id="ledgerTotalDisplay">£0.00</div>
+            </div>
             <div class="ledger-input-card">
                 <input type="text" id="expDesc" placeholder="Description">
                 <input type="number" id="expAmt" placeholder="Amount £">
                 <button onclick="addExpense()">Add Expense</button>
             </div>
-            <div class="ledger-csv-row">
+            <div class="ledger-csv-grid">
                 <button onclick="exportCSV('income')">💹 Income CSV</button>
                 <button onclick="exportCSV('spend')">📋 Spend CSV</button>
             </div>
@@ -118,7 +117,7 @@
         </section>
     </div>
 
-    <footer id="global-version-footer">v32.2 - Ultimate Dashboard</footer>
+    <footer id="global-version-footer">v32.3 - Final Restoration</footer>
 
     <div id="msgModal" class="modal-overlay hidden">
         <div class="modal-content">
@@ -128,6 +127,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=322"></script>
+    <script src="app.js?v=323"></script>
 </body>
 </html>
