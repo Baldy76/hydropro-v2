@@ -3,112 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v33.3</title>
-    <link rel="stylesheet" href="styles.css?v=333">
+    <title>Hydro Pro v34.0</title>
+    <link rel="stylesheet" href="styles.css?v=340">
 </head>
 <body class="light-mode">
 
     <header id="global-shield">
-        <div class="nav-container-transparent">
-            <div class="logo-wrap-surgical-expansion">
-                <img src="Logo.png" id="mainLogo" class="logo-fluid-surgical" alt="HydroPro">
+        <div class="header-nav-top">
+            <div class="logo-container">
+                <img src="Logo.png" id="mainLogo" alt="HydroPro">
             </div>
-            <div class="toggle-wrap-surgical">
+            <div class="theme-container">
                 <label class="theme-slider">
                     <input type="checkbox" id="themeCheckbox">
                     <span class="slider-round"></span>
                 </label>
             </div>
         </div>
-        <div class="header-greet">
+        <div class="header-text">
             <span id="greetText"></span>
             <span id="dateText"></span>
         </div>
     </header>
 
-    <div id="app-viewport">
+    <main id="app-viewport">
         <section id="home-root" class="tab-content active">
-            <div class="home-grid">
-                <button onclick="openTab('setup-root')"><span class="icon-blue-tint">✨</span><small>Setup</small></button>
-                <button onclick="openTab('master-root')"><span class="icon-blue-tint">👥</span><small>Custs</small></button>
-                <button onclick="openTab('stats-root')"><span class="icon-blue-tint">📊</span><small>Stats</small></button>
-                <button onclick="openTab('ledger-root')"><span class="icon-blue-tint">💸</span><small>Ledger</small></button>
-                <button class="full-tile" onclick="openTab('weeks-root')"><span>📅</span><small>Weekly Work</small></button>
+            <div class="main-hub-grid">
+                <button class="hub-tile" onclick="openTab('setup-root')"><span>✨</span><small>Setup</small></button>
+                <button class="hub-tile" onclick="openTab('master-root')"><span>👥</span><small>Custs</small></button>
+                <button class="hub-tile" onclick="openTab('stats-root')"><span>📊</span><small>Stats</small></button>
+                <button class="hub-tile" onclick="openTab('ledger-root')"><span>💸</span><small>Ledger</small></button>
+                <button class="hub-tile tile-full" onclick="openTab('weeks-root')"><span>📅</span><small>Weekly Work</small></button>
             </div>
         </section>
 
         <section id="master-root" class="tab-content">
-            <button class="nav-back-large" onclick="openTab('home-root')">🏠 Home</button>
-            <div class="search-box-wrap"><input type="text" id="mainSearch" placeholder="🔍 Search customers..." oninput="renderMaster()"></div>
+            <button class="btn-back-global" onclick="openTab('home-root')">🏠 Home</button>
+            <div class="search-container">
+                <input type="text" id="mainSearch" placeholder="🔍 Search customers..." oninput="renderMaster()">
+            </div>
             <div id="master-list-container"></div>
         </section>
 
         <section id="setup-root" class="tab-content">
-            <button class="nav-back-large" onclick="openTab('home-root')">🏠 Home</button>
-            <div class="setup-card">
+            <button class="btn-back-global" onclick="openTab('home-root')">🏠 Home</button>
+            <div class="content-card">
                 <input type="hidden" id="editId">
-                <div class="setup-row"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
-                <div class="setup-row"><span>📱</span><input type="tel" id="cPhone" placeholder="Phone"></div>
-                <div class="setup-row"><span>🏠</span><input type="text" id="cHouseNum" placeholder="House No."></div>
-                <div class="setup-row"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
-                <div class="setup-row"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
-                <div class="setup-row"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
-                <textarea id="cNotes" placeholder="Private Notes..."></textarea>
-                <button class="btn-primary-heavy" onclick="saveCustomer()">✨ Save Customer</button>
+                <div class="form-row"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
+                <div class="form-row"><span>📱</span><input type="tel" id="cPhone" placeholder="Phone"></div>
+                <div class="form-row"><span>🏠</span><input type="text" id="cHouseNum" placeholder="House No."></div>
+                <div class="form-row"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
+                <div class="form-row"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
+                <div class="form-row"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
+                <textarea id="cNotes" placeholder="Private Customer Notes..."></textarea>
+                <button class="btn-action-primary" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
-            <div class="bank-vault">
-                <div class="vault-header"><h3>🏦 Bank Vault</h3>
-                    <div class="vault-button-stack">
-                        <button id="copyBankBtn" class="btn-vault-heavy vault-blue" onclick="copyBankDetails()">📋 COPY</button>
-                        <button id="bankLockBtn" class="btn-vault-heavy vault-grey" onclick="toggleBankLock()">🔓 UNLOCK</button>
+            
+            <div class="vault-card">
+                <div class="vault-header">
+                    <h3>🏦 Bank Vault</h3>
+                    <div class="vault-actions">
+                        <button id="copyBankBtn" class="btn-vault vault-copy" onclick="copyBankDetails()">📋 COPY</button>
+                        <button id="bankLockBtn" class="btn-vault vault-lock" onclick="toggleBankLock()">🔓 UNLOCK</button>
                     </div>
                 </div>
-                <input type="text" id="bankName" class="bank-input bank-top-gap" readonly placeholder="Account Name">
-                <input type="text" id="bankSort" class="bank-input" readonly placeholder="Sort Code">
-                <input type="text" id="bankAcc" class="bank-input" readonly placeholder="Account Number">
-                <button id="bankSaveBtn" class="hidden btn-primary-heavy" style="background:var(--success); margin-top:15px;" onclick="saveBankDetails()">💾 Save Bank Info</button>
+                <div class="vault-inputs">
+                    <input type="text" id="bankName" class="bank-field" readonly placeholder="Account Name">
+                    <input type="text" id="bankSort" class="bank-field" readonly placeholder="Sort Code">
+                    <input type="text" id="bankAcc" class="bank-field" readonly placeholder="Account Number">
+                    <button id="bankSaveBtn" class="hidden btn-action-primary" style="background:var(--success); margin-top:10px;" onclick="saveBankDetails()">💾 Save Bank Info</button>
+                </div>
             </div>
-            <div class="reset-area"><button class="btn-reset-heavy" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
+
+            <div class="reset-container">
+                <button class="btn-danger-large" onclick="completeCycle()">🚀 START NEW MONTH</button>
+            </div>
         </section>
 
         <section id="ledger-root" class="tab-content">
-            <button class="nav-back-large" onclick="openTab('home-root')">🏠 Home</button>
-            <div class="ledger-hero-red"><small>MONTH SPEND</small><div id="ledgerTotalDisplay">£0.00</div></div>
+            <button class="btn-back-global" onclick="openTab('home-root')">🏠 Home</button>
+            <div class="ledger-hero">
+                <small>MONTH SPEND</small>
+                <div id="ledgerTotalDisplay">£0.00</div>
+            </div>
             <div class="ledger-input-card">
-                <input type="text" id="expDesc" placeholder="Description"><input type="number" id="expAmt" placeholder="Amount £">
+                <input type="text" id="expDesc" placeholder="Description">
+                <input type="number" id="expAmt" placeholder="Amount £">
                 <button id="ledgerAddBtn" onclick="addExpense()">Add Expense</button>
             </div>
-            <div class="ledger-csv-row">
-                <button onclick="exportCSV('income')">💹 Income CSV</button><button onclick="exportCSV('spend')">📋 Spend CSV</button>
+            <div class="csv-action-row">
+                <button onclick="exportCSV('income')">💹 Income CSV</button>
+                <button onclick="exportCSV('spend')">📋 Spend CSV</button>
             </div>
             <div id="ledger-list-container"></div>
         </section>
 
         <section id="stats-root" class="tab-content">
-            <button class="nav-back-large" onclick="openTab('home-root')">🏠 Home</button>
+            <button class="btn-back-global" onclick="openTab('home-root')">🏠 Home</button>
             <div id="stats-container"></div>
         </section>
 
         <section id="weeks-root" class="tab-content">
-            <button class="nav-back-large" onclick="openTab('home-root')">🏠 Home</button>
-            <div class="weeks-hub-grid">
-                <button class="week-tile-heavy" onclick="viewWeek(1)">Week 1</button>
-                <button class="week-tile-heavy" onclick="viewWeek(2)">Week 2</button>
-                <button class="week-tile-heavy" onclick="viewWeek(3)">Week 3</button>
-                <button class="week-tile-heavy" onclick="viewWeek(4)">Week 4</button>
-                <button class="week-tile-heavy week-full" onclick="viewWeek(5)">Week 5</button>
+            <button class="btn-back-global" onclick="openTab('home-root')">🏠 Home</button>
+            <div class="weeks-grid-master">
+                <button class="week-tile" onclick="viewWeek(1)">Week 1</button>
+                <button class="week-tile" onclick="viewWeek(2)">Week 2</button>
+                <button class="week-tile" onclick="viewWeek(3)">Week 3</button>
+                <button class="week-tile" onclick="viewWeek(4)">Week 4</button>
+                <button class="week-tile week-tile-full" onclick="viewWeek(5)">Week 5</button>
             </div>
         </section>
 
         <section id="week-view-root" class="tab-content">
-            <div class="spread-nav-row">
-                <button class="nav-spread-btn" onclick="openTab('weeks-root')">⬅️ Back</button>
-                <button class="nav-spread-btn" onclick="openTab('home-root')">🏠 Home</button>
+            <div class="nav-spread-row">
+                <button onclick="openTab('weeks-root')">⬅️ Back</button>
+                <button onclick="openTab('home-root')">🏠 Home</button>
             </div>
-            <div id="bulk-box" class="bulk-action-wrap"></div>
+            <div id="bulk-box" class="bulk-container"></div>
             <div id="week-list-container"></div>
         </section>
-    </div>
+    </main>
 
     <div id="msgModal" class="modal-overlay hidden">
         <div class="modal-content">
@@ -119,13 +133,17 @@
     </div>
 
     <div id="briefingModal" class="modal-overlay hidden" onclick="closeBriefing()">
-        <div class="modal-content briefing-content" onclick="event.stopPropagation()">
+        <div class="modal-content briefing-box" onclick="event.stopPropagation()">
             <div id="briefingData"></div>
-            <button class="btn-briefing-edit" id="briefEditBtn">⚙️ Edit Customer Info</button>
-            <button class="btn-briefing-close" onclick="closeBriefing()">CLOSE</button>
+            <div class="briefing-footer">
+                <button class="btn-brief-edit" id="briefEditBtn">⚙️ Edit Customer Info</button>
+                <button class="btn-brief-close" onclick="closeBriefing()">CLOSE</button>
+            </div>
         </div>
     </div>
 
-    <script src="app.js?v=333"></script>
+    <footer id="version-label">v34.0 - Ironclad Monolith</footer>
+
+    <script src="app.js?v=340"></script>
 </body>
 </html>
