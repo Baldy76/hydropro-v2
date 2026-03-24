@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v27.0</title>
-    <link rel="stylesheet" href="styles.css?v=270">
+    <title>Hydro Pro v27.1</title>
+    <link rel="stylesheet" href="styles.css?v=271">
 </head>
 <body class="light-mode">
 
@@ -31,6 +31,33 @@
             </div>
         </section>
 
+        <section id="fence-ledger" class="tab-content">
+            <button class="back-home-pill-top" onclick="openTab('fence-home')">🏠 Back to Home</button>
+            
+            <div class="ledger-hero-card">
+                <small>TOTAL MONTHLY SPEND</small>
+                <div id="ledgerTotalSpend" class="ledger-hero-amt">£0.00</div>
+            </div>
+
+            <div class="ledger-card">
+                <h3 class="ledger-label">💸 Log New Expense</h3>
+                <input type="text" id="expDesc" placeholder="Item (e.g. Fuel, Chemicals)" class="ledger-input">
+                <input type="number" id="expAmt" placeholder="Amount £" class="ledger-input">
+                <button class="ledger-save-btn" onclick="addExpense()">Add to Ledger</button>
+            </div>
+
+            <div class="ledger-card">
+                <h3 class="ledger-label">💹 Financial Exports</h3>
+                <div class="ledger-grid-dual">
+                    <button class="btn-qb-export-iron" onclick="exportToCSV('income')">Income CSV</button>
+                    <button class="btn-qb-export-iron" onclick="exportToCSV('spend')">Spend CSV</button>
+                </div>
+            </div>
+
+            <h3 class="ledger-section-label">📋 Recent Transactions</h3>
+            <div id="expense-list-container" class="iron-list-stack"></div>
+        </section>
+
         <section id="fence-weeks-hub" class="tab-content">
             <button class="back-home-pill-top" onclick="openTab('fence-home')">🏠 Back to Home</button>
             <div class="weeks-grid-lock">
@@ -50,13 +77,9 @@
 
         <section id="fence-master" class="tab-content">
             <button class="back-home-pill-top" onclick="openTab('fence-home')">🏠 Back to Home</button>
-            <div class="search-container-fixed">
-                <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterFence()">
-            </div>
+            <div class="search-container-fixed"><input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterFence()"></div>
             <div id="master-list-container" class="iron-list-stack"></div>
-            <div class="fixed-action-footer">
-                <button class="btn-new-month" onclick="completeCycle()">🚀 START NEW MONTH</button>
-            </div>
+            <div class="fixed-action-footer"><button class="btn-new-month" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
         </section>
 
         <section id="fence-setup" class="tab-content">
@@ -74,33 +97,12 @@
                 <button class="setup-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
             <div class="setup-card vault-border">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                    <h3 class="setup-label" style="margin:0">🏦 Bank Vault</h3>
-                    <button id="bankLockBtn" class="vault-unlock-btn" onclick="toggleBankLock()">🔓 UNLOCK</button>
-                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h3 class="setup-label">🏦 Bank Vault</h3><button id="bankLockBtn" class="vault-unlock-btn" onclick="toggleBankLock()">🔓 UNLOCK</button></div>
                 <div class="setup-row"><div class="setup-icon">🏷️</div><div class="setup-stack"><label>Account Name</label><input type="text" id="bankName" class="setup-input bank-field" readonly></div></div>
                 <div class="setup-row"><div class="setup-icon">🔢</div><div class="setup-stack"><label>Sort Code</label><input type="text" id="bankSort" class="setup-input bank-field" readonly maxlength="8"></div></div>
                 <div class="setup-row" style="border:none"><div class="setup-icon">💳</div><div class="setup-stack"><label>Account Number</label><input type="number" id="bankAcc" class="setup-input bank-field" readonly></div></div>
                 <button id="bankSaveBtn" class="setup-save-btn hidden" onclick="saveBankDetails()" style="background:var(--success); margin-top:20px;">💾 Save Details</button>
             </div>
-        </section>
-
-        <section id="fence-ledger" class="tab-content">
-            <button class="back-home-pill-top" onclick="openTab('fence-home')">🏠 Back to Home</button>
-            <div class="ledger-card">
-                <h3 class="ledger-label">💸 Log Expense</h3>
-                <input type="text" id="expDesc" placeholder="Description" class="ledger-input">
-                <input type="number" id="expAmt" placeholder="Amount £" class="ledger-input">
-                <button class="ledger-save-btn" onclick="addExpense()">Add Expense</button>
-            </div>
-            <div class="ledger-card">
-                <h3 class="ledger-label">📊 QuickBooks</h3>
-                <div class="ledger-grid-dual">
-                    <button class="btn-qb-export-iron" onclick="exportToCSV('income')">💹 Income</button>
-                    <button class="btn-qb-export-iron" onclick="exportToCSV('spend')">📋 Spend</button>
-                </div>
-            </div>
-            <div id="expense-list-container" class="iron-list-stack"></div>
         </section>
 
         <section id="fence-stats" class="tab-content">
@@ -121,7 +123,7 @@
         </div>
     </div>
 
-    <footer id="footer-version">v27.0 - Bank Vault Lockdown</footer>
-    <script src="app.js?v=270"></script>
+    <footer id="footer-version">v27.1 - Ledger Love Upgrade</footer>
+    <script src="app.js?v=271"></script>
 </body>
 </html>
