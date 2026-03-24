@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v21.4</title>
-    <link rel="stylesheet" href="styles.css?v=214">
+    <title>Hydro Pro v21.6</title>
+    <link rel="stylesheet" href="styles.css?v=216">
 </head>
 <body class="light-mode">
 
@@ -39,6 +39,7 @@
     </div>
 
     <div class="main-container">
+        
         <div id="home" class="tab-content active">
             <div class="home-grid">
                 <button class="tile tile-admin" onclick="openTab('admin')"><span>✨</span><small>Setup</small></button>
@@ -46,6 +47,32 @@
                 <button class="tile tile-admin" onclick="openTab('stats')"><span>📊</span><small>Stats</small></button>
                 <button class="tile tile-admin" onclick="openTab('spend')"><span>💸</span><small>Ledger</small></button>
                 <button class="tile tile-weekly-hub" onclick="openTab('weeksHub')"><span>📅</span><small>Weekly Work</small></button>
+            </div>
+        </div>
+
+        <div id="week1" class="tab-content"></div>
+        <div id="week2" class="tab-content"></div>
+        <div id="week3" class="tab-content"></div>
+        <div id="week4" class="tab-content"></div>
+        <div id="week5" class="tab-content"></div>
+
+        <div id="master" class="tab-content">
+            <div class="search-shield"><input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search..." oninput="renderMasterTable()"></div>
+            <div id="masterTableBody"></div>
+            <div class="fixed-bottom-shield"><div class="action-card-green"><button class="btn-clear-large" onclick="completeCycle()">🚀 START NEW MONTH</button></div></div>
+        </div>
+
+        <div id="admin" class="tab-content">
+            <div class="card creative-form-card">
+                <input type="hidden" id="editId">
+                <div class="fun-input-group"><div class="fun-icon">👤</div><div class="fun-field-stack"><label>Name</label><input type="text" id="cName" class="creative-input"></div></div>
+                <div class="fun-input-group"><div class="fun-icon">📱</div><div class="fun-field-stack"><label>Phone</label><input type="tel" id="cPhone" class="creative-input"></div></div>
+                <div class="fun-input-group"><div class="fun-icon">🏠</div><div class="fun-field-stack"><label>House No.</label><input type="text" id="cHouseNum" class="creative-input"></div></div>
+                <div class="fun-input-group"><div class="fun-icon">🛣️</div><div class="fun-field-stack"><label>Street</label><input type="text" id="cStreet" class="creative-input"></div></div>
+                <div class="fun-input-group"><div class="fun-icon">📍</div><div class="fun-field-stack"><label>Postcode</label><input type="text" id="cPostcode" class="creative-input"></div></div>
+                <div class="fun-input-group"><div class="fun-icon">💰</div><div class="fun-field-stack"><label>Price £</label><input type="number" id="cPrice" class="creative-input"></div></div>
+                <div class="fun-input-group" style="border:none"><div class="fun-icon">📝</div><div class="fun-field-stack"><label>Private Notes</label><textarea id="cNotes" class="creative-textarea"></textarea></div></div>
+                <button class="creative-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
         </div>
 
@@ -61,10 +88,7 @@
                     <div id="progressPercent" class="amt-blue-bold">0%</div>
                 </div>
                 <div class="progress-bar-bg"><div id="progressBarFill" class="progress-bar-fill"></div></div>
-                <div class="progress-footer">
-                    <span>TARGET: <strong id="statsTarget">£0.00</strong></span>
-                    <span>REMAINING: <strong id="statsRemaining">£0.00</strong></span>
-                </div>
+                <div class="progress-footer"><span>TARGET: <strong id="statsTarget">£0.00</strong></span><span>REMAINING: <strong id="statsRemaining">£0.00</strong></span></div>
             </div>
             <div class="stats-grid-2x1">
                 <div class="customer-pill-bubble stats-mini-bubble">
@@ -76,48 +100,9 @@
                     <div class="amt-red-bold" id="statsSpend">£0.00</div>
                 </div>
             </div>
-            <div class="arrears-pill-container">
-                <div class="arrears-pill-bubble">Arrears 🔍 <span id="statsArrears">£0.00</span></div>
-            </div>
+            <div class="arrears-pill-container"><div class="arrears-pill-bubble">Arrears 🔍 <span id="statsArrears">£0.00</span></div></div>
             <h3 class="hall-of-fame-title">🏆 The Hall of Fame</h3>
             <div id="monthlyHistoryContainer"></div>
-        </div>
-
-        <div id="master" class="tab-content">
-            <div class="search-shield"><input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()"></div>
-            <div id="masterTableBody"></div>
-            <div class="fixed-bottom-shield"><div class="action-card-green"><button class="btn-clear-large" onclick="completeCycle()">🚀 START NEW MONTH</button></div></div>
-        </div>
-
-        <div id="admin" class="tab-content">
-            <div class="card creative-form-card">
-                <input type="hidden" id="editId">
-                <div class="fun-input-group">
-                    <div class="fun-icon">👤</div>
-                    <div class="fun-field-stack"><label>Customer Name</label><input type="text" id="cName" class="creative-input" placeholder="Full Name"></div>
-                </div>
-                <div class="fun-input-group">
-                    <div class="fun-icon">🏠</div>
-                    <div class="fun-field-stack"><label>House No.</label><input type="text" id="cHouseNum" class="creative-input" placeholder="e.g. 22"></div>
-                </div>
-                <div class="fun-input-group">
-                    <div class="fun-icon">🛣️</div>
-                    <div class="fun-field-stack"><label>Street</label><input type="text" id="cStreet" class="creative-input" placeholder="Street Name"></div>
-                </div>
-                <div class="fun-input-group">
-                    <div class="fun-icon">📍</div>
-                    <div class="fun-field-stack"><label>Postcode</label><input type="text" id="cPostcode" class="creative-input postcode-input" placeholder="Postcode"></div>
-                </div>
-                <div class="fun-input-group">
-                    <div class="fun-icon">💰</div>
-                    <div class="fun-field-stack"><label>Price £</label><input type="number" id="cPrice" class="creative-input" placeholder="0.00"></div>
-                </div>
-                <div class="fun-input-group" style="border:none">
-                    <div class="fun-icon">📝</div>
-                    <div class="fun-field-stack"><label>Private Notes</label><textarea id="cNotes" class="creative-textarea"></textarea></div>
-                </div>
-                <button class="creative-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
-            </div>
         </div>
 
         <div id="spend" class="tab-content">
@@ -149,10 +134,9 @@
                 <button class="tile-week-blue tile-week-5" onclick="openTab('week5')">Week 5</button>
             </div>
         </div>
-        <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
     </div>
 
-    <div class="page-version-footer">v21.4 - HUD Alignment Locked</div>
-    <script src="app.js?v=214"></script>
+    <div class="page-version-footer">v21.6 - Bulk Comm Build</div>
+    <script src="app.js?v=216"></script>
 </body>
 </html>
