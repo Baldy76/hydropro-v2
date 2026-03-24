@@ -1,13 +1,13 @@
 :root { --accent: #007aff; --bg: #f2f2f7; --card: #ffffff; --text: #000; --success: #32d74b; --danger: #ff453a; --gap: 20px; }
 body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; }
 
-/* 🧱 THE CORE WALLS */
+/* 🧱 WALLS */
 .tab-content { display: none !important; }
 .tab-content.active { display: block !important; }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, sans-serif; }
 body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; }
 
-/* 🧼 UNIVERSAL AIRGAP LOGIC */
+/* 🧼 AIRGAPS */
 .airgap-btn { margin-bottom: var(--gap) !important; }
 .airgap-card { margin-bottom: var(--gap) !important; }
 
@@ -16,77 +16,71 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-hei
 .nav-container-transparent { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 440px; padding: 0 20px; }
 .logo-wrap-surgical-expansion { flex-grow: 1; display: flex; justify-content: flex-start; align-items: center; margin-right: 15px; }
 .logo-fluid-surgical { height: auto; max-width: 100%; min-height: 80px; object-fit: contain; }
-
-/* 🎚️ SLIDER */
 .theme-slider { position: relative; display: inline-block; width: 60px; height: 34px; flex-shrink: 0; }
 .theme-slider input { opacity: 0; width: 0; height: 0; }
 .slider-round { position: absolute; cursor: pointer; top:0; left:0; right:0; bottom:0; background-color: #ccc; transition: .4s; border-radius: 34px; }
 .slider-round:before { position: absolute; content: "☀️"; display: flex; align-items: center; justify-content: center; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
 input:checked + .slider-round { background-color: var(--accent); }
 input:checked + .slider-round:before { transform: translateX(26px); content: "🌙"; }
-
-#greetText { display: block; font-size: 13px; font-weight: 800; opacity: 0.6; text-transform: uppercase; text-align: center; margin-bottom: 5px; }
 #dateText { font-size: 26px; font-weight: 900; color: var(--accent); display: block; text-align: center; margin-bottom: 20px; }
 
-/* 🏠 HOME GRID */
+/* 🏠 HOME */
 .home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 0 20px; }
 .home-grid button { height: 125px; border-radius: 30px; background: var(--card); border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text); box-shadow: 0 8px 15px rgba(0,0,0,0.05); }
 .icon-blue-tint { color: var(--accent); font-size: 40px; margin-bottom: 5px; }
 .home-grid button small { font-size: 16px; font-weight: 900; text-transform: uppercase; }
 .full-tile { grid-column: 1 / -1; background: var(--accent) !important; color: white !important; height: 130px !important; }
 
-/* ✨ SETUP - HARD SCALING LOCK */
+/* 👥 CUSTS (v31.8 SURGICAL REPAIR) */
+#master-root .search-box-surgical { width: 100%; padding: 0 20px; }
+#master-root input { width: 100%; height: 65px; border-radius: 20px; border: none; background: var(--card); padding: 0 25px; font-size: 18px; color: var(--text); }
+
+.cust-pill { 
+    background: var(--card); 
+    padding: 0 25px; 
+    border-radius: 30px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin: 0 20px 15px; 
+    position: relative; 
+    min-height: 90px !important; /* Forced Scale Fix */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04); 
+}
+
+/* ✨ SETUP */
 #setup-root .setup-card { background: var(--card); margin: 0 20px; padding: 25px; border-radius: 35px; }
 #setup-root .setup-row { display: flex; align-items: center; height: 75px !important; border-bottom: 1px solid rgba(0,0,0,0.05); gap: 15px; }
 #setup-root .setup-row span { font-size: 24px; width: 35px; text-align: center; }
 #setup-root input { color: var(--text); font-size: 18px; width: 100%; border:none; background:transparent; outline:none; }
-#setup-root textarea { width: 100%; min-height: 150px; background: var(--bg); border: none; border-radius: 20px; padding: 15px; color: var(--text); font-size: 16px; margin-top: 15px; }
 .setup-save-btn { width: 100%; height: 75px; border-radius: 25px; border: none; background: var(--accent); color: white; font-weight: 900; font-size: 20px; }
 
-/* 🏦 VAULT */
-.bank-vault { background: var(--card); margin: 0 20px; padding: 30px; border-radius: 35px; border: 2.5px solid rgba(0,122,255,0.15); }
-.vault-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-.vault-button-stack { display: flex; flex-direction: column; gap: 8px; }
-.vault-btn { min-width: 120px; height: 42px; border-radius: 12px; font-weight: 900; font-size: 11px; border: none; text-transform: uppercase; color: white; }
-.vault-unlock { background: var(--accent); }
-.vault-copy { background: #8e8e93; }
-.bank-field { width: 100%; height: 55px; background: var(--bg); border-radius: 15px; margin-bottom: 10px; padding: 0 15px; color: var(--text); border:none; display:block; font-weight: 600; }
-.bank-top-gap { margin-top: 30px !important; }
-
-/* 💸 LEDGER (HARD REBUILD) */
+/* 💸 LEDGER */
 #ledger-root .ledger-hero { background: var(--card); border: 2.5px solid var(--danger); margin: 0 20px; padding: 30px; border-radius: 35px; text-align: center; }
 #ledger-root .ledger-hero div { font-size: 45px; font-weight: 900; }
 #ledger-root .ledger-input-card { background: var(--card); margin: 0 20px; padding: 25px; border-radius: 30px; display: flex; flex-direction: column; gap: 12px; }
-#ledger-root .ledger-input-card input { background: var(--bg); border: none; height: 55px; border-radius: 15px; padding: 0 15px; color: var(--text); font-size: 16px; }
-#ledger-root .ledger-input-card button { height: 60px; border-radius: 15px; border: none; background: var(--accent); color: white; font-weight: 900; }
-#ledger-root .ledger-csv-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px; }
-#ledger-root .ledger-csv-row button { height: 55px; border-radius: 15px; border: none; background: #4ea03b; color: white; font-weight: 800; font-size: 12px; }
-.exp-pill { background: var(--card); padding: 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 15px; border-left: 6px solid var(--danger); box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+#ledger-root .ledger-input-card input { background: var(--bg); border: none; height: 55px; border-radius: 12px; padding: 0 15px; color: var(--text); }
+.exp-pill { background: var(--card); padding: 25px; border-radius: 30px; display: flex; justify-content: space-between; margin: 0 20px 15px; border-left: 6px solid var(--danger); }
 
-/* 📊 STATS (HARD REBUILD) */
+/* 📊 STATS */
 .stats-hero-main { background: var(--card); border: 3px solid var(--accent); padding: 40px 20px; border-radius: 40px; text-align: center; margin-bottom: 20px; }
-.stats-hero-main div { font-size: 55px; font-weight: 900; }
-.stats-grid-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+.stats-hero-main div { font-size: 50px; font-weight: 900; }
 .stats-mini-card { background: var(--card); padding: 20px; border-radius: 25px; text-align: center; }
-.stats-progress-container { background: var(--card); padding: 25px; border-radius: 35px; margin-bottom: 20px; }
-.progress-track { background: #eee; height: 12px; border-radius: 6px; margin: 15px 0; overflow: hidden; }
-.progress-fill-bar { background: var(--accent); height: 100%; transition: width 0.6s ease; }
-.stats-arrears-banner { background: var(--danger); color: white; padding: 25px; border-radius: 30px; text-align: center; font-weight: 900; font-size: 22px; }
 
-/* 📅 WEEK VIEW (HARD REBUILD) */
-.week-nav-row { display: flex; justify-content: space-between; padding: 0 20px; margin-top: 10px; }
-.nav-half { height: 60px !important; width: calc(50% - 10px) !important; border-radius: 20px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
-.weeks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 0 20px; }
-.weeks-grid button { height: 110px; border-radius: 25px; border: none; background: #1c1c1e; color: white; font-weight: 900; font-size: 22px; }
+/* 📅 WEEKS */
+.week-nav-row { display: flex; justify-content: space-between; padding: 0 20px; }
+.nav-half { height: 60px !important; width: calc(50% - 10px) !important; border-radius: 20px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px; }
 .job-card { background: var(--card); padding: 25px; border-radius: 35px; margin: 0 20px 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); position: relative; }
-.job-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
 .btn-job-action { height: 55px; border-radius: 12px; border: none; font-weight: 900; color: white; font-size: 11px; }
 
-/* 🛠️ GLOBAL SHARED */
+/* 🏦 VAULT */
+.bank-vault { background: var(--card); margin: 0 20px 40px; padding: 30px; border-radius: 35px; border: 2.5px solid rgba(0,122,255,0.15); }
+.bank-field { width: 100%; height: 55px; background: var(--bg); border-radius: 15px; margin-bottom: 10px; padding: 0 15px; color: var(--text); border:none; display:block; font-weight: 600; }
+.bank-top-gap { margin-top: 30px !important; }
+
+/* 🛠️ SHARED MISC */
 .nav-back { width: calc(100% - 40px); height: 60px; border-radius: 30px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px; margin: 0 20px; display: block; }
-.search-box-surgical { width: 100%; padding: 0 20px; }
-.search-box-surgical input { width: 100%; height: 65px; border-radius: 20px; border: none; background: var(--card); padding: 0 25px; font-size: 18px; color: var(--text); }
-.btn-reset { width: 100%; height: 75px; border-radius: 25px; border: none; background: var(--danger); color: white; font-weight: 900; font-size: 18px; }
+.arrears-badge { background: var(--danger); color: white; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 8px; position: absolute; top: -5px; right: 20px; }
 .btn-map-yellow { background: #ffeb3b !important; color: #333 !important; }
 .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; display:flex; align-items:center; justify-content:center; }
 .modal-overlay.hidden { display: none !important; }
