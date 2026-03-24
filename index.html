@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v21.3</title>
-    <link rel="stylesheet" href="styles.css?v=213">
+    <title>Hydro Pro v21.4</title>
+    <link rel="stylesheet" href="styles.css?v=214">
 </head>
 <body class="light-mode">
 
@@ -39,7 +39,6 @@
     </div>
 
     <div class="main-container">
-        
         <div id="home" class="tab-content active">
             <div class="home-grid">
                 <button class="tile tile-admin" onclick="openTab('admin')"><span>✨</span><small>Setup</small></button>
@@ -48,12 +47,6 @@
                 <button class="tile tile-admin" onclick="openTab('spend')"><span>💸</span><small>Ledger</small></button>
                 <button class="tile tile-weekly-hub" onclick="openTab('weeksHub')"><span>📅</span><small>Weekly Work</small></button>
             </div>
-        </div>
-
-        <div id="master" class="tab-content">
-            <div class="search-shield"><input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()"></div>
-            <div id="masterTableBody"></div>
-            <div class="fixed-bottom-shield"><div class="action-card-green"><button class="btn-clear-large" onclick="completeCycle()">🚀 START NEW MONTH</button></div></div>
         </div>
 
         <div id="stats" class="tab-content">
@@ -90,24 +83,10 @@
             <div id="monthlyHistoryContainer"></div>
         </div>
 
-        <div id="spend" class="tab-content">
-            <div class="card ledger-card">
-                <h3 class="ledger-title">💸 Log Expense</h3>
-                <div class="ledger-input-stack">
-                    <input type="text" id="expDesc" placeholder="Description" class="ledger-input">
-                    <input type="number" id="expAmt" placeholder="Amount £" class="ledger-input">
-                    <button class="btn-ledger-add" onclick="addExpense()">Add Expense</button>
-                </div>
-            </div>
-            <div class="card ledger-card">
-                <h3 class="ledger-title">📊 QuickBooks Exports</h3>
-                <div class="ledger-grid-2x1">
-                    <button class="btn-qb-export" onclick="exportToCSV('income')">💹 QB Income</button>
-                    <button class="btn-qb-export" onclick="exportToCSV('spend')">📋 QB Spend</button>
-                </div>
-            </div>
-            <h3 class="ledger-section-label">💸 Spend History</h3>
-            <div id="expenseList"></div>
+        <div id="master" class="tab-content">
+            <div class="search-shield"><input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()"></div>
+            <div id="masterTableBody"></div>
+            <div class="fixed-bottom-shield"><div class="action-card-green"><button class="btn-clear-large" onclick="completeCycle()">🚀 START NEW MONTH</button></div></div>
         </div>
 
         <div id="admin" class="tab-content">
@@ -141,6 +120,26 @@
             </div>
         </div>
 
+        <div id="spend" class="tab-content">
+            <div class="card ledger-card">
+                <h3 class="ledger-title">💸 Log Expense</h3>
+                <div class="ledger-input-stack">
+                    <input type="text" id="expDesc" placeholder="Description" class="ledger-input">
+                    <input type="number" id="expAmt" placeholder="Amount £" class="ledger-input">
+                    <button class="btn-ledger-add" onclick="addExpense()">Add Expense</button>
+                </div>
+            </div>
+            <div class="card ledger-card">
+                <h3 class="ledger-title">📊 QuickBooks Exports</h3>
+                <div class="ledger-grid-2x1">
+                    <button class="btn-qb-export" onclick="exportToCSV('income')">💹 QB Income</button>
+                    <button class="btn-qb-export" onclick="exportToCSV('spend')">📋 QB Spend</button>
+                </div>
+            </div>
+            <h3 class="ledger-section-label">💸 Spend History</h3>
+            <div id="expenseList"></div>
+        </div>
+
         <div id="weeksHub" class="tab-content">
             <div class="weeks-grid">
                 <button class="tile-week-blue" onclick="openTab('week1')">Week 1</button>
@@ -150,11 +149,10 @@
                 <button class="tile-week-blue tile-week-5" onclick="openTab('week5')">Week 5</button>
             </div>
         </div>
-
         <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
     </div>
 
-    <div class="page-version-footer">v21.3 - Final Polish Build</div>
-    <script src="app.js?v=213"></script>
+    <div class="page-version-footer">v21.4 - HUD Alignment Locked</div>
+    <script src="app.js?v=214"></script>
 </body>
 </html>
