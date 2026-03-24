@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v40.4</title>
+    <title>Hydro Pro v40.6</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="AppIcon.png">
     <link rel="icon" type="image/png" href="AppIcon.png">
-    <link rel="stylesheet" href="styles.css?v=404">
+    <link rel="stylesheet" href="styles.css?v=406">
 </head>
 <body class="light-mode">
 
@@ -17,7 +17,7 @@
         <div class="G-NAV-ZONE">
             <span id="dateText"></span>
             <div id="weather-pill" class="G-WEATHER-PILL" onclick="launchWeatherApp()">
-                <span id="w-icon">🌤️</span><small id="w-text">GPS SYNCING...</small>
+                <span id="w-icon">🌤️</span><small id="w-text">GPS SYNC...</small>
             </div>
             <div class="G-SWITCH-WRAP">
                 <label class="ios-switch">
@@ -49,9 +49,8 @@
         <section id="ledger-root" class="tab-content">
             <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
             <div class="LD-HERO"><small>TOTAL SPEND</small><div id="ledgerTotalDisplay">£0.00</div></div>
-            
             <div class="LD-INPUT-CARD">
-                <input type="text" id="expDesc" class="LD-FIELD" placeholder="What did you buy?">
+                <input type="text" id="expDesc" class="LD-FIELD" placeholder="Description">
                 <input type="number" id="expAmt" class="LD-FIELD" placeholder="Amount £">
                 <select id="expCat" class="LD-SELECT-FIXED">
                     <option value="⛽ Fuel">⛽ Fuel</option>
@@ -61,13 +60,12 @@
                 </select>
                 <button class="LD-ADD-BTN" onclick="addExpense()">Add Expense</button>
             </div>
-            
             <div id="ledger-list-container"></div>
         </section>
 
         <section id="master-root" class="tab-content">
             <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="CT-SEARCH-WRAP"><input type="text" id="mainSearch" placeholder="🔍 Search Name or Street..." oninput="renderMaster()"></div>
+            <div class="CT-SEARCH-WRAP"><input type="text" id="mainSearch" placeholder="🔍 Search Customers..." oninput="renderMaster()"></div>
             <div id="master-list-container"></div>
         </section>
 
@@ -98,14 +96,15 @@
                 <textarea id="cNotes" class="SU-NOTES" placeholder="Private Notes..."></textarea>
                 <button class="SU-SAVE-BTN" onclick="saveCustomer()">✨ Save New Customer</button>
             </div>
-            <div class="SU-LOCKDOWN-ZONE">
+
+            <div class="SU-UTILITY-ANCHOR">
                 <button class="SU-CYCLE-BTN" onclick="completeCycle()">🚀 START NEW MONTH</button>
                 <div class="SU-BACKUP-ROW">
                     <button class="SU-IO-BTN" onclick="exportData()">📤 Backup</button>
                     <button class="SU-IO-BTN" onclick="document.getElementById('importFile').click()">📥 Restore</button>
                     <input type="file" id="importFile" hidden onchange="importData(event)" accept=".csv">
                 </div>
-                <button class="SU-DANGER-BTN" onclick="nuclearReset()">☢️ FACTORY RESET DATA</button>
+                <button class="SU-NUCLEAR-BTN" onclick="nuclearReset()">☢️ FACTORY RESET DATA</button>
             </div>
         </section>
 
@@ -131,12 +130,6 @@
             <h2 style="margin-top:0; color:var(--accent); text-align:center;">Edit Profile</h2>
             <input type="hidden" id="eEditId">
             <div class="SU-ROW"><span>👤</span><input type="text" id="eName"></div>
-            <div class="SU-ROW"><span>📱</span><input type="tel" id="ePhone"></div>
-            <div class="SU-ROW"><span>🏠</span><input type="text" id="eHouseNum"></div>
-            <div class="SU-ROW"><span>🛣️</span><input type="text" id="eStreet"></div>
-            <div class="SU-ROW"><span>📍</span><input type="text" id="ePostcode"></div>
-            <div class="SU-ROW"><span>📅</span><select id="eDay" class="SU-SELECT"><option value="Mon">Mon</option><option value="Tue">Tue</option><option value="Wed">Wed</option><option value="Thu">Thu</option><option value="Fri">Fri</option><option value="Sat">Sat</option><option value="Sun">Sun</option></select></div>
-            <div class="SU-ROW"><span>📅</span><select id="eWeek" class="SU-SELECT"><option value="1">Wk 1</option><option value="2">Wk 2</option><option value="3">Wk 3</option><option value="4">Wk 4</option><option value="5">Wk 5</option></select></div>
             <div class="SU-ROW"><span>💰</span><input type="number" id="ePrice"></div>
             <textarea id="eNotes" class="SU-NOTES"></textarea>
             <button class="MD-SAVE-BTN" onclick="updateCustomerFromModal()">💾 SAVE & EXIT</button>
@@ -153,7 +146,7 @@
         </div>
     </div>
     
-    <footer id="version-label">v40.4 LEDGER FIX</footer>
-    <script src="app.js?v=404"></script>
+    <footer id="version-label">v40.6 IRON VAULT</footer>
+    <script src="app.js?v=406"></script>
 </body>
 </html>
