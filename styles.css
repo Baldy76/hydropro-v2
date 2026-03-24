@@ -1,10 +1,9 @@
 :root { --accent: #007aff; --bg: #f2f2f7; --card: #ffffff; --text: #000; --success: #32d74b; --danger: #ff453a; }
 body.dark-mode { --bg: #000 !important; --card: #1c1c1e !important; --text: #fff !important; }
-
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; }
 
-/* 🔒 HEADER & TOP NAV */
+/* 🔒 HEADER */
 #global-header-shield { padding: 40px 0 20px; display: flex; flex-direction: column; align-items: center; width: 100%; }
 .header-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 400px; padding: 0 20px; }
 .oblong-logo { width: 280px !important; height: auto; }
@@ -14,43 +13,57 @@ body { font-family: -apple-system, sans-serif; background: var(--bg); color: var
 #dateText { font-size: 24px; font-weight: 900; color: var(--accent); }
 .back-home-pill-top { width: calc(100% - 40px); height: 60px; border-radius: 30px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 17px; margin: 0 20px 25px; display: block; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
-/* --- 🔒 HOME HUB --- */
-#fence-home .home-grid-lockdown { display: grid !important; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
-#fence-home .lock-tile { height: 125px !important; border-radius: 32px; background: var(--card); border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.06); color: var(--text); }
-#fence-home .lock-tile span { font-size: 42px !important; margin-bottom: 5px; }
-#fence-home .lock-tile small { font-size: 18px !important; font-weight: 900; text-transform: uppercase; }
-#fence-home .tile-full { grid-column: 1 / -1; background: var(--accent); height: 135px !important; color: white !important; }
+/* --- 🔒 FENCE: HOME --- */
+#fence-home .home-grid-lockdown { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
+#fence-home .lock-tile { height: 125px; border-radius: 32px; background: var(--card); border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.06); color: var(--text); }
+#fence-home .lock-tile span { font-size: 42px; margin-bottom: 5px; }
+#fence-home .lock-tile small { font-size: 18px; font-weight: 900; text-transform: uppercase; }
+#fence-home .tile-full { grid-column: 1 / -1; background: var(--accent); height: 135px; color: white !important; }
 
-/* --- 🔒 SETUP --- */
-#fence-setup .setup-card { background: var(--card); border-radius: 35px; padding: 30px; margin: 0 20px 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-#fence-setup .setup-row { display: flex; align-items: center; gap: 15px; height: 75px; border-bottom: 2px solid rgba(0,0,0,0.04); }
-#fence-setup .setup-icon { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; background: rgba(0,122,255,0.05); flex-shrink: 0; }
-#fence-setup .setup-stack { flex-grow: 1; display: flex; flex-direction: column; }
-#fence-setup .setup-stack label { font-size: 10px; font-weight: 800; color: #8e8e93; text-transform: uppercase; }
-#fence-setup .setup-input { font-size: 20px; font-weight: 600; border: none; background: transparent; color: var(--text); outline: none; width: 100%; }
-#fence-setup .setup-textarea-expanded { width: 100%; height: 200px; background: var(--bg); border: none; border-radius: 20px; padding: 15px; font-size: 18px; color: var(--text); outline: none; resize: none; margin-top: 10px; }
-#fence-setup .setup-save-btn { width: 100%; height: 75px; border-radius: 25px; border: none; background: var(--accent); color: white; font-weight: 900; font-size: 20px; margin-top: 15px; }
-#fence-setup .vault-unlock-btn { width: 120px; height: 50px; border-radius: 18px; border: none; background: var(--accent); color: white; font-weight: 900; font-size: 15px; }
-#fence-setup .vault-border { border: 2.5px solid rgba(0,122,255,0.15); }
-#fence-setup .bank-field[readonly] { opacity: 0.5; }
+/* --- 🔒 FENCE: WEEKS --- */
+#fence-weeks-hub .weeks-grid-lock { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding: 20px; }
+#fence-weeks-hub .tile-week-select { height: 110px; border-radius: 28px; border: none; background: linear-gradient(135deg, #444a5e, #1c1c1e); color: white; font-size: 22px; font-weight: 900; }
+#fence-weeks-hub .tile-full { grid-column: 1 / -1; height: 100px; }
+#bulk-action-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 20px 20px; }
+.btn-bulk { height: 60px; border-radius: 18px; border: none; font-weight: 900; color: white; }
+.btn-wa { background: #25d366; }
+.btn-sms { background: #ff9500; }
+.job-card { background: var(--card); padding: 25px; border-radius: 35px; box-shadow: 0 8px 20px rgba(0,0,0,0.06); margin-bottom: 15px; }
+.job-action-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
+.btn-job { height: 48px; border-radius: 14px; border: none; font-weight: 900; color: white; }
 
-/* --- 🔒 MASTER --- */
-#fence-master .search-container-fixed { padding: 0 20px 20px; width: 100%; }
-#fence-master .search-input-pill { width: 100% !important; height: 68px !important; border-radius: 34px; background: var(--card); border: none; padding: 0 30px; font-size: 19px; font-weight: 600; color: var(--text); }
-#fence-master .iron-list-stack { display: flex; flex-direction: column; gap: 15px; padding: 0 20px 220px 20px; }
-#fence-master .cust-tile { background: var(--card); padding: 25px; border-radius: 35px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 20px rgba(0,0,0,0.06); width: 100%; }
-#fence-master .fixed-action-footer { position: fixed; bottom: 40px; left: 0; width: 100%; padding: 0 20px; z-index: 1000; }
-#fence-master .btn-new-month { width: 100%; height: 75px; border-radius: 25px; border: none; background: linear-gradient(135deg, #28a745, #34c759); color: white; font-weight: 900; font-size: 20px; }
+/* --- 🔒 FENCE: SETUP --- */
+.setup-card { background: var(--card); border-radius: 35px; padding: 30px; margin: 0 20px 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+.setup-row { display: flex; align-items: center; gap: 15px; height: 75px; border-bottom: 2px solid rgba(0,0,0,0.04); }
+.setup-icon { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; background: rgba(0,122,255,0.05); }
+.setup-stack { display: flex; flex-direction: column; flex-grow: 1; }
+.setup-stack label { font-size: 10px; font-weight: 800; color: #8e8e93; text-transform: uppercase; }
+.setup-input { font-size: 20px; font-weight: 600; border: none; background: transparent; color: var(--text); outline: none; }
+.setup-textarea-expanded { width: 100%; height: 200px; background: var(--bg); border: none; border-radius: 20px; padding: 15px; font-size: 18px; color: var(--text); outline: none; resize: none; margin-top: 10px; }
+.setup-save-btn { width: 100%; height: 75px; border-radius: 25px; border: none; background: var(--accent); color: white; font-weight: 900; font-size: 20px; margin-top: 15px; }
+.vault-unlock-btn { width: 110px; height: 50px; border-radius: 15px; background: var(--accent); color: white; font-weight: 900; border: none; }
 
-/* --- 💸 LEDGER --- */
-#fence-ledger .ledger-card { background: var(--card); border-radius: 35px; padding: 30px; margin: 0 20px 25px; }
-#fence-ledger .ledger-input { width: 100%; height: 60px; background: var(--bg); border: none; border-radius: 18px; padding: 0 20px; font-size: 18px; margin-bottom: 15px; color: var(--text); }
-#fence-ledger .ledger-save-btn { width: 100%; height: 70px; border-radius: 22px; border: none; background: var(--accent); color: white; font-weight: 900; }
-#fence-ledger .ledger-grid-dual { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-#fence-ledger .btn-qb-export-iron { height: 65px; border-radius: 32px; border: none; background: #4ea03b; color: white; font-weight: 900; font-size: 14px; }
-#fence-ledger .expense-tile { background: var(--card); padding: 25px; border-radius: 35px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+/* --- 🔒 FENCE: MASTER --- */
+.search-input-pill { width: 100% !important; height: 68px; border-radius: 34px; background: var(--card); border: none; padding: 0 30px; font-size: 19px; color: var(--text); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+.cust-tile { background: var(--card); padding: 25px; border-radius: 35px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
+.fixed-action-footer { position: fixed; bottom: 40px; left: 0; width: 100%; padding: 0 20px; z-index: 1000; }
+.btn-new-month { width: 100%; height: 75px; border-radius: 25px; border: none; background: linear-gradient(135deg, #28a745, #34c759); color: white; font-weight: 900; font-size: 20px; }
 
-#footer-version { width: 100%; text-align: center; font-size: 9px; font-weight: 900; opacity: 0.2; padding: 40px 0; text-transform: uppercase; }
+/* --- 🔒 FENCE: STATS --- */
+.stats-hero { background: var(--card); margin: 0 20px 25px; padding: 45px 20px; border-radius: 40px; text-align: center; border: 2.5px solid var(--accent); }
+.main-amt { font-size: 72px; font-weight: 800; color: var(--text); }
+.progress-bubble { background: var(--card); margin: 0 20px 20px; padding: 25px; border-radius: 35px; }
+.bar-bg { background: #eee; height: 18px; border-radius: 9px; margin: 15px 0; overflow: hidden; }
+.bar-fill { background: var(--accent); height: 100%; width: 0%; transition: width 0.8s; }
+.arrears-bubble { background: #f05445; color: white; margin: 0 20px 30px; padding: 25px; border-radius: 30px; text-align: center; font-weight: 800; font-size: 22px; }
+
+/* --- 🔒 FENCE: LEDGER --- */
+.ledger-input { width: 100%; height: 60px; background: var(--bg); border: none; border-radius: 18px; padding: 0 20px; font-size: 18px; margin-bottom: 12px; color: var(--text); }
+.ledger-grid-dual { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.btn-qb-export-iron { height: 65px; border-radius: 32px; background: #4ea03b; color: white; font-weight: 900; border: none; }
+.expense-tile { background: var(--card); padding: 25px; border-radius: 35px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+
+.iron-list-stack { display: flex; flex-direction: column; gap: 15px; padding: 0 20px 220px 20px; }
 .tab-content { display: none; }
 .tab-content.active { display: block !important; }
 .hidden { display: none !important; }
