@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v37.1</title>
-    <link rel="stylesheet" href="styles.css?v=371">
+    <title>Hydro Pro v37.2</title>
+    <link rel="stylesheet" href="styles.css?v=372">
 </head>
 <body class="light-mode">
 
@@ -36,7 +36,9 @@
 
         <section id="master-root" class="tab-content">
             <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home</button>
-            <div class="CT-SEARCH-WRAP"><input type="text" id="mainSearch" placeholder="🔍 Search customers..." oninput="renderMaster()"></div>
+            <div class="CT-SEARCH-WRAP">
+                <input type="text" id="mainSearch" placeholder="🔍 Search customers..." oninput="renderMaster()">
+            </div>
             <div id="master-list-container"></div>
         </section>
 
@@ -61,7 +63,9 @@
                 <textarea id="cNotes" class="SU-NOTES" placeholder="Private Notes..."></textarea>
                 <button class="SU-SAVE-BTN" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
-            <div class="SU-RESET-ZONE"><button class="SU-RESET-BTN" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
+            <div class="SU-RESET-ZONE">
+                <button class="SU-RESET-BTN" onclick="completeCycle()">🚀 START NEW MONTH</button>
+            </div>
         </section>
 
         <section id="stats-root" class="tab-content">
@@ -126,6 +130,7 @@
         </div>
     </div>
 
-    <script src="app.js?v=371"></script>
+    <footer id="version-label">v37.2 GOLD</footer>
+    <script src="app.js?v=372"></script>
 </body>
 </html>
