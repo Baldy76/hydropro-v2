@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v40.0</title>
+    <title>Hydro Pro v40.1</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="AppIcon.png">
     <link rel="icon" type="image/png" href="AppIcon.png">
-    <link rel="stylesheet" href="styles.css?v=400">
+    <link rel="stylesheet" href="styles.css?v=401">
 </head>
 <body class="light-mode">
 
@@ -17,7 +17,7 @@
         <div class="G-NAV-ZONE">
             <span id="dateText"></span>
             <div id="weather-pill" class="G-WEATHER-PILL" onclick="launchWeatherApp()">
-                <span id="w-icon">🌤️</span><small id="w-text">Syncing GPS...</small>
+                <span id="w-icon">🌤️</span><small id="w-text">GPS SYNC...</small>
             </div>
             <div class="G-SWITCH-WRAP">
                 <label class="ios-switch">
@@ -94,19 +94,35 @@
                 <textarea id="cNotes" class="SU-NOTES" placeholder="Private Notes..."></textarea>
                 <button class="SU-SAVE-BTN" onclick="saveCustomer()">✨ Save New Customer</button>
             </div>
+
             <div class="SU-LOCKDOWN-ZONE">
                 <button class="SU-CYCLE-BTN" onclick="completeCycle()">🚀 START NEW MONTH</button>
+                
                 <div class="SU-BACKUP-ROW">
-                    <button class="SU-IO-BTN" onclick="exportData()">📤 Backup Master</button>
-                    <button class="SU-IO-BTN" onclick="document.getElementById('importFile').click()">📥 Restore Master</button>
+                    <button class="SU-IO-BTN" onclick="exportData()">📤 Backup</button>
+                    <button class="SU-IO-BTN" onclick="document.getElementById('importFile').click()">📥 Restore</button>
                     <input type="file" id="importFile" hidden onchange="importData(event)" accept=".csv">
                 </div>
-                <button class="SU-DANGER-BTN" onclick="nuclearReset()">⚠️ FACTORY RESET DATA</button>
+
+                <button class="SU-DANGER-BTN" onclick="nuclearReset()">☢️ FACTORY RESET ALL DATA</button>
             </div>
         </section>
 
         <section id="weeks-root" class="tab-content"><button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button><div class="WK-HUB-GRID"><button class="WK-TILE" onclick="viewWeek(1)">Week 1</button><button class="WK-TILE" onclick="viewWeek(2)">Week 2</button><button class="WK-TILE" onclick="viewWeek(3)">Week 3</button><button class="WK-TILE" onclick="viewWeek(4)">Week 4</button><button class="WK-TILE WK-FULL" onclick="viewWeek(5)">Week 5</button></div></section>
-        <section id="week-view-root" class="tab-content"><div class="WK-NAV-ROW"><button onclick="openTab('weeks-root')">⬅️ Back</button><button onclick="openTab('home-root')">🏠 Home</button></div><div class="WK-DAY-PICKER"><button class="DAY-BTN active" onclick="setWorkingDay('Mon', this)">M</button><button class="DAY-BTN" onclick="setWorkingDay('Tue', this)">T</button><button class="DAY-BTN" onclick="setWorkingDay('Wed', this)">W</button><button class="DAY-BTN" onclick="setWorkingDay('Thu', this)">T</button><button class="DAY-BTN" onclick="setWorkingDay('Fri', this)">F</button><button class="DAY-BTN" onclick="setWorkingDay('Sat', this)">S</button><button class="DAY-BTN" onclick="setWorkingDay('Sun', this)">S</button></div><div id="week-list-container"></div></section>
+        
+        <section id="week-view-root" class="tab-content">
+            <div class="WK-NAV-ROW"><button onclick="openTab('weeks-root')">⬅️ Back</button><button onclick="openTab('home-root')">🏠 Home</button></div>
+            <div class="WK-DAY-PICKER">
+                <button class="DAY-BTN active" onclick="setWorkingDay('Mon', this)">M</button>
+                <button class="DAY-BTN" onclick="setWorkingDay('Tue', this)">T</button>
+                <button class="DAY-BTN" onclick="setWorkingDay('Wed', this)">W</button>
+                <button class="DAY-BTN" onclick="setWorkingDay('Thu', this)">T</button>
+                <button class="DAY-BTN" onclick="setWorkingDay('Fri', this)">F</button>
+                <button class="DAY-BTN" onclick="setWorkingDay('Sat', this)">S</button>
+                <button class="DAY-BTN" onclick="setWorkingDay('Sun', this)">S</button>
+            </div>
+            <div id="week-list-container"></div>
+        </section>
     </main>
 
     <div id="editModal" class="modal-overlay hidden" onclick="closeEditModal()">
@@ -136,7 +152,7 @@
         </div>
     </div>
     
-    <footer id="version-label">v40.0 CLEAN SLATE</footer>
-    <script src="app.js?v=400"></script>
+    <footer id="version-label">v40.1 IRON VAULT</footer>
+    <script src="app.js?v=401"></script>
 </body>
 </html>
