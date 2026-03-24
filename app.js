@@ -31,6 +31,21 @@ window.renderAll = () => {
     }
 };
 
+/* --- CLIPBOARD ROBOT --- */
+window.copyBankDetails = () => {
+    const details = `${db.bank.name}\n${db.bank.sort}\n${db.bank.acc}`;
+    navigator.clipboard.writeText(details).then(() => {
+        const btn = document.getElementById('copyBankBtn');
+        const oldText = btn.innerText;
+        btn.innerText = "COPIED! ✅";
+        btn.style.background = "var(--success)";
+        setTimeout(() => {
+            btn.innerText = oldText;
+            btn.style.background = "#8e8e93";
+        }, 2000);
+    });
+};
+
 /* --- RENDERING ROBOTS --- */
 window.renderMaster = () => {
     const container = document.getElementById('master-list-container');
@@ -40,12 +55,7 @@ window.renderMaster = () => {
         if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
             const div = document.createElement('div'); div.className = 'cust-pill';
             div.onclick = () => editCust(c.id);
-            
-            let badgeHtml = "";
-            if (c.cleaned && n(c.paidThisMonth) === 0) {
-                badgeHtml = `<div class="arrears-badge">UNPAID 🚩</div>`;
-            }
-
+            let badgeHtml = (c.cleaned && n(c.paidThisMonth) === 0) ? `<div class="arrears-badge">UNPAID 🚩</div>` : "";
             div.innerHTML = `${badgeHtml}
                              <div><strong style="font-size:20px; display:block;">${c.name}</strong><small style="color:var(--accent);font-weight:700;">${c.houseNum} ${c.street}</small></div>
                              <div style="font-weight:900; color:var(--success); font-size:18px;">£${n(c.price).toFixed(2)}</div>`;
@@ -94,13 +104,7 @@ window.renderStats = () => {
 window.viewWeek = (w) => { curWeek = w; openTab('week-view-root'); };
 window.renderWeek = () => {
     const bulk = document.getElementById('bulk-box'), list = document.getElementById('week-list-container'); if(!list) return;
-    
-    // UPDATED LABELS (v29.4)
-    bulk.innerHTML = `
-        <button class="btn-wa" onclick="messageAll(${curWeek},'wa')">WA Message all W${curWeek}</button>
-        <button class="btn-sms" onclick="messageAll(${curWeek},'sms')">SMS Message all W${curWeek}</button>
-    `;
-
+    bulk.innerHTML = `<button class="btn-wa" onclick="messageAll(${curWeek},'wa')">WA Message all W${curWeek}</button><button class="btn-sms" onclick="messageAll(${curWeek},'sms')">SMS Message all W${curWeek}</button>`;
     list.innerHTML = '';
     db.customers.filter(c => c.week == curWeek).forEach(c => {
         const div = document.createElement('div'); div.className = 'job-card';
@@ -116,8 +120,7 @@ window.renderWeek = () => {
 
 /* --- CORE LOGIC --- */
 window.openMap = (addr) => {
-    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
-    window.open(url, '_blank');
+    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`, '_blank');
 };
 
 window.toggleBankLock = () => {
