@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v31.3</title>
-    <link rel="stylesheet" href="styles.css?v=313">
+    <title>Hydro Pro v31.4</title>
+    <link rel="stylesheet" href="styles.css?v=314">
 </head>
 <body class="light-mode">
 
@@ -49,14 +49,14 @@
             <button class="nav-back" onclick="openTab('home-root')">🏠 Home</button>
             <div class="setup-card">
                 <input type="hidden" id="editId">
-                <div class="entry-row"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
-                <div class="entry-row"><span>📱</span><input type="tel" id="cPhone" placeholder="Phone"></div>
-                <div class="entry-row"><span>🏠</span><input type="text" id="cHouseNum" placeholder="House No."></div>
-                <div class="entry-row"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
-                <div class="entry-row"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
-                <div class="entry-row"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
+                <div class="entry-row-surgical"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
+                <div class="entry-row-surgical"><span>📱</span><input type="tel" id="cPhone" placeholder="Phone"></div>
+                <div class="entry-row-surgical"><span>🏠</span><input type="text" id="cHouseNum" placeholder="House No."></div>
+                <div class="entry-row-surgical"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
+                <div class="entry-row-surgical"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
+                <div class="entry-row-surgical"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
                 <textarea id="cNotes" placeholder="Private Notes..."></textarea>
-                <button class="btn-primary-large" onclick="saveCustomer()">✨ Save Customer</button>
+                <button class="btn-primary-large" style="margin-top: 20px;" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
             
             <div class="bank-vault">
@@ -116,7 +116,7 @@
         </section>
     </div>
 
-    <footer id="global-version-footer">v31.3</footer>
+    <footer id="global-version-footer">v31.4 - Setup Re-Scaled</footer>
 
     <div id="msgModal" class="modal-overlay hidden">
         <div class="modal-content">
@@ -126,6 +126,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=313"></script>
+    <script src="app.js?v=314"></script>
 </body>
 </html>
