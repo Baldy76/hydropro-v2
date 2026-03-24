@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v31.1</title>
-    <link rel="stylesheet" href="styles.css?v=311">
+    <title>Hydro Pro v31.2</title>
+    <link rel="stylesheet" href="styles.css?v=312">
 </head>
 <body class="light-mode">
 
@@ -66,7 +66,7 @@
                         <button id="bankLockBtn" class="vault-btn-common vault-unlock-surgical" onclick="toggleBankLock()">🔓 UNLOCK</button>
                     </div>
                 </div>
-                <input type="text" id="bankName" class="bank-field-fixed" readonly placeholder="Account Name">
+                <input type="text" id="bankName" class="bank-field-fixed bank-airgap" readonly placeholder="Account Name">
                 <input type="text" id="bankSort" class="bank-field-fixed" readonly placeholder="Sort Code">
                 <input type="text" id="bankAcc" class="bank-field-fixed" readonly placeholder="Account Number">
                 <button id="bankSaveBtn" class="hidden btn-primary-large" style="background:var(--success); margin-top:15px;" onclick="saveBankDetails()">💾 Save Bank Info</button>
@@ -100,10 +100,8 @@
         <section id="weeks-root" class="tab-content">
             <button class="nav-back" onclick="openTab('home-root')">🏠 Home</button>
             <div class="weeks-hub-grid">
-                <button onclick="viewWeek(1)">Week 1</button>
-                <button onclick="viewWeek(2)">Week 2</button>
-                <button onclick="viewWeek(3)">Week 3</button>
-                <button onclick="viewWeek(4)">Week 4</button>
+                <button onclick="viewWeek(1)">Week 1</button><button onclick="viewWeek(2)">Week 2</button>
+                <button onclick="viewWeek(3)">Week 3</button><button onclick="viewWeek(4)">Week 4</button>
                 <button class="full" onclick="viewWeek(5)">Week 5</button>
             </div>
         </section>
@@ -118,7 +116,7 @@
         </section>
     </div>
 
-    <footer id="global-version-footer">v31.1 - Data Migration Active</footer>
+    <footer id="global-version-footer">v31.2 - Airgap Final</footer>
 
     <div id="msgModal" class="modal-overlay hidden">
         <div class="modal-content">
@@ -128,6 +126,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=311"></script>
+    <script src="app.js?v=312"></script>
 </body>
 </html>
