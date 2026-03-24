@@ -1,31 +1,72 @@
-/* --- ARCHITECTURE QUARANTINE v38.0 --- */
+/* --- ARCHITECTURE QUARANTINE v38.2 --- */
 :root { --accent: #007aff; --bg: #f2f2f7; --card: #ffffff; --text: #000; --success: #34C759; --danger: #ff453a; --ios-grey: #e9e9eb; --grad: linear-gradient(135deg, #007aff 0%, #0051a8 100%); }
 body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; --ios-grey: #39393d; }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, sans-serif; }
-body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; }
+body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; transition: background 0.3s; }
 .tab-content { display: none !important; }
 .tab-content.active { display: flex !important; flex-direction: column; width: 100%; }
 
-/* HEADER WEATHER */
+/* HEADER & WEATHER */
 #G-HEADER { width: 100%; text-align: center; }
 .G-LOGO-WRAP { width: 100%; display: flex; justify-content: center; padding: 15px 0; }
 .G-LOGO-WRAP img { width: 100%; height: auto; display: block; object-fit: contain; }
 #dateText { font-size: 26px; font-weight: 900; color: var(--accent); display: block; }
-
 .G-WEATHER-PILL { display: inline-flex; align-items: center; gap: 8px; background: var(--ios-grey); padding: 6px 15px; border-radius: 20px; margin-top: 8px; cursor: pointer; transition: transform 0.2s; }
 .G-WEATHER-PILL:active { transform: scale(0.95); }
 .G-WEATHER-PILL span { font-size: 16px; }
 .G-WEATHER-PILL small { font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-/* (Rest of layout same as v37.9) */
-.G-SWITCH-WRAP { margin-top: 15px; display: flex; justify-content: center; }
-.ios-switch { position: relative; display: inline-block; width: 51px; height: 31px; }
+/* 🌓 INTUITIVE TOGGLE v38.2 */
+.G-SWITCH-WRAP { margin-top: 20px; display: flex; justify-content: center; align-items: center; position: relative; }
+.ios-switch { position: relative; display: inline-block; width: 85px; height: 34px; }
 .ios-switch input { opacity: 0; width: 0; height: 0; }
-.ios-slider { position: absolute; cursor: pointer; top:0; left:0; right:0; bottom:0; background: var(--ios-grey); border-radius: 31px; transition: .3s; }
-.ios-slider:before { position: absolute; content: ""; height: 27px; width: 27px; left: 2px; bottom: 2px; background: white; border-radius: 50%; transition: .3s; }
-input:checked + .ios-slider { background-color: var(--success); }
-input:checked + .ios-slider:before { transform: translateX(20px); }
+.ios-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--ios-grey); border-radius: 34px; transition: 0.4s; overflow: hidden; }
 
+.ios-slider:after {
+    content: "DARK";
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    font-weight: 900;
+    color: #000;
+    letter-spacing: 0.5px;
+}
+
+.ios-slider:before {
+    content: "";
+    position: absolute;
+    height: 28px;
+    width: 28px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.4s;
+    z-index: 2;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+input:checked + .ios-slider { background-color: var(--success); }
+input:checked + .ios-slider:before { transform: translateX(51px); }
+input:checked + .ios-slider:after { content: ""; }
+
+.ios-slider-label-light {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    font-weight: 900;
+    color: #fff;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.4s;
+}
+input:checked ~ .ios-slider-label-light { opacity: 1; }
+
+/* LAYOUT CONSTANTS */
 .HM-GRID { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
 .HM-GRID button { height: 125px; border-radius: 30px; background: var(--card); border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 15px rgba(0,0,0,0.05); color: var(--text); }
 .HM-GRID span { font-size: 40px; color: var(--accent); }
