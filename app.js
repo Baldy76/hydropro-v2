@@ -5,13 +5,13 @@ const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 let curWeek = 1;
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. DATA RECOVERY ROBOT
+    // 1. Data Recovery Logic
     const oldData = localStorage.getItem(OLD_KEY);
     const newData = localStorage.getItem(DB_KEY);
     if (oldData && !newData) { db = JSON.parse(oldData); saveData(); } 
     else if (newData) { db = JSON.parse(newData); }
 
-    // 2. THEME ROBOT
+    // 2. Theme Implementation
     const isDark = localStorage.getItem('HP_Theme') === 'true';
     document.body.classList.toggle('dark-mode', isDark);
     document.getElementById('themeCheckbox').checked = isDark;
@@ -70,7 +70,7 @@ window.renderLedger = () => {
     db.expenses.slice().reverse().forEach(e => {
         const div = document.createElement('div'); div.className = 'exp-pill';
         div.ondblclick = () => { if(confirm("Delete expense?")) { db.expenses = db.expenses.filter(x => x.id !== e.id); saveData(); renderLedger(); renderStats(); } };
-        div.innerHTML = `<div><strong style="font-size:18px;">${e.desc}</strong><br><small style="opacity:0.5;">${e.date}</small></div><div style="color:var(--danger); font-weight:900; font-size:20px;">-£${n(e.amt).toFixed(2)}</div>`;
+        div.innerHTML = `<div><strong style="font-size:17px;">${e.desc}</strong><br><small style="opacity:0.5;">${e.date}</small></div><div style="color:var(--danger); font-weight:900; font-size:20px;">-£${n(e.amt).toFixed(2)}</div>`;
         container.appendChild(div);
     });
 };
@@ -81,21 +81,16 @@ window.addExpense = () => {
     saveData(); document.getElementById('expDesc').value=''; document.getElementById('expAmt').value=''; renderLedger(); renderStats();
 };
 
-/* --- 📊 STATS (RECONCILED MATH) --- */
+/* --- 📊 STATS (RECONCILED) --- */
 window.renderStats = () => {
     const container = document.getElementById('stats-container'); if(!container) return;
     let target = 0, paid = 0, arrears = 0, spend = 0;
     db.customers.forEach(c => { 
-        target += n(c.price); 
-        paid += n(c.paidThisMonth); 
-        // Accurate Arrears calculation (only Cleaned and not fully paid)
-        if (c.cleaned && n(c.paidThisMonth) < n(c.price)) {
-            arrears += (n(c.price) - n(c.paidThisMonth)); 
-        }
+        target += n(c.price); paid += n(c.paidThisMonth); 
+        if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth)); 
     });
     db.expenses.forEach(e => spend += n(e.amt));
     const profit = paid - spend, progress = target > 0 ? Math.min(Math.round((paid / target) * 100), 100) : 0;
-    
     container.innerHTML = `
         <div class="stats-hero-main"><div>£${profit.toFixed(2)}</div><small>PROFIT IN POCKET</small></div>
         <div class="stats-grid-row">
@@ -115,9 +110,10 @@ window.renderStats = () => {
 window.viewWeek = (w) => { curWeek = w; openTab('week-view-root'); };
 window.renderWeek = () => {
     const bulk = document.getElementById('bulk-box'), list = document.getElementById('week-list-container'); if(!list) return;
+    // v32.0 Final Gap Implementation on the buttons container
     bulk.innerHTML = `
-        <button class="airgap-btn" style="background:#25d366;color:white;height:65px;width:100%;border-radius:20px;border:none;font-weight:900;" onclick="messageAll(${curWeek},'wa')">WA Message All W${curWeek}</button>
-        <button class="airgap-btn" style="background:#007aff;color:white;height:65px;width:100%;border-radius:20px;border:none;font-weight:900;" onclick="messageAll(${curWeek},'sms')">SMS Message All W${curWeek}</button>`;
+        <button class="airgap-btn" style="background:#25d366;color:white;height:65px;width:100%;border-radius:20px;border:none;font-weight:900;margin-bottom:12px;" onclick="messageAll(${curWeek},'wa')">WA Message All W${curWeek}</button>
+        <button style="background:#007aff;color:white;height:65px;width:100%;border-radius:20px;border:none;font-weight:900;" onclick="messageAll(${curWeek},'sms')">SMS Message All W${curWeek}</button>`;
     list.innerHTML = '';
     db.customers.filter(c => c.week == curWeek).forEach(c => {
         const div = document.createElement('div'); div.className = 'job-card';
@@ -127,18 +123,18 @@ window.renderWeek = () => {
     });
 };
 
-/* --- 🛠️ UTILS --- */
+/* --- 🛠️ SYSTEM UTILS --- */
 window.markAsPaid = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; if(n(c.paidThisMonth) > 0) { if(confirm(`Reset payment?`)) { c.paidThisMonth = 0; saveData(); renderWeek(); renderStats(); } return; } const amt = prompt(`Enter Amount Paid for ${c.name}:`, c.price); if(amt !== null) { c.paidThisMonth = n(amt); saveData(); renderWeek(); renderStats(); } };
-window.saveCustomer = () => { const name = document.getElementById('cName').value; if(!name) return alert("Name Required"); const id = document.getElementById('editId').value || Date.now().toString(); const entry = { id, name, phone: document.getElementById('cPhone').value, houseNum: document.getElementById('cHouseNum').value, street: document.getElementById('cStreet').value, postcode: document.getElementById('cPostcode').value.toUpperCase(), price: n(document.getElementById('cPrice').value), notes: document.getElementById('cNotes').value, week: (db.customers.find(x=>x.id===id)||{week:"1"}).week, cleaned: (db.customers.find(x=>x.id===id)||{cleaned:false}).cleaned, paidThisMonth: (db.customers.find(x=>x.id===id)||{paidThisMonth:0}).paidThisMonth }; const idx = db.customers.findIndex(c => c.id === id); if(idx>-1) db.customers[idx]=entry; else db.customers.push(entry); saveData(); openTab('master-root'); };
+window.saveCustomer = () => { const name = document.getElementById('cName').value; if(!name) return alert("Name Required"); const id = document.getElementById('editId').value || Date.now().toString(); const ex = db.customers.find(x=>x.id===id); const entry = { id, name, phone: document.getElementById('cPhone').value, houseNum: document.getElementById('cHouseNum').value, street: document.getElementById('cStreet').value, postcode: document.getElementById('cPostcode').value.toUpperCase(), price: n(document.getElementById('cPrice').value), notes: document.getElementById('cNotes').value, week: ex?ex.week:"1", cleaned: ex?ex.cleaned:false, paidThisMonth: ex?ex.paidThisMonth:0 }; const idx = db.customers.findIndex(c => c.id === id); if(idx>-1) db.customers[idx]=entry; else db.customers.push(entry); saveData(); openTab('master-root'); };
 window.editCust = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; openTab('setup-root'); document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cPhone').value = c.phone; document.getElementById('cHouseNum').value = c.houseNum; document.getElementById('cStreet').value = c.street; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPrice').value = c.price; document.getElementById('cNotes').value = c.notes; };
 window.toggleBankLock = () => { const fields = document.querySelectorAll('.bank-input'), lockBtn = document.getElementById('bankLockBtn'), saveBtn = document.getElementById('bankSaveBtn'); const isLocked = fields[0].readOnly; fields.forEach(f => f.readOnly = !isLocked); lockBtn.innerText = isLocked ? "🔒 LOCK" : "🔓 UNLOCK"; saveBtn.classList.toggle('hidden', !isLocked); };
 window.saveBankDetails = () => { db.bank = { name: document.getElementById('bankName').value, sort: document.getElementById('bankSort').value, acc: document.getElementById('bankAcc').value }; saveData(); toggleBankLock(); alert("Bank Secured"); };
-window.copyBankDetails = () => { navigator.clipboard.writeText(`${db.bank.name}\n${db.bank.sort}\n${db.bank.acc}`).then(() => alert("Bank Details Copied!")); };
-window.handleClean = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; c.cleaned = !c.cleaned; saveData(); renderWeek(); if(c.cleaned) { const msg = `Hi ${c.name} windows cleaned today. £${n(c.price).toFixed(2)}.\n\nBank: ${db.bank.name} ${db.bank.sort} ${db.bank.acc}`; document.getElementById('msgPreview').innerText = msg; document.getElementById('msgModal').classList.remove('hidden'); document.getElementById('modalButtons').innerHTML = `<button onclick="sendMsg('${c.phone}','wa','${encodeURIComponent(msg)}')" style="width:100%;margin-bottom:10px;background:#25d366;color:white;height:55px;border:none;border-radius:15px;font-weight:900;">WhatsApp</button><button onclick="sendMsg('${c.phone}','sms','${encodeURIComponent(msg)}')" style="width:100%;margin-bottom:10px;background:#007aff;color:white;height:55px;border:none;border-radius:15px;font-weight:900;">SMS</button><button onclick="closeMsgModal()" style="width:100%;height:45px;border:none;border-radius:15px;background:#8e8e93;color:white;">Skip</button>`; } };
+window.copyBankDetails = () => { navigator.clipboard.writeText(`${db.bank.name}\n${db.bank.sort}\n${db.bank.acc}`).then(() => alert("Copied!")); };
+window.handleClean = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; c.cleaned = !c.cleaned; saveData(); renderWeek(); if(c.cleaned) { const msg = `Hi ${c.name} windows cleaned. £${n(c.price).toFixed(2)}.\n\nBank: ${db.bank.name} ${db.bank.sort} ${db.bank.acc}`; document.getElementById('msgPreview').innerText = msg; document.getElementById('msgModal').classList.remove('hidden'); document.getElementById('modalButtons').innerHTML = `<button onclick="sendMsg('${c.phone}','wa','${encodeURIComponent(msg)}')" style="width:100%;margin-bottom:10px;background:#25d366;color:white;height:55px;border:none;border-radius:15px;font-weight:900;">WhatsApp</button><button onclick="sendMsg('${c.phone}','sms','${encodeURIComponent(msg)}')" style="width:100%;margin-bottom:10px;background:#007aff;color:white;height:55px;border:none;border-radius:15px;font-weight:900;">SMS</button><button onclick="closeMsgModal()" style="width:100%;height:45px;border:none;border-radius:15px;background:#8e8e93;color:white;">Skip</button>`; } };
 window.sendMsg = (p, m, msg) => { const c = (p||"").replace(/\s+/g,''); window.open(m==='wa' ? `https://wa.me/${c}?text=${msg}` : `sms:${c}?body=${msg}`, '_blank'); closeMsgModal(); };
 window.openMap = (addr) => { window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`, '_blank'); };
 window.closeMsgModal = () => document.getElementById('msgModal').classList.add('hidden');
 window.saveData = () => localStorage.setItem(DB_KEY, JSON.stringify(db));
 window.updateHeader = () => { const hr = new Date().getHours(), g = (hr < 12) ? "GOOD MORNING" : (hr < 18) ? "GOOD AFTERNOON" : "GOOD EVENING"; document.getElementById('greetText').innerText = `${g}, PARTNER! ☕`; document.getElementById('dateText').innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }); };
-window.completeCycle = () => { if(confirm("Reset month?")) { db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload(); } };
+window.completeCycle = () => { if(confirm("Reset month? Statuses will clear and Ledger will wipe.")) { db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload(); } };
 window.exportCSV = (type) => { let csv = type === 'income' ? 'Name,Amount\n' : 'Desc,Amount\n'; if(type === 'income') db.customers.filter(c => n(c.paidThisMonth) > 0).forEach(c => csv += `"${c.name}",${c.paidThisMonth}\n`); else db.expenses.forEach(e => csv += `"${e.desc}",${e.amt}\n`); const blob = new Blob([csv], { type: 'text/csv' }); const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `HydroPro_${type}.csv`; a.click(); };
