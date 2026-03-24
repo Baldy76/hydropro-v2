@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v25.1</title>
-    <link rel="stylesheet" href="styles.css?v=251">
+    <title>Hydro Pro v25.2</title>
+    <link rel="stylesheet" href="styles.css?v=252">
 </head>
 <body class="light-mode">
 
@@ -31,28 +31,52 @@
             </div>
         </section>
 
+        <section id="fence-setup" class="tab-content">
+            <div id="setup-form-container">
+                <div class="setup-card">
+                    <h3 class="setup-label">👤 Add/Edit Customer</h3>
+                    <input type="hidden" id="editId">
+                    <div class="setup-row"><div class="setup-icon">👤</div><div class="setup-stack"><label>Name</label><input type="text" id="cName" class="setup-input"></div></div>
+                    <div class="setup-row"><div class="setup-icon">📱</div><div class="setup-stack"><label>Phone</label><input type="tel" id="cPhone" class="setup-input"></div></div>
+                    <div class="setup-row"><div class="setup-icon">🏠</div><div class="setup-stack"><label>House No.</label><input type="text" id="cHouseNum" class="setup-input"></div></div>
+                    <div class="setup-row"><div class="setup-icon">🛣️</div><div class="setup-stack"><label>Street</label><input type="text" id="cStreet" class="setup-input"></div></div>
+                    <div class="setup-row"><div class="setup-icon">📍</div><div class="setup-stack"><label>Postcode</label><input type="text" id="cPostcode" class="setup-input"></div></div>
+                    <div class="setup-row" style="border:none;"><div class="setup-icon">💰</div><div class="setup-stack"><label>Price £</label><input type="number" id="cPrice" class="setup-input"></div></div>
+                    
+                    <div class="notes-area-lockdown">
+                        <label class="notes-label-fixed">📝 PRIVATE NOTES</label>
+                        <textarea id="cNotes" class="setup-textarea-expanded" placeholder="Gate codes, requests..."></textarea>
+                    </div>
+                    <button class="setup-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
+                </div>
+
+                <div class="setup-card vault-border">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <h3 class="setup-label" style="margin:0">🏦 Bank Details</h3>
+                        <button id="bankLockBtn" class="vault-unlock-btn" onclick="toggleBankLock()">🔓 UNLOCK</button>
+                    </div>
+                    <div class="setup-row"><div class="setup-icon">🏷️</div><div class="setup-stack"><label>Account Name</label><input type="text" id="bankName" class="setup-input bank-field" readonly></div></div>
+                    <div class="setup-row"><div class="setup-icon">🔢</div><div class="setup-stack"><label>Sort Code</label><input type="text" id="bankSort" class="setup-input bank-field" readonly maxlength="8" placeholder="00-00-00"></div></div>
+                    <div class="setup-row" style="border:none"><div class="setup-icon">💳</div><div class="setup-stack"><label>Account Number</label><input type="number" id="bankAcc" class="setup-input bank-field" readonly></div></div>
+                    <button id="bankSaveBtn" class="setup-save-btn hidden" onclick="saveBankDetails()" style="background:var(--success); margin-top:20px;">💾 Save Bank Details</button>
+                </div>
+            </div>
+            <button class="back-home-pill" onclick="openTab('fence-home')">🏠 Back to Home</button>
+        </section>
+
         <section id="fence-stats" class="tab-content">
             <div id="stats-dashboard-container"></div>
             <button class="back-home-pill" onclick="openTab('fence-home')">🏠 Back to Home</button>
         </section>
 
-        <section id="fence-setup" class="tab-content">
-             <button class="back-home-pill" onclick="openTab('fence-home')">🏠 Back to Home</button>
-        </section>
-        <section id="fence-master" class="tab-content">
-             <button class="back-home-pill" onclick="openTab('fence-home')">🏠 Back to Home</button>
-        </section>
-        <section id="fence-ledger" class="tab-content">
-             <button class="back-home-pill" onclick="openTab('fence-home')">🏠 Back to Home</button>
-        </section>
-        <section id="fence-weeks" class="tab-content">
-             <button class="back-home-pill" onclick="openTab('fence-home')">🏠 Back to Home</button>
-        </section>
+        <section id="fence-master" class="tab-content"></section>
+        <section id="fence-ledger" class="tab-content"></section>
+        <section id="fence-weeks" class="tab-content"></section>
 
     </div>
 
-    <footer id="footer-version">v25.1 - Header Integrated Toggle</footer>
+    <footer id="footer-version">v25.2 - Setup & Bank Recovered</footer>
 
-    <script src="app.js?v=251"></script>
+    <script src="app.js?v=252"></script>
 </body>
 </html>
