@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v28.2</title>
-    <link rel="stylesheet" href="styles.css?v=282">
+    <title>Hydro Pro v28.3</title>
+    <link rel="stylesheet" href="styles.css?v=283">
 </head>
 <body class="light-mode">
 
@@ -44,11 +44,15 @@
                 <textarea id="cNotes" placeholder="Private Notes..."></textarea>
                 <button class="btn-primary-large" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
+            
             <div class="bank-vault">
-                <div class="vault-header"><h3>🏦 Bank Vault</h3><button id="bankLockBtn" class="vault-unlock-btn" onclick="toggleBankLock()">🔓 UNLOCK</button></div>
-                <input type="text" id="bankName" class="bank-field" readonly placeholder="Account Name">
-                <input type="text" id="bankSort" class="bank-field" readonly placeholder="Sort Code">
-                <input type="number" id="bankAcc" class="bank-field" readonly placeholder="Account Number">
+                <div class="vault-header">
+                    <h3>🏦 Bank Vault</h3>
+                    <button id="bankLockBtn" class="vault-unlock-surgical" onclick="toggleBankLock()">🔓 UNLOCK</button>
+                </div>
+                <input type="text" id="bankName" class="bank-field-fixed" readonly placeholder="Account Name">
+                <input type="text" id="bankSort" class="bank-field-fixed" readonly placeholder="Sort Code">
+                <input type="number" id="bankAcc" class="bank-field-fixed" readonly placeholder="Account Number">
                 <button id="bankSaveBtn" class="hidden btn-primary-large" style="background:var(--success); margin-top:15px;" onclick="saveBankDetails()">💾 Save Details</button>
             </div>
         </section>
@@ -57,12 +61,14 @@
             <button class="nav-back" onclick="openTab('home-root')">🏠 Back to Home</button>
             <div class="ledger-hero-display"><small>MONTH SPEND</small><div id="ledgerTotal">£0.00</div></div>
             <div class="ledger-card-box">
-                <h3 class="ledger-label">Log Expense</h3>
                 <input type="text" id="expDesc" placeholder="Description" class="ledger-field">
                 <input type="number" id="expAmt" placeholder="Amount £" class="ledger-field">
                 <button class="ledger-btn-save" onclick="addExpense()">Add Expense</button>
             </div>
-            <div class="ledger-qb-grid"><button onclick="exportToCSV('income')">💹 Income CSV</button><button onclick="exportToCSV('spend')">📋 Spend CSV</button></div>
+            <div class="ledger-qb-grid">
+                <button onclick="exportToCSV('income')">💹 Income CSV</button>
+                <button onclick="exportToCSV('spend')">📋 Spend CSV</button>
+            </div>
             <div id="ledger-list-container"></div>
         </section>
 
@@ -90,10 +96,10 @@
         </section>
     </div>
 
-    <footer id="global-version-footer">v28.2 - Hard Dimension Protocol</footer>
+    <footer id="global-version-footer">v28.3 - Ground Zero Protocol</footer>
 
     <div id="msgModal" class="modal-overlay hidden" onclick="closeMsgModal()"><div class="modal-content" onclick="event.stopPropagation()"><h3>Send Invoice?</h3><p id="msgPreview"></p><div id="modalButtons"></div></div></div>
 
-    <script src="app.js?v=282"></script>
+    <script src="app.js?v=283"></script>
 </body>
 </html>
