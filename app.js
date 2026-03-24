@@ -30,11 +30,25 @@ window.openTab = (name) => {
     renderAll();
 };
 
-window.updateGreeting = () => {
-    const hr = new Date().getHours();
-    const g = (hr < 12) ? "Good Morning" : (hr < 18) ? "Good Afternoon" : "Good Evening";
-    const el = document.getElementById('greetingMsg');
-    if (el) el.innerText = `${g}, Partner! ☕`;
+// 🆕 MODAL LOGIC FOR v20.3
+window.showActionModal = (id) => {
+    const c = db.customers.find(x => x.id === id);
+    if(!c) return;
+    
+    document.getElementById('modalCustomerName').innerText = c.name;
+    document.getElementById('modalCustomerAddress').innerText = `${c.houseNum} ${c.street}`;
+    
+    const editBtn = document.getElementById('modalEditBtn');
+    editBtn.onclick = () => {
+        closeModal();
+        editCust(c.id);
+    };
+    
+    document.getElementById('actionModal').classList.remove('hidden');
+};
+
+window.closeModal = () => {
+    document.getElementById('actionModal').classList.add('hidden');
 };
 
 window.saveCustomer = () => {
@@ -56,25 +70,35 @@ window.saveCustomer = () => {
 
     if(idx > -1) db.customers[idx] = entry; else db.customers.push(entry);
     saveData();
-    alert("Customer Saved Successfully! ✨");
+    alert("Customer Saved! ✨");
     ['editId', 'cName', 'cHouseNum', 'cStreet', 'cPostcode', 'cPrice', 'cNotes'].forEach(f => {
         const el = document.getElementById(f); if(el) el.value = "";
     });
     openTab('home');
 };
 
+window.renderMasterTable = () => {
+    const body = document.getElementById('masterTableBody'); if(!body) return; body.innerHTML = '';
+    const search = (document.getElementById('mainSearch').value || "").toLowerCase();
+    db.customers.forEach(c => {
+        if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
+            const tile = document.createElement('div'); tile.className = 'customer-pill-bubble bounce-on-tap';
+            // NEW TRIGGER: Calls Modal instead of editCust directly
+            tile.onclick = () => showActionModal(c.id);
+            tile.innerHTML = `<div><strong style="display:block; font-size:19px;">${c.name}</strong><small style="color:var(--accent); font-weight:700;">${c.houseNum} ${c.street}</small></div><div style="font-weight:900; color:var(--success)">£${n(c.price).toFixed(2)}</div>`;
+            body.appendChild(tile);
+        }
+    });
+};
+
 window.renderWeekLists = () => {
     for (let i = 1; i <= 5; i++) {
         const container = document.getElementById(`week${i}`); if (!container) continue;
-        container.innerHTML = `
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 15px 15px;">
-                <button class="tile" style="height:44px; font-size:13px; font-weight:800; background:#e5e5ea; border:none; border-radius:20px;" onclick="openTab('weeksHub')">⬅️ Weekly Hub</button>
-                <button class="tile" style="height:44px; font-size:13px; font-weight:800; background:#e5e5ea; border:none; border-radius:20px;" onclick="openTab('home')">🏠 Home Hub</button>
-            </div>`;
+        container.innerHTML = `<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 15px 15px;"><button class="tile" style="height:44px; font-size:13px; font-weight:800; background:#e5e5ea; border:none; border-radius:20px;" onclick="openTab('weeksHub')">⬅️ Weekly Hub</button><button class="tile" style="height:44px; font-size:13px; font-weight:800; background:#e5e5ea; border:none; border-radius:20px;" onclick="openTab('home')">🏠 Home Hub</button></div>`;
         db.customers.filter(c => c.week == i).forEach(c => {
             const isPaid = n(c.paidThisMonth) >= n(c.price);
             const card = document.createElement('div'); card.className = 'customer-pill-bubble';
-            card.innerHTML = `<div onclick="editCust('${c.id}')"><strong style="color:var(--accent); display:block; font-size:19px;">${c.name} ${c.cleaned ? '✅' : ''}</strong><small style="display:block; margin-top:2px;">${c.houseNum} ${c.street}</small></div>
+            card.innerHTML = `<div><strong style="color:var(--accent); display:block; font-size:19px;">${c.name} ${c.cleaned ? '✅' : ''}</strong><small style="display:block; margin-top:2px;">${c.houseNum} ${c.street}</small></div>
                 <div style="display:flex; gap:10px;">
                     <button class="tile" style="height:44px; padding:0 12px; font-weight:800; background:var(--input-bg); border:none; border-radius:15px; ${c.cleaned ? 'background:var(--success); color:white;' : ''}" onclick="toggleCleaned('${c.id}')">Clean</button>
                     <button class="tile" style="height:44px; padding:0 12px; font-weight:800; background:var(--input-bg); border:none; border-radius:15px; ${isPaid ? 'background:var(--accent); color:white;' : ''}" onclick="markAsPaid('${c.id}')">Pay</button>
@@ -88,14 +112,10 @@ window.renderStats = () => {
     const monthYearEl = document.getElementById('currentMonthYear');
     if (monthYearEl) monthYearEl.innerText = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) + " Summary";
     let target = 0, paid = 0, arrears = 0, spend = 0;
-    db.customers.forEach(c => {
-        target += n(c.price); paid += n(c.paidThisMonth);
-        if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth));
-    });
+    db.customers.forEach(c => { target += n(c.price); paid += n(c.paidThisMonth); if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth)); });
     db.expenses.forEach(e => spend += n(e.amt));
-    const profit = paid - spend;
-    const progress = target > 0 ? (paid / target) * 100 : 0;
-    const map = { 'currProfit': `£${(paid - spend).toFixed(2)}`, 'statsIncome': `£${paid.toFixed(2)}`, 'statsSpend': `£${spend.toFixed(2)}`, 'statsArrears': `£${arrears.toFixed(2)}`, 'statsTarget': `£${target.toFixed(2)}`, 'statsRemaining': `£${(target - paid).toFixed(2)}`, 'progressPercent': `${Math.round(progress)}%` };
+    const profit = paid - spend; const progress = target > 0 ? (paid / target) * 100 : 0;
+    const map = { 'currProfit': `£${profit.toFixed(2)}`, 'statsIncome': `£${paid.toFixed(2)}`, 'statsSpend': `£${spend.toFixed(2)}`, 'statsArrears': `£${arrears.toFixed(2)}`, 'statsTarget': `£${target.toFixed(2)}`, 'statsRemaining': `£${(target - paid).toFixed(2)}`, 'progressPercent': `${Math.round(progress)}%` };
     for (let [id, val] of Object.entries(map)) { const el = document.getElementById(id); if(el) el.innerText = val; }
     const bar = document.getElementById('progressBarFill'); if(bar) bar.style.width = `${progress}%`;
     const histBox = document.getElementById('monthlyHistoryContainer');
@@ -110,30 +130,12 @@ window.renderStats = () => {
     }
 };
 
-window.renderMasterTable = () => {
-    const body = document.getElementById('masterTableBody'); if(!body) return; body.innerHTML = '';
-    const search = (document.getElementById('mainSearch').value || "").toLowerCase();
-    db.customers.forEach(c => {
-        if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
-            const tile = document.createElement('div'); tile.className = 'customer-pill-bubble bounce-on-tap';
-            tile.onclick = () => editCust(c.id);
-            tile.innerHTML = `
-                <div>
-                    <strong style="display:block; font-size:19px;">${c.name}</strong>
-                    <small style="display:block; margin-top:2px;">${c.houseNum} ${c.street}</small>
-                </div>
-                <div style="font-weight:900; color:var(--success); font-size:16px;">£${n(c.price).toFixed(2)}</div>`;
-            body.appendChild(tile);
-        }
-    });
-};
-
+window.editCust = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; openTab('admin'); document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cHouseNum').value = c.houseNum; document.getElementById('cStreet').value = c.street; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPrice').value = c.price; document.getElementById('cNotes').value = c.notes; };
+window.updateGreeting = () => { const hr = new Date().getHours(); const g = (hr < 12) ? "Good Morning" : (hr < 18) ? "Good Afternoon" : "Good Evening"; document.getElementById('greetingMsg').innerText = `${g}, Partner! ☕`; };
 window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
 window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); renderLedger(); };
-window.editCust = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; openTab('admin'); document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cHouseNum').value = c.houseNum; document.getElementById('cStreet').value = c.street; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPrice').value = c.price; document.getElementById('cNotes').value = c.notes; };
 window.toggleCleaned = (id) => { const c = db.customers.find(x => x.id === id); if (c) { c.cleaned = !c.cleaned; saveData(); renderAll(); } };
 window.markAsPaid = (id) => { const c = db.customers.find(x => x.id === id); if (!c) return; const isPaid = n(c.paidThisMonth) >= n(c.price); c.paidThisMonth = isPaid ? 0 : c.price; saveData(); renderAll(); };
 window.renderLedger = () => { const l = document.getElementById('expenseList'); if(!l) return; l.innerHTML = '<h3 class="hall-of-fame-title">💸 Spend History</h3>'; db.expenses.forEach(e => { const d = document.createElement('div'); d.className = 'customer-pill-bubble'; d.innerHTML = `<div style="display:flex; justify-content:space-between; width:100%"><div><strong>${e.desc}</strong><small>${e.date}</small></div><div style="color:var(--danger); font-weight:900">-£${n(e.amt).toFixed(2)}</div></div>`; l.appendChild(d); }); };
-window.addExpense = () => { const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value); if(!d || a<=0) return; db.expenses.push({desc:d, amt:a, date:new Date().toLocaleDateString('en-GB')}); saveData(); renderAll(); document.getElementById('expDesc').value = ""; document.getElementById('expAmt').value = ""; };
-window.completeCycle = () => { if(!confirm("Start New Month?")) return; let inc = 0, exp = 0; db.customers.forEach(c => inc += n(c.paidThisMonth)); db.expenses.forEach(e => exp += n(e.amt)); db.history.push({ month: new Date().toLocaleDateString('en-GB', {month:'long'}), year: new Date().getFullYear(), profit: (inc - exp) }); db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload(); };
 window.toggleDarkMode = () => { const isDark = document.getElementById('darkModeToggle').checked; document.body.className = isDark ? 'dark-mode' : 'light-mode'; localStorage.setItem('Hydro_Dark_Pref', isDark); };
+window.completeCycle = () => { if(!confirm("Start New Month?")) return; let inc = 0, exp = 0; db.customers.forEach(c => inc += n(c.paidThisMonth)); db.expenses.forEach(e => exp += n(e.amt)); db.history.push({ month: new Date().toLocaleDateString('en-GB', {month:'long'}), year: new Date().getFullYear(), profit: (inc - exp) }); db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload(); };
