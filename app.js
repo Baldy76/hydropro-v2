@@ -31,7 +31,7 @@ window.renderAll = () => {
     }
 };
 
-/* --- RENDERING ROBOTS --- */
+/* --- ROBOTS --- */
 window.renderMaster = () => {
     const container = document.getElementById('master-list-container');
     if(!container) return; container.innerHTML = '';
@@ -78,18 +78,20 @@ window.renderStats = () => {
 window.viewWeek = (w) => { curWeek = w; openTab('week-view-root'); };
 window.renderWeek = () => {
     const bulk = document.getElementById('bulk-box'), list = document.getElementById('week-list-container'); if(!list) return;
-    bulk.innerHTML = `<button class="btn-wa" onclick="messageAll(${curWeek},'wa')">WA ALL</button><button class="btn-sms" onclick="messageAll(${curWeek},'sms')">SMS ALL</button>`;
+    bulk.innerHTML = `<button class="btn-wa" onclick="messageAll(${curWeek},'wa')">WA ALL W${curWeek}</button><button class="btn-sms" onclick="messageAll(${curWeek},'sms')">SMS ALL W${curWeek}</button>`;
     list.innerHTML = '';
     db.customers.filter(c => c.week == curWeek).forEach(c => {
         const div = document.createElement('div'); div.className = 'job-card';
-        div.innerHTML = `<div><strong style="font-size:20px;">${c.name} ${c.cleaned?'✅':''}</strong><br><small>${c.houseNum} ${c.street}</small></div>
-            <div class="job-actions"><button class="btn-job" style="background:${c.cleaned?'var(--success)':'#aaa'}" onclick="handleClean('${c.id}')">CLEAN</button>
-            <button class="btn-job" style="background:${n(c.paidThisMonth)>0?'var(--accent)':'#aaa'}" onclick="markAsPaid('${c.id}')">PAY</button></div>`;
+        div.innerHTML = `<div><strong style="font-size:20px;">${c.name} ${c.cleaned?'✅':''}</strong><br><small style="color:var(--accent); font-weight:700;">${c.houseNum} ${c.street}</small></div>
+            <div class="job-actions" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:20px;">
+                <button class="btn-job" style="background:${c.cleaned?'var(--success)':'#aaa'}" onclick="handleClean('${c.id}')">CLEAN</button>
+                <button class="btn-job" style="background:${n(c.paidThisMonth)>0?'var(--accent)':'#aaa'}" onclick="markAsPaid('${c.id}')">PAY</button>
+            </div>`;
         list.appendChild(div);
     });
 };
 
-/* --- CORE LOGIC --- */
+/* --- LOGIC --- */
 window.toggleBankLock = () => {
     const fields = document.querySelectorAll('.bank-field-fixed'), lockBtn = document.getElementById('bankLockBtn'), saveBtn = document.getElementById('bankSaveBtn');
     const isLocked = fields[0].readOnly; fields.forEach(f => f.readOnly = !isLocked);
@@ -97,7 +99,7 @@ window.toggleBankLock = () => {
 };
 window.saveBankDetails = () => { db.bank = { name: document.getElementById('bankName').value, sort: document.getElementById('bankSort').value, acc: document.getElementById('bankAcc').value }; saveData(); toggleBankLock(); alert("Bank Details Secured!"); };
 window.saveCustomer = () => {
-    const name = document.getElementById('cName').value; if(!name) return;
+    const name = document.getElementById('cName').value; if(!name) return alert("Name required");
     const id = document.getElementById('editId').value || Date.now().toString();
     const idx = db.customers.findIndex(c => c.id === id);
     const entry = { id, name, phone: document.getElementById('cPhone').value, houseNum: document.getElementById('cHouseNum').value, street: document.getElementById('cStreet').value, postcode: document.getElementById('cPostcode').value.toUpperCase(), price: n(document.getElementById('cPrice').value), notes: document.getElementById('cNotes').value, week: (idx>-1)?db.customers[idx].week:"1", cleaned: (idx>-1)?db.customers[idx].cleaned:false, paidThisMonth: (idx>-1)?db.customers[idx].paidThisMonth:0 };
@@ -110,7 +112,7 @@ window.editCust = (id) => {
 };
 window.addExpense = () => {
     const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value);
-    if(!d || a <= 0) return; db.expenses.push({ id: Date.now(), desc: d, amt: a, date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) });
+    if(!d || a <= 0) return alert("Details required"); db.expenses.push({ id: Date.now(), desc: d, amt: a, date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) });
     saveData(); document.getElementById('expDesc').value=''; document.getElementById('expAmt').value=''; renderLedger(); renderStats();
 };
 window.handleClean = (id) => {
@@ -118,7 +120,7 @@ window.handleClean = (id) => {
     if(c.cleaned) {
         const msg = `Hi ${c.name}, windows cleaned at ${c.houseNum}. Price £${n(c.price).toFixed(2)}. \n\nBank: ${db.bank.name} \nSort: ${db.bank.sort} \nAcc: ${db.bank.acc}`;
         document.getElementById('msgPreview').innerText = msg; document.getElementById('msgModal').classList.remove('hidden');
-        document.getElementById('modalButtons').innerHTML = `<button class="btn-wa" style="width:100%;margin-bottom:10px;height:55px;border-radius:15px;border:none;color:white;font-weight:900;" onclick="sendMsg('${c.phone}','wa','${encodeURIComponent(msg)}')">Send WhatsApp</button><button class="btn-sms" style="width:100%;margin-bottom:10px;height:55px;border-radius:15px;border:none;color:white;font-weight:900;" onclick="sendMsg('${c.phone}','sms','${encodeURIComponent(msg)}')">Send SMS</button><button onclick="closeMsgModal()" style="width:100%;height:50px;border-radius:15px;border:none;background:#8e8e93;color:white;font-weight:900;">Skip</button>`;
+        document.getElementById('modalButtons').innerHTML = `<button class="btn-wa" style="width:100%;margin-bottom:10px;height:60px;border-radius:15px;border:none;color:white;font-weight:900;" onclick="sendMsg('${c.phone}','wa','${encodeURIComponent(msg)}')">Send WhatsApp</button><button class="btn-sms" style="width:100%;margin-bottom:10px;height:60px;border-radius:15px;border:none;color:white;font-weight:900;" onclick="sendMsg('${c.phone}','sms','${encodeURIComponent(msg)}')">Send SMS</button><button onclick="closeMsgModal()" style="width:100%;height:50px;border-radius:15px;border:none;background:#8e8e93;color:white;font-weight:900;">Skip</button>`;
     }
 };
 window.sendMsg = (p, m, msg) => { const c = (p||"").replace(/\s+/g,''); window.open(m==='wa' ? `https://wa.me/${c}?text=${msg}` : `sms:${c}?body=${msg}`, '_blank'); closeMsgModal(); };
