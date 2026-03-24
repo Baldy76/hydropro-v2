@@ -1,7 +1,6 @@
 :root { --accent: #007aff; --bg: #f2f2f7; --card: #ffffff; --text: #000; --success: #32d74b; --danger: #ff453a; }
 body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; }
 
-/* 🧱 GLOBAL SURGICAL WALLS */
 .tab-content { display: none !important; }
 .tab-content.active { display: block !important; }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, sans-serif; }
@@ -31,16 +30,51 @@ input:checked + .slider-round:before { transform: translateX(26px); content: "�
 /* 👥 CUSTS */
 .search-box-surgical { width: 100%; padding: 0 20px; margin-bottom: 25px; }
 .search-box-surgical input { width: 100%; height: 65px; border-radius: 20px; border: none; background: var(--card); padding: 0 25px; font-size: 18px; color: var(--text); }
-.cust-pill { background: var(--card); padding: 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 15px; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
-.arrears-badge { background: var(--danger); color: white; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 8px; position: absolute; top: -5px; right: 20px; }
+.cust-pill { background: var(--card); padding: 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 15px; position: relative; }
 
-/* ✨ SETUP - Namespace Locked */
-#setup-root .setup-card { background: var(--card); margin: 0 20px 25px; padding: 25px; border-radius: 35px; box-shadow: 0 10px 20px rgba(0,0,0,0.04); }
+/* ✨ SETUP */
+#setup-root .setup-card { background: var(--card); margin: 0 20px 25px; padding: 25px; border-radius: 35px; }
 #setup-root .setup-entry-row { display: flex; align-items: center; height: 75px !important; border-bottom: 1px solid rgba(0,0,0,0.05); gap: 15px; }
 #setup-root .setup-entry-row span { font-size: 22px; width: 30px; text-align: center; }
-#setup-root input { color: var(--text); font-size: 18px; width: 100%; border:none; background:transparent; outline:none; }
 #setup-root textarea { width: 100%; min-height: 150px; background: var(--bg); border: none; border-radius: 20px; padding: 15px; color: var(--text); font-size: 16px; margin-top: 15px; }
 .setup-btn-save { width: 100%; height: 75px; border-radius: 25px; border: none; background: var(--accent); color: white; font-weight: 900; font-size: 20px; }
+
+/* 💸 LEDGER */
+#ledger-root .ledger-hero { background: var(--card); border: 2.5px solid var(--danger); margin: 0 20px 25px; padding: 30px; border-radius: 35px; text-align: center; }
+#ledger-root .ledger-hero div { font-size: 45px; font-weight: 900; }
+#ledger-root .ledger-input-box { background: var(--card); margin: 0 20px 20px; padding: 20px; border-radius: 25px; display: flex; flex-direction: column; gap: 10px; }
+#ledger-root .ledger-input-box input { background: var(--bg); border: none; height: 55px; border-radius: 12px; padding: 0 15px; color: var(--text); }
+#ledger-root .ledger-input-box button { height: 60px; border-radius: 15px; border: none; background: var(--accent); color: white; font-weight: 900; }
+#ledger-root .ledger-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px 25px; }
+#ledger-root .ledger-actions button { height: 50px; border-radius: 15px; border: none; background: #4ea03b; color: white; font-weight: 800; font-size: 12px; }
+
+/* 📊 STATS */
+#stats-root .stats-hero { background: var(--card); border: 3px solid var(--accent); padding: 35px 20px; border-radius: 40px; text-align: center; margin: 0 0 20px; }
+#stats-root .stats-hero div { font-size: 50px; font-weight: 900; }
+#stats-root .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+#stats-root .stats-card { background: var(--card); padding: 20px; border-radius: 25px; text-align: center; }
+#stats-root .stats-progress { background: var(--card); padding: 25px; border-radius: 35px; margin-bottom: 20px; }
+#stats-root .progress-bg { background: #eee; height: 10px; border-radius: 5px; margin: 12px 0; overflow: hidden; }
+#stats-root .progress-fill { background: var(--accent); height: 100%; transition: width 0.5s; }
+
+/* 📅 WEEK VIEW (v31.6 SPREAD) */
+.week-nav-spread-v31 {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px; /* v31.6 Surgical Airgap */
+    width: 100%;
+}
+.nav-half-surgical { 
+    height: 60px !important; 
+    width: calc(50% - 10px) !important; /* Perfect balance */
+    border-radius: 20px; 
+    border: none; 
+    background: var(--card); 
+    color: var(--accent); 
+    font-weight: 900; 
+    font-size: 18px !important; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
 
 /* 🏦 VAULT */
 .bank-vault { background: var(--card); margin: 0 20px 40px; padding: 30px; border-radius: 35px; border: 2.5px solid rgba(0,122,255,0.15); }
@@ -49,41 +83,16 @@ input:checked + .slider-round:before { transform: translateX(26px); content: "�
 .bank-field-fixed { width: 100%; height: 55px; background: var(--bg); border-radius: 15px; margin-bottom: 10px; padding: 0 15px; color: var(--text); border:none; display:block; font-weight: 600; }
 .bank-airgap { margin-top: 30px !important; }
 
-/* 💸 LEDGER - Namespace Locked */
-#ledger-root .ledger-hero { background: var(--card); border: 2.5px solid var(--danger); margin: 0 20px 25px; padding: 30px; border-radius: 35px; text-align: center; }
-#ledger-root .ledger-hero div { font-size: 45px; font-weight: 900; }
-#ledger-root .ledger-input-box { background: var(--card); margin: 0 20px 20px; padding: 20px; border-radius: 25px; display: flex; flex-direction: column; gap: 10px; }
-#ledger-root .ledger-input-box input { background: var(--bg); border: none; height: 55px; border-radius: 12px; padding: 0 15px; color: var(--text); font-size: 16px; }
-#ledger-root .ledger-input-box button { height: 60px; border-radius: 15px; border: none; background: var(--accent); color: white; font-weight: 900; }
-#ledger-root .ledger-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px 25px; }
-#ledger-root .ledger-actions button { height: 50px; border-radius: 15px; border: none; background: #4ea03b; color: white; font-weight: 800; font-size: 12px; }
-.exp-pill { background: var(--card); padding: 20px; border-radius: 25px; display: flex; justify-content: space-between; margin: 0 20px 12px; border-left: 5px solid var(--danger); box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
-
-/* 📊 STATS - Namespace Locked */
-#stats-root .stats-hero { background: var(--card); border: 3px solid var(--accent); padding: 35px 20px; border-radius: 40px; text-align: center; margin: 0 0 20px; }
-#stats-root .stats-hero div { font-size: 50px; font-weight: 900; }
-#stats-root .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-#stats-root .stats-card { background: var(--card); padding: 20px; border-radius: 25px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
-#stats-root .stats-card small { display: block; font-weight: 800; opacity: 0.4; font-size: 10px; text-transform: uppercase; margin-bottom: 5px; }
-#stats-root .stats-progress { background: var(--card); padding: 25px; border-radius: 35px; margin-bottom: 20px; }
-#stats-root .progress-bg { background: #eee; height: 10px; border-radius: 5px; margin: 12px 0; overflow: hidden; }
-#stats-root .progress-fill { background: var(--accent); height: 100%; transition: width 0.5s; }
-#stats-root .stats-alert { background: var(--danger); color: white; padding: 25px; border-radius: 30px; text-align: center; font-weight: 900; }
-
-/* 📅 WEEK VIEW */
-.weeks-hub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
-.weeks-hub-grid button { height: 110px; border-radius: 25px; border: none; background: #1c1c1e; color: white; font-weight: 900; font-size: 22px; }
-.job-card { background: var(--card); padding: 25px; border-radius: 35px; margin: 0 20px 15px; }
+/* 🃏 JOB CARDS */
+.job-card { background: var(--card); padding: 25px; border-radius: 35px; margin: 0 20px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
 .job-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
 .btn-job { height: 50px; border-radius: 12px; border: none; font-weight: 900; color: white; font-size: 11px; }
 .btn-map-yellow { background: #ffeb3b !important; color: #333 !important; }
 
 /* 🛠️ SHARED MISC */
 .nav-back { width: calc(100% - 40px); height: 60px; border-radius: 30px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px; margin: 0 20px 25px; display: block; }
-.nav-half-surgical { height: 60px !important; border-radius: 20px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px !important; }
 .btn-reset-surgical { width: 100%; height: 75px; border-radius: 25px; border: none; background: var(--danger); color: white; font-weight: 900; font-size: 18px; }
 .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; display:flex; align-items:center; justify-content:center; }
 .modal-overlay.hidden { display: none !important; }
 .modal-content { background:var(--card); padding:30px; border-radius:35px; width:90%; text-align: center; }
-.hidden { display: none !important; }
 #global-version-footer { width: 100%; text-align: center; padding: 30px 0; font-size: 10px; font-weight: 900; opacity: 0.3; text-transform: uppercase; }
