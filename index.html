@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v25.4</title>
-    <link rel="stylesheet" href="styles.css?v=254">
+    <title>Hydro Pro v25.5</title>
+    <link rel="stylesheet" href="styles.css?v=255">
 </head>
 <body class="light-mode">
 
@@ -31,6 +31,20 @@
             </div>
         </section>
 
+        <section id="fence-master" class="tab-content">
+            <div class="search-container-fixed">
+                <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterFence()">
+            </div>
+            
+            <div id="master-list-container" class="iron-list-stack">
+                </div>
+
+            <div class="fixed-action-footer">
+                <button class="btn-new-month" onclick="completeCycle()">🚀 START NEW MONTH</button>
+            </div>
+            <button class="back-home-pill" onclick="openTab('fence-home')">🏠 Back to Home</button>
+        </section>
+
         <section id="fence-setup" class="tab-content">
             <div class="setup-card">
                 <h3 class="setup-label">👤 Add/Edit Customer</h3>
@@ -47,28 +61,17 @@
                 </div>
                 <button class="setup-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
-            <div class="setup-card vault-border">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                    <h3 class="setup-label" style="margin:0">🏦 Bank Details</h3>
-                    <button id="bankLockBtn" class="vault-unlock-btn" onclick="toggleBankLock()">🔓 UNLOCK</button>
-                </div>
-                <div class="setup-row"><div class="setup-icon">🏷️</div><div class="setup-stack"><label>Account Name</label><input type="text" id="bankName" class="setup-input bank-field" readonly></div></div>
-                <div class="setup-row"><div class="setup-icon">🔢</div><div class="setup-stack"><label>Sort Code</label><input type="text" id="bankSort" class="setup-input bank-field" readonly maxlength="8"></div></div>
-                <div class="setup-row" style="border:none"><div class="setup-icon">💳</div><div class="setup-stack"><label>Account Number</label><input type="number" id="bankAcc" class="setup-input bank-field" readonly></div></div>
-                <button id="bankSaveBtn" class="setup-save-btn hidden" onclick="saveBankDetails()" style="background:var(--success); margin-top:20px;">💾 Save Details</button>
-            </div>
             <button class="back-home-pill" onclick="openTab('fence-home')">🏠 Back to Home</button>
         </section>
 
         <section id="fence-stats" class="tab-content"><div id="stats-dashboard-container"></div><button class="back-home-pill" onclick="openTab('fence-home')">🏠 Back to Home</button></section>
-        <section id="fence-master" class="tab-content"><button class="back-home-pill" onclick="openTab('fence-home')">🏠 Back to Home</button></section>
         <section id="fence-ledger" class="tab-content"><button class="back-home-pill" onclick="openTab('fence-home')">🏠 Back to Home</button></section>
         <section id="fence-weeks" class="tab-content"><button class="back-home-pill" onclick="openTab('fence-home')">🏠 Back to Home</button></section>
 
     </div>
 
-    <footer id="footer-version">v25.4 - Structural Containment Active</footer>
+    <footer id="footer-version">v25.5 - Master List Isolated</footer>
 
-    <script src="app.js?v=254"></script>
+    <script src="app.js?v=255"></script>
 </body>
 </html>
