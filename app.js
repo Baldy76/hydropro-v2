@@ -42,30 +42,8 @@ window.renderMasterTable = () => {
     });
 };
 
-window.saveCustomer = () => {
-    const name = document.getElementById('cName').value; if(!name) return;
-    const id = document.getElementById('editId').value || Date.now().toString();
-    const idx = db.customers.findIndex(x => x.id === id);
-    const entry = { id, name, phone: document.getElementById('cPhone').value, houseNum: document.getElementById('cHouseNum').value, street: document.getElementById('cStreet').value, postcode: document.getElementById('cPostcode').value.toUpperCase(), price: n(document.getElementById('cPrice').value), notes: document.getElementById('cNotes').value, week: (idx > -1) ? db.customers[idx].week : "1", cleaned: (idx > -1) ? db.customers[idx].cleaned : false, paidThisMonth: (idx > -1) ? db.customers[idx].paidThisMonth : 0 };
-    if(idx > -1) db.customers[idx] = entry; else db.customers.push(entry);
-    saveData(); alert("Saved! ✨"); openTab('home');
-};
-
-window.toggleBankLock = () => {
-    const fields = document.querySelectorAll('.bank-field');
-    const lockBtn = document.getElementById('bankLockBtn');
-    const isLocked = fields[0].readOnly;
-    fields.forEach(f => f.readOnly = !isLocked);
-    lockBtn.innerText = isLocked ? "🔒 Lock" : "🔓 Unlock";
-    document.getElementById('bankSaveBtn').classList.toggle('hidden');
-};
-
-window.saveBankDetails = () => {
-    db.bank = { name: document.getElementById('bankName').value, sort: document.getElementById('bankSort').value, acc: document.getElementById('bankAcc').value };
-    saveData(); toggleBankLock(); alert("Bank Details Locked! 🏦");
-};
-
 window.openTab = (name) => {
+    closeModal();
     document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
     const target = document.getElementById(name);
     if(target) target.classList.add("active");
@@ -76,8 +54,49 @@ window.openTab = (name) => {
     renderAll();
 };
 
+window.updateGreeting = () => {
+    const hr = new Date().getHours();
+    const g = (hr < 12) ? "GOOD MORNING" : (hr < 18) ? "GOOD AFTERNOON" : "GOOD EVENING";
+    const msg = document.getElementById('greetingMsg');
+    if(msg) msg.innerText = `${g}, PARTNER! ☕`;
+    const dt = document.getElementById('headerDate');
+    if(dt) dt.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' });
+};
+
+window.saveCustomer = () => {
+    const name = document.getElementById('cName').value; if(!name) return;
+    const id = document.getElementById('editId').value || Date.now().toString();
+    const entry = { id, name, phone: document.getElementById('cPhone').value, houseNum: document.getElementById('cHouseNum').value, street: document.getElementById('cStreet').value, postcode: document.getElementById('cPostcode').value.toUpperCase(), price: n(document.getElementById('cPrice').value), notes: document.getElementById('cNotes').value, week: "1", cleaned: false, paidThisMonth: 0 };
+    const idx = db.customers.findIndex(x => x.id === id);
+    if(idx > -1) db.customers[idx] = {...db.customers[idx], ...entry}; else db.customers.push(entry);
+    saveData(); alert("Saved! ✨"); openTab('home');
+};
+
+window.saveBankDetails = () => {
+    db.bank = { name: document.getElementById('bankName').value, sort: document.getElementById('bankSort').value, acc: document.getElementById('bankAcc').value };
+    saveData(); toggleBankLock(); alert("Bank Details Saved! 🏦");
+};
+
+window.toggleBankLock = () => {
+    const fields = document.querySelectorAll('.bank-field');
+    const lockBtn = document.getElementById('bankLockBtn');
+    const isLocked = fields[0].readOnly;
+    fields.forEach(f => f.readOnly = !isLocked);
+    lockBtn.innerText = isLocked ? "🔒 LOCK" : "🔓 UNLOCK";
+    document.getElementById('bankSaveBtn').classList.toggle('hidden');
+};
+
+window.showActionModal = (id) => {
+    const c = db.customers.find(x => x.id === id); if(!c) return;
+    document.getElementById('modalCustomerName').innerText = c.name;
+    document.getElementById('modalCustomerAddress').innerText = `${c.houseNum} ${c.street}`;
+    document.getElementById('modalEditBtn').onclick = () => { closeModal(); editCust(c.id); };
+    document.getElementById('actionModal').classList.remove('hidden');
+};
+
+window.closeModal = () => { const m = document.getElementById('actionModal'); if(m) m.classList.add('hidden'); };
 window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
 window.renderAll = () => { renderMasterTable(); if(window.renderWeekLists) renderWeekLists(); if(window.renderStats) renderStats(); if(window.renderLedger) renderLedger(); };
-window.updateGreeting = () => { const hr = new Date().getHours(); const g = (hr < 12) ? "Good Morning" : (hr < 18) ? "Good Afternoon" : "Good Evening"; document.getElementById('greetingMsg').innerText = `${g}, Partner! ☕`; };
+window.editCust = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; openTab('admin'); document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cPhone').value = c.phone||""; document.getElementById('cHouseNum').value = c.houseNum; document.getElementById('cStreet').value = c.street; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPrice').value = c.price; document.getElementById('cNotes').value = c.notes; };
 window.toggleDarkMode = () => { const isDark = document.getElementById('darkModeToggle').checked; document.body.className = isDark ? 'dark-mode' : 'light-mode'; localStorage.setItem('Hydro_Dark_Pref', isDark); };
 window.completeCycle = () => { if(!confirm("Start New Month?")) return; db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload(); };
