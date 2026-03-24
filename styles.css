@@ -1,24 +1,23 @@
 :root { --accent: #007aff; --bg: #f2f2f7; --card: #ffffff; --text: #000; --success: #32d74b; --danger: #ff453a; }
 body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; }
 
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, sans-serif; }
-body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; transition: background 0.3s; }
-
-/* 🧱 SHADOW WALLS */
+/* 🧱 SHADOW WALLS - ABSOLUTE PRIORITY */
 .tab-content { display: none !important; }
 .tab-content.active { display: block !important; }
 
-/* 🛡️ NAVIGATION BAR */
-#global-shield { padding: 30px 0 20px; display: flex; flex-direction: column; align-items: center; }
-.nav-container-transparent { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 440px; padding: 0 20px; margin-bottom: 10px; }
-.logo-wrap-surgical-expansion { flex-grow: 1; display: flex; justify-content: flex-start; align-items: center; margin-right: 15px; }
-.logo-fluid-surgical { height: auto !important; width: auto !important; max-width: 100% !important; min-height: 80px !important; object-fit: contain; transition: opacity 0.2s ease; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, sans-serif; }
+body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; transition: background 0.3s; }
 
-/* 🎚️ SLIDER */
-.toggle-wrap-surgical { flex-shrink: 0; }
+/* 🛡️ HEADER */
+#global-shield { padding: 30px 0 20px; display: flex; flex-direction: column; align-items: center; }
+.nav-container-transparent { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 440px; padding: 0 20px; }
+.logo-wrap-surgical-expansion { flex-grow: 1; display: flex; justify-content: flex-start; align-items: center; margin-right: 15px; }
+.logo-fluid-surgical { height: auto; max-width: 100%; min-height: 80px; object-fit: contain; }
+
+/* 🎚️ THEME SLIDER */
 .theme-slider { position: relative; display: inline-block; width: 60px; height: 34px; }
 .theme-slider input { opacity: 0; width: 0; height: 0; }
-.slider-round { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+.slider-round { position: absolute; cursor: pointer; top:0; left:0; right:0; bottom:0; background-color: #ccc; transition: .4s; border-radius: 34px; }
 .slider-round:before { position: absolute; content: "☀️"; display: flex; align-items: center; justify-content: center; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
 input:checked + .slider-round { background-color: var(--accent); }
 input:checked + .slider-round:before { transform: translateX(26px); content: "🌙"; }
@@ -33,67 +32,52 @@ input:checked + .slider-round:before { transform: translateX(26px); content: "�
 .home-grid button small { font-size: 16px; font-weight: 900; text-transform: uppercase; }
 .full-tile { grid-column: 1 / -1; background: var(--accent) !important; color: white !important; height: 130px !important; }
 
-/* 📊 STATS DASHBOARD (v30.9 REFINED) */
-.stats-hero-surgical { background: var(--card); border: 3px solid var(--accent); padding: 40px 20px; border-radius: 40px; text-align: center; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,122,255,0.05); }
-.stats-hero-surgical div { font-size: 55px; font-weight: 900; }
-.stats-hero-surgical small { font-weight: 800; opacity: 0.5; letter-spacing: 1px; text-transform: uppercase; }
-
-.stats-grid-surgical { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-.stats-card-surgical { background: var(--card); padding: 20px; border-radius: 25px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
-.stats-card-surgical small { display: block; font-weight: 800; opacity: 0.4; font-size: 10px; margin-bottom: 5px; text-transform: uppercase; }
-.stats-card-surgical div { font-weight: 900; font-size: 20px; }
-
-.stats-progress-box { background: var(--card); padding: 25px; border-radius: 35px; margin-bottom: 20px; }
-.progress-bar-bg { background: #eee; height: 12px; border-radius: 6px; margin: 12px 0; overflow: hidden; }
-.progress-bar-fill { background: var(--accent); height: 100%; transition: width 0.5s ease; }
-
-.stats-arrears-alert { background: var(--danger); color: white; padding: 25px; border-radius: 30px; text-align: center; font-weight: 900; font-size: 20px; box-shadow: 0 8px 15px rgba(255,69,58,0.2); }
-
 /* 👥 MASTER LIST SEARCH */
 .search-box-surgical { width: 100%; padding: 0 20px; margin-bottom: 25px; }
-.search-box-surgical input { width: 100%; height: 65px; border-radius: 20px; border: none; background: var(--card); padding: 0 25px; font-size: 18px; color: var(--text); box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+.search-box-surgical input { width: 100%; height: 65px; border-radius: 20px; border: none; background: var(--card); padding: 0 25px; font-size: 18px; color: var(--text); }
 
-/* 🛠️ SHARED UI */
-.nav-back { width: calc(100% - 40px); height: 60px !important; border-radius: 30px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px !important; margin: 0 20px 25px; display: block; }
-.dual-nav-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px 25px; }
-.nav-half { height: 60px !important; border-radius: 20px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px !important; }
+/* 💸 LEDGER STYLING (v31.0) */
+.ledger-hero-display { background: var(--card); border: 2px solid var(--danger); margin: 0 20px 25px; padding: 30px; border-radius: 35px; text-align: center; }
+.ledger-hero-display div { font-size: 45px; font-weight: 900; }
+.ledger-entry-card { background: var(--card); margin: 0 20px 20px; padding: 20px; border-radius: 25px; display: flex; flex-direction: column; gap: 10px; }
+.ledger-entry-card input { background: var(--bg); border: none; height: 50px; border-radius: 12px; padding: 0 15px; color: var(--text); font-size: 16px; }
+.ledger-entry-card button { height: 55px; border-radius: 12px; border: none; background: var(--accent); color: white; font-weight: 900; font-size: 16px; }
+.ledger-actions-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px 20px; }
+.ledger-actions-row button { height: 50px; border-radius: 15px; border: none; background: #4ea03b; color: white; font-weight: 800; font-size: 12px; }
+.exp-pill { background: var(--card); padding: 20px; border-radius: 25px; display: flex; justify-content: space-between; margin-bottom: 12px; border-left: 5px solid var(--danger); box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
 
+/* 📊 STATS */
+.stats-hero-surgical { background: var(--card); border: 3px solid var(--accent); padding: 35px 20px; border-radius: 40px; text-align: center; margin-bottom: 20px; }
+.stats-hero-surgical div { font-size: 50px; font-weight: 900; }
+.stats-grid-surgical { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+.stats-card-surgical { background: var(--card); padding: 20px; border-radius: 25px; text-align: center; }
+.stats-progress-box { background: var(--card); padding: 25px; border-radius: 35px; margin-bottom: 20px; }
+.progress-bar-bg { background: #eee; height: 10px; border-radius: 5px; margin: 10px 0; overflow: hidden; }
+.progress-bar-fill { background: var(--accent); height: 100%; transition: width 0.5s; }
+.stats-arrears-alert { background: var(--danger); color: white; padding: 25px; border-radius: 30px; text-align: center; font-weight: 900; }
+
+/* 🛠️ SHARED */
+.nav-back { width: calc(100% - 40px); height: 60px; border-radius: 30px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px; margin: 0 20px 25px; display: block; }
 .setup-card { background: var(--card); margin: 0 20px 25px; padding: 25px; border-radius: 35px; }
-.entry-row { display: flex; align-items: center; height: 70px; border-bottom: 1px solid rgba(0,0,0,0.05); gap: 15px; }
-.entry-row input { color: var(--text); font-size: 18px; width: 100%; border:none; background:transparent; outline:none; }
-textarea { width: 100%; height: 120px; background: var(--bg); border: none; border-radius: 20px; padding: 15px; color: var(--text); }
-
+.entry-row { display: flex; align-items: center; height: 65px; border-bottom: 1px solid rgba(0,0,0,0.05); gap: 15px; }
+.entry-row input { color: var(--text); font-size: 17px; width: 100%; border:none; background:transparent; outline:none; }
 .bank-vault { background: var(--card); margin: 0 20px 40px; padding: 30px; border-radius: 35px; border: 2.5px solid rgba(0,122,255,0.15); }
-.vault-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .vault-button-stack { display: flex; flex-direction: column; gap: 8px; }
-.vault-btn-common { min-width: 120px !important; height: 42px !important; border-radius: 12px; font-weight: 900; font-size: 11px !important; border: none; text-transform: uppercase; }
-.vault-unlock-surgical { background: var(--accent); color: white; }
-.vault-copy-btn { background: #8e8e93; color: white; }
-.bank-field-fixed { width: 100% !important; height: 60px !important; background: var(--bg); border-radius: 15px; margin-bottom: 12px; padding: 0 20px; color: var(--text); font-weight: 600; border:none; display:block; }
-
+.vault-btn-common { min-width: 120px; height: 42px; border-radius: 12px; font-weight: 900; font-size: 11px; border: none; text-transform: uppercase; }
+.bank-field-fixed { width: 100%; height: 55px; background: var(--bg); border-radius: 15px; margin-bottom: 10px; padding: 0 15px; color: var(--text); border:none; display:block; font-weight: 600; }
 .reset-area-surgical { background: var(--card); margin: 0 20px 50px; padding: 35px; border-radius: 35px; text-align: center; }
 .btn-reset-surgical { width: 100%; height: 75px; border-radius: 25px; border: none; background: var(--danger); color: white; font-weight: 900; font-size: 18px; }
-
-.cust-pill { background: var(--card); padding: 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 15px; position: relative; }
+.cust-pill { background: var(--card); padding: 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 15px; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
 .arrears-badge { background: var(--danger); color: white; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 8px; position: absolute; top: -5px; right: 20px; }
-
-.ledger-hero-display { background: var(--card); border: 2px solid var(--danger); margin: 0 20px 25px; padding: 35px; border-radius: 40px; text-align: center; }
-.ledger-hero-display div { font-size: 50px; font-weight: 900; }
-.exp-pill { background: var(--card); padding: 20px; border-radius: 25px; display: flex; justify-content: space-between; margin: 0 20px 12px; border-left: 5px solid var(--danger); }
-
 .weeks-hub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
 .weeks-hub-grid button { height: 110px; border-radius: 25px; border: none; background: #1c1c1e; color: white; font-weight: 900; font-size: 22px; }
-.weeks-hub-grid .full { grid-column: 1 / -1; }
 .job-card { background: var(--card); padding: 25px; border-radius: 35px; margin: 0 20px 15px; }
 .job-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
 .btn-job { height: 50px; border-radius: 12px; border: none; font-weight: 900; color: white; font-size: 11px; }
 .btn-map-yellow { background: #ffeb3b !important; color: #333 !important; }
-#bulk-box { display: flex; flex-direction: column; gap: 12px; padding: 0 20px 25px; }
-.btn-wa { background: #25d366; color: white; height: 60px; border-radius: 15px; border: none; font-weight: 900; }
-.btn-sms { background: #007aff; color: white; height: 60px; border-radius: 15px; border: none; font-weight: 900; }
-
 .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; display:flex; align-items:center; justify-content:center; }
 .modal-overlay.hidden { display: none !important; }
-.modal-content { background:var(--card); padding:30px; border-radius:35px; width:90%; color: var(--text); }
+.modal-content { background:var(--card); padding:30px; border-radius:35px; width:90%; text-align: center; }
 .btn-primary-large { width: 100%; height: 75px; border-radius: 25px; border: none; background: var(--accent); color: white; font-weight: 900; font-size: 20px; }
+.hidden { display: none !important; }
 #global-version-footer { width: 100%; text-align: center; padding: 30px 0; font-size: 10px; font-weight: 900; opacity: 0.3; text-transform: uppercase; }
