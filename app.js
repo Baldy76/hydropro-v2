@@ -51,12 +51,27 @@ window.renderLedger = () => {
     const container = document.getElementById('ledger-list-container'), totalEl = document.getElementById('ledgerTotal');
     if(!container) return; container.innerHTML = ''; let total = 0;
     db.expenses.forEach(e => total += n(e.amt)); if(totalEl) totalEl.innerText = `£${total.toFixed(2)}`;
+    
+    if(db.expenses.length === 0) {
+        container.innerHTML = '<div style="text-align:center; opacity:0.3; padding:20px;">No spend logged yet.</div>';
+        return;
+    }
+
     db.expenses.slice().reverse().forEach(e => {
         const div = document.createElement('div'); div.className = 'exp-pill';
+        // Double-tap to delete implementation
+        div.ondblclick = () => deleteExpense(e.id);
         div.innerHTML = `<div><strong>${e.desc}</strong><br><small style="opacity:0.5; font-weight:700;">📅 ${e.date}</small></div>
                          <div style="color:var(--danger); font-weight:900; font-size:18px;">-£${n(e.amt).toFixed(2)}</div>`;
         container.appendChild(div);
     });
+};
+
+window.deleteExpense = (id) => {
+    if(confirm("Delete this expense?")) {
+        db.expenses = db.expenses.filter(e => e.id !== id);
+        saveData(); renderLedger(); renderStats();
+    }
 };
 
 window.renderStats = () => {
@@ -65,7 +80,7 @@ window.renderStats = () => {
     db.customers.forEach(c => { target += n(c.price); paid += n(c.paidThisMonth); if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth)); });
     db.expenses.forEach(e => spend += n(e.amt));
     const profit = paid - spend, progress = target > 0 ? Math.round((paid/target)*100) : 0;
-    container.innerHTML = `<div class="stats-hero" style="background:var(--card); padding:40px 20px; border-radius:40px; text-align:center; border:2px solid var(--accent); margin-bottom:20px;">
+    container.innerHTML = `<div class="stats-hero">
         <div style="font-size:55px; font-weight:900;">£${profit.toFixed(2)}</div><small style="font-weight:700; opacity:0.6;">PROFIT IN POCKET</small>
         </div><div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:20px;">
         <div style="background:var(--card); padding:20px; border-radius:25px; text-align:center;"><small style="display:block; font-weight:800; opacity:0.5; font-size:10px;">MONTH INCOME</small><div style="color:var(--success); font-weight:900; font-size:20px;">£${paid.toFixed(2)}</div></div>
@@ -92,7 +107,7 @@ window.renderWeek = () => {
     });
 };
 
-/* --- CORE LOGIC --- */
+/* --- SHARED CORE LOGIC --- */
 window.toggleBankLock = () => {
     const fields = document.querySelectorAll('.bank-field-fixed'), lockBtn = document.getElementById('bankLockBtn'), saveBtn = document.getElementById('bankSaveBtn');
     const isLocked = fields[0].readOnly; fields.forEach(f => f.readOnly = !isLocked);
