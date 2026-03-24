@@ -10,7 +10,7 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-hei
 #global-shield { padding: 30px 0 20px; display: flex; flex-direction: column; align-items: center; }
 .nav-container-transparent { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 440px; padding: 0 20px; }
 .logo-wrap-surgical-expansion { flex-grow: 1; display: flex; justify-content: flex-start; align-items: center; margin-right: 15px; }
-.logo-fluid-surgical { height: auto; max-width: 100%; min-height: 80px; object-fit: contain; transition: opacity 0.2s; }
+.logo-fluid-surgical { height: auto; max-width: 100%; min-height: 80px; object-fit: contain; }
 
 .theme-slider { position: relative; display: inline-block; width: 60px; height: 34px; }
 .theme-slider input { opacity: 0; width: 0; height: 0; }
@@ -53,12 +53,21 @@ input:checked + .slider-round:before { transform: translateX(26px); content: "ü
 .setup-card { background: var(--card); margin: 0 20px 25px; padding: 25px; border-radius: 35px; }
 .entry-row { display: flex; align-items: center; height: 65px; border-bottom: 1px solid rgba(0,0,0,0.05); gap: 15px; }
 .entry-row input { color: var(--text); font-size: 17px; width: 100%; border:none; background:transparent; outline:none; }
+
+/* üè¶ BANK VAULT v31.2 AIRGAP */
 .bank-vault { background: var(--card); margin: 0 20px 40px; padding: 30px; border-radius: 35px; border: 2.5px solid rgba(0,122,255,0.15); }
 .vault-button-stack { display: flex; flex-direction: column; gap: 8px; }
 .vault-btn-common { min-width: 120px; height: 42px; border-radius: 12px; font-weight: 900; font-size: 11px; border: none; text-transform: uppercase; }
+.vault-unlock-surgical { background: var(--accent); color: white; }
+.vault-copy-btn { background: #8e8e93; color: white; }
+
 .bank-field-fixed { width: 100%; height: 55px; background: var(--bg); border-radius: 15px; margin-bottom: 10px; padding: 0 15px; color: var(--text); border:none; display:block; font-weight: 600; }
+/* SURGICAL AIRGAP v31.2 */
+.bank-airgap { margin-top: 30px !important; }
+
 .reset-area-surgical { background: var(--card); margin: 0 20px 50px; padding: 35px; border-radius: 35px; text-align: center; }
 .btn-reset-surgical { width: 100%; height: 75px; border-radius: 25px; border: none; background: var(--danger); color: white; font-weight: 900; font-size: 18px; }
+
 .cust-pill { background: var(--card); padding: 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 15px; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
 .arrears-badge { background: var(--danger); color: white; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 8px; position: absolute; top: -5px; right: 20px; }
 .weeks-hub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
