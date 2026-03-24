@@ -1,13 +1,28 @@
 const DB_KEY = 'HydroPro_V33_Master';
+const V31_KEY = 'HydroPro_V31_Master';
+const V25_KEY = 'HydroPro_V25_Master';
 let db = { customers: [], expenses: [], bank: { name: '', sort: '', acc: '' }, history: [] };
 const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 let curWeek = 1;
 
-// ⚙️ IRONCLAD BOOTLOADER
+// ⚙️ RELIABLE BOOT + MIGRATION ROBOT
 document.addEventListener('DOMContentLoaded', () => {
     try {
-        const saved = localStorage.getItem(DB_KEY);
-        if (saved) db = JSON.parse(saved);
+        const v33 = localStorage.getItem(DB_KEY);
+        const v31 = localStorage.getItem(V31_KEY);
+        const v25 = localStorage.getItem(V25_KEY);
+
+        // Migration logic: Prioritize newest found data
+        if (v33) {
+            db = JSON.parse(v33);
+        } else if (v31) {
+            db = JSON.parse(v31);
+            saveData(); // Commit to v33
+        } else if (v25) {
+            db = JSON.parse(v25);
+            saveData(); // Commit to v33
+        }
+
         if (!db.history) db.history = [];
 
         const isDark = localStorage.getItem('HP_Theme') === 'true';
@@ -61,7 +76,7 @@ window.renderMaster = () => {
     });
 };
 
-/* --- 🃏 BRIEFING POP-UP (SAFE ENGINE) --- */
+/* --- 🃏 BRIEFING POP-UP --- */
 window.showJobBriefing = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
     const history = (db.history || []).filter(h => h.custId === id).slice(-3).reverse();
@@ -97,14 +112,14 @@ window.renderWeek = () => {
     });
 };
 
-/* --- 📊 STATS (RESTORED) --- */
+/* --- 📊 STATS --- */
 window.renderStats = () => {
     const container = document.getElementById('stats-container'); if(!container) return;
     let target = 0, paid = 0, arrears = 0, spend = 0;
     db.customers.forEach(c => { target += n(c.price); paid += n(c.paidThisMonth); if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth)); });
     db.expenses.forEach(e => spend += n(e.amt));
     const profit = paid - spend, progress = target > 0 ? Math.min(Math.round((paid / target) * 100), 100) : 0;
-    container.innerHTML = `<div class="stats-hero-main"><div>£${profit.toFixed(2)}</div><small>PROFIT IN POCKET</small></div><div class="stats-grid-row"><div class="stats-card-heavy"><span>📈</span><small>INCOME</small><div class="stats-value-large" style="color:var(--success);">£${paid.toFixed(2)}</div></div><div class="stats-card-heavy"><span>📉</span><small>SPEND</small><div class="stats-value-large" style="color:var(--danger);">£${spend.toFixed(2)}</div></div></div><div class="stats-progress-box"><div style="display:flex;justify-content:space-between;font-weight:900;font-size:13px;"><span>PROGRESS</span><span>${progress}%</span></div><div class="progress-track"><div class="progress-fill-bar" style="width:${progress}%"></div></div></div>${arrears > 0 ? `<div class="stats-arrears-banner"><small style="display:block;font-size:11px;opacity:0.8;">ARREARS</small>£${arrears.toFixed(2)}</div>` : ''}`;
+    container.innerHTML = `<div class="stats-hero-main"><div>£${profit.toFixed(2)}</div><small>PROFIT IN POCKET</small></div><div class="stats-grid-row"><div class="stats-card-heavy"><span>📈</span><small>MONTH INCOME</small><div class="stats-value-large" style="color:var(--success);">£${paid.toFixed(2)}</div></div><div class="stats-card-heavy"><span>📉</span><small>MONTH SPEND</small><div class="stats-value-large" style="color:var(--danger);">£${spend.toFixed(2)}</div></div></div><div class="stats-progress-box"><div style="display:flex;justify-content:space-between;font-weight:900;font-size:13px;"><span>PROGRESS</span><span>${progress}%</span></div><div class="progress-track"><div class="progress-fill-bar" style="width:${progress}%"></div></div></div>${arrears > 0 ? `<div class="stats-arrears-banner"><small style="display:block;font-size:11px;opacity:0.8;">ARREARS</small>£${arrears.toFixed(2)}</div>` : ''}`;
 };
 
 /* --- 💸 LEDGER --- */
@@ -121,7 +136,7 @@ window.renderLedger = () => {
 };
 window.addExpense = () => { const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value); if(!d || a <= 0) return; db.expenses.push({ id: Date.now(), desc: d, amt: a, date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) }); saveData(); document.getElementById('expDesc').value=''; document.getElementById('expAmt').value=''; renderLedger(); renderStats(); };
 
-/* --- 🛠️ RECORDING LOGIC --- */
+/* --- 🛠️ RECORDING ENGINE --- */
 window.markAsPaid = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
     if(n(c.paidThisMonth) > 0) { if(confirm(`Reset?`)) { c.paidThisMonth = 0; saveData(); renderWeek(); renderStats(); } return; }
@@ -145,5 +160,5 @@ window.openMap = (addr) => { window.open(`https://www.google.com/maps/search/?ap
 window.closeMsgModal = () => document.getElementById('msgModal').classList.add('hidden');
 window.saveData = () => localStorage.setItem(DB_KEY, JSON.stringify(db));
 window.updateHeader = () => { const hr = new Date().getHours(), g = (hr < 12) ? "GOOD MORNING" : (hr < 18) ? "GOOD AFTERNOON" : "GOOD EVENING"; document.getElementById('greetText').innerText = `${g}, PARTNER! ☕`; document.getElementById('dateText').innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }); };
-window.completeCycle = () => { if(confirm("Reset month?")) { db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload(); } };
+window.completeCycle = () => { if(confirm("Reset month? Statuses will clear and Ledger will wipe.")) { db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload(); } };
 window.exportCSV = (type) => { let csv = type === 'income' ? 'Name,Amount\n' : 'Desc,Amount\n'; if(type === 'income') db.customers.filter(c => n(c.paidThisMonth) > 0).forEach(c => csv += `"${c.name}",${c.paidThisMonth}\n`); else db.expenses.forEach(e => csv += `"${e.desc}",${e.amt}\n`); const blob = new Blob([csv], { type: 'text/csv' }); const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `HydroPro_${type}.csv`; a.click(); };
