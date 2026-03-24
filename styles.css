@@ -4,12 +4,29 @@ body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, sans-serif; }
 body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; transition: background 0.3s; }
 
-/* 🛡️ NAV BAR STABILIZED */
+/* 🛡️ v30.5 SURGICAL LOGO EXPANSION */
 #global-shield { padding: 30px 0 20px; display: flex; flex-direction: column; align-items: center; }
-.nav-container-transparent { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 440px; padding: 0 20px; margin-bottom: 10px; }
+.nav-container-transparent { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 440px; padding: 0 10px; margin-bottom: 10px; }
 
-.logo-wrap-expanded { flex-grow: 1; display: flex; justify-content: flex-start; align-items: center; margin-right: 15px; }
-.logo-fluid { height: 60px !important; width: auto !important; object-fit: contain; transition: opacity 0.2s ease; }
+/* v30.5 Stretched Wrapper with Padding Lock */
+.logo-wrap-surgical-expansion { 
+    flex-grow: 1; 
+    display: flex; 
+    justify-content: flex-start; 
+    align-items: center; 
+    margin-right: 15px; /* Locked Slider Gap */
+    padding: 10px; /* Floating look, no internal whitespace */
+}
+
+/* v30.5 Stretched Logo Dimensions and contain logic */
+.logo-fluid-surgical { 
+    height: auto !important; 
+    width: auto !important; 
+    max-width: 100% !important; /* v30.5 stretch horizontally */
+    min-height: 80px !important; /* v30.5 surgical height increase */
+    object-fit: contain; /* v30.5 contains the image, no whitespace */
+    transition: opacity 0.2s ease; 
+}
 
 /* 🎚️ SLIDER */
 .toggle-wrap-surgical { flex-shrink: 0; }
@@ -56,7 +73,7 @@ input:checked + .slider-round:before { transform: translateX(26px); content: "�
 
 #ledger-root .ledger-hero-display { background: var(--card); border: 2px solid var(--danger); margin: 0 20px 25px; padding: 35px; border-radius: 40px; text-align: center; }
 #ledger-root .ledger-hero-display div { font-size: 50px; font-weight: 900; }
-.exp-pill { background: var(--card); padding: 20px; border-radius: 25px; display: flex; justify-content: space-between; margin: 0 20px 12px; border-left: 5px solid var(--danger); }
+.exp-pill { background: var(--card); padding: 20px; border-radius: 25px; display: flex; justify-content: space-between; margin: 0 20px 12px; border-left: 5px solid var(--danger); user-select: none; }
 
 .weeks-hub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
 .weeks-hub-grid button { height: 110px; border-radius: 25px; border: none; background: #1c1c1e; color: white; font-weight: 900; font-size: 22px; }
