@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v22.9</title>
-    <link rel="stylesheet" href="styles.css?v=229">
+    <title>Hydro Pro v23.0</title>
+    <link rel="stylesheet" href="styles.css?v=230">
 </head>
 <body class="light-mode">
 
@@ -49,6 +49,71 @@
             </div>
         </div>
 
+        <div id="stats" class="tab-content">
+            <div class="stats-hero-card">
+                <div id="statsMonthLabel" class="stats-summary-title">Summary</div>
+                <div id="currProfit" class="stats-main-amount">£0.00</div>
+                <div class="stats-hero-sub">💰 Total Profit in Pocket</div>
+            </div>
+
+            <div class="customer-pill-bubble stats-progress-bubble">
+                <div class="progress-label-row">
+                    <strong>Monthly Progress <span id="progressPercent">0%</span></strong>
+                </div>
+                <div class="progress-bar-bg"><div id="progressBarFill" class="progress-bar-fill"></div></div>
+                <div class="progress-footer">
+                    <span>TARGET: <strong id="statsTarget">£0.00</strong></span>
+                    <span>REMAINING: <strong id="statsRemaining">£0.00</strong></span>
+                </div>
+            </div>
+
+            <div class="stats-grid-2x1">
+                <div class="customer-pill-bubble stats-mini-card">
+                    <small>MONTH INCOME 🔍</small>
+                    <div class="amt-green-bold" id="statsIncome">£0.00</div>
+                </div>
+                <div class="customer-pill-bubble stats-mini-card">
+                    <small>MONTH SPEND 🔍</small>
+                    <div class="amt-red-bold" id="statsSpend">£0.00</div>
+                </div>
+            </div>
+
+            <div class="arrears-pill-bubble">
+                Arrears 🔍 <span id="statsArrears">£0.00</span>
+            </div>
+
+            <h3 class="hall-of-fame-title">🏆 The Hall of Fame</h3>
+            <div id="monthlyHistoryContainer" class="history-list-box">
+                <div class="empty-history-msg">Month-end snapshots appear here.</div>
+            </div>
+        </div>
+
+        <div id="spend" class="tab-content">
+            <div class="card ironclad-card">
+                <h3 class="setup-label-fixed">💸 Log Expense</h3>
+                <input type="text" id="expDesc" placeholder="Description" class="ledger-input-iron">
+                <input type="number" id="expAmt" placeholder="Amount £" class="ledger-input-iron">
+                <button class="ironclad-save-btn" style="background:#3b76f6" onclick="addExpense()">Add Expense</button>
+            </div>
+            
+            <div class="card ironclad-card">
+                <h3 class="setup-label-fixed">📊 QuickBooks Exports</h3>
+                <div class="ledger-grid-dual">
+                    <button class="btn-qb-export-iron" onclick="exportToCSV('income')">💹 QB Income</button>
+                    <button class="btn-qb-export-iron" onclick="exportToCSV('spend')">📋 QB Spend</button>
+                </div>
+            </div>
+
+            <h3 class="ledger-section-label">💸 Spend History</h3>
+            <div id="expenseList" class="iron-spaced-stack"></div>
+        </div>
+
+        <div id="master" class="tab-content">
+            <div class="search-shield"><input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()"></div>
+            <div id="masterTableBody" class="iron-spaced-stack"></div>
+            <div class="fixed-bottom-shield"><div class="action-card-green"><button class="btn-clear-large" onclick="completeCycle()">🚀 START NEW MONTH</button></div></div>
+        </div>
+
         <div id="admin" class="tab-content">
             <div class="card ironclad-card">
                 <h3 class="setup-label-fixed">👤 Add/Edit Customer</h3>
@@ -66,45 +131,12 @@
                 <button class="ironclad-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
             <div class="card ironclad-card bank-vault-border">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h3 class="setup-label-fixed" style="margin:0">🏦 Bank Details</h3><button id="bankLockBtn" class="bank-unlock-ironclad" onclick="toggleBankLock()">🔓 Unlock</button></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h3 class="setup-label-fixed" style="margin:0">🏦 Bank Details</h3><button id="bankLockBtn" class="bank-unlock-ironclad" onclick="toggleBankLock()">🔓 UNLOCK</button></div>
                 <div class="iron-input-row"><div class="fun-icon">🏷️</div><div class="iron-stack"><label>Account Name</label><input type="text" id="bankName" class="iron-input bank-field" readonly></div></div>
                 <div class="iron-input-row"><div class="fun-icon">🔢</div><div class="iron-stack"><label>Sort Code</label><input type="text" id="bankSort" class="iron-input bank-field" readonly></div></div>
                 <div class="iron-input-row" style="border:none"><div class="fun-icon">💳</div><div class="iron-stack"><label>Account Number</label><input type="number" id="bankAcc" class="iron-input bank-field" readonly></div></div>
                 <button id="bankSaveBtn" class="ironclad-save-btn hidden" onclick="saveBankDetails()" style="background:var(--success); margin-top:20px;">💾 Save Bank Details</button>
             </div>
-        </div>
-
-        <div id="master" class="tab-content">
-            <div class="search-shield"><input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()"></div>
-            <div id="masterTableBody" class="iron-spaced-stack"></div>
-            <div class="fixed-bottom-shield"><div class="action-card-green"><button class="btn-clear-large" onclick="completeCycle()">🚀 START NEW MONTH</button></div></div>
-        </div>
-
-        <div id="stats" class="tab-content">
-            <div class="stats-hero-card">
-                <div id="currProfit" class="stats-main-amount">£0.00</div>
-                <div class="stats-hero-sub">💰 Total Profit</div>
-            </div>
-            <div class="customer-pill-bubble stats-progress-bubble">
-                <div id="progressPercent" class="amt-blue-bold">0%</div>
-                <div class="progress-bar-bg"><div id="progressBarFill" class="progress-bar-fill"></div></div>
-                <div class="progress-footer"><span>TARGET: <strong id="statsTarget">£0.00</strong></span><span>PAID: <strong id="statsIncome">£0.00</strong></span></div>
-            </div>
-            <div class="stats-grid-2x1">
-                <div class="customer-pill-bubble stats-mini-bubble"><small>SPEND</small><div class="amt-red-bold" id="statsSpend">£0.00</div></div>
-                <div class="customer-pill-bubble stats-mini-bubble"><small>ARREARS</small><div class="amt-red-bold" id="statsArrears">£0.00</div></div>
-            </div>
-            <div id="monthlyHistoryContainer" class="iron-spaced-stack"></div>
-        </div>
-
-        <div id="spend" class="tab-content">
-            <div class="card ironclad-card">
-                <h3 class="setup-label-fixed">💸 Log Expense</h3>
-                <input type="text" id="expDesc" placeholder="Description" class="iron-input-styled" style="background:var(--input-bg); border-radius:15px; border:none; height:50px; padding:0 15px; width:100%; margin-bottom:10px;">
-                <input type="number" id="expAmt" placeholder="Amount £" class="iron-input-styled" style="background:var(--input-bg); border-radius:15px; border:none; height:50px; padding:0 15px; width:100%; margin-bottom:10px;">
-                <button class="ironclad-save-btn" onclick="addExpense()">Add Expense</button>
-            </div>
-            <div id="expenseList" class="iron-spaced-stack"></div>
         </div>
 
         <div id="weeksHub" class="tab-content">
@@ -117,14 +149,12 @@
             </div>
         </div>
 
-        <div id="week1" class="tab-content week-container"></div>
-        <div id="week2" class="tab-content week-container"></div>
-        <div id="week3" class="tab-content week-container"></div>
-        <div id="week4" class="tab-content week-container"></div>
-        <div id="week5" class="tab-content week-container"></div>
+        <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div>
+        <div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div>
+        <div id="week5" class="tab-content"></div>
     </div>
 
-    <footer class="centered-version-footer">v22.9 - Absolute Master Build</footer>
-    <script src="app.js?v=229"></script>
+    <footer class="centered-version-footer">v23.0 - UI Absolute Recovery Build</footer>
+    <script src="app.js?v=230"></script>
 </body>
 </html>
