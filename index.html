@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v21.6</title>
-    <link rel="stylesheet" href="styles.css?v=216">
+    <title>Hydro Pro v21.7</title>
+    <link rel="stylesheet" href="styles.css?v=217">
 </head>
 <body class="light-mode">
 
@@ -50,6 +50,16 @@
             </div>
         </div>
 
+        <div id="weeksHub" class="tab-content">
+            <div class="weeks-grid-lock">
+                <button class="tile-premium-week" onclick="openTab('week1')">Week 1</button>
+                <button class="tile-premium-week" onclick="openTab('week2')">Week 2</button>
+                <button class="tile-premium-week" onclick="openTab('week3')">Week 3</button>
+                <button class="tile-premium-week" onclick="openTab('week4')">Week 4</button>
+                <button class="tile-premium-week tile-week-full" onclick="openTab('week5')">Week 5</button>
+            </div>
+        </div>
+
         <div id="week1" class="tab-content"></div>
         <div id="week2" class="tab-content"></div>
         <div id="week3" class="tab-content"></div>
@@ -57,7 +67,7 @@
         <div id="week5" class="tab-content"></div>
 
         <div id="master" class="tab-content">
-            <div class="search-shield"><input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search..." oninput="renderMasterTable()"></div>
+            <div class="search-shield"><input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()"></div>
             <div id="masterTableBody"></div>
             <div class="fixed-bottom-shield"><div class="action-card-green"><button class="btn-clear-large" onclick="completeCycle()">🚀 START NEW MONTH</button></div></div>
         </div>
@@ -65,8 +75,8 @@
         <div id="admin" class="tab-content">
             <div class="card creative-form-card">
                 <input type="hidden" id="editId">
-                <div class="fun-input-group"><div class="fun-icon">👤</div><div class="fun-field-stack"><label>Name</label><input type="text" id="cName" class="creative-input"></div></div>
-                <div class="fun-input-group"><div class="fun-icon">📱</div><div class="fun-field-stack"><label>Phone</label><input type="tel" id="cPhone" class="creative-input"></div></div>
+                <div class="fun-input-group"><div class="fun-icon">👤</div><div class="fun-field-stack"><label>Customer Name</label><input type="text" id="cName" class="creative-input"></div></div>
+                <div class="fun-input-group"><div class="fun-icon">📱</div><div class="fun-field-stack"><label>Phone Number</label><input type="tel" id="cPhone" class="creative-input"></div></div>
                 <div class="fun-input-group"><div class="fun-icon">🏠</div><div class="fun-field-stack"><label>House No.</label><input type="text" id="cHouseNum" class="creative-input"></div></div>
                 <div class="fun-input-group"><div class="fun-icon">🛣️</div><div class="fun-field-stack"><label>Street</label><input type="text" id="cStreet" class="creative-input"></div></div>
                 <div class="fun-input-group"><div class="fun-icon">📍</div><div class="fun-field-stack"><label>Postcode</label><input type="text" id="cPostcode" class="creative-input"></div></div>
@@ -83,22 +93,13 @@
                 <div class="stats-hero-sub">💰 Total Profit in Pocket</div>
             </div>
             <div class="customer-pill-bubble stats-progress-bubble">
-                <div class="progress-header-centered">
-                    <small>MONTHLY PROGRESS</small>
-                    <div id="progressPercent" class="amt-blue-bold">0%</div>
-                </div>
+                <div class="progress-header-centered"><small>MONTHLY PROGRESS</small><div id="progressPercent" class="amt-blue-bold">0%</div></div>
                 <div class="progress-bar-bg"><div id="progressBarFill" class="progress-bar-fill"></div></div>
                 <div class="progress-footer"><span>TARGET: <strong id="statsTarget">£0.00</strong></span><span>REMAINING: <strong id="statsRemaining">£0.00</strong></span></div>
             </div>
             <div class="stats-grid-2x1">
-                <div class="customer-pill-bubble stats-mini-bubble">
-                    <small>MONTH INCOME 🔍</small>
-                    <div class="amt-green-bold" id="statsIncome">£0.00</div>
-                </div>
-                <div class="customer-pill-bubble stats-mini-bubble">
-                    <small>MONTH SPEND 🔍</small>
-                    <div class="amt-red-bold" id="statsSpend">£0.00</div>
-                </div>
+                <div class="customer-pill-bubble stats-mini-bubble"><small>MONTH INCOME 🔍</small><div class="amt-green-bold" id="statsIncome">£0.00</div></div>
+                <div class="customer-pill-bubble stats-mini-bubble"><small>MONTH SPEND 🔍</small><div class="amt-red-bold" id="statsSpend">£0.00</div></div>
             </div>
             <div class="arrears-pill-container"><div class="arrears-pill-bubble">Arrears 🔍 <span id="statsArrears">£0.00</span></div></div>
             <h3 class="hall-of-fame-title">🏆 The Hall of Fame</h3>
@@ -124,19 +125,9 @@
             <h3 class="ledger-section-label">💸 Spend History</h3>
             <div id="expenseList"></div>
         </div>
-
-        <div id="weeksHub" class="tab-content">
-            <div class="weeks-grid">
-                <button class="tile-week-blue" onclick="openTab('week1')">Week 1</button>
-                <button class="tile-week-blue" onclick="openTab('week2')">Week 2</button>
-                <button class="tile-week-blue" onclick="openTab('week3')">Week 3</button>
-                <button class="tile-week-blue" onclick="openTab('week4')">Week 4</button>
-                <button class="tile-week-blue tile-week-5" onclick="openTab('week5')">Week 5</button>
-            </div>
-        </div>
     </div>
 
-    <div class="page-version-footer">v21.6 - Bulk Comm Build</div>
-    <script src="app.js?v=216"></script>
+    <div class="page-version-footer">v21.7 - Bulk Dual & Grid Restore</div>
+    <script src="app.js?v=217"></script>
 </body>
 </html>
