@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v26.0</title>
-    <link rel="stylesheet" href="styles.css?v=260">
+    <title>Hydro Pro v26.2</title>
+    <link rel="stylesheet" href="styles.css?v=262">
 </head>
 <body class="light-mode">
 
@@ -31,26 +31,15 @@
             </div>
         </section>
 
-        <section id="fence-ledger" class="tab-content">
+        <section id="fence-master" class="tab-content">
             <button class="back-home-pill-top" onclick="openTab('fence-home')">🏠 Back to Home</button>
-            
-            <div class="ledger-card">
-                <h3 class="ledger-label">💸 Log Expense</h3>
-                <input type="text" id="expDesc" placeholder="Description (e.g. Fuel)" class="ledger-input">
-                <input type="number" id="expAmt" placeholder="Amount £" class="ledger-input">
-                <button class="ledger-save-btn" onclick="addExpense()">Add Expense</button>
+            <div class="search-container-fixed">
+                <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterFence()">
             </div>
-
-            <div class="ledger-card">
-                <h3 class="ledger-label">📊 QuickBooks Exports</h3>
-                <div class="ledger-grid-dual">
-                    <button class="btn-qb-export-iron" onclick="exportToCSV('income')">💹 QB Income</button>
-                    <button class="btn-qb-export-iron" onclick="exportToCSV('spend')">📋 QB Spend</button>
-                </div>
+            <div id="master-list-container" class="iron-list-stack"></div>
+            <div class="fixed-action-footer">
+                <button class="btn-new-month" onclick="completeCycle()">🚀 START NEW MONTH</button>
             </div>
-
-            <h3 class="ledger-section-label">💸 Spend History</h3>
-            <div id="expense-list-container" class="iron-list-stack"></div>
         </section>
 
         <section id="fence-setup" class="tab-content">
@@ -70,28 +59,41 @@
                 </div>
                 <button class="setup-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
-        </section>
-
-        <section id="fence-master" class="tab-content">
-            <button class="back-home-pill-top" onclick="openTab('fence-home')">🏠 Back to Home</button>
-            <div class="search-container-fixed">
-                <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterFence()">
+            <div class="setup-card vault-border">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h3 class="setup-label" style="margin:0">🏦 Bank Details</h3>
+                    <button id="bankLockBtn" class="vault-unlock-btn" onclick="toggleBankLock()">🔓 UNLOCK</button>
+                </div>
+                <div class="setup-row"><div class="setup-icon">🏷️</div><div class="setup-stack"><label>Account Name</label><input type="text" id="bankName" class="setup-input bank-field" readonly></div></div>
+                <div class="setup-row"><div class="setup-icon">🔢</div><div class="setup-stack"><label>Sort Code</label><input type="text" id="bankSort" class="setup-input bank-field" readonly maxlength="8"></div></div>
+                <div class="setup-row" style="border:none"><div class="setup-icon">💳</div><div class="setup-stack"><label>Account Number</label><input type="number" id="bankAcc" class="setup-input bank-field" readonly></div></div>
+                <button id="bankSaveBtn" class="setup-save-btn hidden" onclick="saveBankDetails()" style="background:var(--success); margin-top:20px;">💾 Save Details</button>
             </div>
-            <div id="master-list-container" class="iron-list-stack"></div>
-            <div class="fixed-action-footer">
-                <button class="btn-new-month" onclick="completeCycle()">🚀 START NEW MONTH</button>
-            </div>
         </section>
 
-        <section id="fence-stats" class="tab-content">
+        <section id="fence-ledger" class="tab-content">
             <button class="back-home-pill-top" onclick="openTab('fence-home')">🏠 Back to Home</button>
-            <div id="stats-dashboard-container"></div>
+            <div class="ledger-card">
+                <h3 class="ledger-label">💸 Log Expense</h3>
+                <input type="text" id="expDesc" placeholder="Description" class="ledger-input">
+                <input type="number" id="expAmt" placeholder="Amount £" class="ledger-input">
+                <button class="ledger-save-btn" onclick="addExpense()">Add Expense</button>
+            </div>
+            <div class="ledger-card">
+                <h3 class="ledger-label">📊 QuickBooks Exports</h3>
+                <div class="ledger-grid-dual">
+                    <button class="btn-qb-export-iron" onclick="exportToCSV('income')">💹 QB Income</button>
+                    <button class="btn-qb-export-iron" onclick="exportToCSV('spend')">📋 QB Spend</button>
+                </div>
+            </div>
+            <div id="expense-list-container" class="iron-list-stack"></div>
         </section>
 
-        <section id="fence-weeks" class="tab-content"></section>
+        <section id="fence-stats" class="tab-content"><button class="back-home-pill-top" onclick="openTab('fence-home')">🏠 Back to Home</button><div id="stats-dashboard-container"></div></section>
+        <section id="fence-weeks" class="tab-content"><button class="back-home-pill-top" onclick="openTab('fence-home')">🏠 Back to Home</button><div id="weeks-hub-container"></div></section>
     </div>
 
-    <footer id="footer-version">v26.0 - Physical Isolation Build</footer>
-    <script src="app.js?v=260"></script>
+    <footer id="footer-version">v26.2 - Pre-Flight Protocol Active</footer>
+    <script src="app.js?v=262"></script>
 </body>
 </html>
