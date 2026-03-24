@@ -40,7 +40,15 @@ window.renderMaster = () => {
         if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
             const div = document.createElement('div'); div.className = 'cust-pill';
             div.onclick = () => editCust(c.id);
-            div.innerHTML = `<div><strong style="font-size:20px; display:block;">${c.name}</strong><small style="color:var(--accent);font-weight:700;">${c.houseNum} ${c.street}</small></div>
+            
+            // Arrears Flag Logic
+            let badgeHtml = "";
+            if (c.cleaned && n(c.paidThisMonth) === 0) {
+                badgeHtml = `<div class="arrears-badge">UNPAID 🚩</div>`;
+            }
+
+            div.innerHTML = `${badgeHtml}
+                             <div><strong style="font-size:20px; display:block;">${c.name}</strong><small style="color:var(--accent);font-weight:700;">${c.houseNum} ${c.street}</small></div>
                              <div style="font-weight:900; color:var(--success); font-size:18px;">£${n(c.price).toFixed(2)}</div>`;
             container.appendChild(div);
         }
@@ -103,7 +111,6 @@ window.renderWeek = () => {
 
 /* --- CORE LOGIC --- */
 window.openMap = (addr) => {
-    // Hard-locked to Google Maps Search URL
     const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
     window.open(url, '_blank');
 };
