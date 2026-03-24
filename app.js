@@ -30,26 +30,17 @@ window.openTab = (name) => {
     renderAll();
 };
 
-// 🆕 MODAL LOGIC FOR v20.3
 window.showActionModal = (id) => {
     const c = db.customers.find(x => x.id === id);
     if(!c) return;
-    
     document.getElementById('modalCustomerName').innerText = c.name;
     document.getElementById('modalCustomerAddress').innerText = `${c.houseNum} ${c.street}`;
-    
     const editBtn = document.getElementById('modalEditBtn');
-    editBtn.onclick = () => {
-        closeModal();
-        editCust(c.id);
-    };
-    
+    editBtn.onclick = () => { closeModal(); editCust(c.id); };
     document.getElementById('actionModal').classList.remove('hidden');
 };
 
-window.closeModal = () => {
-    document.getElementById('actionModal').classList.add('hidden');
-};
+window.closeModal = () => { document.getElementById('actionModal').classList.add('hidden'); };
 
 window.saveCustomer = () => {
     const name = document.getElementById('cName').value; if(!name) return;
@@ -70,7 +61,7 @@ window.saveCustomer = () => {
 
     if(idx > -1) db.customers[idx] = entry; else db.customers.push(entry);
     saveData();
-    alert("Customer Saved! ✨");
+    alert("Customer Saved Successfully! ✨");
     ['editId', 'cName', 'cHouseNum', 'cStreet', 'cPostcode', 'cPrice', 'cNotes'].forEach(f => {
         const el = document.getElementById(f); if(el) el.value = "";
     });
@@ -83,7 +74,6 @@ window.renderMasterTable = () => {
     db.customers.forEach(c => {
         if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
             const tile = document.createElement('div'); tile.className = 'customer-pill-bubble bounce-on-tap';
-            // NEW TRIGGER: Calls Modal instead of editCust directly
             tile.onclick = () => showActionModal(c.id);
             tile.innerHTML = `<div><strong style="display:block; font-size:19px;">${c.name}</strong><small style="color:var(--accent); font-weight:700;">${c.houseNum} ${c.street}</small></div><div style="font-weight:900; color:var(--success)">£${n(c.price).toFixed(2)}</div>`;
             body.appendChild(tile);
@@ -130,10 +120,15 @@ window.renderStats = () => {
     }
 };
 
-window.editCust = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; openTab('admin'); document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cHouseNum').value = c.houseNum; document.getElementById('cStreet').value = c.street; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPrice').value = c.price; document.getElementById('cNotes').value = c.notes; };
-window.updateGreeting = () => { const hr = new Date().getHours(); const g = (hr < 12) ? "Good Morning" : (hr < 18) ? "Good Afternoon" : "Good Evening"; document.getElementById('greetingMsg').innerText = `${g}, Partner! ☕`; };
+window.updateGreeting = () => {
+    const hr = new Date().getHours();
+    const g = (hr < 12) ? "Good Morning" : (hr < 18) ? "Good Afternoon" : "Good Evening";
+    const el = document.getElementById('greetingMsg'); if (el) el.innerText = `${g}, Partner! ☕`;
+};
+
 window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
 window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); renderLedger(); };
+window.editCust = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; openTab('admin'); document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cHouseNum').value = c.houseNum; document.getElementById('cStreet').value = c.street; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPrice').value = c.price; document.getElementById('cNotes').value = c.notes; };
 window.toggleCleaned = (id) => { const c = db.customers.find(x => x.id === id); if (c) { c.cleaned = !c.cleaned; saveData(); renderAll(); } };
 window.markAsPaid = (id) => { const c = db.customers.find(x => x.id === id); if (!c) return; const isPaid = n(c.paidThisMonth) >= n(c.price); c.paidThisMonth = isPaid ? 0 : c.price; saveData(); renderAll(); };
 window.renderLedger = () => { const l = document.getElementById('expenseList'); if(!l) return; l.innerHTML = '<h3 class="hall-of-fame-title">💸 Spend History</h3>'; db.expenses.forEach(e => { const d = document.createElement('div'); d.className = 'customer-pill-bubble'; d.innerHTML = `<div style="display:flex; justify-content:space-between; width:100%"><div><strong>${e.desc}</strong><small>${e.date}</small></div><div style="color:var(--danger); font-weight:900">-£${n(e.amt).toFixed(2)}</div></div>`; l.appendChild(d); }); };
