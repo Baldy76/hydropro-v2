@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v22.8</title>
-    <link rel="stylesheet" href="styles.css?v=228">
+    <title>Hydro Pro v22.9</title>
+    <link rel="stylesheet" href="styles.css?v=229">
 </head>
 <body class="light-mode">
 
@@ -27,49 +27,104 @@
         <button class="back-pill-ironclad" onclick="openTab('home')">🏠 Back to Home</button>
     </div>
 
+    <div id="actionModal" class="modal-overlay hidden" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div id="modalCustomerName" class="modal-title-locked"></div>
+            <p id="modalCustomerAddress" class="modal-sub-locked"></p>
+            <div class="modal-action-grid">
+                <button class="modal-btn btn-edit" id="modalEditBtn">✏️ Edit Details</button>
+                <button class="modal-btn btn-cancel" onclick="closeModal()">❌ Return to List</button>
+            </div>
+        </div>
+    </div>
+
     <div class="main-container">
-        
         <div id="home" class="tab-content active">
             <div class="home-grid-ironclad">
-                <button class="tile-restore" onclick="openTab('admin')">
-                    <span>✨</span>
-                    <small>Setup</small>
-                </button>
-                <button class="tile-restore" onclick="openTab('master')">
-                    <span>👥</span>
-                    <small>Custs</small>
-                </button>
-                <button class="tile-restore" onclick="openTab('stats')">
-                    <span>📊</span>
-                    <small>Stats</small>
-                </button>
-                <button class="tile-restore" onclick="openTab('spend')">
-                    <span>💸</span>
-                    <small>Ledger</small>
-                </button>
-                <button class="tile-restore tile-weekly-hub-ironclad" onclick="openTab('weeksHub')">
-                    <span>📅</span>
-                    <small>Weekly Work</small>
-                </button>
+                <button class="tile-restore" onclick="openTab('admin')"><span>✨</span><small>Setup</small></button>
+                <button class="tile-restore" onclick="openTab('master')"><span>👥</span><small>Custs</small></button>
+                <button class="tile-restore" onclick="openTab('stats')"><span>📊</span><small>Stats</small></button>
+                <button class="tile-restore" onclick="openTab('spend')"><span>💸</span><small>Ledger</small></button>
+                <button class="tile-restore tile-weekly-hub-ironclad" onclick="openTab('weeksHub')"><span>📅</span><small>Weekly Work</small></button>
             </div>
         </div>
 
         <div id="admin" class="tab-content">
+            <div class="card ironclad-card">
+                <h3 class="setup-label-fixed">👤 Add/Edit Customer</h3>
+                <input type="hidden" id="editId">
+                <div class="iron-input-row"><div class="fun-icon">👤</div><div class="iron-stack"><label>Name</label><input type="text" id="cName" class="iron-input"></div></div>
+                <div class="iron-input-row"><div class="fun-icon">📱</div><div class="iron-stack"><label>Phone</label><input type="tel" id="cPhone" class="iron-input"></div></div>
+                <div class="iron-input-row"><div class="fun-icon">🏠</div><div class="iron-stack"><label>House No.</label><input type="text" id="cHouseNum" class="iron-input"></div></div>
+                <div class="iron-input-row"><div class="fun-icon">🛣️</div><div class="iron-stack"><label>Street</label><input type="text" id="cStreet" class="iron-input"></div></div>
+                <div class="iron-input-row"><div class="fun-icon">📍</div><div class="iron-stack"><label>Postcode</label><input type="text" id="cPostcode" class="iron-input"></div></div>
+                <div class="iron-input-row"><div class="fun-icon">💰</div><div class="iron-stack"><label>Price £</label><input type="number" id="cPrice" class="iron-input"></div></div>
+                <div class="notes-container-fixed">
+                    <label class="notes-label">📝 PRIVATE NOTES</label>
+                    <textarea id="cNotes" class="iron-textarea-expanded"></textarea>
+                </div>
+                <button class="ironclad-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
+            <div class="card ironclad-card bank-vault-border">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h3 class="setup-label-fixed" style="margin:0">🏦 Bank Details</h3><button id="bankLockBtn" class="bank-unlock-ironclad" onclick="toggleBankLock()">🔓 Unlock</button></div>
+                <div class="iron-input-row"><div class="fun-icon">🏷️</div><div class="iron-stack"><label>Account Name</label><input type="text" id="bankName" class="iron-input bank-field" readonly></div></div>
+                <div class="iron-input-row"><div class="fun-icon">🔢</div><div class="iron-stack"><label>Sort Code</label><input type="text" id="bankSort" class="iron-input bank-field" readonly></div></div>
+                <div class="iron-input-row" style="border:none"><div class="fun-icon">💳</div><div class="iron-stack"><label>Account Number</label><input type="number" id="bankAcc" class="iron-input bank-field" readonly></div></div>
+                <button id="bankSaveBtn" class="ironclad-save-btn hidden" onclick="saveBankDetails()" style="background:var(--success); margin-top:20px;">💾 Save Bank Details</button>
+            </div>
+        </div>
 
         <div id="master" class="tab-content">
-            <div class="search-shield"><input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search..."></div>
+            <div class="search-shield"><input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()"></div>
             <div id="masterTableBody" class="iron-spaced-stack"></div>
             <div class="fixed-bottom-shield"><div class="action-card-green"><button class="btn-clear-large" onclick="completeCycle()">🚀 START NEW MONTH</button></div></div>
         </div>
 
-        <div id="stats" class="tab-content"></div>
-        <div id="spend" class="tab-content"></div>
-        <div id="weeksHub" class="tab-content"></div>
+        <div id="stats" class="tab-content">
+            <div class="stats-hero-card">
+                <div id="currProfit" class="stats-main-amount">£0.00</div>
+                <div class="stats-hero-sub">💰 Total Profit</div>
+            </div>
+            <div class="customer-pill-bubble stats-progress-bubble">
+                <div id="progressPercent" class="amt-blue-bold">0%</div>
+                <div class="progress-bar-bg"><div id="progressBarFill" class="progress-bar-fill"></div></div>
+                <div class="progress-footer"><span>TARGET: <strong id="statsTarget">£0.00</strong></span><span>PAID: <strong id="statsIncome">£0.00</strong></span></div>
+            </div>
+            <div class="stats-grid-2x1">
+                <div class="customer-pill-bubble stats-mini-bubble"><small>SPEND</small><div class="amt-red-bold" id="statsSpend">£0.00</div></div>
+                <div class="customer-pill-bubble stats-mini-bubble"><small>ARREARS</small><div class="amt-red-bold" id="statsArrears">£0.00</div></div>
+            </div>
+            <div id="monthlyHistoryContainer" class="iron-spaced-stack"></div>
+        </div>
+
+        <div id="spend" class="tab-content">
+            <div class="card ironclad-card">
+                <h3 class="setup-label-fixed">💸 Log Expense</h3>
+                <input type="text" id="expDesc" placeholder="Description" class="iron-input-styled" style="background:var(--input-bg); border-radius:15px; border:none; height:50px; padding:0 15px; width:100%; margin-bottom:10px;">
+                <input type="number" id="expAmt" placeholder="Amount £" class="iron-input-styled" style="background:var(--input-bg); border-radius:15px; border:none; height:50px; padding:0 15px; width:100%; margin-bottom:10px;">
+                <button class="ironclad-save-btn" onclick="addExpense()">Add Expense</button>
+            </div>
+            <div id="expenseList" class="iron-spaced-stack"></div>
+        </div>
+
+        <div id="weeksHub" class="tab-content">
+            <div class="weeks-grid-lock">
+                <button class="tile-premium-week" onclick="openTab('week1')">Week 1</button>
+                <button class="tile-premium-week" onclick="openTab('week2')">Week 2</button>
+                <button class="tile-premium-week" onclick="openTab('week3')">Week 3</button>
+                <button class="tile-premium-week" onclick="openTab('week4')">Week 4</button>
+                <button class="tile-premium-week tile-week-full" onclick="openTab('week5')">Week 5</button>
+            </div>
+        </div>
+
+        <div id="week1" class="tab-content week-container"></div>
+        <div id="week2" class="tab-content week-container"></div>
+        <div id="week3" class="tab-content week-container"></div>
+        <div id="week4" class="tab-content week-container"></div>
+        <div id="week5" class="tab-content week-container"></div>
     </div>
 
-    <footer class="centered-version-footer">v22.8 - Home Hub Restored</footer>
-
-    <script src="app.js?v=228"></script>
+    <footer class="centered-version-footer">v22.9 - Absolute Master Build</footer>
+    <script src="app.js?v=229"></script>
 </body>
 </html>
