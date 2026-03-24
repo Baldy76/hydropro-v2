@@ -28,6 +28,53 @@ window.renderAll = () => {
     }
 };
 
+/* --- LEDGER UPGRADE ROBOT --- */
+window.renderLedgerFence = () => {
+    const container = document.getElementById('expense-list-container');
+    const totalEl = document.getElementById('ledgerTotalSpend');
+    if(!container) return; container.innerHTML = '';
+    
+    let total = 0;
+    db.expenses.forEach(e => total += n(e.amt));
+    if(totalEl) totalEl.innerText = `£${total.toFixed(2)}`;
+
+    if(db.expenses.length === 0) {
+        container.innerHTML = '<div class="expense-tile" style="justify-content:center; opacity:0.5; border:none;">No expenses logged yet.</div>';
+        return;
+    }
+
+    db.expenses.slice().reverse().forEach((e, index) => {
+        const div = document.createElement('div');
+        div.className = 'expense-tile';
+        div.innerHTML = `
+            <div class="expense-info">
+                <strong>${e.desc}</strong>
+                <small>📅 ${e.date}</small>
+            </div>
+            <div class="expense-amt">-£${n(e.amt).toFixed(2)}</div>
+        `;
+        // Optional: Add double tap to delete logic here in future
+        container.appendChild(div);
+    });
+};
+
+window.addExpense = () => {
+    const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value);
+    if(!d || a <= 0) return alert("Please enter description and amount.");
+    db.expenses.push({ 
+        id: Date.now(), 
+        desc: d, 
+        amt: a, 
+        date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) 
+    });
+    saveData(); 
+    document.getElementById('expDesc').value=''; 
+    document.getElementById('expAmt').value=''; 
+    renderLedgerFence();
+    renderStatsFence(); // Keep stats in sync
+};
+
+/* --- PRESERVED ROBOTS --- */
 window.renderMasterFence = () => {
     const container = document.getElementById('master-list-container');
     if(!container) return; container.innerHTML = '';
@@ -42,7 +89,16 @@ window.renderMasterFence = () => {
     });
 };
 
-window.openWeek = (w) => { currentActiveWeek = w; openTab('fence-week-view'); };
+window.renderStatsFence = () => {
+    const container = document.getElementById('stats-dashboard-container'); if (!container) return;
+    let target = 0, paid = 0, arrears = 0, spend = 0;
+    db.customers.forEach(c => { target += n(c.price); paid += n(c.paidThisMonth); if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth)); });
+    db.expenses.forEach(e => spend += n(e.amt));
+    const profit = paid - spend, progress = target > 0 ? Math.round((paid / target) * 100) : 0;
+    container.innerHTML = `<div class="stats-hero"><span class="main-amt">£${profit.toFixed(2)}</span><small style="font-weight:600; opacity:0.7">💰 Total Profit in Pocket</small></div>
+        <div class="progress-bubble"><strong style="font-size:18px;">Monthly Progress ${progress}%</strong><div class="bar-bg"><div class="bar-fill" style="width:${progress}%"></div></div><div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700; opacity:0.5;"><span>TARGET: £${target.toFixed(2)}</span><span>REMAINING: £${(target - paid).toFixed(2)}</span></div></div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; padding:0 20px 20px;"><div class="progress-bubble" style="margin:0; text-align:center;"><small>INCOME 🔍</small><div style="color:var(--success); font-size:24px; font-weight:800">£${paid.toFixed(2)}</div></div><div class="progress-bubble" style="margin:0; text-align:center;"><small>SPEND 🔍</small><div style="color:var(--danger); font-size:24px; font-weight:800">£${spend.toFixed(2)}</div></div></div><div class="arrears-bubble">Arrears 🔍 £${arrears.toFixed(2)}</div>`;
+};
 
 window.renderWeekFence = () => {
     const bulk = document.getElementById('bulk-action-bar'), list = document.getElementById('week-list-container');
@@ -58,6 +114,7 @@ window.renderWeekFence = () => {
     });
 };
 
+/* --- SHARED ACTIONS --- */
 window.handleCleanAction = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
     c.cleaned = !c.cleaned; saveData(); renderWeekFence();
@@ -84,34 +141,14 @@ window.editCust = (id) => {
     document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cPhone').value = c.phone; document.getElementById('cHouseNum').value = c.houseNum; document.getElementById('cStreet').value = c.street; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPrice').value = c.price; document.getElementById('cNotes').value = c.notes;
 };
 
-window.renderStatsFence = () => {
-    const container = document.getElementById('stats-dashboard-container'); if (!container) return;
-    let target = 0, paid = 0, arrears = 0, spend = 0;
-    db.customers.forEach(c => { target += n(c.price); paid += n(c.paidThisMonth); if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth)); });
-    db.expenses.forEach(e => spend += n(e.amt));
-    const profit = paid - spend, progress = target > 0 ? Math.round((paid / target) * 100) : 0;
-    container.innerHTML = `<div class="stats-hero"><span class="main-amt">£${profit.toFixed(2)}</span><small style="font-weight:600; opacity:0.7">💰 Total Profit in Pocket</small></div>
-        <div class="progress-bubble"><strong style="font-size:18px;">Monthly Progress ${progress}%</strong><div class="bar-bg"><div class="bar-fill" style="width:${progress}%"></div></div><div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700; opacity:0.5;"><span>TARGET: £${target.toFixed(2)}</span><span>REMAINING: £${(target - paid).toFixed(2)}</span></div></div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; padding:0 20px 20px;"><div class="progress-bubble" style="margin:0; text-align:center;"><small>INCOME 🔍</small><div style="color:var(--success); font-size:24px; font-weight:800">£${paid.toFixed(2)}</div></div><div class="progress-bubble" style="margin:0; text-align:center;"><small>SPEND 🔍</small><div style="color:var(--danger); font-size:24px; font-weight:800">£${spend.toFixed(2)}</div></div></div><div class="arrears-bubble">Arrears 🔍 £${arrears.toFixed(2)}</div>`;
-};
-
-window.renderLedgerFence = () => {
-    const container = document.getElementById('expense-list-container'); if(!container) return; container.innerHTML = '';
-    db.expenses.slice().reverse().forEach(e => {
-        const div = document.createElement('div'); div.className = 'expense-tile';
-        div.innerHTML = `<div><strong>${e.desc}</strong><br><small>${e.date}</small></div><div style="color:var(--danger); font-weight:900">-£${n(e.amt).toFixed(2)}</div>`;
-        container.appendChild(div);
-    });
-};
-
 window.toggleBankLock = () => {
     const fields = document.querySelectorAll('.bank-field'), lockBtn = document.getElementById('bankLockBtn'), saveBtn = document.getElementById('bankSaveBtn');
     const isLocked = fields[0].readOnly; fields.forEach(f => f.readOnly = !isLocked);
     lockBtn.innerText = isLocked ? "🔒 LOCK" : "🔓 UNLOCK"; saveBtn.classList.toggle('hidden', !isLocked);
 };
 window.saveBankDetails = () => { db.bank = { name: document.getElementById('bankName').value, sort: document.getElementById('bankSort').value, acc: document.getElementById('bankAcc').value }; saveData(); toggleBankLock(); alert("Saved!"); };
-window.addExpense = () => { const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value); if(!d || a <= 0) return; db.expenses.push({ id: Date.now(), desc: d, amt: a, date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) }); saveData(); document.getElementById('expDesc').value=''; document.getElementById('expAmt').value=''; renderLedgerFence(); };
-window.markAsPaid = (id) => { const c = db.customers.find(x => x.id === id); if(c) { c.paidThisMonth = (n(c.paidThisMonth)>0)?0:c.price; saveData(); renderWeekFence(); } };
+window.openWeek = (w) => { currentActiveWeek = w; openTab('fence-week-view'); };
+window.markAsPaid = (id) => { const c = db.customers.find(x => x.id === id); if(c) { c.paidThisMonth = (n(c.paidThisMonth)>0)?0:c.price; saveData(); renderWeekFence(); renderStatsFence(); } };
 window.toggleDarkMode = () => { const d = document.body.classList.toggle('dark-mode'); localStorage.setItem('HP_Theme', d); document.getElementById('themeToggleBtn').innerText = d ? '☀️' : '🌙'; };
 window.closeMsgModal = () => document.getElementById('msgModal').classList.add('hidden');
 window.saveData = () => localStorage.setItem(DB_KEY, JSON.stringify(db));
