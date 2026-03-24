@@ -7,50 +7,72 @@ body.dark-mode { --bg: #000000; --card-bg: #1c1c1e; --input-bg: #2c2c2e; --text:
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; }
 
-/* 🔒 BRANDING & HUD */
-#branding-shield { display: flex; flex-direction: column; align-items: center; padding: 30px 0 15px 0; text-align: center; width: 100%; }
-.logo-img { height: 120px !important; width: auto; max-width: 85%; margin: 0 auto; }
-.home-greeting { font-size: 13px !important; font-weight: 900; opacity: 0.6; text-transform: uppercase; margin-top: 12px; }
-.home-date { font-size: 24px !important; font-weight: 900; color: var(--accent); }
-.mode-switch-wrapper { position: fixed !important; top: 25px !important; right: 20px !important; z-index: 999999 !important; }
+/* 🔒 GLOBAL BACK PILL HARDCODE */
+.back-pill-ironclad { 
+    width: calc(100% - 40px) !important; 
+    height: 65px !important; 
+    border-radius: 32px !important; 
+    border: none !important; 
+    background: var(--card-bg) !important; 
+    color: var(--accent) !important; 
+    font-weight: 900 !important; 
+    font-size: 20px !important; 
+    margin: 0 20px 25px !important; 
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1) !important;
+    display: block !important;
+}
 
-/* 🔒 MASTER LIST SPACING & BUTTON LOCK */
-.search-shield { padding: 0 18px 20px; width: 100%; box-sizing: border-box; }
-.search-input-pill { width: 100% !important; height: 68px !important; padding: 0 30px !important; border-radius: 34px; background: var(--card-bg); font-size: 19px !important; font-weight: 600; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+/* 🔒 SETUP SCREEN HARDCODE */
+.ironclad-card { background: var(--card-bg); border-radius: 35px; padding: 30px; margin: 0 20px 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
+.setup-label-fixed { font-size: 15px !important; font-weight: 900 !important; color: var(--accent); text-transform: uppercase; margin-bottom: 25px; letter-spacing: 1px; }
 
-.evenly-spaced-stack { 
+.iron-input-row { 
     display: flex !important; 
-    flex-direction: column !important; 
-    gap: 20px !important; /* This creates the even spacing between boxes */
-    padding-bottom: 120px !important; /* Buffer for the bottom button */
+    align-items: center !important; 
+    gap: 15px !important; 
+    height: 70px !important; /* HARD HEIGHT FOR BOXES */
+    border-bottom: 2px solid rgba(0,0,0,0.05);
+    width: 100% !important;
 }
 
-.fixed-bottom-shield { 
-    position: fixed; bottom: 0; left: 0; width: 100%; 
-    padding: 20px 18px; background: linear-gradient(transparent, var(--bg) 20%);
-    box-sizing: border-box; z-index: 100;
-}
-.action-card-green { background: linear-gradient(135deg, #28a745, #34c759); border-radius: 25px; width: 100%; box-shadow: 0 8px 20px rgba(52,199,89,0.3); }
-.btn-clear-large { background: transparent; color: white; border: none; font-weight: 900; width: 100% !important; height: 70px !important; font-size: 20px !important; cursor: pointer; }
-
-/* 🏠 HOME HUB LOCKS */
-#home .home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding: 20px; }
-#home .tile { height: 125px !important; border-radius: 30px; border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--card-bg); box-shadow: 0 6px 15px rgba(0,0,0,0.08); }
-#home .tile span { font-size: 42px !important; }
-#home .tile small { font-size: 17px !important; font-weight: 900; text-transform: uppercase; color: var(--text); }
-#home .tile-weekly-hub { background: var(--accent); grid-column: 1 / -1; height: 130px !important; }
-
-/* 🔒 SETUP LOCKS */
-.creative-form-card { background: var(--card-bg); border-radius: 35px; padding: 25px; margin: 0 18px 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-.fun-input-group { display: flex; align-items: center; gap: 15px; padding: 18px 0; border-bottom: 2px solid rgba(0,0,0,0.05); }
 .fun-icon { width: 55px !important; height: 55px !important; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 26px !important; background: rgba(0,122,255,0.05); flex-shrink: 0; }
-.creative-save-btn { background: linear-gradient(135deg, var(--accent), #5856d6); height: 70px !important; color: #fff; font-weight: 900; border-radius: 25px; width: 100%; border: none; font-size: 20px !important; margin-top: 25px; }
+.iron-stack { flex-grow: 1; display: flex; flex-direction: column; }
+.iron-stack label { font-size: 11px; font-weight: 800; color: #8e8e93; text-transform: uppercase; }
+.iron-input { font-size: 20px !important; font-weight: 600; border: none; background: transparent; color: var(--text); outline: none; width: 100%; height: 35px; }
+.iron-textarea { font-size: 18px !important; font-weight: 600; border: none; background: transparent; color: var(--text); outline: none; width: 100%; min-height: 100px; padding-top: 5px; }
 
-/* UTILS */
-.customer-pill-bubble { background: var(--card-bg); margin: 0 18px; padding: 25px; border-radius: 35px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
+.ironclad-save-btn { background: linear-gradient(135deg, var(--accent), #5856d6); height: 75px !important; color: #fff; font-weight: 900; border-radius: 25px; width: 100%; border: none; font-size: 22px !important; cursor: pointer; }
+
+/* 🔒 BANK UNLOCK HARDCODE */
+.bank-unlock-ironclad { 
+    background: var(--accent) !important; 
+    color: white !important; 
+    border: none !important; 
+    width: 110px !important; 
+    height: 50px !important; 
+    border-radius: 18px !important; 
+    font-weight: 900 !important; 
+    font-size: 16px !important;
+    box-shadow: 0 4px 10px rgba(0,122,255,0.3) !important;
+}
+.bank-vault-border { border: 2px solid rgba(0,122,255,0.15); }
+.bank-field[readonly] { opacity: 0.6; }
+
+/* 🏠 HUB LOCKS */
+#home .home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
+#home .tile { height: 125px !important; border-radius: 32px; border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--card-bg); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
+#home .tile small { font-size: 17px !important; font-weight: 900; text-transform: uppercase; margin-top: 5px; }
+#home .tile-weekly-hub { background: var(--accent); grid-column: 1 / -1; height: 135px !important; }
+
+/* 👥 MASTER SPACING */
+.iron-spaced-stack { display: flex !important; flex-direction: column !important; gap: 20px !important; padding-bottom: 140px !important; }
+.fixed-bottom-shield { position: fixed; bottom: 0; left: 0; width: 100%; padding: 25px 20px; background: linear-gradient(transparent, var(--bg) 20%); z-index: 999; }
+.btn-clear-large { background: linear-gradient(135deg, #28a745, #34c759); color: white; border: none; font-weight: 900; width: 100% !important; height: 75px !important; font-size: 22px !important; border-radius: 25px; box-shadow: 0 10px 25px rgba(52,199,89,0.3); }
+
+/* SHARED */
+.customer-pill-bubble { background: var(--card-bg); margin: 0 20px; padding: 28px !important; border-radius: 38px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
 .tab-content { display: none; }
 .tab-content.active { display: block !important; }
 .hidden { display: none !important; }
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 200000; display: flex; align-items: center; justify-content: center; }
-.modal-content { background: var(--card-bg); width: 90%; border-radius: 40px; padding: 40px; text-align: center; }
-.page-version-footer { width: 100%; text-align: center; padding: 140px 0 40px; font-size: 7px; opacity: 0.15; font-weight: 900; text-transform: uppercase; }
+#branding-shield { display: flex; flex-direction: column; align-items: center; padding: 35px 0 15px 0; text-align: center; }
+.logo-img { height: 120px !important; margin: 0 auto; }
