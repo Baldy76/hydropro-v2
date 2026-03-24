@@ -17,7 +17,6 @@ window.openTab = (fenceId) => {
     window.scrollTo(0,0); renderAll();
 };
 
-/* --- RENDER ENGINES --- */
 window.renderAll = () => {
     renderMasterFence();
     renderStatsFence();
@@ -59,7 +58,6 @@ window.renderWeekFence = () => {
     });
 };
 
-/* --- CORE ACTIONS --- */
 window.handleCleanAction = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
     c.cleaned = !c.cleaned; saveData(); renderWeekFence();
