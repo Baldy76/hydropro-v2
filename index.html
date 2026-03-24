@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v42.3</title>
+    <title>Hydro Pro v42.4</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="AppIcon.png">
     <link rel="icon" type="image/png" href="AppIcon.png">
-    <link rel="stylesheet" href="styles.css?v=423">
+    <link rel="stylesheet" href="styles.css?v=424">
 </head>
 <body class="light-mode">
 
@@ -42,6 +42,11 @@
             </div>
         </section>
 
+        <section id="stats-root" class="tab-content">
+            <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
+            <div id="stats-dashboard-container"></div>
+        </section>
+
         <section id="setup-root" class="tab-content">
             <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
             <div class="VAULT-CARD">
@@ -54,15 +59,6 @@
                 <textarea id="cNotes" class="VAULT-NOTES-XL" placeholder="Detailed job notes..."></textarea>
                 <button class="VAULT-SAVE-BTN" onclick="saveCustomer()">✨ SAVE CUSTOMER</button>
             </div>
-
-            <div class="VAULT-CARD">
-                <h3 style="margin-top:0; opacity:0.5; font-size:14px; text-transform:uppercase;">Business Bank Details</h3>
-                <div class="VAULT-ROW"><span>🏦</span><input type="text" id="bName" placeholder="Account Name"></div>
-                <div class="VAULT-ROW"><span>🔢</span><input type="text" id="bSort" placeholder="Sort Code"></div>
-                <div class="VAULT-ROW"><span>💳</span><input type="text" id="bAcc" placeholder="Account Number"></div>
-                <button class="VAULT-SAVE-BTN" style="background:var(--accent); margin-top:20px;" onclick="saveBank()">💾 SAVE BANK DETAILS</button>
-            </div>
-
             <div class="ADMIN-VAULT">
                 <button class="ADMIN-BTN-BLUE" onclick="completeCycle()">🚀 START NEW MONTH</button>
                 <div class="ADMIN-ROW">
@@ -76,20 +72,13 @@
 
         <section id="master-root" class="tab-content">
             <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="CONCRETE-SEARCH-VAULT">
-                <input type="text" id="mainSearch" placeholder="🔍 Search Name/Street/Postcode..." oninput="renderMaster()">
-            </div>
+            <div class="CONCRETE-SEARCH-VAULT"><input type="text" id="mainSearch" placeholder="🔍 Search Name/Street/Postcode..." oninput="renderMaster()"></div>
             <div id="master-list-container"></div>
-        </section>
-
-        <section id="stats-root" class="tab-content">
-            <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div id="stats-dashboard-container"></div>
         </section>
 
         <section id="ledger-root" class="tab-content">
             <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="LD-LOCKED-HERO"><small>TOTAL SPEND</small><div id="ledgerTotalDisplay">£0.00</div></div>
+            <div class="LD-LOCKED-HERO"><small>LEDGER TOTAL</small><div id="ledgerTotalDisplay">£0.00</div></div>
             <div class="VAULT-CARD">
                 <div class="VAULT-ROW"><input type="text" id="expDesc" placeholder="Description"></div>
                 <div class="VAULT-ROW"><input type="number" id="expAmt" placeholder="Amount £"></div>
@@ -129,23 +118,12 @@
             <div id="briefingData"></div>
             <div id="briefHistoryZone"></div>
             <div id="quickSettleContainer"></div>
-            <button class="MD-EDIT" id="briefEditBtn">⚙️ Edit Info</button>
+            <button class="MD-EDIT" id="briefEditBtn">⚙️ Edit Profile</button>
             <button class="MD-CLOSE" onclick="closeBriefing()">CLOSE</button>
         </div>
     </div>
-
-    <div id="editModal" class="modal-overlay hidden" onclick="closeEditModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <h2 style="margin:0 0 25px; color:var(--accent); text-align:center; font-weight:900;">Edit Profile</h2>
-            <input type="hidden" id="eEditId">
-            <div class="VAULT-ROW"><span>👤</span><input type="text" id="eName"></div>
-            <div class="VAULT-ROW"><span>💰</span><input type="number" id="ePrice"></div>
-            <button class="VAULT-SAVE-BTN" onclick="updateCustomerFromModal()">💾 SAVE CHANGES</button>
-            <button class="ADMIN-BTN-GREY" style="margin-top:15px;" onclick="closeEditModal()">CANCEL</button>
-        </div>
-    </div>
     
-    <footer id="version-label">v42.3 CONCRETE FOUNDATION</footer>
-    <script src="app.js?v=423"></script>
+    <footer id="version-label">v42.4 DUAL LEDGER LOCK</footer>
+    <script src="app.js?v=424"></script>
 </body>
 </html>
