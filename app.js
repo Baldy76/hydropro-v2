@@ -124,17 +124,7 @@ window.renderLedger = () => {
     document.getElementById('ledgerTotalDisplay').innerText = `£${total.toFixed(2)}`;
 };
 
-/* --- ☢️ SYSTEM --- */
-window.saveData = () => localStorage.setItem(DB_KEY, JSON.stringify(db));
-window.renderAll = () => { renderMaster(); renderStats(); renderLedger(); updateHeader(); if(typeof renderWeek === 'function') renderWeek(); };
-window.updateHeader = () => { document.getElementById('dateText').innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }); };
-window.closeBriefing = () => document.getElementById('briefingModal').classList.add('hidden');
-window.closeEditModal = () => document.getElementById('editModal').classList.add('hidden');
-window.saveCustomer = () => { const name = document.getElementById('cName').value; if(!name) return alert("Required"); db.customers.push({ id: Date.now().toString(), name, phone: document.getElementById('cPhone').value, houseNum: document.getElementById('cHouseNum').value, street: document.getElementById('cStreet').value, postcode: document.getElementById('cPostcode').value.toUpperCase(), day: document.getElementById('cDay').value, week: "1", price: n(document.getElementById('cPrice').value), notes: document.getElementById('cNotes').value, cleaned: false, paidThisMonth: 0 }); saveData(); alert("Saved!"); location.reload(); };
-window.nuclearReset = () => { if(confirm("☢️ DELETE ALL?")) { localStorage.removeItem(DB_KEY); location.reload(); } };
-window.completeCycle = () => { if(confirm("Clear Month?")) { db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload(); } };
-window.exportData = () => { const d = new Date().toLocaleDateString().replace(/\//g, '-'); let csv = "Name,Phone,HouseNum,Street,Postcode,Day,Price,Notes\n"; db.customers.forEach(c => { csv += `"${c.name}","${c.phone}","${c.houseNum}","${c.street}","${c.postcode}","${c.day}","${c.price}","${c.notes}"\n`; }); const b = new Blob([csv], { type: 'text/csv' }); const u = URL.createObjectURL(b); const l = document.createElement("a"); l.href = u; l.download = `HP_EXPORT_${d}.csv`; l.click(); };
-window.launchWeatherApp = () => { if (navigator.userAgent.match(/(iPhone|iPod|iPad)/)) { window.location.href = "weather://"; setTimeout(() => window.open("https://weather.com/", "_blank"), 500); } else { window.open("https://www.google.com/search?q=weather", "_blank"); } };
+/* --- 📅 WEEKLY WORK --- */
 window.viewWeek = (w) => { curWeek = w; openTab('week-view-root'); renderWeek(); };
 window.setWorkingDay = (day, btn) => { workingDay = day; document.querySelectorAll('.D-BTN').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderWeek(); };
 window.renderWeek = () => {
@@ -155,13 +145,13 @@ window.renderWeek = () => {
         list.appendChild(div);
     });
 };
-window.handleClean = (id) => { const c = db.customers.find(x => x.id === id); c.cleaned = !c.cleaned; saveData(); renderWeek(); };
-window.markAsPaid = (id) => { const c = db.customers.find(x => x.id === id); const amt = prompt(`Paid:`, c.price); if(amt) { c.paidThisMonth = n(amt); db.history.push({ custId: id, amt: n(amt), date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) }); saveData(); renderWeek(); renderStats(); renderLedger(); } };
+
 window.showJobBriefing = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
     const history = (db.history || []).filter(h => h.custId === id).slice(-3).reverse();
     let htm = ''; history.forEach(h => { htm += `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(0,0,0,0.05); font-weight:800; font-size:16px;"><span>${h.date}</span><span style="color:var(--success)">+£${n(h.amt).toFixed(2)}</span></div>`; });
     const currentOwed = c.cleaned ? (n(c.price) - n(c.paidThisMonth)) : 0;
+    
     document.getElementById('briefingData').innerHTML = `
         <div style="font-size:36px; font-weight:950; color:var(--accent);">${c.name}</div>
         <div style="margin:25px 0; display:flex; flex-direction:column; gap:12px;">
@@ -172,10 +162,25 @@ window.showJobBriefing = (id) => {
             <small style="text-transform:uppercase; font-weight:950; opacity:0.4; font-size:11px;">Recent Payments</small>
             <div style="margin-top:10px;">${htm || '<p>No history</p>'}</div>
         </div>`;
+    
     document.getElementById('quickSettleContainer').innerHTML = currentOwed > 0 ? `<button style="width:100%; height:80px; background:var(--success); color:white; border:none; border-radius:22px; font-weight:900; font-size:20px; margin-bottom:15px;" onclick="quickSettle('${c.id}', ${currentOwed})">💰 SETTLE £${currentOwed} NOW</button>` : '';
     document.getElementById('receiptActionBox').innerHTML = n(c.paidThisMonth) > 0 ? `<button style="width:100%; height:75px; background:#5856d6; color:white; border:none; border-radius:20px; font-weight:900; font-size:18px; margin-bottom:15px;" onclick="sendSmsReceipt('${c.id}')">💬 TEXT RECEIPT</button>` : '';
     document.getElementById('briefEditBtn').onclick = () => { closeBriefing(); openEditModal(id); };
     document.getElementById('briefingModal').classList.remove('hidden');
 };
-window.quickSettle = (id, amt) => { const c = db.customers.find(x => x.id === id); c.paidThisMonth = n(c.price); db.history.push({ custId: id, amt: n(amt), date: 'Debt-Settle' }); saveData(); closeBriefing(); renderWeek(); renderStats(); };
+
+/* --- ☢️ CORE LIBS --- */
+window.saveData = () => localStorage.setItem(DB_KEY, JSON.stringify(db));
+window.updateHeader = () => { document.getElementById('dateText').innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }); };
+window.closeBriefing = () => document.getElementById('briefingModal').classList.add('hidden');
+window.closeEditModal = () => document.getElementById('editModal').classList.add('hidden');
+window.handleClean = (id) => { const c = db.customers.find(x => x.id === id); c.cleaned = !c.cleaned; saveData(); renderWeek(); };
+window.quickSettle = (id, amt) => { const c = db.customers.find(x => x.id === id); c.paidThisMonth = n(c.price); db.history.push({ custId: id, amt: n(amt), date: new Date().toLocaleDateString('en-GB', { day:'numeric', month:'short'}) }); saveData(); closeBriefing(); renderWeek(); renderStats(); };
 window.sendSmsReceipt = (id) => { const c = db.customers.find(x => x.id === id); const msg = encodeURIComponent(`Hi ${c.name}, thanks for your payment of £${n(c.price).toFixed(2)} to Hydro Pro. Sparkling windows confirmed! 🧼`); window.location.href = `sms:${c.phone}?&body=${msg}`; };
+window.saveCustomer = () => { const name = document.getElementById('cName').value; if(!name) return alert("Required"); db.customers.push({ id: Date.now().toString(), name, phone: document.getElementById('cPhone').value, houseNum: document.getElementById('cHouseNum').value, street: document.getElementById('cStreet').value, postcode: document.getElementById('cPostcode').value.toUpperCase(), day: document.getElementById('cDay').value, week: "1", price: n(document.getElementById('cPrice').value), notes: document.getElementById('cNotes').value, cleaned: false, paidThisMonth: 0 }); saveData(); alert("Saved!"); location.reload(); };
+window.renderAll = () => { renderMaster(); renderStats(); renderLedger(); updateHeader(); };
+window.nuclearReset = () => { if(confirm("☢️ DELETE ALL?")) { localStorage.removeItem(DB_KEY); location.reload(); } };
+window.completeCycle = () => { if(confirm("Clear Month?")) { db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload(); } };
+window.exportData = () => { const d = new Date().toLocaleDateString().replace(/\//g, '-'); let csv = "Name,Phone,HouseNum,Street,Postcode,Day,Price,Notes\n"; db.customers.forEach(c => { csv += `"${c.name}","${c.phone}","${c.houseNum}","${c.street}","${c.postcode}","${c.day}","${c.price}","${c.notes}"\n`; }); const b = new Blob([csv], { type: 'text/csv' }); const u = URL.createObjectURL(b); const l = document.createElement("a"); l.href = u; l.download = `HP_FORTRESS_${d}.csv`; l.click(); };
+window.markAsPaid = (id) => { const c = db.customers.find(x => x.id === id); const amt = prompt(`Paid:`, c.price); if(amt) { c.paidThisMonth = n(amt); db.history.push({ custId: id, amt: n(amt), date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) }); saveData(); renderWeek(); renderStats(); renderLedger(); } };
+window.launchWeatherApp = () => { if (navigator.userAgent.match(/(iPhone|iPod|iPad)/)) { window.location.href = "weather://"; setTimeout(() => window.open("https://weather.com/", "_blank"), 500); } else { window.open("https://www.google.com/search?q=weather", "_blank"); } };
