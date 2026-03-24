@@ -1,9 +1,23 @@
-const DB_KEY = 'HydroPro_V25_Master';
+const OLD_DB_KEY = 'HydroPro_App_Production'; // The old safe-haven
+const NEW_DB_KEY = 'HydroPro_V25_Master';      // The newModular Vault
+
 let db = { customers: [], expenses: [], history: [], bank: { name: '', sort: '', acc: '' } };
 
 window.onload = () => {
-    const saved = localStorage.getItem(DB_KEY);
-    if (saved) db = JSON.parse(saved);
+    // 🛡️ DATA MIGRATION ENGINE
+    const oldData = localStorage.getItem(OLD_DB_KEY);
+    const newData = localStorage.getItem(NEW_DB_KEY);
+
+    if (oldData && !newData) {
+        console.log("Old data found. Migrating to v25 Vault...");
+        db = JSON.parse(oldData);
+        localStorage.setItem(NEW_DB_KEY, JSON.stringify(db));
+        alert("✨ Previous customer data successfully recovered!");
+    } else if (newData) {
+        db = JSON.parse(newData);
+    }
+
+    if (!db.bank) db.bank = { name: '', sort: '', acc: '' };
 
     const isDark = localStorage.getItem('HP_Theme') === 'true';
     document.body.classList.toggle('dark-mode', isDark);
@@ -26,21 +40,21 @@ window.openTab = (fenceId) => {
     renderAll();
 };
 
-/* --- FENCE: MASTER LIST ROBOTS --- */
-
 window.renderMasterFence = () => {
     const container = document.getElementById('master-list-container');
     if(!container) return;
     container.innerHTML = '';
-    
     const search = (document.getElementById('mainSearch').value || "").toLowerCase();
     
+    if(db.customers.length === 0) {
+        container.innerHTML = '<div class="cust-tile" style="justify-content:center; opacity:0.5;">No customers found.</div>';
+    }
+
     db.customers.forEach(c => {
         if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
             const tile = document.createElement('div');
             tile.className = 'cust-tile';
-            tile.onclick = () => editCust(c.id); // Reusing the editCust logic for selection
-            
+            tile.onclick = () => editCust(c.id);
             tile.innerHTML = `
                 <div>
                     <strong style="display:block; font-size:22px; margin-bottom:4px;">${c.name}</strong>
@@ -53,8 +67,6 @@ window.renderMasterFence = () => {
         }
     });
 };
-
-/* --- FENCE: SETUP ROBOTS --- */
 
 window.saveCustomer = () => {
     const name = document.getElementById('cName').value;
@@ -73,7 +85,7 @@ window.saveCustomer = () => {
     const idx = db.customers.findIndex(c => c.id === id);
     if(idx > -1) db.customers[idx] = {...db.customers[idx], ...entry}; 
     else db.customers.push(entry);
-    saveData(); alert("Saved! ✨"); openTab('fence-master'); // Go to list after save
+    saveData(); alert("Saved! ✨"); openTab('fence-master');
 };
 
 window.editCust = (id) => {
@@ -90,19 +102,19 @@ window.editCust = (id) => {
     document.getElementById('cNotes').value = c.notes;
 };
 
-/* --- GLOBAL CORE --- */
+window.saveData = () => localStorage.setItem(NEW_DB_KEY, JSON.stringify(db));
 
-window.saveData = () => localStorage.setItem(DB_KEY, JSON.stringify(db));
 window.renderAll = () => {
     renderMasterFence();
-    // Re-load stats logic would go here next
+    // Stats calculation...
 };
+
 window.updateHeader = () => {
-    const dt = new Date();
-    document.getElementById('dateText').innerText = dt.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' });
+    document.getElementById('dateText').innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' });
 };
+
 window.completeCycle = () => {
-    if(!confirm("🚀 Start a new month? All cleaned statuses will be reset!")) return;
+    if(!confirm("🚀 Start a new month?")) return;
     db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; });
-    db.expenses = []; saveData(); location.reload();
+    saveData(); location.reload();
 };
