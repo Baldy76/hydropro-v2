@@ -26,8 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch(e) { console.error("Boot Error", e); }
 });
 
-/* --- 🌦️ WEATHER SERVICE --- */
+/* --- 🌦️ UPDATED WEATHER SERVICE v38.0 --- */
 async function initWeather() {
+    const options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
     navigator.geolocation.getCurrentPosition(async (pos) => {
         const { latitude, longitude } = pos.coords;
         try {
@@ -37,8 +38,13 @@ async function initWeather() {
             const icon = iconMap[data.weather[0].main] || "🌤️";
             document.getElementById('w-icon').innerText = icon;
             document.getElementById('w-text').innerText = `${Math.round(data.main.temp)}°C ${data.weather[0].main.toUpperCase()}`;
-        } catch (err) { document.getElementById('w-text').innerText = "Weather Offline"; }
-    }, () => { document.getElementById('w-text').innerText = "GPS Disabled"; }, { timeout: 5000 });
+        } catch (err) { document.getElementById('w-text').innerText = "API Offline"; }
+    }, (err) => {
+        let msg = "GPS Offline";
+        if (err.code === 1) msg = "Enable GPS";
+        if (err.code === 3) msg = "GPS Timeout";
+        document.getElementById('w-text').innerText = msg;
+    }, options);
 }
 
 window.launchWeatherApp = () => {
