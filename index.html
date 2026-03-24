@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v30.8</title>
-    <link rel="stylesheet" href="styles.css?v=308">
+    <title>Hydro Pro v30.9</title>
+    <link rel="stylesheet" href="styles.css?v=309">
 </head>
 <body class="light-mode">
 
@@ -39,7 +39,9 @@
 
         <section id="master-root" class="tab-content">
             <button class="nav-back" onclick="openTab('home-root')">🏠 Back to Home</button>
-            <div class="search-box"><input type="text" id="mainSearch" placeholder="🔍 Search customers..." oninput="renderMaster()"></div>
+            <div class="search-box-surgical">
+                <input type="text" id="mainSearch" placeholder="🔍 Search customers..." oninput="renderMaster()">
+            </div>
             <div id="master-list-container"></div>
         </section>
 
@@ -112,7 +114,7 @@
         </section>
     </div>
 
-    <footer id="global-version-footer">v30.8 - System Recovery</footer>
+    <footer id="global-version-footer">v30.9 - Layout Refined</footer>
 
     <div id="msgModal" class="modal-overlay hidden" onclick="closeMsgModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
@@ -122,6 +124,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=308"></script>
+    <script src="app.js?v=309"></script>
 </body>
 </html>
