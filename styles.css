@@ -1,10 +1,11 @@
 :root { --accent: #007aff; --bg: #f2f2f7; --card: #ffffff; --text: #000; --success: #32d74b; --danger: #ff453a; --gap: 25px; }
 body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; }
 
+/* 🧱 THE IRONCLAD WALLS */
 .tab-content { display: none !important; }
 .tab-content.active { display: block !important; }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, sans-serif; }
-body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; transition: background 0.3s; }
+body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; }
 
 /* 🛡️ HEADER */
 #global-shield { padding: 30px 0 10px; display: flex; flex-direction: column; align-items: center; }
@@ -20,10 +21,12 @@ input:checked + .slider-round:before { transform: translateX(26px); content: "�
 #greetText { display: block; font-size: 13px; font-weight: 800; opacity: 0.6; text-transform: uppercase; text-align: center; margin-bottom: 5px; }
 #dateText { font-size: 26px; font-weight: 900; color: var(--accent); display: block; text-align: center; margin-bottom: 20px; }
 
-/* 🧼 SHARED LAYOUT */
-.airgap-btn, .airgap-card { margin-bottom: var(--gap) !important; }
-.nav-back-large { width: calc(100% - 40px); height: 60px; border-radius: 30px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px; margin: 0 20px var(--gap); display: block; }
-.cust-pill { background: var(--card); padding: 0 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px var(--gap); position: relative; min-height: 95px !important; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
+/* 🏠 HOME */
+.home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 0 20px; }
+.home-grid button { height: 125px; border-radius: 30px; background: var(--card); border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text); box-shadow: 0 8px 15px rgba(0,0,0,0.05); }
+.icon-blue-tint { color: var(--accent); font-size: 40px; margin-bottom: 5px; }
+.home-grid button small { font-size: 16px; font-weight: 900; text-transform: uppercase; }
+.full-tile { grid-column: 1 / -1; background: var(--accent) !important; color: white !important; height: 130px !important; }
 
 /* ✨ SETUP */
 #setup-root .setup-card { background: var(--card); margin: 0 20px var(--gap); padding: 25px; border-radius: 35px; }
@@ -37,13 +40,25 @@ input:checked + .slider-round:before { transform: translateX(26px); content: "�
 .bank-vault { background: var(--card); margin: 0 20px var(--gap); padding: 30px; border-radius: 35px; border: 2.5px solid rgba(0,122,255,0.15); }
 .vault-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
 .vault-button-stack { display: flex; flex-direction: column; gap: 10px; }
-.btn-vault-heavy { min-width: 130px; height: 50px; border-radius: 12px; font-weight: 900; font-size: 11px; border: none; text-transform: uppercase; color: white; }
+.btn-vault-heavy { min-width: 130px; height: 50px !important; border-radius: 12px; font-weight: 900; font-size: 11px; border: none; text-transform: uppercase; color: white; }
 .vault-blue { background: var(--accent); }
 .vault-grey { background: #8e8e93; }
 .bank-input { width: 100%; height: 60px; background: var(--bg); border-radius: 15px; margin-bottom: 10px; padding: 0 15px; color: var(--text); border:none; display:block; font-weight: 600; font-size: 16px; }
 .bank-top-gap { margin-top: 30px !important; }
-.btn-reset-heavy { width: 100%; height: 75px; border-radius: 25px; border: none; background: var(--danger); color: white; font-weight: 900; font-size: 18px; }
-.reset-area { margin: 0 20px 50px; text-align: center; }
+.btn-reset-heavy { width: 100%; height: 75px !important; border-radius: 25px; border: none; background: var(--danger); color: white; font-weight: 900; font-size: 18px; }
+
+/* 👥 LISTS */
+.search-box-wrap { padding: 0 20px; margin-bottom: var(--gap); }
+.search-box-wrap input { width: 100%; height: 65px; border-radius: 20px; border: none; background: var(--card); padding: 0 25px; font-size: 18px; color: var(--text); }
+.cust-pill { background: var(--card); padding: 0 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px var(--gap); position: relative; min-height: 95px !important; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
+
+/* 💸 LEDGER */
+.ledger-hero-red { background: var(--card); border: 3px solid var(--danger); margin: 0 20px var(--gap); padding: 35px; border-radius: 40px; text-align: center; }
+.ledger-hero-red div { font-size: 50px; font-weight: 900; }
+.ledger-input-card { background: var(--card); margin: 0 20px var(--gap); padding: 25px; border-radius: 30px; display: flex; flex-direction: column; gap: 12px; }
+.ledger-csv-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px; margin-bottom: var(--gap); }
+.ledger-csv-row button { height: 60px; border-radius: 18px; border: none; background: #4ea03b; color: white; font-weight: 900; font-size: 13px; }
+.exp-pill { background: var(--card); padding: 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 15px; border-left: 6px solid var(--danger); }
 
 /* 📊 STATS */
 .stats-hero-main { background: var(--card); border: 3px solid var(--accent); padding: 40px 20px; border-radius: 40px; text-align: center; margin-bottom: var(--gap); }
@@ -52,21 +67,35 @@ input:checked + .slider-round:before { transform: translateX(26px); content: "�
 .stats-card-heavy { background: var(--card); padding: 25px 15px; border-radius: 30px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
 .stats-card-heavy span { font-size: 30px; display: block; margin-bottom: 8px; }
 .stats-value-large { font-weight: 900; font-size: 24px !important; }
+.stats-progress-box { background: var(--card); margin: 0 20px var(--gap); padding: 25px; border-radius: 35px; }
+.progress-track { background: #eee; height: 12px; border-radius: 6px; margin: 15px 0; overflow: hidden; }
+.progress-fill-bar { background: var(--accent); height: 100%; transition: width 0.8s ease; }
+.stats-arrears-banner { background: var(--danger); color: white; padding: 25px; border-radius: 30px; text-align: center; font-weight: 900; font-size: 24px; margin: 0 20px 50px; }
 
-/* 🃏 JOB BRIEFING MODAL (v33.0) */
-.briefing-content { text-align: left !important; max-height: 85vh; overflow-y: auto; padding: 30px !important; }
-.briefing-title { font-size: 24px; font-weight: 900; margin-bottom: 5px; color: var(--accent); }
-.briefing-addr { font-size: 14px; font-weight: 700; opacity: 0.6; margin-bottom: 20px; }
-.briefing-section { background: var(--bg); padding: 20px; border-radius: 20px; margin-bottom: 15px; }
-.briefing-section h4 { margin: 0 0 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5; }
-.brief-hist-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-weight: 600; font-size: 14px; }
-.brief-arrear { color: var(--danger); font-weight: 900; }
-.btn-briefing-edit { width: 100%; height: 60px; background: var(--bg); border: 2px solid var(--accent); color: var(--accent); border-radius: 18px; font-weight: 800; margin-top: 10px; margin-bottom: 10px; }
-.btn-briefing-close { width: 100%; height: 60px; background: var(--text); color: var(--card); border-radius: 18px; font-weight: 900; border: none; }
+/* 📅 WEEK HUB */
+.weeks-hub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 0 20px; }
+.week-tile-heavy { min-height: 110px !important; border-radius: 25px; border: none; background: #1c1c1e; color: white; font-weight: 900; font-size: 22px; margin-bottom: var(--gap); }
+.week-full { grid-column: 1 / -1; }
+.spread-nav-row { display: flex; justify-content: space-between; padding: 0 20px; margin-bottom: var(--gap); }
+.nav-spread-btn { height: 65px !important; width: calc(50% - 10px) !important; border-radius: 20px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px; }
+.bulk-action-wrap { padding: 0 20px; margin-bottom: 35px; }
+.job-card { background: var(--card); padding: 25px; border-radius: 35px; margin: 0 20px var(--gap); box-shadow: 0 4px 12px rgba(0,0,0,0.04); position: relative; }
+.job-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
+.btn-job-heavy { height: 60px; border-radius: 12px; border: none; font-weight: 900; color: white; font-size: 12px; }
 
-/* 🛠️ GLOBAL MISC */
+/* 🛠️ MODALS */
+.briefing-content { text-align: left !important; max-height: 85vh; overflow-y: auto; }
+.briefing-title { font-size: 24px; font-weight: 900; color: var(--accent); margin-bottom: 5px; }
+.briefing-addr { font-size: 14px; opacity: 0.6; margin-bottom: 20px; font-weight: 700; }
+.brief-section { background: var(--bg); padding: 20px; border-radius: 20px; margin-bottom: 15px; }
+.brief-section h4 { margin: 0 0 10px; font-size: 10px; text-transform: uppercase; opacity: 0.5; }
+.btn-briefing-edit { width: 100%; height: 60px; background: var(--bg); border: 2px solid var(--accent); color: var(--accent); border-radius: 18px; font-weight: 800; margin: 10px 0; }
+.btn-briefing-close { width: 100%; height: 60px; background: var(--text); color: #fff; border-radius: 18px; font-weight: 900; border: none; }
+
+.nav-back-large { width: calc(100% - 40px); height: 60px; border-radius: 30px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px; margin: 0 20px var(--gap); display: block; }
+.arrears-badge { background: var(--danger); color: white; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 8px; position: absolute; top: -5px; right: 20px; }
+.btn-map-yellow { background: #ffeb3b !important; color: #333 !important; }
 .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; display:flex; align-items:center; justify-content:center; padding: 20px; }
 .modal-overlay.hidden { display: none !important; }
 .modal-content { background:var(--card); padding:35px; border-radius:40px; width:100%; max-width: 400px; text-align: center; }
-.hidden { display: none !important; }
 #global-version-footer { width: 100%; text-align: center; padding: 40px 0; font-size: 10px; font-weight: 900; opacity: 0.3; text-transform: uppercase; }
