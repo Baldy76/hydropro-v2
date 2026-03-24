@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v36.1</title>
-    <link rel="stylesheet" href="styles.css?v=361">
+    <title>Hydro Pro v36.2</title>
+    <link rel="stylesheet" href="styles.css?v=362">
 </head>
 <body class="light-mode">
 
@@ -43,41 +43,44 @@
 
         <section id="setup-root" class="tab-content">
             <button class="btn-back-global" onclick="openTab('home-root')">🏠 Home</button>
-            <div class="content-card">
+            <div class="setup-form-card">
                 <input type="hidden" id="editId">
-                <div class="form-row"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
-                <div class="form-row"><span>📱</span><input type="tel" id="cPhone" placeholder="Phone"></div>
-                <div class="form-row"><span>🏠</span><input type="text" id="cHouseNum" placeholder="House No."></div>
-                <div class="form-row"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
-                <div class="form-row"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
-                <div class="form-row">
+                <div class="setup-form-row"><span>👤</span><input type="text" id="cName" placeholder="Customer Name"></div>
+                <div class="setup-form-row"><span>📱</span><input type="tel" id="cPhone" placeholder="Phone Number"></div>
+                <div class="setup-form-row"><span>🏠</span><input type="text" id="cHouseNum" placeholder="House No."></div>
+                <div class="setup-form-row"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street Name"></div>
+                <div class="setup-form-row"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
+                <div class="setup-form-row">
                     <span>📅</span>
-                    <select id="cDay" class="custom-select-pro">
+                    <select id="cDay" class="setup-select">
                         <option value="Mon">Monday</option><option value="Tue">Tuesday</option>
                         <option value="Wed">Wednesday</option><option value="Thu">Thursday</option>
                         <option value="Fri">Friday</option><option value="Sat">Saturday</option>
                         <option value="Sun">Sunday</option>
                     </select>
                 </div>
-                <div class="form-row"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
-                <textarea id="cNotes" placeholder="Notes..."></textarea>
-                <button class="btn-action-primary" onclick="saveCustomer()">✨ Save Customer</button>
+                <div class="setup-form-row"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
+                <textarea id="cNotes" placeholder="Private Notes..."></textarea>
+                <button class="btn-setup-save" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
-            <div class="reset-container"><button class="btn-danger-large" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
+            <div class="reset-area"><button class="btn-reset-month" onclick="completeCycle()">🚀 START NEW MONTH</button></div>
         </section>
 
         <section id="ledger-root" class="tab-content">
             <button class="btn-back-global" onclick="openTab('home-root')">🏠 Home</button>
-            <div class="ledger-hero"><small>MONTH SPEND</small><div id="ledgerTotalDisplay">£0.00</div></div>
+            <div class="ledger-hero-box">
+                <small>MONTH SPEND</small>
+                <div id="ledgerTotalDisplay">£0.00</div>
+            </div>
             <div class="ledger-input-card">
                 <input type="text" id="expDesc" placeholder="Description">
                 <input type="number" id="expAmt" placeholder="Amount £">
-                <select id="expCat" class="ledger-select">
+                <select id="expCat" class="ledger-cat-select">
                     <option value="⛽ Fuel">⛽ Fuel</option>
                     <option value="🛠️ Gear">🛠️ Gear</option>
                     <option value="📦 Misc">📦 Misc</option>
                 </select>
-                <button id="ledgerAddBtn" onclick="addExpense()">Add Expense</button>
+                <button class="btn-ledger-add" onclick="addExpense()">Add Expense</button>
             </div>
             <div id="ledger-list-container"></div>
         </section>
@@ -114,19 +117,9 @@
     </main>
 
     <div id="msgModal" class="modal-overlay hidden"><div class="modal-content"><h3>Send Invoice?</h3><p id="msgPreview"></p><div id="modalButtons"></div></div></div>
-    
-    <div id="briefingModal" class="modal-overlay hidden" onclick="closeBriefing()">
-        <div class="modal-content briefing-box" onclick="event.stopPropagation()">
-            <div id="briefingData"></div>
-            <div id="quickSettleContainer"></div>
-            <div class="briefing-footer">
-                <button class="btn-brief-edit" id="briefEditBtn">⚙️ Edit Info</button>
-                <button class="btn-brief-close" onclick="closeBriefing()">CLOSE</button>
-            </div>
-        </div>
-    </div>
+    <div id="briefingModal" class="modal-overlay hidden" onclick="closeBriefing()"><div class="modal-content briefing-box" onclick="event.stopPropagation()"><div id="briefingData"></div><div id="quickSettleContainer"></div><div class="briefing-footer"><button class="btn-brief-edit" id="briefEditBtn">⚙️ Edit Info</button><button class="btn-brief-close" onclick="closeBriefing()">CLOSE</button></div></div></div>
 
-    <footer id="version-label">v36.1 GOLD STANDARD</footer>
-    <script src="app.js?v=361"></script>
+    <footer id="version-label">v36.2 - Restoration</footer>
+    <script src="app.js?v=362"></script>
 </body>
 </html>
