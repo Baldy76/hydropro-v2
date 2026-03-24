@@ -29,7 +29,6 @@ window.renderAll = () => {
 };
 
 /* --- RENDER ROBOTS --- */
-
 window.renderMasterFence = () => {
     const container = document.getElementById('master-list-container');
     if(!container) return; container.innerHTML = '';
@@ -53,24 +52,14 @@ window.renderLedgerFence = () => {
     if(totalEl) totalEl.innerText = `£${total.toFixed(2)}`;
     db.expenses.slice().reverse().forEach(e => {
         const div = document.createElement('div'); div.className = 'expense-tile';
-        div.innerHTML = `<div class="expense-info"><strong>${e.desc}</strong><small>📅 ${e.date}</small></div><div class="expense-amt">-£${n(e.amt).toFixed(2)}</div>`;
+        div.innerHTML = `<div class="expense-info"><strong>${e.desc}</strong><br><small>📅 ${e.date}</small></div><div class="expense-amt">-£${n(e.amt).toFixed(2)}</div>`;
         container.appendChild(div);
     });
 };
 
-window.renderStatsFence = () => {
-    const container = document.getElementById('stats-dashboard-container'); if (!container) return;
-    let target = 0, paid = 0, arrears = 0, spend = 0;
-    db.customers.forEach(c => { target += n(c.price); paid += n(c.paidThisMonth); if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth)); });
-    db.expenses.forEach(e => spend += n(e.amt));
-    const profit = paid - spend, progress = target > 0 ? Math.round((paid / target) * 100) : 0;
-    container.innerHTML = `<div class="stats-hero"><span class="main-amt">£${profit.toFixed(2)}</span><small style="font-weight:600; opacity:0.7">💰 Total Profit in Pocket</small></div>
-        <div class="progress-bubble"><strong style="font-size:18px;">Monthly Progress ${progress}%</strong><div class="bar-bg"><div class="bar-fill" style="width:${progress}%"></div></div><div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700; opacity:0.5;"><span>TARGET: £${target.toFixed(2)}</span><span>REMAINING: £${(target - paid).toFixed(2)}</span></div></div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; padding:0 20px 20px;"><div class="progress-bubble" style="margin:0; text-align:center;"><small>INCOME 🔍</small><div style="color:var(--success); font-size:24px; font-weight:800">£${paid.toFixed(2)}</div></div><div class="progress-bubble" style="margin:0; text-align:center;"><small>SPEND 🔍</small><div style="color:var(--danger); font-size:24px; font-weight:800">£${spend.toFixed(2)}</div></div></div><div class="arrears-bubble">Arrears 🔍 £${arrears.toFixed(2)}</div>`;
-};
-
 window.renderWeekFence = () => {
-    const bulk = document.getElementById('bulk-action-bar'), list = document.getElementById('week-list-container'); if(!list) return;
+    const bulk = document.getElementById('bulk-action-bar'), list = document.getElementById('week-list-container');
+    if(!list) return;
     bulk.innerHTML = `<button class="btn-bulk btn-wa" onclick="messageAll(${currentActiveWeek}, 'whatsapp')">WA ALL</button><button class="btn-bulk btn-sms" onclick="messageAll(${currentActiveWeek}, 'sms')">SMS ALL</button>`;
     list.innerHTML = '';
     db.customers.filter(c => c.week == currentActiveWeek).forEach(c => {
@@ -82,8 +71,7 @@ window.renderWeekFence = () => {
     });
 };
 
-/* --- SHARED CORE ACTIONS --- */
-
+/* --- CORE ACTIONS --- */
 window.handleCleanAction = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
     c.cleaned = !c.cleaned; saveData(); renderWeekFence();
@@ -108,6 +96,17 @@ window.saveCustomer = () => {
 window.editCust = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return; openTab('fence-setup');
     document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cPhone').value = c.phone; document.getElementById('cHouseNum').value = c.houseNum; document.getElementById('cStreet').value = c.street; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPrice').value = c.price; document.getElementById('cNotes').value = c.notes;
+};
+
+window.renderStatsFence = () => {
+    const container = document.getElementById('stats-dashboard-container'); if (!container) return;
+    let target = 0, paid = 0, arrears = 0, spend = 0;
+    db.customers.forEach(c => { target += n(c.price); paid += n(c.paidThisMonth); if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth)); });
+    db.expenses.forEach(e => spend += n(e.amt));
+    const profit = paid - spend, progress = target > 0 ? Math.round((paid / target) * 100) : 0;
+    container.innerHTML = `<div class="stats-hero" style="border:2px solid var(--accent)"><span class="main-amt">£${profit.toFixed(2)}</span><small style="font-weight:600; opacity:0.7">💰 Total Profit in Pocket</small></div>
+        <div class="progress-bubble"><strong style="font-size:18px;">Monthly Progress ${progress}%</strong><div class="bar-bg"><div class="bar-fill" style="width:${progress}%"></div></div><div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700; opacity:0.5;"><span>TARGET: £${target.toFixed(2)}</span><span>REMAINING: £${(target - paid).toFixed(2)}</span></div></div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; padding:0 20px 20px;"><div class="progress-bubble" style="margin:0; text-align:center;"><small>INCOME 🔍</small><div style="color:var(--success); font-size:24px; font-weight:800">£${paid.toFixed(2)}</div></div><div class="progress-bubble" style="margin:0; text-align:center;"><small>SPEND 🔍</small><div style="color:var(--danger); font-size:24px; font-weight:800">£${spend.toFixed(2)}</div></div></div><div class="arrears-bubble">Arrears 🔍 £${arrears.toFixed(2)}</div>`;
 };
 
 window.toggleBankLock = () => {
