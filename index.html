@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v22.2</title>
-    <link rel="stylesheet" href="styles.css?v=222">
+    <title>Hydro Pro v22.3</title>
+    <link rel="stylesheet" href="styles.css?v=223">
 </head>
 <body class="light-mode">
 
@@ -24,7 +24,7 @@
     </header>
 
     <div id="globalNav" class="subpage-nav hidden">
-        <button class="back-pill" onclick="openTab('home')">🏠 Back to Home</button>
+        <button class="back-pill-ironclad" onclick="openTab('home')">🏠 Back to Home</button>
     </div>
 
     <div id="actionModal" class="modal-overlay hidden" onclick="closeModal()">
@@ -49,71 +49,46 @@
             </div>
         </div>
 
-        <div id="master" class="tab-content">
-            <div class="search-shield">
-                <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()">
-            </div>
-            
-            <div id="masterTableBody" class="evenly-spaced-stack"></div>
-
-            <div class="fixed-bottom-shield">
-                <div class="action-card-green">
-                    <button class="btn-clear-large" onclick="completeCycle()">🚀 START NEW MONTH</button>
-                </div>
-            </div>
-        </div>
-
         <div id="admin" class="tab-content">
-            <div class="card creative-form-card">
-                <h3 class="setup-section-label">👤 Add/Edit Customer</h3>
+            <div class="card ironclad-card">
+                <h3 class="setup-label-fixed">👤 Add/Edit Customer</h3>
                 <input type="hidden" id="editId">
-                <div class="fun-input-group"><div class="fun-icon">👤</div><div class="fun-field-stack"><label>Name</label><input type="text" id="cName" class="creative-input"></div></div>
-                <div class="fun-input-group"><div class="fun-icon">📱</div><div class="fun-field-stack"><label>Phone</label><input type="tel" id="cPhone" class="creative-input"></div></div>
-                <div class="fun-input-group"><div class="fun-icon">🏠</div><div class="fun-field-stack"><label>House No.</label><input type="text" id="cHouseNum" class="creative-input"></div></div>
-                <div class="fun-input-group"><div class="fun-icon">🛣️</div><div class="fun-field-stack"><label>Street</label><input type="text" id="cStreet" class="creative-input"></div></div>
-                <div class="fun-input-group"><div class="fun-icon">📍</div><div class="fun-field-stack"><label>Postcode</label><input type="text" id="cPostcode" class="creative-input"></div></div>
-                <div class="fun-input-group"><div class="fun-icon">💰</div><div class="fun-field-stack"><label>Price £</label><input type="number" id="cPrice" class="creative-input"></div></div>
-                <div class="fun-input-group" style="border:none"><div class="fun-icon">📝</div><div class="fun-field-stack"><label>Private Notes</label><textarea id="cNotes" class="creative-textarea"></textarea></div></div>
-                <button class="creative-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
+                <div class="iron-input-row"><div class="fun-icon">👤</div><div class="iron-stack"><label>Name</label><input type="text" id="cName" class="iron-input"></div></div>
+                <div class="iron-input-row"><div class="fun-icon">📱</div><div class="iron-stack"><label>Phone</label><input type="tel" id="cPhone" class="iron-input"></div></div>
+                <div class="iron-input-row"><div class="fun-icon">🏠</div><div class="iron-stack"><label>House No.</label><input type="text" id="cHouseNum" class="iron-input"></div></div>
+                <div class="iron-input-row"><div class="fun-icon">🛣️</div><div class="iron-stack"><label>Street</label><input type="text" id="cStreet" class="iron-input"></div></div>
+                <div class="iron-input-row"><div class="fun-icon">📍</div><div class="iron-stack"><label>Postcode</label><input type="text" id="cPostcode" class="iron-input"></div></div>
+                <div class="iron-input-row"><div class="fun-icon">💰</div><div class="iron-stack"><label>Price £</label><input type="number" id="cPrice" class="iron-input"></div></div>
+                <div class="iron-input-row" style="border:none; height:auto; padding-top:15px;">
+                    <div class="fun-icon">📝</div>
+                    <div class="iron-stack"><label>Private Notes</label><textarea id="cNotes" class="iron-textarea"></textarea></div>
+                </div>
+                <button class="ironclad-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
 
-            <div class="card creative-form-card bank-vault-card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <h3 class="setup-section-label" style="margin:0">🏦 Bank Details</h3>
-                    <button id="bankLockBtn" class="bank-toggle-btn" onclick="toggleBankLock()">🔓 Unlock</button>
+            <div class="card ironclad-card bank-vault-border">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h3 class="setup-label-fixed" style="margin:0">🏦 Bank Details</h3>
+                    <button id="bankLockBtn" class="bank-unlock-ironclad" onclick="toggleBankLock()">🔓 Unlock</button>
                 </div>
-                <div class="fun-input-group">
-                    <div class="fun-icon">🏷️</div>
-                    <div class="fun-field-stack"><label>Account Name</label><input type="text" id="bankName" class="creative-input bank-field" readonly></div>
-                </div>
-                <div class="fun-input-group">
-                    <div class="fun-icon">🔢</div>
-                    <div class="fun-field-stack"><label>Sort Code</label><input type="text" id="bankSort" class="creative-input bank-field" readonly maxlength="8" placeholder="00-00-00"></div>
-                </div>
-                <div class="fun-input-group" style="border:none">
-                    <div class="fun-icon" style="background:rgba(255,149,0,0.1)">💳</div>
-                    <div class="fun-field-stack"><label>Account Number</label><input type="number" id="bankAcc" class="creative-input bank-field" readonly></div>
-                </div>
-                <button id="bankSaveBtn" class="creative-save-btn hidden" onclick="saveBankDetails()" style="background:var(--success); margin-top:15px;">💾 Save Bank Details</button>
+                <div class="iron-input-row"><div class="fun-icon">🏷️</div><div class="iron-stack"><label>Account Name</label><input type="text" id="bankName" class="iron-input bank-field" readonly></div></div>
+                <div class="iron-input-row"><div class="fun-icon">🔢</div><div class="iron-stack"><label>Sort Code</label><input type="text" id="bankSort" class="iron-input bank-field" readonly maxlength="8"></div></div>
+                <div class="iron-input-row" style="border:none"><div class="fun-icon">💳</div><div class="iron-stack"><label>Account Number</label><input type="number" id="bankAcc" class="iron-input bank-field" readonly></div></div>
+                <button id="bankSaveBtn" class="ironclad-save-btn hidden" onclick="saveBankDetails()" style="background:var(--success); margin-top:20px;">💾 Save Bank Details</button>
             </div>
         </div>
 
-        <div id="weeksHub" class="tab-content">
-            <div class="weeks-grid-lock">
-                <button class="tile-premium-week" onclick="openTab('week1')">Week 1</button>
-                <button class="tile-premium-week" onclick="openTab('week2')">Week 2</button>
-                <button class="tile-premium-week" onclick="openTab('week3')">Week 3</button>
-                <button class="tile-premium-week" onclick="openTab('week4')">Week 4</button>
-                <button class="tile-premium-week tile-week-full" onclick="openTab('week5')">Week 5</button>
-            </div>
+        <div id="master" class="tab-content">
+            <div class="search-shield"><input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()"></div>
+            <div id="masterTableBody" class="iron-spaced-stack"></div>
+            <div class="fixed-bottom-shield"><div class="action-card-green"><button class="btn-clear-large" onclick="completeCycle()">🚀 START NEW MONTH</button></div></div>
         </div>
 
-        <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
-        <div id="stats" class="tab-content"></div>
-        <div id="spend" class="tab-content"></div>
+        <div id="weeksHub" class="tab-content"></div><div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
+        <div id="stats" class="tab-content"></div><div id="spend" class="tab-content"></div>
     </div>
 
-    <div class="page-version-footer">v22.2 - Master Alignment Patch</div>
-    <script src="app.js?v=222"></script>
+    <div class="page-version-footer">v22.3 - IRONCLAD LOCKDOWN ACTIVE</div>
+    <script src="app.js?v=223"></script>
 </body>
 </html>
