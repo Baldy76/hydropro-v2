@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v27.2</title>
-    <link rel="stylesheet" href="styles.css?v=272">
+    <title>Hydro Pro v27.3</title>
+    <link rel="stylesheet" href="styles.css?v=273">
 </head>
 <body class="light-mode">
 
@@ -31,23 +31,6 @@
             </div>
         </section>
 
-        <section id="fence-weeks-hub" class="tab-content">
-            <button class="back-home-pill-top" onclick="openTab('fence-home')">🏠 Back to Home</button>
-            <div class="weeks-grid-lock">
-                <button class="tile-week-select" onclick="openWeek(1)">Week 1</button>
-                <button class="tile-week-select" onclick="openWeek(2)">Week 2</button>
-                <button class="tile-week-select" onclick="openWeek(3)">Week 3</button>
-                <button class="tile-week-select" onclick="openWeek(4)">Week 4</button>
-                <button class="tile-week-select tile-full" onclick="openWeek(5)">Week 5</button>
-            </div>
-        </section>
-
-        <section id="fence-week-view" class="tab-content">
-            <button class="back-home-pill-top" onclick="openTab('fence-weeks-hub')">⬅️ Back to Hub</button>
-            <div id="bulk-action-bar"></div>
-            <div id="week-list-container" class="iron-list-stack"></div>
-        </section>
-
         <section id="fence-master" class="tab-content">
             <button class="back-home-pill-top" onclick="openTab('fence-home')">🏠 Back to Home</button>
             <div class="search-container-fixed">
@@ -56,29 +39,6 @@
             <div id="master-list-container" class="iron-list-stack-spaced"></div>
             <div class="fixed-action-footer">
                 <button class="btn-new-month" onclick="completeCycle()">🚀 START NEW MONTH</button>
-            </div>
-        </section>
-
-        <section id="fence-setup" class="tab-content">
-            <button class="back-home-pill-top" onclick="openTab('fence-home')">🏠 Back to Home</button>
-            <div class="setup-card">
-                <h3 class="setup-label">👤 Customer Entry</h3>
-                <input type="hidden" id="editId">
-                <div class="setup-row"><div class="setup-icon">👤</div><div class="setup-stack"><label>Name</label><input type="text" id="cName" class="setup-input"></div></div>
-                <div class="setup-row"><div class="setup-icon">📱</div><div class="setup-stack"><label>Phone</label><input type="tel" id="cPhone" class="setup-input"></div></div>
-                <div class="setup-row"><div class="setup-icon">🏠</div><div class="setup-stack"><label>House</label><input type="text" id="cHouseNum" class="setup-input"></div></div>
-                <div class="setup-row"><div class="setup-icon">🛣️</div><div class="setup-stack"><label>Street</label><input type="text" id="cStreet" class="setup-input"></div></div>
-                <div class="setup-row"><div class="setup-icon">📍</div><div class="setup-stack"><label>Postcode</label><input type="text" id="cPostcode" class="setup-input"></div></div>
-                <div class="setup-row" style="border:none;"><div class="setup-icon">💰</div><div class="setup-stack"><label>Price £</label><input type="number" id="cPrice" class="setup-input"></div></div>
-                <div class="notes-area-lockdown"><label class="notes-label-fixed">📝 PRIVATE NOTES</label><textarea id="cNotes" class="setup-textarea-expanded"></textarea></div>
-                <button class="setup-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
-            </div>
-            <div class="setup-card vault-border">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h3 class="setup-label">🏦 Bank Vault</h3><button id="bankLockBtn" class="vault-unlock-btn" onclick="toggleBankLock()">🔓 UNLOCK</button></div>
-                <div class="setup-row"><div class="setup-icon">🏷️</div><div class="setup-stack"><label>Account Name</label><input type="text" id="bankName" class="setup-input bank-field" readonly></div></div>
-                <div class="setup-row"><div class="setup-icon">🔢</div><div class="setup-stack"><label>Sort Code</label><input type="text" id="bankSort" class="setup-input bank-field" readonly maxlength="8"></div></div>
-                <div class="setup-row" style="border:none"><div class="setup-icon">💳</div><div class="setup-stack"><label>Account Number</label><input type="number" id="bankAcc" class="setup-input bank-field" readonly></div></div>
-                <button id="bankSaveBtn" class="setup-save-btn hidden" onclick="saveBankDetails()" style="background:var(--success); margin-top:20px;">💾 Save Details</button>
             </div>
         </section>
 
@@ -105,6 +65,47 @@
             <button class="back-home-pill-top" onclick="openTab('fence-home')">🏠 Back to Home</button>
             <div id="stats-dashboard-container"></div>
         </section>
+
+        <section id="fence-weeks-hub" class="tab-content">
+            <button class="back-home-pill-top" onclick="openTab('fence-home')">🏠 Back to Home</button>
+            <div class="weeks-grid-lock">
+                <button class="tile-week-select" onclick="openWeek(1)">Week 1</button>
+                <button class="tile-week-select" onclick="openWeek(2)">Week 2</button>
+                <button class="tile-week-select" onclick="openWeek(3)">Week 3</button>
+                <button class="tile-week-select" onclick="openWeek(4)">Week 4</button>
+                <button class="tile-week-select tile-full" onclick="openWeek(5)">Week 5</button>
+            </div>
+        </section>
+
+        <section id="fence-week-view" class="tab-content">
+            <button class="back-home-pill-top" onclick="openTab('fence-weeks-hub')">⬅️ Back to Hub</button>
+            <div id="bulk-action-bar"></div>
+            <div id="week-list-container" class="iron-list-stack"></div>
+        </section>
+
+        <section id="fence-setup" class="tab-content">
+            <button class="back-home-pill-top" onclick="openTab('fence-home')">🏠 Back to Home</button>
+            <div class="setup-card">
+                <h3 class="setup-label">👤 Customer Entry</h3>
+                <input type="hidden" id="editId">
+                <div class="setup-row"><div class="setup-icon">👤</div><div class="setup-stack"><label>Name</label><input type="text" id="cName" class="setup-input"></div></div>
+                <div class="setup-row"><div class="setup-icon">📱</div><div class="setup-stack"><label>Phone</label><input type="tel" id="cPhone" class="setup-input"></div></div>
+                <div class="setup-row"><div class="setup-icon">🏠</div><div class="setup-stack"><label>House</label><input type="text" id="cHouseNum" class="setup-input"></div></div>
+                <div class="setup-row"><div class="setup-icon">🛣️</div><div class="setup-stack"><label>Street</label><input type="text" id="cStreet" class="setup-input"></div></div>
+                <div class="setup-row"><div class="setup-icon">📍</div><div class="setup-stack"><label>Postcode</label><input type="text" id="cPostcode" class="setup-input"></div></div>
+                <div class="setup-row" style="border:none;"><div class="setup-icon">💰</div><div class="setup-stack"><label>Price £</label><input type="number" id="cPrice" class="setup-input"></div></div>
+                <div class="notes-area-lockdown"><label class="notes-label-fixed">📝 PRIVATE NOTES</label><textarea id="cNotes" class="setup-textarea-expanded"></textarea></div>
+                <button class="setup-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
+            </div>
+            <div class="setup-card vault-border">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h3 class="setup-label">🏦 Bank Vault</h3><button id="bankLockBtn" class="vault-unlock-btn" onclick="toggleBankLock()">🔓 UNLOCK</button></div>
+                <div class="setup-row"><div class="setup-icon">🏷️</div><div class="setup-stack"><label>Account Name</label><input type="text" id="bankName" class="setup-input bank-field" readonly></div></div>
+                <div class="setup-row"><div class="setup-icon">🔢</div><div class="setup-stack"><label>Sort Code</label><input type="text" id="bankSort" class="setup-input bank-field" readonly maxlength="8"></div></div>
+                <div class="setup-row" style="border:none"><div class="setup-icon">💳</div><div class="setup-stack"><label>Account Number</label><input type="number" id="bankAcc" class="setup-input bank-field" readonly></div></div>
+                <button id="bankSaveBtn" class="setup-save-btn hidden" onclick="saveBankDetails()" style="background:var(--success); margin-top:20px;">💾 Save Details</button>
+            </div>
+        </section>
+
     </div>
 
     <div id="msgModal" class="modal-overlay hidden" onclick="closeMsgModal()">
@@ -119,7 +120,7 @@
         </div>
     </div>
 
-    <footer id="footer-version">v27.2 - Double-Lock Spacing</footer>
-    <script src="app.js?v=272"></script>
+    <footer id="footer-version">v27.3 - Global Integrity Release</footer>
+    <script src="app.js?v=273"></script>
 </body>
 </html>
