@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v41.9</title>
+    <title>Hydro Pro v42.0</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="AppIcon.png">
     <link rel="icon" type="image/png" href="AppIcon.png">
-    <link rel="stylesheet" href="styles.css?v=419">
+    <link rel="stylesheet" href="styles.css?v=420">
 </head>
 <body class="light-mode">
 
@@ -103,6 +103,15 @@
 
         <section id="week-view-root" class="tab-content">
             <div class="NAV-VAULT"><button onclick="openTab('weeks-root')">⬅️ Back</button><button onclick="openTab('home-root')">🏠 Hub</button></div>
+            <div class="DAY-LOCKED-BAR">
+                <button class="D-BTN-LOCKED active" onclick="setWorkingDay('Mon', this)">M</button>
+                <button class="D-BTN-LOCKED" onclick="setWorkingDay('Tue', this)">T</button>
+                <button class="D-BTN-LOCKED" onclick="setWorkingDay('Wed', this)">W</button>
+                <button class="D-BTN-LOCKED" onclick="setWorkingDay('Thu', this)">T</button>
+                <button class="D-BTN-LOCKED" onclick="setWorkingDay('Fri', this)">F</button>
+                <button class="D-BTN-LOCKED" onclick="setWorkingDay('Sat', this)">S</button>
+                <button class="D-BTN-LOCKED" onclick="setWorkingDay('Sun', this)">S</button>
+            </div>
             <div id="week-list-container"></div>
         </section>
     </main>
@@ -112,7 +121,7 @@
             <div id="briefingData"></div>
             <div id="briefHistoryZone"></div>
             <div id="quickSettleContainer"></div>
-            <button class="MD-EDIT" id="briefEditBtn">⚙️ Edit Profile</button>
+            <button class="MD-EDIT" id="briefEditBtn">⚙️ Edit Info</button>
             <button class="MD-CLOSE" onclick="closeBriefing()">CLOSE</button>
         </div>
     </div>
@@ -128,7 +137,7 @@
         </div>
     </div>
     
-    <footer id="version-label">v41.9 HARDENED FORTRESS</footer>
-    <script src="app.js?v=419"></script>
+    <footer id="version-label">v42.0 FINAL SEAL</footer>
+    <script src="app.js?v=420"></script>
 </body>
 </html>
