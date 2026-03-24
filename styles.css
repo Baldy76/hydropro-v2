@@ -24,7 +24,7 @@ body { font-family: -apple-system, sans-serif; background: var(--bg); color: var
 #home-root button small { font-size: 16px; font-weight: 900; text-transform: uppercase; }
 #home-root .full-tile { grid-column: 1 / -1; background: var(--accent); color: white; height: 130px; }
 
-/* ✨ SETUP & RESET AREA */
+/* ✨ SETUP AREA */
 #setup-root .setup-card { background: var(--card); margin: 0 20px 25px; padding: 25px; border-radius: 35px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
 #setup-root .entry-row { display: flex; align-items: center; height: 70px; border-bottom: 1px solid rgba(0,0,0,0.05); gap: 15px; }
 #setup-root .entry-row input { font-size: 18px; color: var(--text); width: 100%; border: none; background: transparent; outline: none; }
@@ -32,30 +32,12 @@ body { font-family: -apple-system, sans-serif; background: var(--bg); color: var
 
 .bank-vault { background: var(--card); margin: 0 20px 40px; padding: 30px; border-radius: 35px; border: 2.5px solid rgba(0,122,255,0.15); }
 .vault-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-
-/* 🔒 VERTICAL STACK FOR VAULT BUTTONS (v29.6) */
-.vault-button-stack { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 8px; 
-}
-.vault-btn-common {
-    min-width: 120px !important; 
-    width: 120px !important;
-    height: 42px !important; 
-    border-radius: 12px; 
-    font-weight: 900; 
-    font-size: 11px !important; 
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-transform: uppercase;
-}
+.vault-button-stack { display: flex; flex-direction: column; gap: 8px; }
+.vault-btn-common { min-width: 120px !important; width: 120px !important; height: 42px !important; border-radius: 12px; font-weight: 900; font-size: 11px !important; border: none; display: flex; align-items: center; justify-content: center; text-transform: uppercase; }
 .vault-unlock-surgical { background: var(--accent); color: white; }
 .vault-copy-btn { background: #8e8e93; color: white; }
-
 .bank-field-fixed { width: 100% !important; height: 60px !important; background: var(--bg); border: none; border-radius: 15px; margin-bottom: 12px; padding: 0 20px; color: var(--text); font-size: 16px; font-weight: 600; display: block; }
+
 .reset-area-surgical { background: var(--card); margin: 0 20px 50px; padding: 35px 30px; border-radius: 35px; text-align: center; border: 2px solid rgba(0,0,0,0.05); }
 .btn-reset-surgical { width: 100% !important; height: 75px !important; border-radius: 25px !important; border: none !important; background: var(--danger) !important; color: white !important; font-weight: 900 !important; font-size: 18px !important; box-shadow: 0 10px 20px rgba(255, 69, 58, 0.15) !important; text-transform: uppercase; }
 
