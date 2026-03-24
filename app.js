@@ -110,7 +110,41 @@ window.renderWeek = () => {
     });
 };
 
-/* --- SHARED UTILS --- */
+/* --- 📱 MODAL LOGIC (v37.1) --- */
+window.showJobBriefing = (id) => {
+    const c = db.customers.find(x => x.id === id); 
+    if(!c) return;
+
+    const history = (db.history || []).filter(h => h.custId === id).slice(-3).reverse();
+    let histHtml = history.length > 0 ? '' : '<p style="opacity:0.4; font-size:13px; font-weight:600;">No recent activity.</p>';
+    history.forEach(h => {
+        histHtml += `<div class="MD-HIST-ROW"><span>${h.date}</span><span style="color:var(--success)">+£${n(h.amt).toFixed(2)}</span></div>`;
+    });
+
+    const currentOwed = c.cleaned ? (n(c.price) - n(c.paidThisMonth)) : 0;
+
+    document.getElementById('briefingData').innerHTML = `
+        <div style="font-size:28px; font-weight:900; color:var(--accent); margin-bottom:5px;">${c.name}</div>
+        <div class="MD-INFO-LIST">
+            <div class="MD-INFO-ITEM"><span>🏠</span> ${c.houseNum} ${c.street}</div>
+            <div class="MD-INFO-ITEM"><span>📍</span> ${c.postcode || 'No Postcode'}</div>
+            <div class="MD-INFO-ITEM"><span>📱</span> ${c.phone || 'No Number'}</div>
+            <div class="MD-INFO-ITEM"><span>📅</span> Scheduled: ${c.day}s</div>
+            <div class="MD-INFO-ITEM" style="color:var(--success)"><span>💰</span> Rate: £${n(c.price).toFixed(2)}</div>
+        </div>
+        <div class="MD-HIST-WRAP"><span class="MD-HIST-TITLE">Last 3 Transactions</span>${histHtml}</div>
+        ${c.notes ? `<div style="font-size:13px; opacity:0.7; margin-bottom:20px; padding:0 10px;"><strong>Notes:</strong> ${c.notes}</div>` : ''}
+    `;
+
+    const settleBox = document.getElementById('quickSettleContainer');
+    settleBox.innerHTML = currentOwed > 0 ? `<button style="width:100%; height:70px; background:var(--success); color:white; border:none; border-radius:20px; font-weight:900; font-size:18px; margin-bottom:15px;" onclick="quickSettle('${c.id}', ${currentOwed})">💰 Settle £${currentOwed.toFixed(2)} Now</button>` : '';
+
+    document.getElementById('briefEditBtn').onclick = () => { closeBriefing(); editCust(id); };
+    document.getElementById('briefingModal').classList.remove('hidden');
+};
+
+/* --- CORE FUNCTIONS --- */
+window.quickSettle = (id, amt) => { const c = db.customers.find(x => x.id === id); c.paidThisMonth = n(c.price); db.history.push({ custId: id, amt: n(amt), date: 'Debt-Settle' }); saveData(); closeBriefing(); renderWeek(); renderStats(); };
 window.addExpense = () => {
     const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value), c = document.getElementById('expCat').value;
     if(!d || a <= 0) return alert("Details Required");
@@ -140,15 +174,6 @@ window.editCust = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return; openTab('setup-root');
     document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cPhone').value = c.phone; document.getElementById('cHouseNum').value = c.houseNum; document.getElementById('cStreet').value = c.street; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cDay').value = c.day || 'Mon'; document.getElementById('cPrice').value = c.price; document.getElementById('cNotes').value = c.notes;
 };
-window.showJobBriefing = (id) => {
-    const c = db.customers.find(x => x.id === id); if(!c) return;
-    const currentOwed = c.cleaned ? (n(c.price) - n(c.paidThisMonth)) : 0;
-    document.getElementById('briefingData').innerHTML = `<div style="font-size:26px; font-weight:900; color:var(--accent);">${c.name}</div><div style="font-size:16px; font-weight:700; opacity:0.8;">${c.houseNum} ${c.street}</div><div style="font-size:14px; opacity:0.5; margin-bottom:20px;">📍 ${c.postcode} | 📱 ${c.phone} | 📅 ${c.day}s</div>`;
-    const settleBox = document.getElementById('quickSettleContainer'); settleBox.innerHTML = currentOwed > 0 ? `<button style="width:100%; height:70px; background:var(--success); color:white; border:none; border-radius:20px; font-weight:900; margin-bottom:15px;" onclick="quickSettle('${c.id}', ${currentOwed})">💰 Settle £${currentOwed.toFixed(2)}</button>` : '';
-    document.getElementById('briefEditBtn').onclick = () => { closeBriefing(); editCust(id); };
-    document.getElementById('briefingModal').classList.remove('hidden');
-};
-window.quickSettle = (id, amt) => { const c = db.customers.find(x => x.id === id); c.paidThisMonth = n(c.price); db.history.push({ custId: id, amt: n(amt), date: 'Debt-Settle' }); saveData(); closeBriefing(); renderWeek(); renderStats(); };
 window.handleClean = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; c.cleaned = !c.cleaned; saveData(); renderWeek(); };
 window.markAsPaid = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; const amt = prompt(`Paid for ${c.name}:`, c.price); if(amt) { c.paidThisMonth = n(amt); db.history.push({ custId: id, amt: n(amt), date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) }); saveData(); renderWeek(); renderStats(); } };
 window.updateHeader = () => { document.getElementById('dateText').innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }); };
