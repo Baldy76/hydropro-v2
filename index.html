@@ -3,16 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
     <title>Hydro Pro</title>
     <meta name="apple-mobile-web-app-title" content="Hydro Pro">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    
     <link rel="apple-touch-icon" href="AppIcon.png">
     <link rel="icon" type="image/png" href="AppIcon.png">
-
-    <link rel="stylesheet" href="styles.css?v=377">
+    <link rel="stylesheet" href="styles.css?v=378">
 </head>
 <body class="light-mode">
 
@@ -47,9 +44,7 @@
 
         <section id="master-root" class="tab-content">
             <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home</button>
-            <div class="CT-SEARCH-WRAP">
-                <input type="text" id="mainSearch" placeholder="🔍 Search..." oninput="renderMaster()">
-            </div>
+            <div class="CT-SEARCH-WRAP"><input type="text" id="mainSearch" placeholder="🔍 Search..." oninput="renderMaster()"></div>
             <div id="master-list-container"></div>
         </section>
 
@@ -78,19 +73,15 @@
             <div class="SU-ADMIN-ZONE">
                 <button class="SU-RESET-BTN" onclick="completeCycle()">🚀 START NEW MONTH</button>
                 <div class="SU-BACKUP-ROW">
-                    <button class="SU-IO-BTN" onclick="exportData()">📤 Backup CSVs</button>
-                    <button class="SU-IO-BTN" onclick="document.getElementById('importFile').click()">📥 Restore CSVs</button>
-                    <input type="file" id="importFile" hidden onchange="importData(event)" accept=".csv" multiple>
+                    <button class="SU-IO-BTN" onclick="exportData()">📤 Backup Master CSV</button>
+                    <button class="SU-IO-BTN" onclick="document.getElementById('importFile').click()">📥 Restore Master CSV</button>
+                    <input type="file" id="importFile" hidden onchange="importData(event)" accept=".csv">
                 </div>
                 <button class="SU-DANGER-BTN" onclick="nuclearReset()">⚠️ FACTORY RESET DATA</button>
             </div>
         </section>
 
-        <section id="stats-root" class="tab-content">
-            <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home</button>
-            <div id="stats-container"></div>
-        </section>
-
+        <section id="stats-root" class="tab-content"><button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home</button><div id="stats-container"></div></section>
         <section id="ledger-root" class="tab-content">
             <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home</button>
             <div class="LD-HERO"><small>MONTH SPEND</small><div id="ledgerTotalDisplay">£0.00</div></div>
@@ -98,54 +89,19 @@
                 <input type="text" id="expDesc" class="LD-FIELD" placeholder="Description">
                 <input type="number" id="expAmt" class="LD-FIELD" placeholder="Amount £">
                 <select id="expCat" class="LD-SELECT">
-                    <option value="⛽ Fuel">⛽ Fuel</option>
-                    <option value="🛠️ Gear">🛠️ Gear</option>
-                    <option value="🍔 Food">🍔 Food</option>
-                    <option value="📦 Misc">📦 Misc</option>
+                    <option value="⛽ Fuel">⛽ Fuel</option><option value="🛠️ Gear">🛠️ Gear</option>
+                    <option value="🍔 Food">🍔 Food</option><option value="📦 Misc">📦 Misc</option>
                 </select>
                 <button class="LD-ADD-BTN" onclick="addExpense()">Add Expense</button>
             </div>
             <div id="ledger-list-container"></div>
         </section>
-
-        <section id="weeks-root" class="tab-content">
-            <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home</button>
-            <div class="WK-HUB-GRID">
-                <button class="WK-TILE" onclick="viewWeek(1)">Week 1</button>
-                <button class="WK-TILE" onclick="viewWeek(2)">Week 2</button>
-                <button class="WK-TILE" onclick="viewWeek(3)">Week 3</button>
-                <button class="WK-TILE" onclick="viewWeek(4)">Week 4</button>
-                <button class="WK-TILE WK-FULL" onclick="viewWeek(5)">Week 5</button>
-            </div>
-        </section>
-
-        <section id="week-view-root" class="tab-content">
-            <div class="WK-NAV-ROW"><button onclick="openTab('weeks-root')">⬅️ Back</button><button onclick="openTab('home-root')">🏠 Home</button></div>
-            <div class="WK-DAY-PICKER">
-                <button class="DAY-BTN active" onclick="setWorkingDay('Mon', this)">M</button>
-                <button class="DAY-BTN" onclick="setWorkingDay('Tue', this)">T</button>
-                <button class="DAY-BTN" onclick="setWorkingDay('Wed', this)">W</button>
-                <button class="DAY-BTN" onclick="setWorkingDay('Thu', this)">T</button>
-                <button class="DAY-BTN" onclick="setWorkingDay('Fri', this)">F</button>
-                <button class="DAY-BTN" onclick="setWorkingDay('Sat', this)">S</button>
-                <button class="DAY-BTN" onclick="setWorkingDay('Sun', this)">S</button>
-            </div>
-            <div class="WK-PLAN-ROW"><button class="WK-PLAN-BTN" onclick="launchRoutePlanner()">🗺️ Plan Route</button></div>
-            <div class="WK-LEGEND"><span>📱 Call</span><span>📍 Map</span><span>🧼 Clean</span><span>£ Paid</span></div>
-            <div id="week-list-container"></div>
-        </section>
+        <section id="weeks-root" class="tab-content"><button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home</button><div class="WK-HUB-GRID"><button class="WK-TILE" onclick="viewWeek(1)">Week 1</button><button class="WK-TILE" onclick="viewWeek(2)">Week 2</button><button class="WK-TILE" onclick="viewWeek(3)">Week 3</button><button class="WK-TILE" onclick="viewWeek(4)">Week 4</button><button class="WK-TILE WK-FULL" onclick="viewWeek(5)">Week 5</button></div></section>
+        <section id="week-view-root" class="tab-content"><div class="WK-NAV-ROW"><button onclick="openTab('weeks-root')">⬅️ Back</button><button onclick="openTab('home-root')">🏠 Home</button></div><div class="WK-DAY-PICKER"><button class="DAY-BTN active" onclick="setWorkingDay('Mon', this)">M</button><button class="DAY-BTN" onclick="setWorkingDay('Tue', this)">T</button><button class="DAY-BTN" onclick="setWorkingDay('Wed', this)">W</button><button class="DAY-BTN" onclick="setWorkingDay('Thu', this)">T</button><button class="DAY-BTN" onclick="setWorkingDay('Fri', this)">F</button><button class="DAY-BTN" onclick="setWorkingDay('Sat', this)">S</button><button class="DAY-BTN" onclick="setWorkingDay('Sun', this)">S</button></div><div class="WK-PLAN-ROW"><button class="WK-PLAN-BTN" onclick="launchRoutePlanner()">🗺️ Plan Route</button></div><div class="WK-LEGEND"><span>📱 Call</span><span>📍 Map</span><span>🧼 Clean</span><span>£ Paid</span></div><div id="week-list-container"></div></section>
     </main>
 
-    <div id="briefingModal" class="modal-overlay hidden" onclick="closeBriefing()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div id="briefingData"></div>
-            <div id="quickSettleContainer"></div>
-            <button class="MD-EDIT" id="briefEditBtn">⚙️ Edit Info</button>
-            <button class="MD-CLOSE" onclick="closeBriefing()">CLOSE</button>
-        </div>
-    </div>
-
-    <footer id="version-label">v37.7 GOLD</footer>
-    <script src="app.js?v=377"></script>
+    <div id="briefingModal" class="modal-overlay hidden" onclick="closeBriefing()"><div class="modal-content" onclick="event.stopPropagation()"><div id="briefingData"></div><div id="quickSettleContainer"></div><button class="MD-EDIT" id="briefEditBtn">⚙️ Edit Info</button><button class="MD-CLOSE" onclick="closeBriefing()">CLOSE</button></div></div>
+    <footer id="version-label">v37.8 GOLD</footer>
+    <script src="app.js?v=378"></script>
 </body>
 </html>
