@@ -1,72 +1,43 @@
-/* --- ARCHITECTURE QUARANTINE v38.2 --- */
+/* --- ARCHITECTURE QUARANTINE v38.3 --- */
 :root { --accent: #007aff; --bg: #f2f2f7; --card: #ffffff; --text: #000; --success: #34C759; --danger: #ff453a; --ios-grey: #e9e9eb; --grad: linear-gradient(135deg, #007aff 0%, #0051a8 100%); }
 body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; --ios-grey: #39393d; }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, sans-serif; }
-body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; transition: background 0.3s; }
+body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; }
 .tab-content { display: none !important; }
 .tab-content.active { display: flex !important; flex-direction: column; width: 100%; }
 
-/* HEADER & WEATHER */
+/* 📄 RECEIPT STYLING */
+#receipt-zone { display: none; background: white; color: black; padding: 40px; text-align: center; font-family: 'Helvetica', sans-serif; }
+.receipt-header { border-bottom: 2px solid #eee; padding-bottom: 20px; margin-bottom: 20px; }
+.receipt-logo { width: 180px; margin-bottom: 10px; }
+.paid-stamp { border: 4px solid #34C759; color: #34C759; display: inline-block; padding: 5px 20px; font-weight: 900; transform: rotate(-5deg); font-size: 24px; margin: 20px 0; border-radius: 10px; }
+.receipt-details { text-align: left; line-height: 1.6; }
+
+@media print {
+    .no-print { display: none !important; }
+    #receipt-zone { display: block !important; }
+    body { background: white !important; }
+}
+
+/* (Preserve all Header, Weather, Toggle, and Grid CSS from v38.2) */
 #G-HEADER { width: 100%; text-align: center; }
 .G-LOGO-WRAP { width: 100%; display: flex; justify-content: center; padding: 15px 0; }
 .G-LOGO-WRAP img { width: 100%; height: auto; display: block; object-fit: contain; }
 #dateText { font-size: 26px; font-weight: 900; color: var(--accent); display: block; }
 .G-WEATHER-PILL { display: inline-flex; align-items: center; gap: 8px; background: var(--ios-grey); padding: 6px 15px; border-radius: 20px; margin-top: 8px; cursor: pointer; transition: transform 0.2s; }
 .G-WEATHER-PILL:active { transform: scale(0.95); }
-.G-WEATHER-PILL span { font-size: 16px; }
 .G-WEATHER-PILL small { font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
-
-/* 🌓 INTUITIVE TOGGLE v38.2 */
 .G-SWITCH-WRAP { margin-top: 20px; display: flex; justify-content: center; align-items: center; position: relative; }
 .ios-switch { position: relative; display: inline-block; width: 85px; height: 34px; }
 .ios-switch input { opacity: 0; width: 0; height: 0; }
 .ios-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--ios-grey); border-radius: 34px; transition: 0.4s; overflow: hidden; }
-
-.ios-slider:after {
-    content: "DARK";
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 10px;
-    font-weight: 900;
-    color: #000;
-    letter-spacing: 0.5px;
-}
-
-.ios-slider:before {
-    content: "";
-    position: absolute;
-    height: 28px;
-    width: 28px;
-    left: 3px;
-    bottom: 3px;
-    background: white;
-    border-radius: 50%;
-    transition: 0.4s;
-    z-index: 2;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
+.ios-slider:after { content: "DARK"; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 10px; font-weight: 900; color: #000; letter-spacing: 0.5px; }
+.ios-slider:before { content: ""; position: absolute; height: 28px; width: 28px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.4s; z-index: 2; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 input:checked + .ios-slider { background-color: var(--success); }
 input:checked + .ios-slider:before { transform: translateX(51px); }
 input:checked + .ios-slider:after { content: ""; }
-
-.ios-slider-label-light {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 10px;
-    font-weight: 900;
-    color: #fff;
-    opacity: 0;
-    pointer-events: none;
-    transition: 0.4s;
-}
+.ios-slider-label-light { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 10px; font-weight: 900; color: #fff; opacity: 0; pointer-events: none; transition: 0.4s; }
 input:checked ~ .ios-slider-label-light { opacity: 1; }
-
-/* LAYOUT CONSTANTS */
 .HM-GRID { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
 .HM-GRID button { height: 125px; border-radius: 30px; background: var(--card); border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 15px rgba(0,0,0,0.05); color: var(--text); }
 .HM-GRID span { font-size: 40px; color: var(--accent); }
@@ -74,16 +45,14 @@ input:checked ~ .ios-slider-label-light { opacity: 1; }
 .HM-FULL { grid-column: 1 / -1; background: var(--grad) !important; color: white !important; }
 .HM-SYNC-ZONE { padding: 10px 20px 40px; text-align: center; }
 .HM-SYNC-BTN { background: transparent; border: 2px solid var(--accent); color: var(--accent); padding: 12px 25px; border-radius: 50px; font-size: 13px; font-weight: 800; text-transform: uppercase; }
-.CT-SEARCH-WRAP { padding: 0 20px 20px; }
-#mainSearch { width: 100%; height: 65px; border-radius: 20px; border: none; background: var(--card); padding: 0 25px; font-size: 18px; color: var(--text); }
 .CT-PILL { background: var(--card); padding: 20px 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 15px; min-height: 100px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
 .CT-TEXT-STACK { display: flex; flex-direction: column; gap: 4px; text-align: left; }
 .CT-TEXT-STACK strong { font-size: 20px; }
 .CT-TEXT-STACK small { color: var(--accent); font-weight: 700; font-size: 15px; }
 .SU-CARD { background: var(--card); margin: 0 20px 25px; padding: 25px; border-radius: 35px; }
-.SU-ROW { display: flex; align-items: center; height: 75px !important; border-bottom: 1px solid rgba(0,0,0,0.05); gap: 15px; }
+.SU-ROW { display: flex; align-items: center; height: 75px; border-bottom: 1px solid rgba(0,0,0,0.05); gap: 15px; }
 .SU-ROW span { font-size: 22px; width: 35px; text-align: center; }
-.SU-ROW input, .SU-SELECT { flex: 1; border: none; background: transparent; font-size: 18px; color: var(--text); outline: none; height: 100%; }
+.SU-ROW input, .SU-SELECT { flex: 1; border: none; background: transparent; font-size: 18px; color: var(--text); outline: none; }
 .SU-NOTES { width: 100%; min-height: 120px; border-radius: 20px; background: var(--bg); border: none; padding: 15px; margin: 20px 0; color: var(--text); font-size: 16px; }
 .SU-SAVE-BTN { width: 100%; height: 75px; border-radius: 25px; border: none; background: var(--grad); color: white; font-weight: 900; font-size: 20px; margin-top: 15px; }
 .SU-ADMIN-ZONE { padding: 0 20px 80px; display: flex; flex-direction: column; gap: 15px; }
@@ -108,9 +77,6 @@ input:checked ~ .ios-slider-label-light { opacity: 1; }
 .LD-HERO { background: var(--card); border: 3px solid var(--danger); margin: 0 20px 25px; padding: 35px; border-radius: 40px; text-align: center; }
 .LD-HERO div { font-size: 50px; font-weight: 900; }
 .LD-PILL { background: var(--card); padding: 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 15px; border-left: 6px solid var(--danger); }
-.WK-HUB-GRID { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 0 20px; }
-.WK-TILE { height: 115px !important; border-radius: 25px; border: none; background: var(--grad); color: white; font-weight: 900; font-size: 24px; }
-.WK-FULL { grid-column: 1 / -1; }
 .WK-NAV-ROW { display: flex; justify-content: space-between; padding: 0 20px 15px; }
 .WK-NAV-ROW button { height: 60px; width: calc(50% - 10px); border-radius: 20px; border: none; background: var(--card); color: var(--accent); font-weight: 900; }
 .WK-DAY-PICKER { display: flex; justify-content: space-between; padding: 0 10px; margin-bottom: 15px; gap: 4px; }
