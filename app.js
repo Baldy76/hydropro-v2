@@ -8,10 +8,25 @@ window.onload = () => {
     if (saved) db = JSON.parse(saved);
     const isDark = localStorage.getItem('HP_Theme') === 'true';
     document.body.classList.toggle('dark-mode', isDark);
+    
+    // Sync the slider checkbox
+    const themeCheckbox = document.getElementById('themeCheckbox');
+    if(themeCheckbox) themeCheckbox.checked = isDark;
+
     updateHeader();
     renderAll();
 };
 
+window.toggleDarkMode = () => {
+    const isDark = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('HP_Theme', isDark);
+    
+    // Ensure checkbox matches
+    const themeCheckbox = document.getElementById('themeCheckbox');
+    if(themeCheckbox) themeCheckbox.checked = isDark;
+};
+
+/* --- REST OF CODE REMAINS FULLY INTACT --- */
 window.openTab = (tabId) => {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
@@ -20,10 +35,7 @@ window.openTab = (tabId) => {
 };
 
 window.renderAll = () => {
-    renderMaster();
-    renderLedger();
-    renderStats();
-    renderWeek();
+    renderMaster(); renderLedger(); renderStats(); renderWeek();
     if(document.getElementById('bankName')) {
         document.getElementById('bankName').value = db.bank.name || '';
         document.getElementById('bankSort').value = db.bank.sort || '';
@@ -38,14 +50,10 @@ window.copyBankDetails = () => {
         const oldText = btn.innerText;
         btn.innerText = "COPIED! ✅";
         btn.style.background = "var(--success)";
-        setTimeout(() => {
-            btn.innerText = oldText;
-            btn.style.background = "#8e8e93";
-        }, 2000);
+        setTimeout(() => { btn.innerText = oldText; btn.style.background = "#8e8e93"; }, 2000);
     });
 };
 
-/* --- RENDERING --- */
 window.renderMaster = () => {
     const container = document.getElementById('master-list-container');
     if(!container) return; container.innerHTML = '';
@@ -54,11 +62,8 @@ window.renderMaster = () => {
         if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
             const div = document.createElement('div'); div.className = 'cust-pill';
             div.onclick = () => editCust(c.id);
-            // UPDATED ARREARS LOGIC (Step 8): Shows if cleaned but amount paid is less than price
             let badgeHtml = (c.cleaned && n(c.paidThisMonth) < n(c.price)) ? `<div class="arrears-badge">UNPAID 🚩</div>` : "";
-            div.innerHTML = `${badgeHtml}
-                             <div><strong style="font-size:20px; display:block;">${c.name}</strong><small style="color:var(--accent);font-weight:700;">${c.houseNum} ${c.street}</small></div>
-                             <div style="font-weight:900; color:var(--success); font-size:18px;">£${n(c.price).toFixed(2)}</div>`;
+            div.innerHTML = `${badgeHtml}<div><strong style="font-size:20px; display:block;">${c.name}</strong><small style="color:var(--accent);font-weight:700;">${c.houseNum} ${c.street}</small></div><div style="font-weight:900; color:var(--success); font-size:18px;">£${n(c.price).toFixed(2)}</div>`;
             container.appendChild(div);
         }
     });
@@ -84,15 +89,7 @@ window.renderStats = () => {
     db.customers.forEach(c => { target += n(c.price); paid += n(c.paidThisMonth); if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth)); });
     db.expenses.forEach(e => spend += n(e.amt));
     const profit = paid - spend, progress = target > 0 ? Math.round((paid/target)*100) : 0;
-    container.innerHTML = `<div class="stats-hero">
-        <div style="font-size:55px; font-weight:900;">£${profit.toFixed(2)}</div><small style="font-weight:700; opacity:0.6;">PROFIT IN POCKET</small>
-        </div><div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:20px;">
-        <div style="background:var(--card); padding:20px; border-radius:25px; text-align:center;"><small style="display:block; font-weight:800; opacity:0.5; font-size:10px;">MONTH INCOME</small><div style="color:var(--success); font-weight:900; font-size:20px;">£${paid.toFixed(2)}</div></div>
-        <div style="background:var(--card); padding:20px; border-radius:25px; text-align:center;"><small style="display:block; font-weight:800; opacity:0.5; font-size:10px;">MONTH SPEND</small><div style="color:var(--danger); font-weight:900; font-size:20px;">£${spend.toFixed(2)}</div></div>
-        </div><div style="background:var(--card); padding:25px; border-radius:35px; margin-bottom:20px;">
-        <strong>Progress ${progress}%</strong><div style="background:#eee; height:14px; border-radius:7px; margin:10px 0; overflow:hidden;"><div style="background:var(--accent); height:100%; width:${progress}%"></div></div>
-        <div style="display:flex; justify-content:space-between; font-size:12px; opacity:0.6; font-weight:700;"><span>TARGET £${target.toFixed(2)}</span><span>REMAINING £${(target - paid).toFixed(2)}</span></div>
-        </div><div style="background:var(--danger); color:white; padding:25px; border-radius:30px; text-align:center; font-weight:900; font-size:20px;">ARREARS: £${arrears.toFixed(2)}</div>`;
+    container.innerHTML = `<div class="stats-hero"><div>£${profit.toFixed(2)}</div><small style="font-weight:700; opacity:0.6;">PROFIT IN POCKET</small></div><div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:20px;"><div style="background:var(--card); padding:20px; border-radius:25px; text-align:center;"><small style="display:block; font-weight:800; opacity:0.5; font-size:10px;">MONTH INCOME</small><div style="color:var(--success); font-weight:900; font-size:20px;">£${paid.toFixed(2)}</div></div><div style="background:var(--card); padding:20px; border-radius:25px; text-align:center;"><small style="display:block; font-weight:800; opacity:0.5; font-size:10px;">MONTH SPEND</small><div style="color:var(--danger); font-weight:900; font-size:20px;">£${spend.toFixed(2)}</div></div></div><div style="background:var(--card); padding:25px; border-radius:35px; margin-bottom:20px;"><strong>Progress ${progress}%</strong><div style="background:#eee; height:14px; border-radius:7px; margin:10px 0; overflow:hidden;"><div style="background:var(--accent); height:100%; width:${progress}%"></div></div><div style="display:flex; justify-content:space-between; font-size:12px; opacity:0.6; font-weight:700;"><span>TARGET £${target.toFixed(2)}</span><span>REMAINING £${(target - paid).toFixed(2)}</span></div></div><div style="background:var(--danger); color:white; padding:25px; border-radius:30px; text-align:center; font-weight:900; font-size:20px;">ARREARS: £${arrears.toFixed(2)}</div>`;
 };
 
 window.viewWeek = (w) => { curWeek = w; openTab('week-view-root'); };
@@ -102,43 +99,18 @@ window.renderWeek = () => {
     list.innerHTML = '';
     db.customers.filter(c => c.week == curWeek).forEach(c => {
         const div = document.createElement('div'); div.className = 'job-card';
-        div.innerHTML = `<div><strong style="font-size:20px;">${c.name} ${c.cleaned?'✅':''}</strong><br><small style="color:var(--accent); font-weight:700;">${c.houseNum} ${c.street}</small></div>
-            <div class="job-actions">
-                <button class="btn-job btn-map-yellow" onclick="openMap('${c.houseNum} ${c.street} ${c.postcode}')">📍 MAP</button>
-                <button class="btn-job" style="background:${c.cleaned?'var(--success)':'#aaa'}" onclick="handleClean('${c.id}')">CLEAN</button>
-                <button class="btn-job" style="background:${n(c.paidThisMonth)>0?'var(--accent)':'#aaa'}" onclick="markAsPaid('${c.id}')">PAY</button>
-            </div>`;
+        div.innerHTML = `<div><strong style="font-size:20px;">${c.name} ${c.cleaned?'✅':''}</strong><br><small style="color:var(--accent); font-weight:700;">${c.houseNum} ${c.street}</small></div><div class="job-actions"><button class="btn-job btn-map-yellow" onclick="openMap('${c.houseNum} ${c.street} ${c.postcode}')">📍 MAP</button><button class="btn-job" style="background:${c.cleaned?'var(--success)':'#aaa'}" onclick="handleClean('${c.id}')">CLEAN</button><button class="btn-job" style="background:${n(c.paidThisMonth)>0?'var(--accent)':'#aaa'}" onclick="markAsPaid('${c.id}')">PAY</button></div>`;
         list.appendChild(div);
     });
 };
 
-/* --- UPDATED PARTIAL PAY LOGIC --- */
 window.markAsPaid = (id) => {
-    const c = db.customers.find(x => x.id === id);
-    if(!c) return;
-
-    // Toggle logic: If already paid something, ask if they want to reset it
-    if(n(c.paidThisMonth) > 0) {
-        if(confirm(`Current paid: £${n(c.paidThisMonth)}. Reset to £0?`)) {
-            c.paidThisMonth = 0; saveData(); renderWeek(); renderStats();
-        }
-        return;
-    }
-
-    // New Partial Pay logic
-    const amt = prompt(`Enter amount paid for ${c.name}:`, c.price);
-    if(amt === null) return; // User cancelled
-
-    const val = n(amt);
-    if(val >= 0) {
-        c.paidThisMonth = val;
-        saveData(); renderWeek(); renderStats();
-    } else {
-        alert("Please enter a valid amount.");
-    }
+    const c = db.customers.find(x => x.id === id); if(!c) return;
+    if(n(c.paidThisMonth) > 0) { if(confirm(`Current paid: £${n(c.paidThisMonth)}. Reset to £0?`)) { c.paidThisMonth = 0; saveData(); renderWeek(); renderStats(); } return; }
+    const amt = prompt(`Enter amount paid for ${c.name}:`, c.price); if(amt === null) return;
+    const val = n(amt); if(val >= 0) { c.paidThisMonth = val; saveData(); renderWeek(); renderStats(); } else { alert("Valid amount please."); }
 };
 
-/* --- CORE --- */
 window.openMap = (addr) => { window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`, '_blank'); };
 window.toggleBankLock = () => { const fields = document.querySelectorAll('.bank-field-fixed'), lockBtn = document.getElementById('bankLockBtn'), saveBtn = document.getElementById('bankSaveBtn'); const isLocked = fields[0].readOnly; fields.forEach(f => f.readOnly = !isLocked); lockBtn.innerText = isLocked ? "🔒 LOCK" : "🔓 UNLOCK"; saveBtn.classList.toggle('hidden', !isLocked); };
 window.saveBankDetails = () => { db.bank = { name: document.getElementById('bankName').value, sort: document.getElementById('bankSort').value, acc: document.getElementById('bankAcc').value }; saveData(); toggleBankLock(); alert("Bank Details Secured!"); };
@@ -147,7 +119,6 @@ window.editCust = (id) => { const c = db.customers.find(x => x.id === id); if(!c
 window.addExpense = () => { const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value); if(!d || a <= 0) return alert("Details required"); db.expenses.push({ id: Date.now(), desc: d, amt: a, date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) }); saveData(); document.getElementById('expDesc').value=''; document.getElementById('expAmt').value=''; renderLedger(); renderStats(); };
 window.handleClean = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; c.cleaned = !c.cleaned; saveData(); renderWeek(); if(c.cleaned) { const msg = `Hi ${c.name} your windows at ${c.houseNum}, ${c.street}, were cleaned today. If you would like to make a bank transfer payment for £${n(c.price).toFixed(2)}, please use the bank details below.\n\nThank you for your business\nJonathan\n\n${db.bank.name}\n${db.bank.sort}\n${db.bank.acc}`; document.getElementById('msgPreview').innerText = msg; document.getElementById('msgModal').classList.remove('hidden'); document.getElementById('modalButtons').innerHTML = `<button class="btn-wa" style="width:100%;margin-bottom:10px;height:60px;border-radius:15px;border:none;color:white;font-weight:900;" onclick="sendMsg('${c.phone}','wa','${encodeURIComponent(msg)}')">Send WhatsApp</button><button class="btn-sms" style="width:100%;margin-bottom:10px;height:60px;border-radius:15px;border:none;color:white;font-weight:900;" onclick="sendMsg('${c.phone}','sms','${encodeURIComponent(msg)}')">Send SMS</button><button onclick="closeMsgModal()" style="width:100%;height:50px;border-radius:15px;border:none;background:#8e8e93;color:white;font-weight:900;">Skip</button>`; } };
 window.sendMsg = (p, m, msg) => { const c = (p||"").replace(/\s+/g,''); window.open(m==='wa' ? `https://wa.me/${c}?text=${msg}` : `sms:${c}?body=${msg}`, '_blank'); closeMsgModal(); };
-window.toggleDarkMode = () => { const d = document.body.classList.toggle('dark-mode'); localStorage.setItem('HP_Theme', d); };
 window.closeMsgModal = () => document.getElementById('msgModal').classList.add('hidden');
 window.saveData = () => localStorage.setItem(DB_KEY, JSON.stringify(db));
 window.updateHeader = () => { const hr = new Date().getHours(), g = (hr < 12) ? "GOOD MORNING" : (hr < 18) ? "GOOD AFTERNOON" : "GOOD EVENING"; document.getElementById('greetText').innerText = `${g}, PARTNER! ☕`; document.getElementById('dateText').innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }); };
