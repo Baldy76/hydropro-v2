@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v21.1</title>
-    <link rel="stylesheet" href="styles.css?v=211">
+    <title>Hydro Pro v21.2</title>
+    <link rel="stylesheet" href="styles.css?v=212">
 </head>
 <body class="light-mode">
 
@@ -50,6 +50,52 @@
             </div>
         </div>
 
+        <div id="stats" class="tab-content">
+            <div class="stats-hero-card">
+                <div id="currentMonthYear" class="stats-summary-title">Summary</div>
+                <div id="currProfit" class="stats-main-amount">£0.00</div>
+                <div class="stats-hero-sub">💰 Total Profit in Pocket</div>
+            </div>
+
+            <div class="customer-pill-bubble stats-progress-bubble">
+                <div class="progress-header-centered">
+                    <small>MONTHLY PROGRESS</small>
+                    <div id="progressPercent" class="amt-blue-bold">0%</div>
+                </div>
+                <div class="progress-bar-bg"><div id="progressBarFill" class="progress-bar-fill"></div></div>
+                <div class="progress-footer">
+                    <span>TARGET: <strong id="statsTarget">£0.00</strong></span>
+                    <span>REMAINING: <strong id="statsRemaining">£0.00</strong></span>
+                </div>
+            </div>
+
+            <div class="stats-grid-2x1">
+                <div class="customer-pill-bubble stats-mini-bubble">
+                    <small>MONTH INCOME 🔍</small>
+                    <div class="amt-green-bold" id="statsIncome">£0.00</div>
+                </div>
+                <div class="customer-pill-bubble stats-mini-bubble">
+                    <small>MONTH SPEND 🔍</small>
+                    <div class="amt-red-bold" id="statsSpend">£0.00</div>
+                </div>
+            </div>
+
+            <div class="arrears-pill-container">
+                <div class="arrears-pill-bubble">
+                    Arrears 🔍 <span id="statsArrears">£0.00</span>
+                </div>
+            </div>
+
+            <h3 class="hall-of-fame-title">🏆 The Hall of Fame</h3>
+            <div id="monthlyHistoryContainer"></div>
+        </div>
+
+        <div id="master" class="tab-content">
+            <div class="search-shield"><input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()"></div>
+            <div id="masterTableBody"></div>
+            <div class="fixed-bottom-shield"><div class="action-card-green"><button class="btn-clear-large" onclick="completeCycle()">🚀 START NEW MONTH</button></div></div>
+        </div>
+
         <div id="admin" class="tab-content">
             <div class="card creative-form-card">
                 <input type="hidden" id="editId">
@@ -79,38 +125,6 @@
                 </div>
                 <button class="creative-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
-        </div>
-
-        <div id="master" class="tab-content">
-            <div class="search-shield"><input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()"></div>
-            <div id="masterTableBody"></div>
-            <div class="fixed-bottom-shield"><div class="action-card-green"><button class="btn-clear-large" onclick="completeCycle()">🚀 START NEW MONTH</button></div></div>
-        </div>
-
-        <div id="stats" class="tab-content">
-            <div class="stats-hero-card">
-                <div id="currentMonthYear" class="stats-summary-title">Summary</div>
-                <div id="currProfit" class="stats-main-amount">£0.00</div>
-                <div class="stats-hero-sub">💰 Total Profit in Pocket</div>
-            </div>
-            <div class="customer-pill-bubble stats-progress-bubble">
-                <div class="progress-header-centered">
-                    <small>MONTHLY PROGRESS</small>
-                    <div id="progressPercent" class="amt-blue-bold">0%</div>
-                </div>
-                <div class="progress-bar-bg"><div id="progressBarFill" class="progress-bar-fill"></div></div>
-                <div class="progress-footer">
-                    <span>TARGET: <strong id="statsTarget">£0.00</strong></span>
-                    <span>REMAINING: <strong id="statsRemaining">£0.00</strong></span>
-                </div>
-            </div>
-            <div class="stats-grid-2x1">
-                <div class="stats-mini-card"><small>MONTH INCOME 🔍</small><div class="amt-green" id="statsIncome">£0.00</div></div>
-                <div class="stats-mini-card"><small>MONTH SPEND 🔍</small><div class="amt-red" id="statsSpend">£0.00</div></div>
-            </div>
-            <div class="arrears-pill">Arrears 🔍 <span id="statsArrears">£0.00</span></div>
-            <h3 class="hall-of-fame-title">🏆 The Hall of Fame</h3>
-            <div id="monthlyHistoryContainer"></div>
         </div>
 
         <div id="spend" class="tab-content">
@@ -146,7 +160,7 @@
         <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
     </div>
 
-    <div class="page-version-footer">v21.1 - Concrete Scale Lock</div>
-    <script src="app.js?v=211"></script>
+    <div class="page-version-footer">v21.2 - The Final Seal</div>
+    <script src="app.js?v=212"></script>
 </body>
 </html>
