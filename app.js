@@ -5,24 +5,16 @@ let db = { customers: [], expenses: [], bank: { name: '', sort: '', acc: '' }, h
 const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 let curWeek = 1;
 
-// ⚙️ RELIABLE BOOT + MIGRATION ROBOT
 document.addEventListener('DOMContentLoaded', () => {
     try {
         const v33 = localStorage.getItem(DB_KEY);
         const v31 = localStorage.getItem(V31_KEY);
         const v25 = localStorage.getItem(V25_KEY);
-
-        // Migration logic: Prioritize newest found data
-        if (v33) {
-            db = JSON.parse(v33);
-        } else if (v31) {
-            db = JSON.parse(v31);
-            saveData(); // Commit to v33
-        } else if (v25) {
-            db = JSON.parse(v25);
-            saveData(); // Commit to v33
-        }
-
+        if (v33) db = JSON.parse(v33);
+        else if (v31) { db = JSON.parse(v31); saveData(); }
+        else if (v25) { db = JSON.parse(v25); saveData(); }
+        
+        // Ensure History object exists for Pop-up logic
         if (!db.history) db.history = [];
 
         const isDark = localStorage.getItem('HP_Theme') === 'true';
@@ -44,13 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch(e) { console.error("Boot Error:", e); }
 });
 
-window.openTab = (id) => {
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    window.scrollTo(0,0);
-    renderAll();
-};
-
 window.renderAll = () => {
     renderMaster(); renderLedger(); renderStats(); renderWeek();
     if(document.getElementById('bankName')) {
@@ -60,38 +45,62 @@ window.renderAll = () => {
     }
 };
 
-/* --- 👥 MASTER LIST --- */
-window.renderMaster = () => {
-    const container = document.getElementById('master-list-container');
-    if(!container) return; container.innerHTML = '';
-    const search = (document.getElementById('mainSearch').value || "").toLowerCase();
-    db.customers.forEach(c => {
-        if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
-            const div = document.createElement('div'); div.className = 'cust-pill';
-            div.onclick = () => editCust(c.id);
-            let badge = (c.cleaned && n(c.paidThisMonth) < n(c.price)) ? `<div class="arrears-badge">UNPAID 🚩</div>` : "";
-            div.innerHTML = `${badge}<div><strong style="font-size:20px;">${c.name}</strong><br><small style="color:var(--accent); font-weight:700;">${c.houseNum} ${c.street}</small></div><div style="font-weight:900; color:var(--success); font-size:18px;">£${n(c.price).toFixed(2)}</div>`;
-            container.appendChild(div);
-        }
-    });
+window.openTab = (id) => {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0,0);
+    renderAll();
 };
 
-/* --- 🃏 BRIEFING POP-UP --- */
+/* --- 🃏 ENHANCED BRIEFING POP-UP (v32.5) --- */
 window.showJobBriefing = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
-    const history = (db.history || []).filter(h => h.custId === id).slice(-3).reverse();
+    
+    // v32.5 Improved Scraper for History
+    const history = (db.history || [])
+        .filter(h => h.custId === id)
+        .slice(-3)
+        .reverse();
+
     const currentOwed = c.cleaned ? (n(c.price) - n(c.paidThisMonth)) : 0;
     
     let histHtml = history.length > 0 ? '' : '<p style="font-size:12px; opacity:0.3;">No history found.</p>';
-    history.forEach(h => histHtml += `<div style="display:flex; justify-content:space-between; padding:5px 0; font-size:13px; font-weight:600; border-bottom:1px solid rgba(0,0,0,0.05);"><span>${h.date}</span><span style="color:var(--success)">+£${n(h.amt).toFixed(2)}</span></div>`);
+    history.forEach(h => histHtml += `
+        <div class="brief-hist-row">
+            <span>${h.date}</span>
+            <span style="color:var(--success)">+£${n(h.amt).toFixed(2)}</span>
+        </div>`);
 
     document.getElementById('briefingData').innerHTML = `
-        <div class="briefing-title">${c.name}</div><div class="briefing-addr">${c.houseNum} ${c.street}</div>
-        <div class="brief-section"><h4>Rate</h4><div style="font-size:20px; font-weight:900;">£${n(c.price).toFixed(2)}</div></div>
-        ${currentOwed > 0 ? `<div class="brief-section" style="border:2px solid var(--danger);"><h4>Unpaid This Month</h4><div style="color:var(--danger); font-size:20px; font-weight:900;">£${currentOwed.toFixed(2)}</div></div>` : ''}
-        <div class="brief-section"><h4>Last 3 Payments</h4>${histHtml}</div>
-        <div class="brief-section"><h4>Notes</h4><div style="font-size:13px;">${c.notes || 'None'}</div></div>
+        <div class="briefing-title">${c.name}</div>
+        <div class="briefing-addr">${c.houseNum} ${c.street}</div>
+        <div class="briefing-detail-row">
+            <span>📍 ${c.postcode || 'No Postcode'}</span>
+            <span>📱 ${c.phone || 'No Phone Number'}</span>
+        </div>
+
+        <div class="brief-section">
+            <h4>Monthly Rate</h4>
+            <div style="font-size:22px; font-weight:900;">£${n(c.price).toFixed(2)}</div>
+        </div>
+
+        ${currentOwed > 0 ? `
+        <div class="brief-section" style="border:2.5px solid var(--danger); background:rgba(255,69,58,0.05);">
+            <h4>Unpaid This Month</h4>
+            <div style="color:var(--danger); font-size:22px; font-weight:900;">£${currentOwed.toFixed(2)}</div>
+        </div>` : ''}
+
+        <div class="brief-section">
+            <h4>Payment History (Last 3)</h4>
+            ${histHtml}
+        </div>
+
+        <div class="brief-section">
+            <h4>Private Notes</h4>
+            <div style="font-size:13px; line-height:1.4;">${c.notes || 'No notes found for this customer.'}</div>
+        </div>
     `;
+
     document.getElementById('briefEditBtn').onclick = () => { closeBriefing(); editCust(id); };
     document.getElementById('briefingModal').classList.remove('hidden');
 };
@@ -112,7 +121,7 @@ window.renderWeek = () => {
     });
 };
 
-/* --- 📊 STATS --- */
+/* --- 💸 LEDGER & STATS --- */
 window.renderStats = () => {
     const container = document.getElementById('stats-container'); if(!container) return;
     let target = 0, paid = 0, arrears = 0, spend = 0;
@@ -122,39 +131,46 @@ window.renderStats = () => {
     container.innerHTML = `<div class="stats-hero-main"><div>£${profit.toFixed(2)}</div><small>PROFIT IN POCKET</small></div><div class="stats-grid-row"><div class="stats-card-heavy"><span>📈</span><small>MONTH INCOME</small><div class="stats-value-large" style="color:var(--success);">£${paid.toFixed(2)}</div></div><div class="stats-card-heavy"><span>📉</span><small>MONTH SPEND</small><div class="stats-value-large" style="color:var(--danger);">£${spend.toFixed(2)}</div></div></div><div class="stats-progress-box"><div style="display:flex;justify-content:space-between;font-weight:900;font-size:13px;"><span>PROGRESS</span><span>${progress}%</span></div><div class="progress-track"><div class="progress-fill-bar" style="width:${progress}%"></div></div></div>${arrears > 0 ? `<div class="stats-arrears-banner"><small style="display:block;font-size:11px;opacity:0.8;">ARREARS</small>£${arrears.toFixed(2)}</div>` : ''}`;
 };
 
-/* --- 💸 LEDGER --- */
 window.renderLedger = () => {
     const container = document.getElementById('ledger-list-container'); if(!container) return; container.innerHTML = '';
     let total = 0; db.expenses.forEach(e => total += n(e.amt));
     document.getElementById('ledgerTotalDisplay').innerText = `£${total.toFixed(2)}`;
     db.expenses.slice().reverse().forEach(e => {
         const div = document.createElement('div'); div.className = 'exp-pill';
-        div.ondblclick = () => { if(confirm("Delete?")) { db.expenses = db.expenses.filter(x => x.id !== e.id); saveData(); renderLedger(); renderStats(); } };
+        div.ondblclick = () => { if(confirm("Delete expense?")) { db.expenses = db.expenses.filter(x => x.id !== e.id); saveData(); renderLedger(); renderStats(); } };
         div.innerHTML = `<div><strong style="font-size:17px;">${e.desc}</strong><br><small style="opacity:0.5;">${e.date}</small></div><div style="color:var(--danger); font-weight:900; font-size:20px;">-£${n(e.amt).toFixed(2)}</div>`;
         container.appendChild(div);
     });
 };
-window.addExpense = () => { const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value); if(!d || a <= 0) return; db.expenses.push({ id: Date.now(), desc: d, amt: a, date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) }); saveData(); document.getElementById('expDesc').value=''; document.getElementById('expAmt').value=''; renderLedger(); renderStats(); };
 
-/* --- 🛠️ RECORDING ENGINE --- */
+/* --- 🛠️ RECORDING ENGINE (v32.5 FIX) --- */
 window.markAsPaid = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
-    if(n(c.paidThisMonth) > 0) { if(confirm(`Reset?`)) { c.paidThisMonth = 0; saveData(); renderWeek(); renderStats(); } return; }
+    if(n(c.paidThisMonth) > 0) { if(confirm(`Reset payment?`)) { c.paidThisMonth = 0; saveData(); renderWeek(); renderStats(); } return; }
     const amt = prompt(`Enter Paid for ${c.name}:`, c.price);
     if(amt !== null) {
-        c.paidThisMonth = n(amt);
-        db.history.push({ custId: id, amt: n(amt), date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) });
+        const val = n(amt);
+        c.paidThisMonth = val;
+        // v32.5 Fix: Ensure history array is properly pushed
+        if (!db.history) db.history = [];
+        db.history.push({
+            custId: id,
+            amt: val,
+            date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+        });
         saveData(); renderWeek(); renderStats();
     }
 };
 
-/* --- CORE UTILS --- */
+/* --- SYSTEM UTILS --- */
+window.renderMaster = () => { const container = document.getElementById('master-list-container'); if(!container) return; container.innerHTML = ''; const search = (document.getElementById('mainSearch').value || "").toLowerCase(); db.customers.forEach(c => { if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) { const div = document.createElement('div'); div.className = 'cust-pill'; div.onclick = () => editCust(c.id); let badge = (c.cleaned && n(c.paidThisMonth) < n(c.price)) ? `<div class="arrears-badge">UNPAID 🚩</div>` : ""; div.innerHTML = `${badge}<div><strong style="font-size:20px;">${c.name}</strong><br><small style="color:var(--accent); font-weight:700;">${c.houseNum} ${c.street}</small></div><div style="font-weight:900; color:var(--success); font-size:18px;">£${n(c.price).toFixed(2)}</div>`; container.appendChild(div); } }); };
+window.addExpense = () => { const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value); if(!d || a <= 0) return; db.expenses.push({ id: Date.now(), desc: d, amt: a, date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) }); saveData(); document.getElementById('expDesc').value=''; document.getElementById('expAmt').value=''; renderLedger(); renderStats(); };
 window.saveCustomer = () => { const name = document.getElementById('cName').value; if(!name) return; const id = document.getElementById('editId').value || Date.now().toString(); const ex = db.customers.find(x=>x.id===id); const entry = { id, name, phone: document.getElementById('cPhone').value, houseNum: document.getElementById('cHouseNum').value, street: document.getElementById('cStreet').value, postcode: document.getElementById('cPostcode').value.toUpperCase(), price: n(document.getElementById('cPrice').value), notes: document.getElementById('cNotes').value, week: ex?ex.week:"1", cleaned: ex?ex.cleaned:false, paidThisMonth: ex?ex.paidThisMonth:0 }; const idx = db.customers.findIndex(c => c.id === id); if(idx>-1) db.customers[idx]=entry; else db.customers.push(entry); saveData(); openTab('master-root'); };
 window.editCust = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; openTab('setup-root'); document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cPhone').value = c.phone; document.getElementById('cHouseNum').value = c.houseNum; document.getElementById('cStreet').value = c.street; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPrice').value = c.price; document.getElementById('cNotes').value = c.notes; };
 window.toggleBankLock = () => { const fields = document.querySelectorAll('.bank-input'), lockBtn = document.getElementById('bankLockBtn'), saveBtn = document.getElementById('bankSaveBtn'); const isLocked = fields[0].readOnly; fields.forEach(f => f.readOnly = !isLocked); lockBtn.innerText = isLocked ? "🔒 LOCK" : "🔓 UNLOCK"; saveBtn.classList.toggle('hidden', !isLocked); };
 window.saveBankDetails = () => { db.bank = { name: document.getElementById('bankName').value, sort: document.getElementById('bankSort').value, acc: document.getElementById('bankAcc').value }; saveData(); toggleBankLock(); alert("Bank Secured"); };
 window.copyBankDetails = () => { navigator.clipboard.writeText(`${db.bank.name}\n${db.bank.sort}\n${db.bank.acc}`).then(() => alert("Copied!")); };
-window.handleClean = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; c.cleaned = !c.cleaned; saveData(); renderWeek(); if(c.cleaned) { const msg = `Hi ${c.name} windows cleaned. £${n(c.price).toFixed(2)}.\n\nBank: ${db.bank.name} ${db.bank.sort} ${db.bank.acc}`; document.getElementById('msgPreview').innerText = msg; document.getElementById('msgModal').classList.remove('hidden'); document.getElementById('modalButtons').innerHTML = `<button onclick="sendMsg('${c.phone}','wa','${encodeURIComponent(msg)}')" style="width:100%;margin-bottom:10px;background:#25d366;color:white;height:55px;border:none;border-radius:15px;font-weight:900;">WhatsApp</button><button onclick="sendMsg('${c.phone}','sms','${encodeURIComponent(msg)}')" style="width:100%;margin-bottom:10px;background:#007aff;color:white;height:55px;border:none;border-radius:15px;font-weight:900;">SMS</button><button onclick="closeMsgModal()" style="width:100%;height:45px;border:none;border-radius:15px;background:#8e8e93;color:white;">Skip</button>`; } };
+window.handleClean = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; c.cleaned = !c.cleaned; saveData(); renderWeek(); if(c.cleaned) { const msg = `Hi ${c.name} windows cleaned today. £${n(c.price).toFixed(2)}.\n\nBank: ${db.bank.name} ${db.bank.sort} ${db.bank.acc}`; document.getElementById('msgPreview').innerText = msg; document.getElementById('msgModal').classList.remove('hidden'); document.getElementById('modalButtons').innerHTML = `<button onclick="sendMsg('${c.phone}','wa','${encodeURIComponent(msg)}')" style="width:100%;margin-bottom:10px;background:#25d366;color:white;height:55px;border:none;border-radius:15px;font-weight:900;">WhatsApp</button><button onclick="sendMsg('${c.phone}','sms','${encodeURIComponent(msg)}')" style="width:100%;margin-bottom:10px;background:#007aff;color:white;height:55px;border:none;border-radius:15px;font-weight:900;">SMS</button><button onclick="closeMsgModal()" style="width:100%;height:45px;border:none;border-radius:15px;background:#8e8e93;color:white;">Skip</button>`; } };
 window.sendMsg = (p, m, msg) => { const c = (p||"").replace(/\s+/g,''); window.open(m==='wa' ? `https://wa.me/${c}?text=${msg}` : `sms:${c}?body=${msg}`, '_blank'); closeMsgModal(); };
 window.openMap = (addr) => { window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`, '_blank'); };
 window.closeMsgModal = () => document.getElementById('msgModal').classList.add('hidden');
