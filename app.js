@@ -94,7 +94,13 @@ window.renderStats = () => {
 window.viewWeek = (w) => { curWeek = w; openTab('week-view-root'); };
 window.renderWeek = () => {
     const bulk = document.getElementById('bulk-box'), list = document.getElementById('week-list-container'); if(!list) return;
-    bulk.innerHTML = `<button class="btn-wa" onclick="messageAll(${curWeek},'wa')">WA ALL W${curWeek}</button><button class="btn-sms" onclick="messageAll(${curWeek},'sms')">SMS ALL W${curWeek}</button>`;
+    
+    // UPDATED LABELS (v29.4)
+    bulk.innerHTML = `
+        <button class="btn-wa" onclick="messageAll(${curWeek},'wa')">WA Message all W${curWeek}</button>
+        <button class="btn-sms" onclick="messageAll(${curWeek},'sms')">SMS Message all W${curWeek}</button>
+    `;
+
     list.innerHTML = '';
     db.customers.filter(c => c.week == curWeek).forEach(c => {
         const div = document.createElement('div'); div.className = 'job-card';
