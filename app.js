@@ -14,25 +14,21 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.toggle('dark-mode', isDark);
         document.getElementById('themeCheckbox').checked = isDark;
         
-        // Initial Logo Set
         updateLogo(isDark);
 
         document.getElementById('themeCheckbox').addEventListener('change', (e) => {
             const dark = e.target.checked;
             document.body.classList.toggle('dark-mode', dark);
             localStorage.setItem('HP_Theme', dark);
-            updateLogo(dark); // RE-FIRE LOGO SWAP ON TOGGLE
+            updateLogo(dark);
         });
         updateHeader(); renderAll();
     } catch(e) { console.error("Restore Error", e); }
 });
 
-// v36.91 Force Logo Swap
 function updateLogo(isDark) {
     const logoImg = document.getElementById('mainLogo');
-    if(logoImg) {
-        logoImg.src = isDark ? 'Logo-Dark.png' : 'Logo.png';
-    }
+    if(logoImg) logoImg.src = isDark ? 'Logo-Dark.png' : 'Logo.png';
 }
 
 window.saveData = () => localStorage.setItem(DB_KEY, JSON.stringify(db));
@@ -127,6 +123,7 @@ window.renderLedger = () => {
     document.getElementById('ledgerTotalDisplay').innerText = `£${total.toFixed(2)}`;
     db.expenses.slice().reverse().forEach(e => {
         const div = document.createElement('div'); div.className = 'LD-PILL';
+        div.ondblclick = () => { if(confirm("Delete?")) { db.expenses = db.expenses.filter(x => x.id !== e.id); saveData(); renderLedger(); renderStats(); } };
         div.innerHTML = `<div><strong>${e.cat||'📦'} ${e.desc}</strong><br><small>${e.date}</small></div><div style="color:var(--danger); font-weight:900;">-£${n(e.amt).toFixed(2)}</div>`;
         container.appendChild(div);
     });
@@ -146,7 +143,7 @@ window.editCust = (id) => {
 window.showJobBriefing = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
     const currentOwed = c.cleaned ? (n(c.price) - n(c.paidThisMonth)) : 0;
-    document.getElementById('briefingData').innerHTML = `<div style="font-size:26px; font-weight:900; color:var(--accent);">${c.name}</div><div style="font-size:16px; font-weight:700; opacity:0.8;">${c.houseNum} ${c.street}</div><div style="font-size:14px; opacity:0.5; margin-bottom:20px;">📍 ${c.postcode} | 📱 ${c.phone}</div>`;
+    document.getElementById('briefingData').innerHTML = `<div style="font-size:26px; font-weight:900; color:var(--accent);">${c.name}</div><div style="font-size:16px; font-weight:700; opacity:0.8;">${c.houseNum} ${c.street}</div><div style="font-size:14px; opacity:0.5; margin-bottom:20px;">📍 ${c.postcode} | 📱 ${c.phone} | 📅 ${c.day}s</div>`;
     const settleBox = document.getElementById('quickSettleContainer'); settleBox.innerHTML = currentOwed > 0 ? `<button style="width:100%; height:70px; background:var(--success); color:white; border:none; border-radius:20px; font-weight:900; margin-bottom:15px;" onclick="quickSettle('${c.id}', ${currentOwed})">💰 Settle £${currentOwed.toFixed(2)}</button>` : '';
     document.getElementById('briefEditBtn').onclick = () => { closeBriefing(); editCust(id); };
     document.getElementById('briefingModal').classList.remove('hidden');
