@@ -1,4 +1,4 @@
-/* --- v42.5 IRON FOUNDATION --- */
+/* --- v42.6 PRECISION CENTER ARCHITECTURE --- */
 :root { --accent: #007aff; --bg: #f2f2f7; --card: #ffffff; --text: #000; --success: #34C759; --danger: #ff453a; --ios-grey: #e9e9eb; --grad: linear-gradient(135deg, #007aff 0%, #0051a8 100%); }
 body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; --ios-grey: #39393d; }
 
@@ -9,56 +9,78 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-hei
 .tab-content.active { display: block !important; opacity: 1; }
 
 /* HEADER LOCKDOWN */
-#G-HEADER { width: 100%; height: 220px !important; text-align: center; padding-top: 15px; flex-shrink: 0; z-index: 50; position: relative; }
-.G-LOGO-WRAP img { width: 240px; height: auto; display: block; margin: 0 auto; }
-.DATE-CONTAINER { width: 100%; height: 40px; display: flex; align-items: center; justify-content: center; margin-top: 5px; }
-#dateText { font-size: 28px !important; font-weight: 950; color: var(--accent); }
+#G-HEADER { width: 100%; height: 230px !important; text-align: center; padding-top: 15px; flex-shrink: 0; z-index: 50; position: relative; }
+.G-LOGO-WRAP img { width: 220px; height: auto; display: block; margin: 0 auto 10px; }
 
-/* 🛡️ THE IRON HUB - MANUAL PLACEMENT */
-.IRON-HUB-WRAPPER { 
-    width: 400px; 
-    margin: 20px auto; 
-    text-align: center; 
-    padding: 0; 
+/* 🛠️ CENTRAL STATUS POD - SIDE BY SIDE */
+.CENTRAL-STATUS-POD { 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    gap: 15px; 
+    width: 100%; 
+    height: 50px; 
+    margin-bottom: 10px;
+}
+
+.G-WEATHER-PILL { 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 8px; 
+    background: var(--ios-grey); 
+    width: 120px; 
+    height: 45px; 
+    border-radius: 25px; 
+    cursor: pointer; 
+}
+
+.G-SWITCH-WRAP { display: flex; align-items: center; height: 45px; }
+.ios-switch { position: relative; display: inline-block; width: 60px; height: 32px; }
+.ios-switch input { opacity: 0; width: 0; height: 0; }
+.ios-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--ios-grey); transition: .4s; border-radius: 34px; }
+.ios-slider:before { position: absolute; content: ""; height: 24px; width: 24px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .ios-slider { background-color: var(--success); }
+input:checked + .ios-slider:before { transform: translateX(28px); }
+
+.DATE-CONTAINER { width: 100%; height: 30px; display: flex; align-items: center; justify-content: center; margin-top: 5px; }
+#dateText { font-size: 24px !important; font-weight: 950; color: var(--accent); }
+
+/* 🧱 THE PRECISION HUB CONTAINER */
+.HUB-LOCK-CONTAINER { 
+    width: 380px; 
+    margin: 10px auto; 
     display: block; 
 }
 
-.IRON-BTN { 
-    display: inline-block; 
-    width: 180px !important; 
-    height: 160px !important; 
-    margin: 10px; 
-    vertical-align: top; 
-    border-radius: 40px; 
+.GRID-ROW { 
+    display: flex; 
+    justify-content: center; 
+    gap: 15px; 
+    margin-bottom: 15px; 
+}
+
+.BLOCK-BTN { 
+    width: 175px !important; 
+    height: 150px !important; 
+    border-radius: 35px; 
     background: var(--card); 
     border: none; 
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1); 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    box-shadow: 0 8px 15px rgba(0,0,0,0.08); 
     color: var(--text); 
 }
 
-.IRON-FULL { 
-    width: 380px !important; 
-    background: var(--grad) !important; 
-    color: white !important; 
-}
+.FULL-W { width: 365px !important; background: var(--grad) !important; color: white !important; }
 
-.I-LOCK { font-size: 50px !important; display: block; margin-top: 20px; pointer-events: none; }
-.T-LOCK { font-size: 18px !important; font-weight: 950; text-transform: uppercase; margin-top: 10px; display: block; pointer-events: none; }
-
-/* STATS ELEMENTS */
-.ST-HERO { background: var(--card); border: 5px solid var(--accent); padding: 45px; border-radius: 50px; text-align: center; margin: 25px; flex-shrink: 0; }
-.ST-ARREARS-VAULT { background: var(--danger); color: white; padding: 30px; border-radius: 40px; text-align: center; margin: 25px; flex-shrink: 0; }
-
-/* 💸 STATS EXPENSE LIST */
-.STATS-EXPENSE-CARD { background: var(--card); margin: 25px 25px 120px; padding: 35px; border-radius: 45px; flex-shrink: 0; }
-.STATS-EXP-ROW { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-weight: 800; }
-
-/* VAULTS */
-.VAULT-CARD { background: var(--card); margin: 25px; padding: 30px; border-radius: 45px; }
-.VAULT-ROW { display: flex; align-items: center; height: 80px !important; border-bottom: 2px solid var(--ios-grey); gap: 15px; }
-.VAULT-ROW input { flex: 1; border: none; background: transparent; font-size: 20px !important; font-weight: 700; height: 100%; outline: none; }
+.I-LOCK { font-size: 45px !important; display: block; pointer-events: none; }
+.T-LOCK { font-size: 16px !important; font-weight: 900; text-transform: uppercase; margin-top: 8px; display: block; pointer-events: none; }
 
 /* SHARED */
-.SYNC-AREA { width: 100%; height: 100px; display: flex; align-items: center; justify-content: center; margin-top: 15px; }
-.SYNC-BTN-LOCKED { width: 340px; height: 75px !important; border-radius: 40px; border: 3px solid var(--accent); background: transparent; color: var(--accent); font-weight: 950; font-size: 18px; }
-.FIXED-BACK-BTN { width: 340px; height: 80px !important; border-radius: 40px; border: none; background: var(--card); color: var(--accent); font-weight: 950; font-size: 20px; margin: 0 auto 30px; display: flex; align-items: center; justify-content: center; }
+.SYNC-AREA { width: 100%; text-align: center; margin-top: 10px; }
+.SYNC-BTN-LOCKED { width: 340px; height: 70px; border-radius: 35px; border: 3px solid var(--accent); background: transparent; color: var(--accent); font-weight: 950; font-size: 18px; }
+.FIXED-BACK-BTN { width: 340px; height: 75px; border-radius: 35px; border: none; background: var(--card); color: var(--accent); font-weight: 950; font-size: 18px; margin: 0 auto 30px; display: flex; align-items: center; justify-content: center; }
+.VAULT-NOTES-XL { width: 100%; height: 250px; border-radius: 20px; background: var(--bg); border: none; padding: 20px; color: var(--text); font-size: 18px; }
