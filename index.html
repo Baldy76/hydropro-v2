@@ -3,14 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v29.7</title>
-    <link rel="stylesheet" href="styles.css?v=297">
+    <title>Hydro Pro v30.0</title>
+    <link rel="stylesheet" href="styles.css?v=300">
 </head>
 <body class="light-mode">
 
     <header id="global-shield">
-        <div class="header-top"><img src="Logo.png" class="oblong-logo" alt="Logo"><button id="themeToggleBtn" onclick="toggleDarkMode()">🌙</button></div>
-        <div class="header-greet"><span id="greetText"></span><span id="dateText"></span></div>
+        <div class="nav-container-transparent">
+            <div class="logo-wrap">
+                <img src="Logo.png" class="logo-fluid" alt="HydroPro">
+            </div>
+            <div class="toggle-wrap">
+                <label class="theme-slider">
+                    <input type="checkbox" id="themeCheckbox" onclick="toggleDarkMode()">
+                    <span class="slider-round"></span>
+                </label>
+            </div>
+        </div>
+        <div class="header-greet">
+            <span id="greetText"></span>
+            <span id="dateText"></span>
+        </div>
     </header>
 
     <div id="app-viewport">
@@ -101,10 +114,10 @@
         </section>
     </div>
 
-    <footer id="global-version-footer">v29.7</footer>
+    <footer id="global-version-footer">v30.0 - Visual Overhaul</footer>
 
     <div id="msgModal" class="modal-overlay hidden" onclick="closeMsgModal()"><div class="modal-content" onclick="event.stopPropagation()"><h3>Send Invoice?</h3><p id="msgPreview" style="white-space: pre-wrap; text-align: left; font-size: 13px; line-height: 1.5; background: var(--bg); padding: 15px; border-radius: 15px; margin-bottom: 20px; color: var(--text); font-weight: 500;"></p><div id="modalButtons"></div></div></div>
 
-    <script src="app.js?v=297"></script>
+    <script src="app.js?v=300"></script>
 </body>
 </html>
