@@ -20,34 +20,25 @@ window.toggleDarkMode = () => {
 
 window.openTab = (fenceId) => {
     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-    document.getElementById(fenceId).classList.add('active');
+    const target = document.getElementById(fenceId);
+    if(target) target.classList.add('active');
     window.scrollTo(0,0);
     renderAll();
 };
 
-/* --- FENCE: LEDGER ROBOTS --- */
-
+/* --- FENCE: LEDGER --- */
 window.renderLedgerFence = () => {
     const container = document.getElementById('expense-list-container');
     if(!container) return;
     container.innerHTML = '';
-    
     if(db.expenses.length === 0) {
-        container.innerHTML = '<div class="expense-tile" style="justify-content:center; opacity:0.5">No expenses logged this month.</div>';
+        container.innerHTML = '<div class="expense-tile" style="justify-content:center; opacity:0.5">No expenses logged.</div>';
         return;
     }
-
     db.expenses.slice().reverse().forEach(e => {
         const div = document.createElement('div');
         div.className = 'expense-tile';
-        div.innerHTML = `
-            <div>
-                <strong style="display:block; font-size:18px;">${e.desc}</strong>
-                <small style="opacity:0.6; font-weight:700;">${e.date}</small>
-            </div>
-            <div style="color:var(--danger); font-weight:900; font-size:20px;">
-                -£${n(e.amt).toFixed(2)}
-            </div>`;
+        div.innerHTML = `<div><strong style="display:block; font-size:18px;">${e.desc}</strong><small style="opacity:0.6; font-weight:700;">${e.date}</small></div><div style="color:var(--danger); font-weight:900; font-size:20px;">-£${n(e.amt).toFixed(2)}</div>`;
         container.appendChild(div);
     });
 };
@@ -56,14 +47,7 @@ window.addExpense = () => {
     const d = document.getElementById('expDesc').value;
     const a = n(document.getElementById('expAmt').value);
     if(!d || a <= 0) return alert("Enter description and amount.");
-    
-    db.expenses.push({
-        id: Date.now(),
-        desc: d,
-        amt: a,
-        date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
-    });
-    
+    db.expenses.push({ id: Date.now(), desc: d, amt: a, date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) });
     saveData();
     document.getElementById('expDesc').value = '';
     document.getElementById('expAmt').value = '';
@@ -79,9 +63,7 @@ window.exportToCSV = (type) => {
     }
     const b = new Blob([csv], { type: 'text/csv' });
     const u = window.URL.createObjectURL(b);
-    const a = document.createElement('a');
-    a.href = u; a.download = `HydroPro_${type}.csv`;
-    a.click();
+    const a = document.createElement('a'); a.href = u; a.download = `HydroPro_${type}.csv`; a.click();
 };
 
 /* --- GLOBAL CORE --- */
@@ -91,6 +73,7 @@ window.renderAll = () => {
     if(document.getElementById('stats-dashboard-container')) renderStatsFence();
     renderLedgerFence();
 };
+
 window.updateHeader = () => {
     const hr = new Date().getHours();
     const g = (hr < 12) ? "GOOD MORNING" : (hr < 18) ? "GOOD AFTERNOON" : "GOOD EVENING";
