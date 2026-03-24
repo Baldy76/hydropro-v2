@@ -26,18 +26,15 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch(e) { console.error("Boot Error", e); }
 });
 
-/* --- 🌦️ WEATHER SERVICE --- */
+/* --- 🌦️ WEATHER --- */
 async function initWeather() {
     const options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
     navigator.geolocation.getCurrentPosition(async (pos) => {
-        const { latitude, longitude } = pos.coords;
         try {
-            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${W_API_KEY}&units=metric`;
-            const res = await fetch(url);
+            const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&appid=${W_API_KEY}&units=metric`);
             const data = await res.json();
             const iconMap = { "Clear": "☀️", "Clouds": "☁️", "Rain": "🌧️", "Drizzle": "🌦️", "Thunderstorm": "⛈️", "Snow": "❄️", "Mist": "🌫️" };
-            const icon = iconMap[data.weather[0].main] || "🌤️";
-            document.getElementById('w-icon').innerText = icon;
+            document.getElementById('w-icon').innerText = iconMap[data.weather[0].main] || "🌤️";
             document.getElementById('w-text').innerText = `${Math.round(data.main.temp)}°C ${data.weather[0].main.toUpperCase()}`;
         } catch (err) { document.getElementById('w-text').innerText = "API Offline"; }
     }, (err) => { document.getElementById('w-text').innerText = "GPS Offline"; }, options);
@@ -50,76 +47,64 @@ window.launchWeatherApp = () => {
     } else { window.open("https://www.google.com/search?q=weather", "_blank"); }
 };
 
-/* --- 📄 RECEIPT ENGINE v38.3 --- */
+/* --- 📄 RECEIPT ENGINE --- */
 window.generateReceipt = (id) => {
-    const c = db.customers.find(x => x.id === id);
-    if (!c) return;
+    const c = db.customers.find(x => x.id === id); if (!c) return;
     const date = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-    
-    const zone = document.getElementById('receipt-zone');
-    zone.innerHTML = `
-        <div class="receipt-header">
-            <img src="Logo.png" class="receipt-logo">
+    document.getElementById('receipt-zone').innerHTML = `
+        <div style="text-align:center; padding:40px; background:white; color:black;">
+            <img src="Logo.png" style="width:200px; margin-bottom:20px;">
             <h2>Payment Receipt</h2>
-        </div>
-        <div class="paid-stamp">PAID IN FULL</div>
-        <div class="receipt-details">
-            <p><strong>Date:</strong> ${date}</p>
-            <p><strong>Customer:</strong> ${c.name}</p>
-            <p><strong>Property:</strong> ${c.houseNum} ${c.street}, ${c.postcode}</p>
-            <p><strong>Service:</strong> Window Cleaning</p>
-            <hr style="border:1px solid #eee; margin:20px 0;">
-            <p style="font-size:24px;"><strong>TOTAL PAID: £${n(c.price).toFixed(2)}</strong></p>
-        </div>
-        <p style="margin-top:40px; font-style:italic; opacity:0.6;">Thank you for your business!</p>
-    `;
+            <div class="paid-stamp">PAID IN FULL</div>
+            <div style="text-align:left; line-height:2;">
+                <p><strong>Date:</strong> ${date}</p>
+                <p><strong>Customer:</strong> ${c.name}</p>
+                <p><strong>Property:</strong> ${c.houseNum} ${c.street}, ${c.postcode}</p>
+                <hr>
+                <p style="font-size:24px;"><strong>TOTAL PAID: £${n(c.price).toFixed(2)}</strong></p>
+            </div>
+            <p style="margin-top:40px; font-style:italic;">Thank you for your business!</p>
+        </div>`;
     window.print();
 };
 
-/* --- CORE FUNCTIONS --- */
+/* --- 📅 WEEKS LOGIC --- */
 window.viewWeek = (w) => { curWeek = w; openTab('week-view-root'); renderWeek(); };
 window.setWorkingDay = (day, btn) => { 
     workingDay = day; 
     document.querySelectorAll('.DAY-BTN').forEach(b => b.classList.remove('active')); 
-    btn.classList.add('active'); 
-    renderWeek(); 
+    btn.classList.add('active'); renderWeek(); 
 };
 
 window.renderWeek = () => {
-    const list = document.getElementById('week-list-container');
-    if(!list) return;
-    list.innerHTML = '';
-    const jobs = db.customers.filter(c => c.week == curWeek && c.day == workingDay);
-    
-    if (jobs.length === 0) {
-        list.innerHTML = `<p style="text-align:center; opacity:0.3; padding:40px;">No jobs scheduled.</p>`;
-        return;
-    }
-
-    jobs.forEach(c => {
+    const list = document.getElementById('week-list-container'); if(!list) return; list.innerHTML = '';
+    db.customers.filter(c => c.week == curWeek && c.day == workingDay).forEach(c => {
         const div = document.createElement('div'); div.className = 'JOB-CARD';
         div.onclick = () => showJobBriefing(c.id);
-        div.innerHTML = `<div class="CT-TEXT-STACK"><strong>${c.name} ${c.cleaned?'✅':''}</strong><small>${c.houseNum} ${c.street}</small></div><div class="JOB-ACTIONS" onclick="event.stopPropagation()"><button class="BTN-ACTION" style="background:var(--accent)" onclick="window.open('tel:${c.phone}')">📱</button><button class="BTN-ACTION" style="background:#ffeb3b; color:#333" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.houseNum+' '+c.street+' '+c.postcode)}')">📍</button><button class="BTN-ACTION" style="background:${c.cleaned?'var(--success)':'#aaa'}" onclick="handleClean('${c.id}')">🧼</button><button class="BTN-ACTION" style="background:${n(c.paidThisMonth)>0?'var(--accent)':'#aaa'}" onclick="markAsPaid('${c.id}')">£</button></div>`;
+        div.innerHTML = `
+            <div class="CT-TEXT-STACK"><strong>${c.name} ${c.cleaned?'✅':''}</strong><small>${c.houseNum} ${c.street}</small></div>
+            <div class="JOB-ACTIONS" onclick="event.stopPropagation()">
+                <button class="BTN-ACTION" style="background:var(--accent)" onclick="window.open('tel:${c.phone}')">📱</button>
+                <button class="BTN-ACTION" style="background:#ffeb3b; color:#333" onclick="window.open('http://maps.google.com/?q=${encodeURIComponent(c.houseNum+' '+c.street+' '+c.postcode)}')">📍</button>
+                <button class="BTN-ACTION" style="background:${c.cleaned?'var(--success)':'#aaa'}" onclick="handleClean('${c.id}')">🧼</button>
+                <button class="BTN-ACTION" style="background:${n(c.paidThisMonth)>0?'var(--accent)':'#aaa'}" onclick="markAsPaid('${c.id}')">£</button>
+            </div>`;
         list.appendChild(div);
     });
 };
 
+/* --- SHARED CORE --- */
 window.showJobBriefing = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
     const history = (db.history || []).filter(h => h.custId === id).slice(-3).reverse();
     let histHtml = history.length > 0 ? '' : '<p style="opacity:0.4; font-size:13px; font-weight:600;">No recent activity.</p>';
-    history.forEach(h => { histHtml += `<div class="MD-HIST-ROW"><span>${h.date}</span><span style="color:var(--success)">+£${n(h.amt).toFixed(2)}</span></div>`; });
-    
-    document.getElementById('briefingData').innerHTML = `<div style="font-size:28px; font-weight:900; color:var(--accent); margin-bottom:5px;">${c.name}</div><div class="MD-INFO-LIST"><div class="MD-INFO-ITEM"><span>🏠</span> ${c.houseNum} ${c.street}</div><div class="MD-INFO-ITEM"><span>📍</span> ${c.postcode || 'No Postcode'}</div><div class="MD-INFO-ITEM"><span>💰</span> Rate: £${n(c.price).toFixed(2)}</div></div><div class="MD-HIST-WRAP"><span class="MD-HIST-TITLE">Last 3 Payments</span>${histHtml}</div>`;
-    
-    const receiptBtnBox = document.getElementById('receiptButtonContainer');
-    receiptBtnBox.innerHTML = n(c.paidThisMonth) > 0 ? `<button style="width:100%; height:60px; background:#5856d6; color:white; border:none; border-radius:18px; font-weight:900; margin-bottom:10px;" onclick="generateReceipt('${c.id}')">📄 Share Receipt</button>` : '';
-
+    history.forEach(h => { histHtml += `<div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid rgba(0,0,0,0.05); font-weight:800;"><span>${h.date}</span><span style="color:var(--success)">+£${n(h.amt).toFixed(2)}</span></div>`; });
+    document.getElementById('briefingData').innerHTML = `<div style="font-size:28px; font-weight:900; color:var(--accent); margin-bottom:5px;">${c.name}</div><div style="margin:15px 0; display:flex; flex-direction:column; gap:10px;"><div style="background:var(--bg); padding:10px; border-radius:12px; font-weight:700;">🏠 ${c.houseNum} ${c.street}</div><div style="background:var(--bg); padding:10px; border-radius:12px; font-weight:700;">💰 Rate: £${n(c.price).toFixed(2)}</div></div><div style="background:rgba(0,122,255,0.05); padding:15px; border-radius:20px; margin-bottom:20px;"><small style="text-transform:uppercase; font-weight:900; opacity:0.5;">Recent Payments</small>${histHtml}</div>`;
+    document.getElementById('receiptButtonContainer').innerHTML = n(c.paidThisMonth) > 0 ? `<button style="width:100%; height:60px; background:#5856d6; color:white; border:none; border-radius:18px; font-weight:900; margin-bottom:10px;" onclick="generateReceipt('${c.id}')">📄 Share Receipt</button>` : '';
     document.getElementById('briefEditBtn').onclick = () => { closeBriefing(); editCust(id); };
     document.getElementById('briefingModal').classList.remove('hidden');
 };
 
-/* --- (Rest of standard Master CSV/Save logic from v38.2) --- */
 function updateLogo(isDark) { const logoImg = document.getElementById('mainLogo'); if(logoImg) logoImg.src = isDark ? 'Logo-Dark.png' : 'Logo.png'; }
 window.saveData = () => localStorage.setItem(DB_KEY, JSON.stringify(db));
 window.openTab = (id) => { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); renderAll(); };
@@ -130,7 +115,7 @@ window.renderStats = () => {
     db.customers.forEach(c => { targetIncome += n(c.price); paid += n(c.paidThisMonth); });
     db.expenses.forEach(e => { totalSpend += n(e.amt); });
     const progressPercent = targetIncome > 0 ? Math.min(Math.round((paid / targetIncome) * 100), 100) : 0;
-    container.innerHTML = `<div class="ST-HERO"><div>£${(paid - totalSpend).toFixed(2)}</div><small>NET PROFIT</small></div><div class="ST-GRID"><div class="ST-BUBBLE" style="border-bottom: 5px solid var(--success);"><small>INCOME</small><strong>£${paid.toFixed(2)}</strong></div><div class="ST-BUBBLE" style="border-bottom: 5px solid var(--danger);"><small>SPEND</small><strong>£${totalSpend.toFixed(2)}</strong></div></div><div class="ST-PROG-CARD"><div class="ST-PROG-HEADER"><span>Round Target</span><span>${progressPercent}%</span></div><div class="ST-PROG-TRACK"><div class="ST-PROG-FILL" style="width:${progressPercent}%"></div></div></div>`;
+    container.innerHTML = `<div class="ST-HERO"><div>£${(paid - totalSpend).toFixed(2)}</div><small>NET PROFIT</small></div><div class="ST-GRID"><div class="ST-BUBBLE">INCOME<strong>£${paid.toFixed(2)}</strong></div><div class="ST-BUBBLE">SPEND<strong>£${totalSpend.toFixed(2)}</strong></div></div><div class="ST-PROG-CARD"><strong>Round Progress: ${progressPercent}%</strong><div class="ST-PROG-TRACK"><div class="ST-PROG-FILL" style="width:${progressPercent}%"></div></div></div>`;
 };
 window.renderMaster = () => {
     const container = document.getElementById('master-list-container'); if(!container) return; container.innerHTML = '';
