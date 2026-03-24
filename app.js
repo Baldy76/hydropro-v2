@@ -9,12 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const saved = localStorage.getItem(DB_KEY);
         if (saved) db = JSON.parse(saved);
         if (!db.history) db.history = [];
-        
         const isDark = localStorage.getItem('HP_Theme') === 'true';
         document.body.classList.toggle('dark-mode', isDark);
         document.getElementById('themeCheckbox').checked = isDark;
         updateLogo(isDark);
-
         document.getElementById('themeCheckbox').addEventListener('change', (e) => {
             const dark = e.target.checked;
             document.body.classList.toggle('dark-mode', dark);
@@ -43,13 +41,11 @@ window.renderAll = () => { renderMaster(); renderLedger(); renderStats(); render
 window.renderStats = () => {
     const container = document.getElementById('stats-container'); if(!container) return;
     let targetIncome = 0, paid = 0, arrears = 0, fuel = 0, gear = 0, food = 0, misc = 0;
-
     db.customers.forEach(c => { 
         targetIncome += n(c.price);
         paid += n(c.paidThisMonth); 
         if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth)); 
     });
-
     db.expenses.forEach(e => {
         const cat = (e.cat||"").toLowerCase();
         if(cat.includes('fuel')) fuel += n(e.amt);
@@ -57,11 +53,9 @@ window.renderStats = () => {
         else if(cat.includes('food')) food += n(e.amt);
         else misc += n(e.amt);
     });
-
     const totalSpend = fuel + gear + food + misc;
     const profit = paid - totalSpend;
     const progressPercent = targetIncome > 0 ? Math.min(Math.round((paid / targetIncome) * 100), 100) : 0;
-    
     container.innerHTML = `
         <div class="ST-HERO"><div>£${profit.toFixed(2)}</div><small>NET PROFIT</small></div>
         <div class="ST-GRID">
@@ -108,43 +102,38 @@ window.renderWeek = () => {
     db.customers.filter(c => c.week == curWeek && c.day == workingDay).forEach(c => {
         const div = document.createElement('div'); div.className = 'JOB-CARD';
         div.onclick = () => showJobBriefing(c.id);
-        div.innerHTML = `
-            <div class="CT-TEXT-STACK"><strong>${c.name} ${c.cleaned?'✅':''}</strong><small>${c.houseNum} ${c.street}</small></div>
-            <div class="JOB-ACTIONS" onclick="event.stopPropagation()">
-                <button class="BTN-ACTION" style="background:var(--accent)" onclick="window.open('tel:${c.phone}')">📱</button>
-                <button class="BTN-ACTION" style="background:#ffeb3b; color:#333" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.houseNum+' '+c.street+' '+c.postcode)}')">📍</button>
-                <button class="BTN-ACTION" style="background:${c.cleaned?'var(--success)':'#aaa'}" onclick="handleClean('${c.id}')">🧼</button>
-                <button class="BTN-ACTION" style="background:${n(c.paidThisMonth)>0?'var(--accent)':'#aaa'}" onclick="markAsPaid('${c.id}')">£</button>
-            </div>`;
+        div.innerHTML = `<div class="CT-TEXT-STACK"><strong>${c.name} ${c.cleaned?'✅':''}</strong><small>${c.houseNum} ${c.street}</small></div><div class="JOB-ACTIONS" onclick="event.stopPropagation()"><button class="BTN-ACTION" style="background:var(--accent)" onclick="window.open('tel:${c.phone}')">📱</button><button class="BTN-ACTION" style="background:#ffeb3b; color:#333" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.houseNum+' '+c.street+' '+c.postcode)}')">📍</button><button class="BTN-ACTION" style="background:${c.cleaned?'var(--success)':'#aaa'}" onclick="handleClean('${c.id}')">🧼</button><button class="BTN-ACTION" style="background:${n(c.paidThisMonth)>0?'var(--accent)':'#aaa'}" onclick="markAsPaid('${c.id}')">£</button></div>`;
         list.appendChild(div);
     });
 };
 
-/* --- 📱 MODAL --- */
-window.showJobBriefing = (id) => {
-    const c = db.customers.find(x => x.id === id); if(!c) return;
-    const history = (db.history || []).filter(h => h.custId === id).slice(-3).reverse();
-    let histHtml = history.length > 0 ? '' : '<p style="opacity:0.4; font-size:13px; font-weight:600;">No recent activity.</p>';
-    history.forEach(h => { histHtml += `<div class="MD-HIST-ROW"><span>${h.date}</span><span style="color:var(--success)">+£${n(h.amt).toFixed(2)}</span></div>`; });
-    const currentOwed = c.cleaned ? (n(c.price) - n(c.paidThisMonth)) : 0;
-    document.getElementById('briefingData').innerHTML = `<div style="font-size:28px; font-weight:900; color:var(--accent); margin-bottom:5px;">${c.name}</div><div class="MD-INFO-LIST"><div class="MD-INFO-ITEM"><span>🏠</span> ${c.houseNum} ${c.street}</div><div class="MD-INFO-ITEM"><span>📍</span> ${c.postcode || 'No Postcode'}</div><div class="MD-INFO-ITEM"><span>📱</span> ${c.phone || 'No Number'}</div><div class="MD-INFO-ITEM"><span>📅</span> Scheduled: ${c.day}s</div><div class="MD-INFO-ITEM" style="color:var(--success)"><span>💰</span> Rate: £${n(c.price).toFixed(2)}</div></div><div class="MD-HIST-WRAP"><span class="MD-HIST-TITLE">Last 3 Transactions</span>${histHtml}</div>${c.notes ? `<div style="font-size:13px; opacity:0.7; margin-bottom:20px; padding:0 10px;"><strong>Notes:</strong> ${c.notes}</div>` : ''}`;
-    const settleBox = document.getElementById('quickSettleContainer'); settleBox.innerHTML = currentOwed > 0 ? `<button style="width:100%; height:70px; background:var(--success); color:white; border:none; border-radius:20px; font-weight:900; font-size:18px; margin-bottom:15px;" onclick="quickSettle('${c.id}', ${currentOwed})">💰 Settle £${currentOwed.toFixed(2)} Now</button>` : '';
-    document.getElementById('briefEditBtn').onclick = () => { closeBriefing(); editCust(id); };
-    document.getElementById('briefingModal').classList.remove('hidden');
-};
-
-/* --- 💾 CSV BACKUP ENGINE --- */
-window.exportData = () => {
-    let cCSV = "Name,Phone,HouseNum,Street,Postcode,Day,Price,Week,Notes\n";
+/* --- 🍏 TRIPLE-LOCK CSV ENGINE v37.7 --- */
+window.exportData = async () => {
+    alert("Starting Backup: You will receive 3 files. Please tap 'Allow' if your phone asks to download multiple files.");
+    const date = new Date().toLocaleDateString();
+    
+    // 1. Customers
+    let cCSV = "\ufeffName,Phone,HouseNum,Street,Postcode,Day,Price,Week,Notes,Cleaned,PaidThisMonth\n";
     db.customers.forEach(c => {
-        cCSV += `"${c.name}","${c.phone||''}","${c.houseNum||''}","${c.street||''}","${c.postcode||''}","${c.day}","${c.price}","${c.week}","${(c.notes||'').replace(/\n/g,' ')}"\n`;
+        cCSV += `"${c.name}","${c.phone||''}","${c.houseNum||''}","${c.street||''}","${c.postcode||''}","${c.day}","${c.price}","${c.week}","${(c.notes||'').replace(/"/g,'""')}","${c.cleaned}","${c.paidThisMonth}"\n`;
     });
-    downloadCSV(cCSV, `HydroPro_Customers_${new Date().toLocaleDateString()}.csv`);
-    if(db.expenses.length > 0) {
-        let eCSV = "Date,Category,Description,Amount\n";
-        db.expenses.forEach(e => { eCSV += `"${e.date}","${e.cat}","${e.desc}","${e.amt}"\n`; });
-        downloadCSV(eCSV, `HydroPro_Expenses_${new Date().toLocaleDateString()}.csv`);
-    }
+    downloadCSV(cCSV, `HP_Customers_${date}.csv`);
+
+    // 2. Expenses (1s delay)
+    await new Promise(r => setTimeout(r, 1000));
+    let eCSV = "\ufeffDate,Category,Description,Amount\n";
+    db.expenses.forEach(e => {
+        eCSV += `"${e.date}","${e.cat}","${e.desc}","${e.amt}"\n`;
+    });
+    downloadCSV(eCSV, `HP_Expenses_${date}.csv`);
+
+    // 3. History (1s delay)
+    await new Promise(r => setTimeout(r, 1000));
+    let hCSV = "\ufeffDate,CustomerID,Amount\n";
+    db.history.forEach(h => {
+        hCSV += `"${h.date}","${h.custId}","${h.amt}"\n`;
+    });
+    downloadCSV(hCSV, `HP_History_${date}.csv`);
 };
 
 function downloadCSV(csv, name) {
@@ -155,30 +144,57 @@ function downloadCSV(csv, name) {
 }
 
 window.importData = (event) => {
-    const file = event.target.files[0]; if(!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        const rows = e.target.result.split('\n').slice(1);
-        const newCusts = [];
-        rows.forEach(row => {
-            if(row.trim() === '') return;
-            const cols = row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
-            const cl = (v) => (v||"").replace(/"/g, "").trim();
-            if(cols.length >= 7) {
-                newCusts.push({
-                    id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
-                    name: cl(cols[0]), phone: cl(cols[1]), houseNum: cl(cols[2]), street: cl(cols[3]), 
-                    postcode: cl(cols[4]), day: cl(cols[5]), price: n(cl(cols[6])), 
-                    week: cl(cols[7]) || "1", notes: cl(cols[8]) || "", cleaned: false, paidThisMonth: 0
-                });
-            }
-        });
-        if(newCusts.length > 0 && confirm(`Restore ${newCusts.length} customers?`)) {
-            db.customers = [...db.customers, ...newCusts]; saveData(); location.reload();
-        }
-    };
-    reader.readAsText(file);
+    const files = Array.from(event.target.files);
+    if (files.length === 0) return;
+    let count = 0;
+    files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const text = e.target.result;
+            const name = file.name.toLowerCase();
+            if (name.includes("customer")) importCust(text);
+            else if (name.includes("expense")) importExp(text);
+            else if (name.includes("history")) importHist(text);
+            count++;
+            if(count === files.length) { saveData(); alert("Restore Complete!"); location.reload(); }
+        };
+        reader.readAsText(file);
+    });
 };
+
+function importCust(text) {
+    const rows = text.split('\n').slice(1);
+    rows.forEach(row => {
+        if(!row.trim()) return;
+        const cols = row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+        const cl = (v) => (v||"").replace(/"/g, "").trim();
+        if(cols.length >= 7) {
+            db.customers.push({
+                id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                name: cl(cols[0]), phone: cl(cols[1]), houseNum: cl(cols[2]), street: cl(cols[3]),
+                postcode: cl(cols[4]), day: cl(cols[5]), price: n(cl(cols[6])),
+                week: cl(cols[7]) || "1", notes: cl(cols[8]) || "",
+                cleaned: cl(cols[9]) === "true", paidThisMonth: n(cl(cols[10]))
+            });
+        }
+    });
+}
+function importExp(text) {
+    const rows = text.split('\n').slice(1);
+    rows.forEach(row => {
+        const cols = row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+        const cl = (v) => (v||"").replace(/"/g, "").trim();
+        if(cols.length >= 4) db.expenses.push({ date: cl(cols[0]), cat: cl(cols[1]), desc: cl(cols[2]), amt: n(cl(cols[3])) });
+    });
+}
+function importHist(text) {
+    const rows = text.split('\n').slice(1);
+    rows.forEach(row => {
+        const cols = row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+        const cl = (v) => (v||"").replace(/"/g, "").trim();
+        if(cols.length >= 3) db.history.push({ date: cl(cols[0]), custId: cl(cols[1]), amt: n(cl(cols[2])) });
+    });
+}
 
 window.nuclearReset = () => {
     if(confirm("☢️ NUCLEAR OPTION: Delete EVERYTHING?")) {
@@ -188,7 +204,7 @@ window.nuclearReset = () => {
     }
 };
 
-/* --- CORE UTILS --- */
+/* --- SHARED --- */
 window.quickSettle = (id, amt) => { const c = db.customers.find(x => x.id === id); c.paidThisMonth = n(c.price); db.history.push({ custId: id, amt: n(amt), date: 'Debt-Settle' }); saveData(); closeBriefing(); renderWeek(); renderStats(); };
 window.addExpense = () => {
     const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value), c = document.getElementById('expCat').value;
@@ -223,4 +239,4 @@ window.markAsPaid = (id) => { const c = db.customers.find(x => x.id === id); if(
 window.updateHeader = () => { document.getElementById('dateText').innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }); };
 window.launchRoutePlanner = () => { const list = db.customers.filter(c => c.week == curWeek && c.day == workingDay && !c.cleaned); if(list.length === 0) return alert("Done!"); const baseUrl = "https://www.google.com/maps/dir/"; const stops = list.map(c => encodeURIComponent(`${c.houseNum} ${c.street} ${c.postcode}`)).join('/'); window.open(`${baseUrl}${stops}`, '_blank'); };
 window.closeBriefing = () => document.getElementById('briefingModal').classList.add('hidden');
-window.completeCycle = () => { if(confirm("Clear month? Statuses reset but history is kept.")) { db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload(); } };
+window.completeCycle = () => { if(confirm("Clear month?")) { db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload(); } };
