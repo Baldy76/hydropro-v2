@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('mainLogo').src = isDark ? 'Logo-Dark.png' : 'Logo.png';
         updateHeader();
         renderAll();
-    } catch(e) { console.error("Critical Boot Error:", e); }
+    } catch(e) { console.error("Restore Error:", e); }
 });
 
 /* --- CORE NAVIGATION --- */
@@ -70,7 +70,7 @@ window.renderMaster = () => {
     });
 };
 
-/* --- STATS ENGINE (RECONCILED) --- */
+/* --- STATS ENGINE --- */
 window.renderStats = () => {
     const container = document.getElementById('stats-container'); if(!container) return;
     let target = 0, paid = 0, arrears = 0, spend = 0;
@@ -160,7 +160,7 @@ window.renderLedger = () => {
 
 /* --- SYSTEM UTILS --- */
 window.addExpense = () => { const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value); if(!d || a <= 0) return; db.expenses.push({ id: Date.now(), desc: d, amt: a, date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) }); saveData(); document.getElementById('expDesc').value=''; document.getElementById('expAmt').value=''; renderLedger(); renderStats(); };
-window.saveCustomer = () => { const name = document.getElementById('cName').value; if(!name) return; const id = document.getElementById('editId').value || Date.now().toString(); const ex = db.customers.find(x=>x.id===id); const entry = { id, name, phone: document.getElementById('cPhone').value, houseNum: document.getElementById('cHouseNum').value, street: document.getElementById('cStreet').value, postcode: document.getElementById('cPostcode').value.toUpperCase(), price: n(document.getElementById('cPrice').value), notes: document.getElementById('cNotes').value, week: ex?ex.week:"1", cleaned: ex?ex.cleaned:false, paidThisMonth: ex?ex.paidThisMonth:0 }; const idx = db.customers.findIndex(c => c.id === id); if(idx>-1) db.customers[idx]=entry; else db.customers.push(entry); saveData(); openTab('master-root'); };
+window.saveCustomer = () => { const name = document.getElementById('cName').value; if(!name) return alert("Name Required"); const id = document.getElementById('editId').value || Date.now().toString(); const ex = db.customers.find(x=>x.id===id); const entry = { id, name, phone: document.getElementById('cPhone').value, houseNum: document.getElementById('cHouseNum').value, street: document.getElementById('cStreet').value, postcode: document.getElementById('cPostcode').value.toUpperCase(), price: n(document.getElementById('cPrice').value), notes: document.getElementById('cNotes').value, week: ex?ex.week:"1", cleaned: ex?ex.cleaned:false, paidThisMonth: ex?ex.paidThisMonth:0 }; const idx = db.customers.findIndex(c => c.id === id); if(idx>-1) db.customers[idx]=entry; else db.customers.push(entry); saveData(); openTab('master-root'); };
 window.editCust = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; openTab('setup-root'); document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cPhone').value = c.phone; document.getElementById('cHouseNum').value = c.houseNum; document.getElementById('cStreet').value = c.street; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPrice').value = c.price; document.getElementById('cNotes').value = c.notes; };
 window.toggleBankLock = () => { const fields = document.querySelectorAll('.bank-field'), lockBtn = document.getElementById('bankLockBtn'), saveBtn = document.getElementById('bankSaveBtn'); const isLocked = fields[0].readOnly; fields.forEach(f => f.readOnly = !isLocked); lockBtn.innerText = isLocked ? "🔒 LOCK" : "🔓 UNLOCK"; saveBtn.classList.toggle('hidden', !isLocked); };
 window.saveBankDetails = () => { db.bank = { name: document.getElementById('bankName').value, sort: document.getElementById('bankSort').value, acc: document.getElementById('bankAcc').value }; saveData(); toggleBankLock(); alert("Bank Secured"); };
