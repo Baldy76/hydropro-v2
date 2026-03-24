@@ -39,17 +39,15 @@ window.openTab = (id) => {
 
 window.renderAll = () => { renderMaster(); renderLedger(); renderStats(); renderWeek(); };
 
-/* --- 📊 STATS (Progress Bar Restored v37.2) --- */
+/* --- 📊 STATS --- */
 window.renderStats = () => {
     const container = document.getElementById('stats-container'); if(!container) return;
     let targetIncome = 0, paid = 0, arrears = 0, fuel = 0, gear = 0, food = 0, misc = 0;
-
     db.customers.forEach(c => { 
         targetIncome += n(c.price);
         paid += n(c.paidThisMonth); 
         if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth)); 
     });
-
     db.expenses.forEach(e => {
         const cat = (e.cat||"").toLowerCase();
         if(cat.includes('fuel')) fuel += n(e.amt);
@@ -57,7 +55,6 @@ window.renderStats = () => {
         else if(cat.includes('food')) food += n(e.amt);
         else misc += n(e.amt);
     });
-
     const totalSpend = fuel + gear + food + misc;
     const profit = paid - totalSpend;
     const progressPercent = targetIncome > 0 ? Math.min(Math.round((paid / targetIncome) * 100), 100) : 0;
@@ -68,13 +65,11 @@ window.renderStats = () => {
             <div class="ST-BUBBLE" style="border-bottom: 5px solid var(--success);"><small>INCOME</small><strong>£${paid.toFixed(2)}</strong></div>
             <div class="ST-BUBBLE" style="border-bottom: 5px solid var(--danger);"><small>SPEND</small><strong>£${totalSpend.toFixed(2)}</strong></div>
         </div>
-
         <div class="ST-PROG-CARD">
             <div class="ST-PROG-HEADER"><span>Monthly Target</span><span>${progressPercent}%</span></div>
             <div class="ST-PROG-TRACK"><div class="ST-PROG-FILL" style="width:${progressPercent}%"></div></div>
             <div class="ST-PROG-FOOTER"><span>GOAL: £${targetIncome.toFixed(0)}</span><span>REMAINING: £${Math.max(0, targetIncome - paid).toFixed(0)}</span></div>
         </div>
-
         <div class="ST-LIST-CARD">
             <div class="ST-ITEM"><span>⛽ Fuel</span><span>£${fuel.toFixed(2)}</span></div>
             <div class="ST-ITEM"><span>🛠️ Gear</span><span>£${gear.toFixed(2)}</span></div>
@@ -122,7 +117,7 @@ window.renderWeek = () => {
     });
 };
 
-/* --- 📱 MODAL LOGIC (v37.1) --- */
+/* --- 📱 MODAL LOGIC --- */
 window.showJobBriefing = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
     const history = (db.history || []).filter(h => h.custId === id).slice(-3).reverse();
