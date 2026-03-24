@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v38.9</title>
+    <title>Hydro Pro v39.0</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="AppIcon.png">
-    <link rel="icon" type="image/png" href="AppIcon.png">
-    <link rel="stylesheet" href="styles.css?v=389">
+    <link rel="stylesheet" href="styles.css?v=390">
 </head>
 <body class="light-mode">
 
@@ -16,11 +15,9 @@
         <div class="G-LOGO-WRAP"><img src="Logo.png" id="mainLogo" alt="HydroPro"></div>
         <div class="G-NAV-ZONE">
             <span id="dateText"></span>
-            
             <div id="weather-pill" class="G-WEATHER-PILL" onclick="launchWeatherApp()">
                 <span id="w-icon">🌤️</span><small id="w-text">GPS SYNC...</small>
             </div>
-
             <div class="G-SWITCH-WRAP">
                 <label class="ios-switch">
                     <input type="checkbox" id="themeCheckbox">
@@ -40,24 +37,19 @@
                 <button onclick="openTab('ledger-root')"><span>💸</span><small>Ledger</small></button>
                 <button class="HM-FULL" onclick="openTab('weeks-root')"><span>📅</span><small>Weekly Work</small></button>
             </div>
-            <div class="HM-SYNC-ZONE">
-                <button class="HM-SYNC-BTN" onclick="location.reload(true)">🔄 Sync Updates</button>
-            </div>
+            <div class="HM-SYNC-ZONE"><button class="HM-SYNC-BTN" onclick="location.reload(true)">🔄 Sync Updates</button></div>
         </section>
 
         <section id="master-root" class="tab-content">
             <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="CT-SEARCH-WRAP">
-                <input type="text" id="mainSearch" placeholder="🔍 Search Name or Street..." oninput="renderMaster()">
-            </div>
+            <div class="CT-SEARCH-WRAP"><input type="text" id="mainSearch" placeholder="🔍 Search Name or Street..." oninput="renderMaster()"></div>
             <div id="master-list-container"></div>
         </section>
 
         <section id="setup-root" class="tab-content">
             <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
             <div class="SU-CARD">
-                <input type="hidden" id="editId">
-                <div class="SU-ROW"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
+                <div class="SU-ROW"><span>👤</span><input type="text" id="cName" placeholder="New Name"></div>
                 <div class="SU-ROW"><span>📱</span><input type="tel" id="cPhone" placeholder="Phone Number"></div>
                 <div class="SU-ROW"><span>🏠</span><input type="text" id="cHouseNum" placeholder="House No."></div>
                 <div class="SU-ROW"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
@@ -79,10 +71,9 @@
                 </div>
                 <div class="SU-ROW"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
                 <textarea id="cNotes" class="SU-NOTES" placeholder="Access codes / Notes..."></textarea>
-                <button class="SU-SAVE-BTN" onclick="saveCustomer()">✨ Save Customer</button>
+                <button class="SU-SAVE-BTN" onclick="saveCustomer()">✨ Save New Customer</button>
             </div>
             <div class="SU-ADMIN-ZONE">
-                <h3 style="text-align:center; opacity:0.5; margin-bottom:20px;">Data Management</h3>
                 <button class="SU-CYCLE-BTN" onclick="completeCycle()">🚀 START NEW MONTH</button>
                 <div class="SU-BACKUP-ROW">
                     <button class="SU-IO-BTN" onclick="exportData()">📤 Backup Master</button>
@@ -94,14 +85,44 @@
         </section>
 
         <section id="stats-root" class="tab-content"><button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button><div id="stats-container"></div></section>
-        <section id="ledger-root" class="tab-content"><button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button><div class="LD-HERO"><small>TOTAL SPEND</small><div id="ledgerTotalDisplay">£0.00</div></div><div id="ledger-list-container"></div></section>
+        <section id="ledger-root" class="tab-content"><button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button><div class="LD-HERO"><small>TOTAL SPEND</small><div id="ledgerTotalDisplay">£0.00</div></div><div class="LD-INPUT-CARD"><input type="text" id="expDesc" class="LD-FIELD" placeholder="Expense description..."><input type="number" id="expAmt" class="LD-FIELD" placeholder="£ 0.00"><select id="expCat" class="LD-SELECT-FIXED"><option value="⛽ Fuel">⛽ Fuel</option><option value="🛠️ Gear">🛠️ Gear</option><option value="🍔 Food">🍔 Food</option><option value="📦 Misc">📦 Misc</option></select><button class="LD-ADD-BTN" onclick="addExpense()">Add Expense</button></div><div id="ledger-list-container"></div></section>
         <section id="weeks-root" class="tab-content"><button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button><div class="WK-HUB-GRID"><button class="WK-TILE" onclick="viewWeek(1)">Week 1</button><button class="WK-TILE" onclick="viewWeek(2)">Week 2</button><button class="WK-TILE" onclick="viewWeek(3)">Week 3</button><button class="WK-TILE" onclick="viewWeek(4)">Week 4</button><button class="WK-TILE WK-FULL" onclick="viewWeek(5)">Week 5</button></div></section>
         <section id="week-view-root" class="tab-content"><div class="WK-NAV-ROW"><button onclick="openTab('weeks-root')">⬅️ Back</button><button onclick="openTab('home-root')">🏠 Home</button></div><div class="WK-DAY-PICKER"><button class="DAY-BTN active" onclick="setWorkingDay('Mon', this)">M</button><button class="DAY-BTN" onclick="setWorkingDay('Tue', this)">T</button><button class="DAY-BTN" onclick="setWorkingDay('Wed', this)">W</button><button class="DAY-BTN" onclick="setWorkingDay('Thu', this)">T</button><button class="DAY-BTN" onclick="setWorkingDay('Fri', this)">F</button><button class="DAY-BTN" onclick="setWorkingDay('Sat', this)">S</button><button class="DAY-BTN" onclick="setWorkingDay('Sun', this)">S</button></div><div id="week-list-container"></div></section>
     </main>
 
-    <div id="briefingModal" class="modal-overlay hidden" onclick="closeBriefing()"><div class="modal-content" onclick="event.stopPropagation()"><div id="briefingData"></div><div id="quickSettleContainer"></div><div id="receiptActionBox"></div><button class="MD-EDIT" id="briefEditBtn">⚙️ Edit Info</button><button class="MD-CLOSE" onclick="closeBriefing()">CLOSE</button></div></div>
+    <div id="editModal" class="modal-overlay hidden" onclick="closeEditModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h2 style="margin-top:0; color:var(--accent);">Edit Customer</h2>
+            <input type="hidden" id="eEditId">
+            <div class="SU-ROW"><span>👤</span><input type="text" id="eName" placeholder="Name"></div>
+            <div class="SU-ROW"><span>📱</span><input type="tel" id="ePhone" placeholder="Phone"></div>
+            <div class="SU-ROW"><span>🏠</span><input type="text" id="eHouseNum" placeholder="House No."></div>
+            <div class="SU-ROW"><span>🛣️</span><input type="text" id="eStreet" placeholder="Street"></div>
+            <div class="SU-ROW"><span>📍</span><input type="text" id="ePostcode" placeholder="Postcode"></div>
+            <div class="SU-ROW"><span>📅</span>
+                <select id="eDay" class="SU-SELECT">
+                    <option value="Mon">Monday</option><option value="Tue">Tuesday</option>
+                    <option value="Wed">Wednesday</option><option value="Thu">Thursday</option>
+                    <option value="Fri">Friday</option><option value="Sat">Saturday</option>
+                    <option value="Sun">Sunday</option>
+                </select>
+            </div>
+            <div class="SU-ROW"><span>📅</span>
+                <select id="eWeek" class="SU-SELECT">
+                    <option value="1">Week 1</option><option value="2">Week 2</option>
+                    <option value="3">Week 3</option><option value="4">Week 4</option>
+                    <option value="5">Week 5</option>
+                </select>
+            </div>
+            <div class="SU-ROW"><span>💰</span><input type="number" id="ePrice" placeholder="Price £"></div>
+            <textarea id="eNotes" class="SU-NOTES" placeholder="Access codes / Notes..."></textarea>
+            
+            <button class="MD-SAVE-BTN" onclick="updateCustomerFromModal()">💾 SAVE & EXIT</button>
+            <button class="MD-CLOSE-BTN" onclick="closeEditModal()">CANCEL</button>
+        </div>
+    </div>
     
-    <footer id="version-label">v38.9 INDUSTRIAL GOLD</footer>
-    <script src="app.js?v=389"></script>
+    <footer id="version-label">v39.0 MODAL EDIT</footer>
+    <script src="app.js?v=390"></script>
 </body>
 </html>
