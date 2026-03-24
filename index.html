@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v41.7</title>
+    <title>Hydro Pro v41.9</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="AppIcon.png">
     <link rel="icon" type="image/png" href="AppIcon.png">
-    <link rel="stylesheet" href="styles.css?v=417">
+    <link rel="stylesheet" href="styles.css?v=419">
 </head>
 <body class="light-mode">
 
@@ -70,7 +70,7 @@
 
         <section id="master-root" class="tab-content">
             <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="SEARCH-VAULT"><input type="text" id="mainSearch" placeholder="🔍 Search Name/Street..." oninput="renderMaster()"></div>
+            <div class="SEARCH-VAULT"><input type="text" id="mainSearch" placeholder="🔍 Search Name/Street/Postcode..." oninput="renderMaster()"></div>
             <div id="master-list-container"></div>
         </section>
 
@@ -81,17 +81,30 @@
 
         <section id="ledger-root" class="tab-content">
             <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="LD-LOCKED-HERO"><small>TOTAL SPEND</small><div id="ledgerTotalDisplay">£0.00</div></div>
+            <div class="LD-LOCKED-HERO"><small>MONTHLY SPEND</small><div id="ledgerTotalDisplay">£0.00</div></div>
             <div class="VAULT-CARD">
-                <div class="VAULT-ROW"><input type="text" id="expDesc" placeholder="Expense description"></div>
+                <div class="VAULT-ROW"><input type="text" id="expDesc" placeholder="Description"></div>
                 <div class="VAULT-ROW"><input type="number" id="expAmt" placeholder="Amount £"></div>
                 <button class="VAULT-SAVE-BTN" onclick="addExpense()">Add Expense</button>
             </div>
             <div id="ledger-list-container"></div>
         </section>
 
-        <section id="weeks-root" class="tab-content"><button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button><div class="WK-HUB-GRID"><button class="WK-TILE" onclick="viewWeek(1)">Week 1</button><button class="WK-TILE" onclick="viewWeek(2)">Week 2</button><button class="WK-TILE" onclick="viewWeek(3)">Week 3</button><button class="WK-TILE" onclick="viewWeek(4)">Week 4</button><button class="WK-TILE WK-FULL" onclick="viewWeek(5)">Week 5</button></div></section>
-        <section id="week-view-root" class="tab-content"><div class="NAV-VAULT"><button onclick="openTab('weeks-root')">⬅️ Back</button><button onclick="openTab('home-root')">🏠 Hub</button></div><div id="week-list-container"></div></section>
+        <section id="weeks-root" class="tab-content">
+            <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
+            <div class="FIXED-GRID">
+                <button class="GRID-BTN" onclick="viewWeek(1)"><span class="I-LOCK">1</span><small class="T-LOCK">Week 1</small></button>
+                <button class="GRID-BTN" onclick="viewWeek(2)"><span class="I-LOCK">2</span><small class="T-LOCK">Week 2</small></button>
+                <button class="GRID-BTN" onclick="viewWeek(3)"><span class="I-LOCK">3</span><small class="T-LOCK">Week 3</small></button>
+                <button class="GRID-BTN" onclick="viewWeek(4)"><span class="I-LOCK">4</span><small class="T-LOCK">Week 4</small></button>
+                <button class="GRID-BTN FULL-W" onclick="viewWeek(5)"><span class="I-LOCK">5</span><small class="T-LOCK">Week 5</small></button>
+            </div>
+        </section>
+
+        <section id="week-view-root" class="tab-content">
+            <div class="NAV-VAULT"><button onclick="openTab('weeks-root')">⬅️ Back</button><button onclick="openTab('home-root')">🏠 Hub</button></div>
+            <div id="week-list-container"></div>
+        </section>
     </main>
 
     <div id="briefingModal" class="modal-overlay hidden" onclick="closeBriefing()">
@@ -99,14 +112,14 @@
             <div id="briefingData"></div>
             <div id="briefHistoryZone"></div>
             <div id="quickSettleContainer"></div>
-            <button class="MD-EDIT" id="briefEditBtn">⚙️ Edit Info</button>
+            <button class="MD-EDIT" id="briefEditBtn">⚙️ Edit Profile</button>
             <button class="MD-CLOSE" onclick="closeBriefing()">CLOSE</button>
         </div>
     </div>
 
     <div id="editModal" class="modal-overlay hidden" onclick="closeEditModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h2 style="margin:0 0 25px; color:var(--accent); text-align:center;">Edit Profile</h2>
+            <h2 style="margin:0 0 25px; color:var(--accent); text-align:center; font-weight:900;">Edit Profile</h2>
             <input type="hidden" id="eEditId">
             <div class="VAULT-ROW"><span>👤</span><input type="text" id="eName"></div>
             <div class="VAULT-ROW"><span>💰</span><input type="number" id="ePrice"></div>
@@ -115,7 +128,7 @@
         </div>
     </div>
     
-    <footer id="version-label">v41.7 RECOVERY</footer>
-    <script src="app.js?v=417"></script>
+    <footer id="version-label">v41.9 HARDENED FORTRESS</footer>
+    <script src="app.js?v=419"></script>
 </body>
 </html>
