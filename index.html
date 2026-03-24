@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v34.1</title>
-    <link rel="stylesheet" href="styles.css?v=341">
+    <title>Hydro Pro v35.0</title>
+    <link rel="stylesheet" href="styles.css?v=350">
 </head>
 <body class="light-mode">
 
@@ -54,6 +54,15 @@
                 <div class="form-row"><span>🏠</span><input type="text" id="cHouseNum" placeholder="House No."></div>
                 <div class="form-row"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
                 <div class="form-row"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
+                <div class="form-row">
+                    <span>📅</span>
+                    <select id="cDay" class="custom-select-pro">
+                        <option value="Mon">Monday</option><option value="Tue">Tuesday</option>
+                        <option value="Wed">Wednesday</option><option value="Thu">Thursday</option>
+                        <option value="Fri">Friday</option><option value="Sat">Saturday</option>
+                        <option value="Sun">Sunday</option>
+                    </select>
+                </div>
                 <div class="form-row"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
                 <textarea id="cNotes" placeholder="Private Customer Notes..."></textarea>
                 <button class="btn-action-primary" onclick="saveCustomer()">✨ Save Customer</button>
@@ -71,7 +80,7 @@
                     <input type="text" id="bankName" class="bank-field" readonly placeholder="Account Name">
                     <input type="text" id="bankSort" class="bank-field" readonly placeholder="Sort Code">
                     <input type="text" id="bankAcc" class="bank-field" readonly placeholder="Account Number">
-                    <button id="bankSaveBtn" class="hidden btn-action-primary" style="background:var(--success); margin-top:10px;" onclick="saveBankDetails()">💾 Save Bank Info</button>
+                    <button id="bankSaveBtn" class="hidden btn-action-primary" style="background:var(--success); margin-top:15px;" onclick="saveBankDetails()">💾 Save Bank Info</button>
                 </div>
             </div>
 
@@ -119,6 +128,21 @@
                 <button onclick="openTab('weeks-root')">⬅️ Back</button>
                 <button onclick="openTab('home-root')">🏠 Home</button>
             </div>
+
+            <div class="day-picker-container">
+                <button class="day-btn active" onclick="setWorkingDay('Mon', this)">M</button>
+                <button class="day-btn" onclick="setWorkingDay('Tue', this)">T</button>
+                <button class="day-btn" onclick="setWorkingDay('Wed', this)">W</button>
+                <button class="day-btn" onclick="setWorkingDay('Thu', this)">T</button>
+                <button class="day-btn" onclick="setWorkingDay('Fri', this)">F</button>
+                <button class="day-btn" onclick="setWorkingDay('Sat', this)">S</button>
+                <button class="day-btn" onclick="setWorkingDay('Sun', this)">S</button>
+            </div>
+
+            <div class="planning-action-row">
+                <button class="btn-plan-route" onclick="launchRoutePlanner()">🗺️ Plan Optimized Route</button>
+            </div>
+
             <div id="bulk-box" class="bulk-container"></div>
             <div id="week-list-container"></div>
         </section>
@@ -142,8 +166,8 @@
         </div>
     </div>
 
-    <footer id="version-label">v34.1</footer>
+    <footer id="version-label">v35.0 - The Navigator</footer>
 
-    <script src="app.js?v=341"></script>
+    <script src="app.js?v=350"></script>
 </body>
 </html>
