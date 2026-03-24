@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="AppIcon.png">
     <link rel="icon" type="image/png" href="AppIcon.png">
-    <link rel="stylesheet" href="styles.css?v=383">
+    <link rel="stylesheet" href="styles.css?v=384">
 </head>
 <body class="light-mode">
 
@@ -89,7 +89,21 @@
         </section>
 
         <section id="stats-root" class="tab-content"><button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home</button><div id="stats-container"></div></section>
-        <section id="ledger-root" class="tab-content"><button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home</button><div class="LD-HERO"><small>MONTH SPEND</small><div id="ledgerTotalDisplay">£0.00</div></div><div id="ledger-list-container"></div></section>
+        
+        <section id="ledger-root" class="tab-content">
+            <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home</button>
+            <div class="LD-HERO"><small>MONTH SPEND</small><div id="ledgerTotalDisplay">£0.00</div></div>
+            <div class="LD-INPUT-CARD">
+                <input type="text" id="expDesc" class="LD-FIELD" placeholder="Description">
+                <input type="number" id="expAmt" class="LD-FIELD" placeholder="Amount £">
+                <select id="expCat" class="LD-SELECT">
+                    <option value="⛽ Fuel">⛽ Fuel</option><option value="🛠️ Gear">🛠️ Gear</option>
+                    <option value="🍔 Food">🍔 Food</option><option value="📦 Misc">📦 Misc</option>
+                </select>
+                <button class="LD-ADD-BTN" onclick="addExpense()">Add Expense</button>
+            </div>
+            <div id="ledger-list-container"></div>
+        </section>
 
         <section id="weeks-root" class="tab-content">
             <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home</button>
@@ -121,12 +135,13 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <div id="briefingData"></div>
             <div id="quickSettleContainer"></div>
-            <div id="receiptButtonContainer"></div> <button class="MD-EDIT" id="briefEditBtn">⚙️ Edit Info</button>
+            <div id="receiptButtonContainer"></div>
+            <button class="MD-EDIT" id="briefEditBtn">⚙️ Edit Info</button>
             <button class="MD-CLOSE" onclick="closeBriefing()">CLOSE</button>
         </div>
     </div>
     
-    <footer id="version-label" class="no-print">v38.3 GOLD</footer>
-    <script src="app.js?v=383"></script>
+    <footer id="version-label" class="no-print">v38.4 GOLD</footer>
+    <script src="app.js?v=384"></script>
 </body>
 </html>
