@@ -1,17 +1,14 @@
 const DB_KEY = 'HydroPro_Gold_V36';
 const W_API_KEY = "4c00e61833ea94d3c4a1bff9d2c32969"; 
-let db = { customers: [], expenses: [], history: [] };
+let db = { customers: [], expenses: [], bank: { name:'', sort:'', acc:'' }, history: [] };
 const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
-let curWeek = 1;
-let workingDay = 'Mon';
 
 document.addEventListener('DOMContentLoaded', () => {
     try {
         const saved = localStorage.getItem(DB_KEY);
         if (saved) db = JSON.parse(saved);
-        if (!db.history) db.history = [];
         
-        // Dark Mode Logic
+        // Theme Slider Init
         const isDark = localStorage.getItem('HP_Theme') === 'true';
         document.body.classList.toggle('dark-mode', isDark);
         const cb = document.getElementById('themeCheckbox');
@@ -22,11 +19,87 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('HP_Theme', e.target.checked);
             });
         }
-        updateHeader(); renderAll(); initWeather();
+
+        // Fill Admin Fields
+        if(document.getElementById('bName')) {
+            document.getElementById('bName').value = db.bank.name || '';
+            document.getElementById('bSort').value = db.bank.sort || '';
+            document.getElementById('bAcc').value = db.bank.acc || '';
+        }
+
+        renderAll(); updateHeader(); initWeather();
     } catch(e) { console.error("Boot Error", e); }
 });
 
-/* --- 🛡️ ENGINE ROOM --- */
+/* --- 💰 FINANCES ENGINE (MERGED STATS & LEDGER) --- */
+window.renderFinances = () => {
+    const dash = document.getElementById('finances-dashboard-container');
+    const statement = document.getElementById('finances-statement-container');
+    if(!dash || !statement) return;
+
+    let target = 0, coll = 0, spend = 0;
+    db.customers.forEach(c => { target += n(c.price); coll += n(c.paidThisMonth); });
+    db.expenses.forEach(e => { spend += n(e.amt); });
+    const net = coll - spend;
+
+    dash.innerHTML = `
+        <div class="FIN-HERO">
+            <small style="opacity:0.4; font-weight:900; letter-spacing:1px;">MONTHLY NET PROFIT</small>
+            <div style="color:${net>=0?'var(--success)':'var(--danger)'}">£${net.toFixed(2)}</div>
+        </div>
+        <div class="FIN-GRID">
+            <div class="FIN-BUBBLE"><span>💰</span><small>INCOME</small><strong>£${coll.toFixed(2)}</strong></div>
+            <div class="FIN-BUBBLE"><span>💸</span><small>OUTGOINGS</small><strong>£${spend.toFixed(2)}</strong></div>
+        </div>
+        <div class="VAULT-CARD" style="margin-bottom:25px;">
+            <h3 class="VAULT-HDR">Log Expense</h3>
+            <div class="VAULT-ROW"><input type="text" id="fExpDesc" placeholder="e.g. Fuel, Gear"></div>
+            <div class="VAULT-ROW"><input type="number" id="fExpAmt" placeholder="£ 0.00"></div>
+            <button class="VAULT-SAVE-BTN" onclick="addFinanceExpense()">ADD TRANSACTION</button>
+        </div>
+    `;
+
+    let listHtml = '<div class="FIN-STATEMENT-CARD"><h3 class="VAULT-HDR">Transaction Statement</h3>';
+    if(db.expenses.length === 0) {
+        listHtml += '<p style="text-align:center; opacity:0.5; font-weight:800;">No transactions yet.</p>';
+    } else {
+        db.expenses.slice().reverse().forEach(e => {
+            listHtml += `<div class="FIN-ROW"><span>${e.date} - ${e.desc}</span><span style="color:var(--danger)">-£${n(e.amt).toFixed(2)}</span></div>`;
+        });
+    }
+    listHtml += `<div style="display:flex; justify-content:space-between; padding-top:20px; font-weight:950; font-size:20px; color:var(--danger); border-top:3px solid var(--ios-grey); margin-top:10px;"><span>TOTAL SPEND</span><span>£${spend.toFixed(2)}</span></div></div>`;
+    statement.innerHTML = listHtml;
+};
+
+window.addFinanceExpense = () => {
+    const d = document.getElementById('fExpDesc').value;
+    const a = n(document.getElementById('fExpAmt').value);
+    if(!d || a <= 0) return alert("Required");
+    db.expenses.push({ id: Date.now(), desc: d, amt: a, date: new Date().toLocaleDateString('en-GB', { day:'numeric', month:'short'}) });
+    saveData(); renderFinances();
+};
+
+/* --- 🛡️ ADMIN TOOLS --- */
+window.saveBank = () => {
+    db.bank.name = document.getElementById('bName').value;
+    db.bank.sort = document.getElementById('bSort').value;
+    db.bank.acc = document.getElementById('bAcc').value;
+    saveData(); alert("Bank details bolted! 🔒");
+};
+
+window.exportToQuickBooks = () => {
+    const d = new Date().toLocaleDateString().replace(/\//g, '-');
+    let csv = "Date,Description,Amount,Type\n";
+    // Add Income
+    db.customers.forEach(c => { if(n(c.paidThisMonth) > 0) csv += `${new Date().toLocaleDateString()},Payment from ${c.name},${n(c.paidThisMonth)},Income\n`; });
+    // Add Expenses
+    db.expenses.forEach(e => { csv += `${e.date},${e.desc},${n(e.amt)},Expense\n`; });
+    const b = new Blob([csv], { type: 'text/csv' });
+    const u = URL.createObjectURL(b);
+    const l = document.createElement("a"); l.href = u; l.download = `QuickBooks_Export_${d}.csv`; l.click();
+};
+
+/* --- SHARED NAVIGATION --- */
 window.openTab = (id) => {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     const a = document.getElementById(id);
@@ -36,89 +109,16 @@ window.openTab = (id) => {
 };
 
 window.renderAll = () => {
-    updateHeader();
-    renderMaster();
-    if(document.getElementById('stats-root').classList.contains('active')) renderStats();
-    if(document.getElementById('ledger-root').classList.contains('active')) renderLedger();
-    if(document.getElementById('week-view-root').classList.contains('active')) renderWeek();
+    const el = document.getElementById('dateText');
+    if(el) el.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' });
+    if(document.getElementById('finances-root').classList.contains('active')) renderFinances();
+    if(document.getElementById('master-root').classList.contains('active')) renderMaster();
 };
 
-/* --- 👥 CUSTS --- */
-window.renderMaster = () => {
-    const list = document.getElementById('master-list-container'); if(!list) return; list.innerHTML = '';
-    const search = (document.getElementById('mainSearch')?.value || "").toLowerCase();
-    db.customers.forEach(c => {
-        if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
-            const div = document.createElement('div');
-            div.style = "background:var(--card); padding:25px; border-radius:35px; margin:0 20px 15px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 5px 15px rgba(0,0,0,0.03);";
-            div.onclick = () => openEditModal(c.id);
-            div.innerHTML = `<div><strong>${c.name}</strong><br><small>${c.houseNum} ${c.street}</small></div><div style="font-weight:900; color:var(--success);">£${n(c.price).toFixed(2)}</div>`;
-            list.appendChild(div);
-        }
-    });
-};
-
-/* --- 📊 STATS --- */
-window.renderStats = () => {
-    const container = document.getElementById('stats-dashboard-container'); if(!container) return;
-    let target = 0, coll = 0, spend = 0;
-    db.customers.forEach(c => { target += n(c.price); coll += n(c.paidThisMonth); });
-    db.expenses.forEach(e => spend += n(e.amt));
-    const net = coll - spend;
-    const prog = target > 0 ? Math.min(Math.round((coll / target) * 100), 100) : 0;
-
-    container.innerHTML = `
-        <div class="ST-HERO"><small style="opacity:0.4; font-weight:900;">NET PROFIT</small><div style="color:${net>=0?'var(--success)':'var(--danger)'}">£${net.toFixed(2)}</div></div>
-        <div class="ST-GRID">
-            <div class="ST-BUBBLE"><span style="font-size:24px;">💰</span><br><small>INCOME</small><br><strong>£${coll.toFixed(2)}</strong></div>
-            <div class="ST-BUBBLE"><span style="font-size:24px;">💸</span><br><small>SPENT</small><br><strong>£${spend.toFixed(2)}</strong></div>
-        </div>
-        <div class="VAULT-CARD">
-            <div style="display:flex; justify-content:space-between; font-weight:950; font-size:14px; margin-bottom:10px;"><span>TARGET PROGRESS</span><span>${prog}%</span></div>
-            <div style="background:var(--ios-grey); height:20px; border-radius:10px; overflow:hidden;"><div style="width:${prog}%; height:100%; background:${prog>=100?'var(--success)':'var(--accent)'}; transition:1s;"></div></div>
-        </div>
-    `;
-};
-
-/* --- 💸 LEDGER --- */
-window.addExpense = () => {
-    const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value);
-    if(!d || a <= 0) return alert("Details required");
-    db.expenses.push({ id: Date.now(), desc: d, amt: a, date: new Date().toLocaleDateString('en-GB', { day:'numeric', month:'short'}) });
-    saveData(); renderAll(); document.getElementById('expDesc').value = ''; document.getElementById('expAmt').value = '';
-};
-window.renderLedger = () => {
-    const list = document.getElementById('ledger-list-container'); if(!list) return; list.innerHTML = ''; let t = 0;
-    db.expenses.slice().reverse().forEach(e => {
-        t += n(e.amt);
-        const div = document.createElement('div');
-        div.style = "background:var(--card); padding:20px; border-radius:30px; margin:0 20px 10px; display:flex; justify-content:space-between; border-left:8px solid var(--danger);";
-        div.innerHTML = `<div><strong>${e.desc}</strong><br><small>${e.date}</small></div><div style="font-weight:900; color:var(--danger);">-£${n(e.amt).toFixed(2)}</div>`;
-        list.appendChild(div);
-    });
-    document.getElementById('ledgerTotalDisplay').innerText = `£${t.toFixed(2)}`;
-};
-
-/* --- 📅 WEEKS --- */
-window.viewWeek = (w) => { curWeek = w; openTab('week-view-root'); };
-window.setWorkingDay = (day, btn) => { workingDay = day; document.querySelectorAll('.D-BTN-LOCKED').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderWeek(); };
-window.renderWeek = () => {
-    const list = document.getElementById('week-list-container'); if(!list) return; list.innerHTML = '';
-    db.customers.filter(c => c.week == curWeek && c.day == workingDay).forEach(c => {
-        const div = document.createElement('div');
-        div.className = 'VAULT-CARD'; div.style = "display:flex; justify-content:space-between; align-items:center; margin:10px 20px;";
-        div.onclick = () => showJobBriefing(c.id);
-        div.innerHTML = `<div><strong>${c.name} ${c.cleaned?'✅':''}</strong><br><small>${c.houseNum} ${c.street}</small></div><div style="font-weight:900;">£${n(c.price).toFixed(2)}</div>`;
-        list.appendChild(div);
-    });
-};
-
-/* --- ⚙️ UTILS --- */
 window.saveData = () => localStorage.setItem(DB_KEY, JSON.stringify(db));
-window.updateHeader = () => { const el = document.getElementById('dateText'); if(el) el.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }); };
 window.saveCustomer = () => { 
-    const name = document.getElementById('cName').value; if(!name) return alert("Name required");
-    db.customers.push({ id: Date.now().toString(), name, phone: document.getElementById('cPhone').value, houseNum: document.getElementById('cHouseNum').value, street: document.getElementById('cStreet').value, postcode: document.getElementById('cPostcode').value.toUpperCase(), price: n(document.getElementById('cPrice').value), notes: document.getElementById('cNotes').value, cleaned: false, paidThisMonth: 0, week: "1", day: "Mon" });
+    const name = document.getElementById('cName').value; if(!name) return alert("Required");
+    db.customers.push({ id: Date.now().toString(), name, phone: '', houseNum: document.getElementById('cHouseNum').value, street: document.getElementById('cStreet').value, price: n(document.getElementById('cPrice').value), cleaned: false, paidThisMonth: 0, week: "1", day: "Mon" });
     saveData(); alert("Saved!"); location.reload();
 };
 window.nuclearReset = () => { if(confirm("☢️ DELETE EVERYTHING?")) { localStorage.removeItem(DB_KEY); location.reload(); } };
