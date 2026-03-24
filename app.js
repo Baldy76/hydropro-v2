@@ -21,9 +21,6 @@ window.openTab = (name) => {
     document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
     const target = document.getElementById(name);
     if(target) target.classList.add("active");
-    const globalNav = document.getElementById('globalNav');
-    if (name === 'home') globalNav.classList.add('hidden');
-    else globalNav.classList.remove('hidden');
     window.scrollTo({ top: 0, behavior: 'instant' });
     renderAll();
 };
@@ -59,49 +56,6 @@ window.saveCustomer = () => {
     openTab('home');
 };
 
-window.renderStats = () => {
-    const monthYearEl = document.getElementById('currentMonthYear');
-    if (monthYearEl) monthYearEl.innerText = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) + " Summary";
-
-    let totalTarget = 0, totalPaid = 0, totalArrears = 0, totalSpend = 0;
-    db.customers.forEach(c => {
-        totalTarget += n(c.price);
-        totalPaid += n(c.paidThisMonth);
-        if (c.cleaned && n(c.paidThisMonth) < n(c.price)) totalArrears += (n(c.price) - n(c.paidThisMonth));
-    });
-    db.expenses.forEach(e => totalSpend += n(e.amt));
-    const profit = totalPaid - totalSpend;
-    const progress = totalTarget > 0 ? (totalPaid / totalTarget) * 100 : 0;
-
-    const map = {
-        'currProfit': `£${profit.toFixed(2)}`,
-        'statsIncome': `£${totalPaid.toFixed(2)}`,
-        'statsSpend': `£${totalSpend.toFixed(2)}`,
-        'statsArrears': `£${totalArrears.toFixed(2)}`,
-        'statsTarget': `£${totalTarget.toFixed(2)}`,
-        'statsRemaining': `£${(totalTarget - totalPaid).toFixed(2)}`,
-        'progressPercent': `${Math.round(progress)}%`
-    };
-
-    for (let [id, val] of Object.entries(map)) {
-        const el = document.getElementById(id);
-        if(el) el.innerText = val;
-    }
-    const bar = document.getElementById('progressBarFill');
-    if(bar) bar.style.width = `${progress}%`;
-
-    const histBox = document.getElementById('monthlyHistoryContainer');
-    if(histBox) {
-        histBox.innerHTML = '';
-        if (db.history.length === 0) histBox.innerHTML = '<div class="empty-history-msg">Month-end snapshots appear here.</div>';
-        else [...db.history].reverse().forEach(h => {
-            const div = document.createElement('div'); div.className = 'customer-pill-bubble';
-            div.innerHTML = `<div><strong>${h.month} ${h.year}</strong><small>SNAPSHOT</small></div><div style="font-weight:900; color:var(--success)">£${n(h.profit).toFixed(2)}</div>`;
-            histBox.appendChild(div);
-        });
-    }
-};
-
 window.renderMasterTable = () => {
     const body = document.getElementById('masterTableBody'); if(!body) return; body.innerHTML = '';
     const search = (document.getElementById('mainSearch').value || "").toLowerCase();
@@ -128,11 +82,40 @@ window.renderWeekLists = () => {
     }
 };
 
+window.renderStats = () => {
+    let totalTarget = 0, totalPaid = 0, totalArrears = 0, totalSpend = 0;
+    db.customers.forEach(c => {
+        totalTarget += n(c.price); totalPaid += n(c.paidThisMonth);
+        if (c.cleaned && n(c.paidThisMonth) < n(c.price)) totalArrears += (n(c.price) - n(c.paidThisMonth));
+    });
+    db.expenses.forEach(e => totalSpend += n(e.amt));
+    const profit = totalPaid - totalSpend; const progress = totalTarget > 0 ? (totalPaid / totalTarget) * 100 : 0;
+    const map = { 'currProfit': `£${profit.toFixed(2)}`, 'statsIncome': `£${totalPaid.toFixed(2)}`, 'statsSpend': `£${totalSpend.toFixed(2)}`, 'statsArrears': `£${totalArrears.toFixed(2)}`, 'statsTarget': `£${totalTarget.toFixed(2)}`, 'statsRemaining': `£${(totalTarget - totalPaid).toFixed(2)}`, 'progressPercent': `${Math.round(progress)}%` };
+    for (let [id, val] of Object.entries(map)) { const el = document.getElementById(id); if(el) el.innerText = val; }
+    const bar = document.getElementById('progressBarFill'); if(bar) bar.style.width = `${progress}%`;
+    const histBox = document.getElementById('monthlyHistoryContainer');
+    if(histBox) {
+        histBox.innerHTML = '';
+        if (db.history.length === 0) histBox.innerHTML = '<div class="empty-history-msg">Month-end snapshots appear here.</div>';
+        else [...db.history].reverse().forEach(h => {
+            const div = document.createElement('div'); div.className = 'customer-pill-bubble';
+            div.innerHTML = `<div><strong>${h.month} ${h.year}</strong><small>SNAPSHOT</small></div><div style="font-weight:900; color:var(--success)">£${n(h.profit).toFixed(2)}</div>`;
+            histBox.appendChild(div);
+        });
+    }
+};
+
+window.updateGreeting = () => {
+    const hr = new Date().getHours();
+    const g = (hr < 12) ? "Good Morning" : (hr < 18) ? "Good Afternoon" : "Good Evening";
+    const el = document.getElementById('greetingMsg'); if (el) el.innerText = `${g}, Partner! ☕`;
+};
+
 window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
-window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); };
+window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); renderLedger(); };
 window.editCust = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; openTab('admin'); document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cHouseNum').value = c.houseNum; document.getElementById('cStreet').value = c.street; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPrice').value = c.price; document.getElementById('cNotes').value = c.notes; };
 window.toggleCleaned = (id) => { const c = db.customers.find(x => x.id === id); if (c) { c.cleaned = !c.cleaned; saveData(); renderAll(); } };
 window.markAsPaid = (id) => { const c = db.customers.find(x => x.id === id); if (!c) return; const isPaid = n(c.paidThisMonth) >= n(c.price); c.paidThisMonth = isPaid ? 0 : c.price; saveData(); renderAll(); };
-window.updateGreeting = () => { const hr = new Date().getHours(); const g = (hr < 12) ? "Good Morning" : (hr < 18) ? "Good Afternoon" : "Good Evening"; const el = document.getElementById('greetingMsg'); if (el) el.innerText = `${g}, Partner! ☕`; };
+window.renderLedger = () => { const l = document.getElementById('expenseList'); if(!l) return; l.innerHTML = '<h3 class="hall-of-fame-title">💸 Spend History</h3>'; db.expenses.forEach(e => { const d = document.createElement('div'); d.className = 'customer-pill-bubble'; d.innerHTML = `<div style="display:flex; justify-content:space-between; width:100%"><div><strong>${e.desc}</strong><small>${e.date}</small></div><div class="amt-red" style="font-size:16px; font-weight:900">-£${n(e.amt).toFixed(2)}</div></div>`; l.appendChild(d); }); };
 window.toggleDarkMode = () => { const isDark = document.getElementById('darkModeToggle').checked; document.body.className = isDark ? 'dark-mode' : 'light-mode'; localStorage.setItem('Hydro_Dark_Pref', isDark); };
 window.completeCycle = () => { if(!confirm("Start New Month?")) return; let inc = 0, exp = 0; db.customers.forEach(c => inc += n(c.paidThisMonth)); db.expenses.forEach(e => exp += n(e.amt)); db.history.push({ month: new Date().toLocaleDateString('en-GB', {month:'long'}), year: new Date().getFullYear(), profit: (inc - exp) }); db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload(); };
