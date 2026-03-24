@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v28.5</title>
-    <link rel="stylesheet" href="styles.css?v=285">
+    <title>Hydro Pro v28.6</title>
+    <link rel="stylesheet" href="styles.css?v=286">
 </head>
 <body class="light-mode">
 
@@ -52,10 +52,9 @@
                 <button id="bankSaveBtn" class="hidden btn-primary-large" style="background:var(--success); margin-top:15px;" onclick="saveBankDetails()">💾 Save Details</button>
             </div>
 
-            <div class="danger-zone-surgical">
-                <h3 style="color:var(--danger); font-size:12px; margin-bottom:10px;">⚠️ DANGER ZONE</h3>
+            <div class="reset-area-surgical">
                 <button class="btn-reset-surgical" onclick="completeCycle()">🚀 START NEW MONTH</button>
-                <p style="font-size:11px; opacity:0.5; margin-top:10px;">This will clear all 'Cleaned' statuses and 'Spend' for the current month.</p>
+                <p style="font-size:12px; opacity:0.5; margin-top:15px; line-height:1.4;">Resets all customers to 'uncleaned' and clears the monthly ledger spend.</p>
             </div>
         </section>
 
@@ -95,10 +94,10 @@
         </section>
     </div>
 
-    <footer id="global-version-footer">v28.5 - Safety First Release</footer>
+    <footer id="global-version-footer">v28.6</footer>
 
     <div id="msgModal" class="modal-overlay hidden" onclick="closeMsgModal()"><div class="modal-content" onclick="event.stopPropagation()"><h3>Send Invoice?</h3><p id="msgPreview"></p><div id="modalButtons"></div></div></div>
 
-    <script src="app.js?v=285"></script>
+    <script src="app.js?v=286"></script>
 </body>
 </html>
