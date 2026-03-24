@@ -43,13 +43,12 @@ window.openTab = (id) => {
     window.scrollTo(0,0);
 };
 
-/* --- PREFIX-LOCKED RENDERING --- */
+/* --- PREFIXED RENDERING --- */
 window.renderStats = () => {
     const container = document.getElementById('stats-container'); if(!container) return;
     let target = 0, paid = 0, arrears = 0, spend = 0;
     db.customers.forEach(c => { 
-        target += n(c.price); 
-        paid += n(c.paidThisMonth); 
+        target += n(c.price); paid += n(c.paidThisMonth); 
         if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth)); 
     });
     db.expenses.forEach(e => spend += n(e.amt));
@@ -81,7 +80,7 @@ window.renderLedger = () => {
     });
 };
 
-/* --- SHARED LOGIC INTACT --- */
+/* --- ACTIONS --- */
 window.addExpense = () => { const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value); if(!d || a <= 0) return alert("Details?"); db.expenses.push({ id: Date.now(), desc: d, amt: a, date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) }); saveData(); document.getElementById('expDesc').value=''; document.getElementById('expAmt').value=''; renderLedger(); renderStats(); };
 window.renderMaster = () => { const container = document.getElementById('master-list-container'); if(!container) return; container.innerHTML = ''; const search = (document.getElementById('mainSearch').value || "").toLowerCase(); db.customers.forEach(c => { if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) { const div = document.createElement('div'); div.className = 'cust-pill'; div.onclick = () => editCust(c.id); let badge = (c.cleaned && n(c.paidThisMonth) < n(c.price)) ? `<div class="arrears-badge">UNPAID 🚩</div>` : ""; div.innerHTML = `${badge}<div><strong style="font-size:18px;">${c.name}</strong><br><small style="color:var(--accent); font-weight:700;">${c.houseNum} ${c.street}</small></div><div style="font-weight:900; color:var(--success);">£${n(c.price).toFixed(2)}</div>`; container.appendChild(div); } }); };
 window.viewWeek = (w) => { curWeek = w; openTab('week-view-root'); };
