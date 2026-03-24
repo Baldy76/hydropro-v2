@@ -24,25 +24,25 @@ body { font-family: -apple-system, sans-serif; background: var(--bg); color: var
 #home-root button small { font-size: 16px; font-weight: 900; text-transform: uppercase; }
 #home-root .full-tile { grid-column: 1 / -1; background: var(--accent); color: white; height: 130px; }
 
-/* ✨ SETUP & DANGER ZONE (SURGICAL) */
+/* ✨ SETUP & RESET AREA */
 #setup-root .setup-card { background: var(--card); margin: 0 20px 25px; padding: 25px; border-radius: 35px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
 #setup-root .entry-row { display: flex; align-items: center; height: 70px; border-bottom: 1px solid rgba(0,0,0,0.05); gap: 15px; }
 #setup-root .entry-row input { font-size: 18px; color: var(--text); width: 100%; border: none; background: transparent; outline: none; }
 #setup-root textarea { width: 100%; height: 180px; background: var(--bg); border: none; border-radius: 20px; padding: 15px; margin-top: 15px; color: var(--text); font-size: 16px; }
 
-.bank-vault { background: var(--card); margin: 0 20px 25px; padding: 30px; border-radius: 35px; border: 2.5px solid rgba(0,122,255,0.15); }
+.bank-vault { background: var(--card); margin: 0 20px 40px; padding: 30px; border-radius: 35px; border: 2.5px solid rgba(0,122,255,0.15); }
 .vault-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .vault-unlock-surgical { min-width: 140px !important; width: 140px !important; height: 50px !important; flex-shrink: 0 !important; border-radius: 15px; background: var(--accent); color: white; font-weight: 900; font-size: 14px !important; border: none; display: flex; align-items: center; justify-content: center; }
 .bank-field-fixed { width: 100% !important; height: 60px !important; background: var(--bg); border: none; border-radius: 15px; margin-bottom: 12px; padding: 0 20px; color: var(--text); font-size: 16px; font-weight: 600; display: block; }
 
-.danger-zone-surgical { background: var(--card); margin: 0 20px 50px; padding: 30px; border-radius: 35px; border: 2px dashed var(--danger); text-align: center; }
-.btn-reset-surgical { width: 100% !important; height: 75px !important; border-radius: 25px !important; border: none !important; background: linear-gradient(135deg, #ff453a, #ff3b30) !important; color: white !important; font-weight: 900 !important; font-size: 18px !important; box-shadow: 0 10px 20px rgba(255, 69, 58, 0.2) !important; }
+.reset-area-surgical { background: var(--card); margin: 0 20px 50px; padding: 35px 30px; border-radius: 35px; text-align: center; border: 2px solid rgba(0,0,0,0.05); }
+.btn-reset-surgical { width: 100% !important; height: 75px !important; border-radius: 25px !important; border: none !important; background: var(--danger) !important; color: white !important; font-weight: 900 !important; font-size: 18px !important; box-shadow: 0 10px 20px rgba(255, 69, 58, 0.15) !important; text-transform: uppercase; }
 
 /* 👥 MASTER ROOT */
 #master-root .search-box { padding: 0 20px 40px; }
 #master-root input { width: 100%; height: 65px; border-radius: 30px; border: none; background: var(--card); padding: 0 25px; font-size: 18px; color: var(--text); }
 #master-root #master-list-container { display: flex; flex-direction: column; gap: 15px; padding: 0 20px 50px; }
-.cust-pill { background: var(--card); padding: 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
+.cust-pill { background: var(--card); padding: 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
 
 .btn-primary-large { width: 100%; height: 75px !important; border-radius: 25px; border: none; background: var(--accent); color: white; font-weight: 900; font-size: 20px !important; }
 
