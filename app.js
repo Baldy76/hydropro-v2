@@ -91,7 +91,6 @@ window.renderWeek = () => {
     });
 };
 
-/* --- CORE LOGIC --- */
 window.toggleBankLock = () => {
     const fields = document.querySelectorAll('.bank-field-fixed'), lockBtn = document.getElementById('bankLockBtn'), saveBtn = document.getElementById('bankSaveBtn');
     const isLocked = fields[0].readOnly; fields.forEach(f => f.readOnly = !isLocked);
