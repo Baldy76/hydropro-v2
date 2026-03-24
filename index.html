@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v40.8</title>
+    <title>Hydro Pro v40.9</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="AppIcon.png">
     <link rel="icon" type="image/png" href="AppIcon.png">
-    <link rel="stylesheet" href="styles.css?v=408">
+    <link rel="stylesheet" href="styles.css?v=409">
 </head>
 <body class="light-mode">
 
@@ -50,11 +50,13 @@
             <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
             <div class="LD-HERO"><small>TOTAL SPEND</small><div id="ledgerTotalDisplay">£0.00</div></div>
             <div class="LD-INPUT-CARD">
-                <input type="text" id="expDesc" class="LD-FIELD" placeholder="Expense description">
+                <input type="text" id="expDesc" class="LD-FIELD" placeholder="Description">
                 <input type="number" id="expAmt" class="LD-FIELD" placeholder="Amount £">
                 <select id="expCat" class="LD-SELECT-FIXED">
-                    <option value="⛽ Fuel">⛽ Fuel</option><option value="🛠️ Gear">🛠️ Gear</option>
-                    <option value="🍔 Food">🍔 Food</option><option value="📦 Misc">📦 Misc</option>
+                    <option value="⛽ Fuel">⛽ Fuel</option>
+                    <option value="🛠️ Gear">🛠️ Gear</option>
+                    <option value="🍔 Food">🍔 Food</option>
+                    <option value="📦 Misc">📦 Misc</option>
                 </select>
                 <button class="LD-ADD-BTN" onclick="addExpense()">Add Expense</button>
             </div>
@@ -63,7 +65,7 @@
 
         <section id="master-root" class="tab-content">
             <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="CT-SEARCH-WRAP"><input type="text" id="mainSearch" placeholder="🔍 Search Name or Street..." oninput="renderMaster()"></div>
+            <div class="CT-SEARCH-WRAP"><input type="text" id="mainSearch" placeholder="🔍 Search Customers..." oninput="renderMaster()"></div>
             <div id="master-list-container"></div>
         </section>
 
@@ -75,6 +77,14 @@
                 <div class="SU-ROW"><span>🏠</span><input type="text" id="cHouseNum" placeholder="House No."></div>
                 <div class="SU-ROW"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
                 <div class="SU-ROW"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
+                <div class="SU-ROW"><span>📅</span>
+                    <select id="cDay" class="SU-SELECT">
+                        <option value="Mon">Monday</option><option value="Tue">Tuesday</option>
+                        <option value="Wed">Wednesday</option><option value="Thu">Thursday</option>
+                        <option value="Fri">Friday</option><option value="Sat">Saturday</option>
+                        <option value="Sun">Sunday</option>
+                    </select>
+                </div>
                 <div class="SU-ROW"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
                 <textarea id="cNotes" class="SU-NOTES" placeholder="Private Notes..."></textarea>
                 <button class="SU-SAVE-BTN" onclick="saveCustomer()">✨ Save New Customer</button>
@@ -106,7 +116,7 @@
         </div>
     </div>
     
-    <footer id="version-label">v40.8 DASHBOARD MASTER</footer>
-    <script src="app.js?v=408"></script>
+    <footer id="version-label">v40.9 ANTI-SHRINK LOCK</footer>
+    <script src="app.js?v=409"></script>
 </body>
 </html>
