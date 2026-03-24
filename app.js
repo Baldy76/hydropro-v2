@@ -14,14 +14,26 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.toggle('dark-mode', isDark);
         document.getElementById('themeCheckbox').checked = isDark;
         
+        // Initial Logo Set
+        updateLogo(isDark);
+
         document.getElementById('themeCheckbox').addEventListener('change', (e) => {
             const dark = e.target.checked;
             document.body.classList.toggle('dark-mode', dark);
             localStorage.setItem('HP_Theme', dark);
+            updateLogo(dark); // RE-FIRE LOGO SWAP ON TOGGLE
         });
         updateHeader(); renderAll();
     } catch(e) { console.error("Restore Error", e); }
 });
+
+// v36.91 Force Logo Swap
+function updateLogo(isDark) {
+    const logoImg = document.getElementById('mainLogo');
+    if(logoImg) {
+        logoImg.src = isDark ? 'Logo-Dark.png' : 'Logo.png';
+    }
+}
 
 window.saveData = () => localStorage.setItem(DB_KEY, JSON.stringify(db));
 window.openTab = (id) => {
@@ -32,7 +44,7 @@ window.openTab = (id) => {
 
 window.renderAll = () => { renderMaster(); renderLedger(); renderStats(); renderWeek(); };
 
-/* --- 📊 STATS (Isolated) --- */
+/* --- 📊 STATS --- */
 window.renderStats = () => {
     const container = document.getElementById('stats-container'); if(!container) return;
     let paid = 0, arrears = 0, fuel = 0, gear = 0, food = 0, misc = 0;
@@ -66,7 +78,7 @@ window.renderStats = () => {
     `;
 };
 
-/* --- 👥 MASTER LIST (Isolated) --- */
+/* --- 👥 MASTER LIST --- */
 window.renderMaster = () => {
     const container = document.getElementById('master-list-container'); if(!container) return; container.innerHTML = '';
     const search = (document.getElementById('mainSearch').value || "").toLowerCase();
@@ -82,7 +94,7 @@ window.renderMaster = () => {
     });
 };
 
-/* --- 📅 WEEKLY ENGINE --- */
+/* --- 📅 WEEKLY WORK --- */
 window.viewWeek = (w) => { curWeek = w; openTab('week-view-root'); };
 window.setWorkingDay = (day, btn) => { workingDay = day; document.querySelectorAll('.DAY-BTN').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderWeek(); };
 window.renderWeek = () => {
@@ -115,7 +127,6 @@ window.renderLedger = () => {
     document.getElementById('ledgerTotalDisplay').innerText = `£${total.toFixed(2)}`;
     db.expenses.slice().reverse().forEach(e => {
         const div = document.createElement('div'); div.className = 'LD-PILL';
-        div.ondblclick = () => { if(confirm("Delete?")) { db.expenses = db.expenses.filter(x => x.id !== e.id); saveData(); renderLedger(); renderStats(); } };
         div.innerHTML = `<div><strong>${e.cat||'📦'} ${e.desc}</strong><br><small>${e.date}</small></div><div style="color:var(--danger); font-weight:900;">-£${n(e.amt).toFixed(2)}</div>`;
         container.appendChild(div);
     });
