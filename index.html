@@ -92,7 +92,7 @@
 
         <section id="stats-root" class="tab-content">
             <button class="nav-back" onclick="openTab('home-root')">🏠 Back to Home</button>
-            <div id="stats-container"></div>
+            <div id="stats-container" style="padding: 0 20px;"></div>
         </section>
 
         <section id="weeks-root" class="tab-content">
@@ -114,15 +114,9 @@
         </section>
     </div>
 
-    <footer id="global-version-footer">v30.9 - Layout Refined</footer>
+    <footer id="global-version-footer">v30.9 - Full Dashboard</footer>
 
-    <div id="msgModal" class="modal-overlay hidden" onclick="closeMsgModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <h3>Send Invoice?</h3>
-            <p id="msgPreview" style="white-space: pre-wrap; text-align: left; font-size: 13px; line-height: 1.5; background: var(--bg); padding: 15px; border-radius: 15px; margin-bottom: 20px; color: var(--text); font-weight: 500;"></p>
-            <div id="modalButtons"></div>
-        </div>
-    </div>
+    <div id="msgModal" class="modal-overlay hidden" onclick="closeMsgModal()"><div class="modal-content" onclick="event.stopPropagation()"><h3>Send Invoice?</h3><p id="msgPreview" style="white-space: pre-wrap; text-align: left; font-size: 13px; line-height: 1.5; background: var(--bg); padding: 15px; border-radius: 15px; margin-bottom: 20px; color: var(--text); font-weight: 500;"></p><div id="modalButtons"></div></div></div>
 
     <script src="app.js?v=309"></script>
 </body>
