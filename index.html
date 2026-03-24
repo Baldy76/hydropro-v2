@@ -12,7 +12,7 @@
     <link rel="apple-touch-icon" href="AppIcon.png">
     <link rel="icon" type="image/png" href="AppIcon.png">
 
-    <link rel="stylesheet" href="styles.css?v=375">
+    <link rel="stylesheet" href="styles.css?v=376">
 </head>
 <body class="light-mode">
 
@@ -40,12 +40,15 @@
                 <button onclick="openTab('ledger-root')"><span>💸</span><small>Ledger</small></button>
                 <button class="HM-FULL" onclick="openTab('weeks-root')"><span>📅</span><small>Weekly Work</small></button>
             </div>
+            <div class="HM-SYNC-ZONE">
+                <button class="HM-SYNC-BTN" onclick="location.reload(true)">🔄 Sync Updates</button>
+            </div>
         </section>
 
         <section id="master-root" class="tab-content">
             <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home</button>
             <div class="CT-SEARCH-WRAP">
-                <input type="text" id="mainSearch" placeholder="🔍 Search customers or streets..." oninput="renderMaster()">
+                <input type="text" id="mainSearch" placeholder="🔍 Search..." oninput="renderMaster()">
             </div>
             <div id="master-list-container"></div>
         </section>
@@ -68,19 +71,17 @@
                     </select>
                 </div>
                 <div class="SU-ROW"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
-                <textarea id="cNotes" class="SU-NOTES" placeholder="Private Notes (Access codes, etc)..."></textarea>
+                <textarea id="cNotes" class="SU-NOTES" placeholder="Private Notes..."></textarea>
                 <button class="SU-SAVE-BTN" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
 
             <div class="SU-ADMIN-ZONE">
                 <button class="SU-RESET-BTN" onclick="completeCycle()">🚀 START NEW MONTH</button>
-                
                 <div class="SU-BACKUP-ROW">
                     <button class="SU-IO-BTN" onclick="exportData()">📤 Backup CSV</button>
                     <button class="SU-IO-BTN" onclick="document.getElementById('importFile').click()">📥 Restore CSV</button>
                     <input type="file" id="importFile" hidden onchange="importData(event)" accept=".csv">
                 </div>
-
                 <button class="SU-DANGER-BTN" onclick="nuclearReset()">⚠️ RESET ALL DATA</button>
             </div>
         </section>
@@ -144,7 +145,7 @@
         </div>
     </div>
 
-    <footer id="version-label">v37.5 GOLD</footer>
-    <script src="app.js?v=375"></script>
+    <footer id="version-label">v37.6 GOLD</footer>
+    <script src="app.js?v=376"></script>
 </body>
 </html>
