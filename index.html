@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v31.6</title>
-    <link rel="stylesheet" href="styles.css?v=316">
+    <title>Hydro Pro v31.7</title>
+    <link rel="stylesheet" href="styles.css?v=317">
 </head>
 <body class="light-mode">
 
@@ -29,66 +29,63 @@
     <div id="app-viewport">
         <section id="home-root" class="tab-content active">
             <div class="home-grid">
-                <button onclick="openTab('setup-root')"><span class="icon-blue-tint">✨</span><small>Setup</small></button>
-                <button onclick="openTab('master-root')"><span class="icon-blue-tint">👥</span><small>Custs</small></button>
-                <button onclick="openTab('stats-root')"><span class="icon-blue-tint">📊</span><small>Stats</small></button>
-                <button onclick="openTab('ledger-root')"><span class="icon-blue-tint">💸</span><small>Ledger</small></button>
-                <button class="full-tile" onclick="openTab('weeks-root')"><span>📅</span><small>Weekly Work</small></button>
+                <button class="airgap-btn" onclick="openTab('setup-root')"><span class="icon-blue-tint">✨</span><small>Setup</small></button>
+                <button class="airgap-btn" onclick="openTab('master-root')"><span class="icon-blue-tint">👥</span><small>Custs</small></button>
+                <button class="airgap-btn" onclick="openTab('stats-root')"><span class="icon-blue-tint">📊</span><small>Stats</small></button>
+                <button class="airgap-btn" onclick="openTab('ledger-root')"><span class="icon-blue-tint">💸</span><small>Ledger</small></button>
+                <button class="full-tile airgap-btn" onclick="openTab('weeks-root')"><span>📅</span><small>Weekly Work</small></button>
             </div>
         </section>
 
         <section id="master-root" class="tab-content">
-            <button class="nav-back" onclick="openTab('home-root')">🏠 Home</button>
-            <div class="search-box-surgical">
+            <button class="nav-back airgap-btn" onclick="openTab('home-root')">🏠 Home</button>
+            <div class="search-box-surgical airgap-card">
                 <input type="text" id="mainSearch" placeholder="🔍 Search customers..." oninput="renderMaster()">
             </div>
             <div id="master-list-container"></div>
         </section>
 
         <section id="setup-root" class="tab-content">
-            <button class="nav-back" onclick="openTab('home-root')">🏠 Home</button>
-            <div class="setup-card">
+            <button class="nav-back airgap-btn" onclick="openTab('home-root')">🏠 Home</button>
+            <div class="setup-card airgap-card">
                 <input type="hidden" id="editId">
-                <div class="setup-entry-row"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
-                <div class="setup-entry-row"><span>📱</span><input type="tel" id="cPhone" placeholder="Phone"></div>
-                <div class="setup-entry-row"><span>🏠</span><input type="text" id="cHouseNum" placeholder="House No."></div>
-                <div class="setup-entry-row"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
-                <div class="setup-entry-row"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
-                <div class="setup-entry-row"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
+                <div class="setup-row"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
+                <div class="setup-row"><span>📱</span><input type="tel" id="cPhone" placeholder="Phone"></div>
+                <div class="setup-row"><span>🏠</span><input type="text" id="cHouseNum" placeholder="House No."></div>
+                <div class="setup-row"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
+                <div class="setup-row"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
+                <div class="setup-row"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
                 <textarea id="cNotes" placeholder="Private Notes..."></textarea>
-                <button class="setup-btn-save" onclick="saveCustomer()">✨ Save Customer</button>
+                <button class="setup-save-btn airgap-btn" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
             
-            <div class="bank-vault">
+            <div class="bank-vault airgap-card">
                 <div class="vault-header"><h3>🏦 Bank Vault</h3>
                     <div class="vault-button-stack">
-                        <button id="copyBankBtn" class="vault-btn-common vault-copy-btn" onclick="copyBankDetails()">📋 COPY</button>
-                        <button id="bankLockBtn" class="vault-btn-common vault-unlock-surgical" onclick="toggleBankLock()">🔓 UNLOCK</button>
+                        <button id="copyBankBtn" class="vault-btn vault-copy" onclick="copyBankDetails()">📋 COPY</button>
+                        <button id="bankLockBtn" class="vault-btn vault-unlock" onclick="toggleBankLock()">🔓 UNLOCK</button>
                     </div>
                 </div>
-                <input type="text" id="bankName" class="bank-field-fixed bank-airgap" readonly placeholder="Account Name">
-                <input type="text" id="bankSort" class="bank-field-fixed" readonly placeholder="Sort Code">
-                <input type="text" id="bankAcc" class="bank-field-fixed" readonly placeholder="Account Number">
-                <button id="bankSaveBtn" class="hidden setup-btn-save" style="background:var(--success); margin-top:15px;" onclick="saveBankDetails()">💾 Save Bank Info</button>
+                <input type="text" id="bankName" class="bank-field bank-top-gap" readonly placeholder="Account Name">
+                <input type="text" id="bankSort" class="bank-field" readonly placeholder="Sort Code">
+                <input type="text" id="bankAcc" class="bank-field" readonly placeholder="Account Number">
+                <button id="bankSaveBtn" class="hidden setup-save-btn" onclick="saveBankDetails()">💾 Save Bank Info</button>
             </div>
 
-            <div class="reset-area-surgical">
-                <button class="btn-reset-surgical" onclick="completeCycle()">🚀 START NEW MONTH</button>
+            <div class="reset-area airgap-card">
+                <button class="btn-reset" onclick="completeCycle()">🚀 START NEW MONTH</button>
             </div>
         </section>
 
         <section id="ledger-root" class="tab-content">
-            <button class="nav-back" onclick="openTab('home-root')">🏠 Home</button>
-            <div class="ledger-hero">
-                <small>MONTH SPEND</small>
-                <div id="ledgerTotalDisplay">£0.00</div>
-            </div>
-            <div class="ledger-input-box">
+            <button class="nav-back airgap-btn" onclick="openTab('home-root')">🏠 Home</button>
+            <div class="ledger-hero airgap-card"><small>MONTH SPEND</small><div id="ledgerTotalDisplay">£0.00</div></div>
+            <div class="ledger-input-card airgap-card">
                 <input type="text" id="expDesc" placeholder="Description">
                 <input type="number" id="expAmt" placeholder="Amount £">
                 <button onclick="addExpense()">Add Expense</button>
             </div>
-            <div class="ledger-actions">
+            <div class="ledger-csv-row airgap-card">
                 <button onclick="exportCSV('income')">💹 Income CSV</button>
                 <button onclick="exportCSV('spend')">📋 Spend CSV</button>
             </div>
@@ -96,41 +93,41 @@
         </section>
 
         <section id="stats-root" class="tab-content">
-            <button class="nav-back" onclick="openTab('home-root')">🏠 Home</button>
-            <div id="stats-container"></div>
+            <button class="nav-back airgap-btn" onclick="openTab('home-root')">🏠 Home</button>
+            <div id="stats-container" style="padding: 0 20px;"></div>
         </section>
 
         <section id="weeks-root" class="tab-content">
-            <button class="nav-back" onclick="openTab('home-root')">🏠 Home</button>
-            <div class="weeks-hub-grid">
-                <button onclick="viewWeek(1)">Week 1</button>
-                <button onclick="viewWeek(2)">Week 2</button>
-                <button onclick="viewWeek(3)">Week 3</button>
-                <button onclick="viewWeek(4)">Week 4</button>
-                <button class="full" onclick="viewWeek(5)">Week 5</button>
+            <button class="nav-back airgap-btn" onclick="openTab('home-root')">🏠 Home</button>
+            <div class="weeks-grid">
+                <button class="airgap-btn" onclick="viewWeek(1)">Week 1</button>
+                <button class="airgap-btn" onclick="viewWeek(2)">Week 2</button>
+                <button class="airgap-btn" onclick="viewWeek(3)">Week 3</button>
+                <button class="airgap-btn" onclick="viewWeek(4)">Week 4</button>
+                <button class="full airgap-btn" onclick="viewWeek(5)">Week 5</button>
             </div>
         </section>
 
         <section id="week-view-root" class="tab-content">
-            <div class="week-nav-spread-v31">
-                <button class="nav-half-surgical" onclick="openTab('weeks-root')">⬅️ Back</button>
-                <button class="nav-half-surgical" onclick="openTab('home-root')">🏠 Home</button>
+            <div class="week-nav-row airgap-card">
+                <button class="nav-half" onclick="openTab('weeks-root')">⬅️ Back</button>
+                <button class="nav-half" onclick="openTab('home-root')">🏠 Home</button>
             </div>
-            <div id="bulk-box"></div>
+            <div id="bulk-box" class="airgap-card"></div>
             <div id="week-list-container"></div>
         </section>
     </div>
 
-    <footer id="global-version-footer">v31.6 - Spread Nav Layout</footer>
+    <footer id="global-version-footer">v31.7 - Final System Integrity</footer>
 
     <div id="msgModal" class="modal-overlay hidden">
         <div class="modal-content">
             <h3>Send Invoice?</h3>
-            <p id="msgPreview"></p>
+            <p id="msgPreview" style="white-space: pre-wrap; text-align: left; font-size: 13px; background: var(--bg); padding: 15px; border-radius: 15px; margin-bottom: 20px; color: var(--text);"></p>
             <div id="modalButtons"></div>
         </div>
     </div>
 
-    <script src="app.js?v=316"></script>
+    <script src="app.js?v=317"></script>
 </body>
 </html>
