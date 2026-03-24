@@ -3,22 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v41.3</title>
+    <title>Hydro Pro v41.4</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="AppIcon.png">
     <link rel="icon" type="image/png" href="AppIcon.png">
-    <link rel="stylesheet" href="styles.css?v=413">
+    <link rel="stylesheet" href="styles.css?v=414">
 </head>
 <body class="light-mode">
 
     <header id="G-HEADER">
-        <div class="G-LOGO-WRAP"><img src="Logo.png" id="mainLogo" alt="HydroPro"></div>
+        <div class="G-LOGO-WRAP">
+            <img src="Logo.png" id="mainLogo" alt="HydroPro">
+        </div>
+        
         <div class="G-NAV-ZONE">
-            <span id="dateText"></span>
             <div id="weather-pill" class="G-WEATHER-PILL" onclick="launchWeatherApp()">
                 <span id="w-icon">🌤️</span><small id="w-text">GPS SYNC...</small>
             </div>
+
             <div class="G-SWITCH-WRAP">
                 <label class="ios-switch">
                     <input type="checkbox" id="themeCheckbox">
@@ -27,6 +30,7 @@
                 </label>
             </div>
         </div>
+        <span id="dateText"></span>
     </header>
 
     <main id="G-VIEWPORT">
@@ -81,12 +85,12 @@
         </section>
 
         <section id="stats-root" class="tab-content">
-            <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
+            <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
             <div id="stats-dashboard-container"></div>
         </section>
 
         <section id="ledger-root" class="tab-content">
-            <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
+            <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
             <div class="LD-LOCKED-HERO"><small>TOTAL MONTHLY SPEND</small><div id="ledgerTotalDisplay">£0.00</div></div>
             <div class="VAULT-CARD">
                 <div class="VAULT-ROW"><input type="text" id="expDesc" placeholder="Expense Description"></div>
@@ -103,7 +107,7 @@
         </section>
 
         <section id="weeks-root" class="tab-content">
-            <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
+            <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
             <div class="FIXED-GRID">
                 <button class="GRID-BTN" onclick="viewWeek(1)">Week 1</button>
                 <button class="GRID-BTN" onclick="viewWeek(2)">Week 2</button>
@@ -150,7 +154,7 @@
         </div>
     </div>
     
-    <footer id="version-label">v41.3 HOME RECOVERY</footer>
-    <script src="app.js?v=413"></script>
+    <footer id="version-label">v41.4 SLEEK HEADER</footer>
+    <script src="app.js?v=414"></script>
 </body>
 </html>
