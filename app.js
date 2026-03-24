@@ -9,9 +9,12 @@ window.onload = () => {
     const isDark = localStorage.getItem('HP_Theme') === 'true';
     document.body.classList.toggle('dark-mode', isDark);
     
-    // Sync the slider checkbox
+    // Sync the slider checkbox and LOGO on load
     const themeCheckbox = document.getElementById('themeCheckbox');
     if(themeCheckbox) themeCheckbox.checked = isDark;
+    
+    const mainLogo = document.getElementById('mainLogo');
+    if(mainLogo) mainLogo.src = isDark ? 'Logo-Dark.png' : 'Logo.png';
 
     updateHeader();
     renderAll();
@@ -21,12 +24,22 @@ window.toggleDarkMode = () => {
     const isDark = document.body.classList.toggle('dark-mode');
     localStorage.setItem('HP_Theme', isDark);
     
-    // Ensure checkbox matches
+    // Sync checkbox
     const themeCheckbox = document.getElementById('themeCheckbox');
     if(themeCheckbox) themeCheckbox.checked = isDark;
+
+    // SWAP LOGO ROBOT
+    const mainLogo = document.getElementById('mainLogo');
+    if(mainLogo) {
+        mainLogo.style.opacity = '0'; // Smooth fade out
+        setTimeout(() => {
+            mainLogo.src = isDark ? 'Logo-Dark.png' : 'Logo.png';
+            mainLogo.style.opacity = '1'; // Smooth fade in
+        }, 200);
+    }
 };
 
-/* --- REST OF CODE REMAINS FULLY INTACT --- */
+/* --- SHARED RENDERING ROBOTS --- */
 window.openTab = (tabId) => {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
