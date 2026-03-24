@@ -1,7 +1,6 @@
 :root { --accent: #007aff; --bg: #f2f2f7; --card: #ffffff; --text: #000; --success: #32d74b; --danger: #ff453a; }
 body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; }
 
-/* 🔡 v30.6 UNIFIED TYPOGRAPHY (Standardized Sans-Serif) */
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
 body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; transition: background 0.3s; }
 
@@ -20,22 +19,18 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-hei
 input:checked + .slider-round { background-color: var(--accent); }
 input:checked + .slider-round:before { transform: translateX(26px); content: "🌙"; }
 
-/* 🔡 v30.6 REFINED GREETING (No Serif, No Italics) */
 #dateText { font-size: 26px; font-weight: 900; color: var(--accent); display: block; text-align: center; }
 #greetText { display: block; font-size: 13px; font-weight: 800; opacity: 0.6; letter-spacing: 1.5px; text-transform: uppercase; text-align: center; margin-bottom: 5px; font-style: normal !important; }
 
-/* 🏠 HOME GRID (v30.6 Cohesive Styling) */
+/* 🏠 HOME GRID */
 .home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
 .home-grid button { height: 125px; border-radius: 30px; background: var(--card); border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text); box-shadow: 0 8px 15px rgba(0,0,0,0.05); }
-
-/* v30.6 Tint Icons Blue to match Weekly Work button */
-.icon-blue-tint { color: var(--accent); font-size: 40px; margin-bottom: 5px; filter: drop-shadow(0 2px 4px rgba(0,122,255,0.1)); }
-
+.icon-blue-tint { color: var(--accent); font-size: 40px; margin-bottom: 5px; }
 .home-grid button small { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
 .full-tile { grid-column: 1 / -1; background: var(--accent) !important; color: white !important; height: 130px !important; }
 .full-tile span { font-size: 40px; }
 
-/* 🛠️ SHARED UI ELEMENTS */
+/* 🛠️ SHARED UI */
 .nav-back { width: calc(100% - 40px); height: 60px !important; border-radius: 30px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px !important; margin: 0 20px 25px; display: block; }
 .dual-nav-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px 25px; }
 .nav-half { height: 60px !important; border-radius: 20px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px !important; }
@@ -63,9 +58,6 @@ input:checked + .slider-round:before { transform: translateX(26px); content: "�
 #ledger-root .ledger-hero-display div { font-size: 50px; font-weight: 900; }
 .exp-pill { background: var(--card); padding: 20px; border-radius: 25px; display: flex; justify-content: space-between; margin: 0 20px 12px; border-left: 5px solid var(--danger); }
 
-.weeks-hub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
-.weeks-hub-grid button { height: 110px; border-radius: 25px; border: none; background: #1c1c1e; color: white; font-weight: 900; font-size: 22px; }
-.weeks-hub-grid .full { grid-column: 1 / -1; }
 .job-card { background: var(--card); padding: 25px; border-radius: 35px; margin: 0 20px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
 .job-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
 .btn-job { height: 50px; border-radius: 12px; border: none; font-weight: 900; color: white; font-size: 11px; }
@@ -74,9 +66,7 @@ input:checked + .slider-round:before { transform: translateX(26px); content: "�
 .btn-wa { background: #25d366; color: white; height: 60px; border-radius: 15px; border: none; font-weight: 900; }
 .btn-sms { background: #007aff; color: white; height: 60px; border-radius: 15px; border: none; font-weight: 900; }
 
-.btn-primary-large { width: 100%; height: 75px; border-radius: 25px; border: none; background: var(--accent); color: white; font-weight: 900; font-size: 20px; }
-.tab-content { display: none; }
-.tab-content.active { display: block !important; }
 .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; display:flex; align-items:center; justify-content:center; }
-.modal-content { background:var(--card); padding:30px; border-radius:35px; width:90%; color: var(--text); }
+.modal-overlay.hidden { display: none !important; }
+.modal-content { background:var(--card); padding:30px; border-radius:35px; width:90%; color: var(--text); text-align: center; }
 #global-version-footer { width: 100%; text-align: center; padding: 30px 0; font-size: 10px; font-weight: 900; opacity: 0.3; text-transform: uppercase; }
