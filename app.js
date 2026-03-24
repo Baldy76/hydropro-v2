@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateLogo(dark);
         });
         updateHeader(); renderAll();
-    } catch(e) { console.error("Restore Error", e); }
+    } catch(e) { console.error("Boot Error", e); }
 });
 
 function updateLogo(isDark) {
@@ -43,11 +43,13 @@ window.renderAll = () => { renderMaster(); renderLedger(); renderStats(); render
 window.renderStats = () => {
     const container = document.getElementById('stats-container'); if(!container) return;
     let targetIncome = 0, paid = 0, arrears = 0, fuel = 0, gear = 0, food = 0, misc = 0;
+
     db.customers.forEach(c => { 
         targetIncome += n(c.price);
         paid += n(c.paidThisMonth); 
         if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth)); 
     });
+
     db.expenses.forEach(e => {
         const cat = (e.cat||"").toLowerCase();
         if(cat.includes('fuel')) fuel += n(e.amt);
@@ -55,6 +57,7 @@ window.renderStats = () => {
         else if(cat.includes('food')) food += n(e.amt);
         else misc += n(e.amt);
     });
+
     const totalSpend = fuel + gear + food + misc;
     const profit = paid - totalSpend;
     const progressPercent = targetIncome > 0 ? Math.min(Math.round((paid / targetIncome) * 100), 100) : 0;
@@ -117,7 +120,7 @@ window.renderWeek = () => {
     });
 };
 
-/* --- 📱 MODAL LOGIC --- */
+/* --- 📱 MODAL --- */
 window.showJobBriefing = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
     const history = (db.history || []).filter(h => h.custId === id).slice(-3).reverse();
@@ -130,11 +133,71 @@ window.showJobBriefing = (id) => {
     document.getElementById('briefingModal').classList.remove('hidden');
 };
 
-/* --- CORE FUNCTIONS --- */
+/* --- 🍏 CSV BACKUP ENGINE v37.5 --- */
+window.exportData = () => {
+    // Customers CSV
+    let cCSV = "Name,Phone,HouseNum,Street,Postcode,Day,Price,Week,Notes\n";
+    db.customers.forEach(c => {
+        cCSV += `"${c.name}","${c.phone||''}","${c.houseNum||''}","${c.street||''}","${c.postcode||''}","${c.day}","${c.price}","${c.week}","${(c.notes||'').replace(/\n/g,' ')}"\n`;
+    });
+    downloadCSV(cCSV, `HydroPro_Customers_${new Date().toLocaleDateString()}.csv`);
+
+    // Expenses CSV
+    if(db.expenses.length > 0) {
+        let eCSV = "Date,Category,Description,Amount\n";
+        db.expenses.forEach(e => {
+            eCSV += `"${e.date}","${e.cat}","${e.desc}","${e.amt}"\n`;
+        });
+        downloadCSV(eCSV, `HydroPro_Expenses_${new Date().toLocaleDateString()}.csv`);
+    }
+};
+
+function downloadCSV(csv, name) {
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url; link.download = name; link.click();
+}
+
+window.importData = (event) => {
+    const file = event.target.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const rows = e.target.result.split('\n').slice(1);
+        const newCusts = [];
+        rows.forEach(row => {
+            if(row.trim() === '') return;
+            const cols = row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+            const cl = (v) => (v||"").replace(/"/g, "").trim();
+            if(cols.length >= 7) {
+                newCusts.push({
+                    id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                    name: cl(cols[0]), phone: cl(cols[1]), houseNum: cl(cols[2]), street: cl(cols[3]), 
+                    postcode: cl(cols[4]), day: cl(cols[5]), price: n(cl(cols[6])), 
+                    week: cl(cols[7]) || "1", notes: cl(cols[8]) || "", cleaned: false, paidThisMonth: 0
+                });
+            }
+        });
+        if(newCusts.length > 0 && confirm(`Found ${newCusts.length} customers. Restore them?`)) {
+            db.customers = [...db.customers, ...newCusts]; saveData(); location.reload();
+        }
+    };
+    reader.readAsText(file);
+};
+
+window.nuclearReset = () => {
+    if(confirm("☢️ NUCLEAR OPTION: Delete EVERYTHING?")) {
+        if(confirm("FINAL WARNING: This wipes all customers, history and ledger. Proceed?")) {
+            localStorage.removeItem(DB_KEY); location.reload();
+        }
+    }
+};
+
+/* --- CORE UTILS --- */
 window.quickSettle = (id, amt) => { const c = db.customers.find(x => x.id === id); c.paidThisMonth = n(c.price); db.history.push({ custId: id, amt: n(amt), date: 'Debt-Settle' }); saveData(); closeBriefing(); renderWeek(); renderStats(); };
 window.addExpense = () => {
     const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value), c = document.getElementById('expCat').value;
-    if(!d || a <= 0) return alert("Details Required");
+    if(!d || a <= 0) return alert("Required");
     db.expenses.push({ id: Date.now(), desc: d, amt: a, cat: c, date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) });
     saveData(); renderLedger(); renderStats(); document.getElementById('expDesc').value=''; document.getElementById('expAmt').value='';
 };
@@ -152,8 +215,7 @@ window.renderLedger = () => {
 window.saveCustomer = () => {
     const name = document.getElementById('cName').value; if(!name) return alert("Name required");
     const id = document.getElementById('editId').value || Date.now().toString();
-    const ex = db.customers.find(x=>x.id===id);
-    const entry = { id, name, phone: document.getElementById('cPhone').value, houseNum: document.getElementById('cHouseNum').value, street: document.getElementById('cStreet').value, postcode: document.getElementById('cPostcode').value.toUpperCase(), day: document.getElementById('cDay').value, price: n(document.getElementById('cPrice').value), notes: document.getElementById('cNotes').value, week: ex?ex.week:"1", cleaned: ex?ex.cleaned:false, paidThisMonth: ex?ex.paidThisMonth:0 };
+    const entry = { id, name, phone: document.getElementById('cPhone').value, houseNum: document.getElementById('cHouseNum').value, street: document.getElementById('cStreet').value, postcode: document.getElementById('cPostcode').value.toUpperCase(), day: document.getElementById('cDay').value, price: n(document.getElementById('cPrice').value), notes: document.getElementById('cNotes').value, week: (db.customers.find(x=>x.id===id)||{week:"1"}).week, cleaned: (db.customers.find(x=>x.id===id)||{cleaned:false}).cleaned, paidThisMonth: (db.customers.find(x=>x.id===id)||{paidThisMonth:0}).paidThisMonth };
     const idx = db.customers.findIndex(c => c.id === id); if(idx>-1) db.customers[idx]=entry; else db.customers.push(entry);
     saveData(); openTab('master-root');
 };
