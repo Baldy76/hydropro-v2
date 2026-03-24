@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v40.9</title>
+    <title>Hydro Pro v41.1</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="AppIcon.png">
     <link rel="icon" type="image/png" href="AppIcon.png">
-    <link rel="stylesheet" href="styles.css?v=409">
+    <link rel="stylesheet" href="styles.css?v=411">
 </head>
 <body class="light-mode">
 
@@ -31,92 +31,126 @@
 
     <main id="G-VIEWPORT">
         <section id="home-root" class="tab-content active">
-            <div class="HM-GRID">
-                <button onclick="openTab('setup-root')"><span>✨</span><small>Setup</small></button>
-                <button onclick="openTab('master-root')"><span>👥</span><small>Custs</small></button>
-                <button onclick="openTab('stats-root')"><span>📊</span><small>Stats</small></button>
-                <button onclick="openTab('ledger-root')"><span>💸</span><small>Ledger</small></button>
-                <button class="HM-FULL" onclick="openTab('weeks-root')"><span>📅</span><small>Weekly Work</small></button>
+            <div class="FIXED-GRID">
+                <button class="GRID-BTN" onclick="openTab('setup-root')"><span>✨</span><small>Setup</small></button>
+                <button class="GRID-BTN" onclick="openTab('master-root')"><span>👥</span><small>Custs</small></button>
+                <button class="GRID-BTN" onclick="openTab('stats-root')"><span>📊</span><small>Stats</small></button>
+                <button class="GRID-BTN" onclick="openTab('ledger-root')"><span>💸</span><small>Ledger</small></button>
+                <button class="GRID-BTN FULL-W" onclick="openTab('weeks-root')"><span>📅</span><small>Weekly Work</small></button>
             </div>
-            <div class="HM-SYNC-ZONE"><button class="HM-SYNC-BTN" onclick="location.reload(true)">🔄 Sync Updates</button></div>
-        </section>
-
-        <section id="stats-root" class="tab-content">
-            <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div id="stats-dashboard-container"></div>
-        </section>
-
-        <section id="ledger-root" class="tab-content">
-            <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="LD-HERO"><small>TOTAL SPEND</small><div id="ledgerTotalDisplay">£0.00</div></div>
-            <div class="LD-INPUT-CARD">
-                <input type="text" id="expDesc" class="LD-FIELD" placeholder="Description">
-                <input type="number" id="expAmt" class="LD-FIELD" placeholder="Amount £">
-                <select id="expCat" class="LD-SELECT-FIXED">
-                    <option value="⛽ Fuel">⛽ Fuel</option>
-                    <option value="🛠️ Gear">🛠️ Gear</option>
-                    <option value="🍔 Food">🍔 Food</option>
-                    <option value="📦 Misc">📦 Misc</option>
-                </select>
-                <button class="LD-ADD-BTN" onclick="addExpense()">Add Expense</button>
+            <div class="SYNC-AREA">
+                <button class="SYNC-BTN-LOCKED" onclick="location.reload(true)">🔄 SYNC UPDATES</button>
             </div>
-            <div id="ledger-list-container"></div>
-        </section>
-
-        <section id="master-root" class="tab-content">
-            <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="CT-SEARCH-WRAP"><input type="text" id="mainSearch" placeholder="🔍 Search Customers..." oninput="renderMaster()"></div>
-            <div id="master-list-container"></div>
         </section>
 
         <section id="setup-root" class="tab-content">
-            <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="SU-CARD">
-                <div class="SU-ROW"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
-                <div class="SU-ROW"><span>📱</span><input type="tel" id="cPhone" placeholder="Phone"></div>
-                <div class="SU-ROW"><span>🏠</span><input type="text" id="cHouseNum" placeholder="House No."></div>
-                <div class="SU-ROW"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
-                <div class="SU-ROW"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
-                <div class="SU-ROW"><span>📅</span>
-                    <select id="cDay" class="SU-SELECT">
+            <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
+            <div class="VAULT-CARD">
+                <div class="VAULT-ROW"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
+                <div class="VAULT-ROW"><span>📱</span><input type="tel" id="cPhone" placeholder="Phone"></div>
+                <div class="VAULT-ROW"><span>🏠</span><input type="text" id="cHouseNum" placeholder="House No."></div>
+                <div class="VAULT-ROW"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
+                <div class="VAULT-ROW"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
+                <div class="VAULT-ROW"><span>📅</span>
+                    <select id="cDay" class="VAULT-SELECT">
                         <option value="Mon">Monday</option><option value="Tue">Tuesday</option>
                         <option value="Wed">Wednesday</option><option value="Thu">Thursday</option>
                         <option value="Fri">Friday</option><option value="Sat">Saturday</option>
                         <option value="Sun">Sunday</option>
                     </select>
                 </div>
-                <div class="SU-ROW"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
-                <textarea id="cNotes" class="SU-NOTES" placeholder="Private Notes..."></textarea>
-                <button class="SU-SAVE-BTN" onclick="saveCustomer()">✨ Save New Customer</button>
+                <div class="VAULT-ROW"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
+                <textarea id="cNotes" class="VAULT-NOTES" placeholder="Private Notes..."></textarea>
+                <button class="VAULT-SAVE-BTN" onclick="saveCustomer()">✨ SAVE CUSTOMER</button>
             </div>
-
-            <div class="SU-UTILITY-ANCHOR">
-                <button class="SU-CYCLE-BTN" onclick="completeCycle()">🚀 START NEW MONTH</button>
-                <div class="SU-BACKUP-ROW">
-                    <button class="SU-IO-BTN" onclick="exportData()">📤 Backup</button>
-                    <button class="SU-IO-BTN" onclick="document.getElementById('importFile').click()">📥 Restore</button>
+            <div class="ADMIN-VAULT">
+                <button class="ADMIN-BTN-BLUE" onclick="completeCycle()">🚀 START NEW MONTH</button>
+                <div class="ADMIN-ROW">
+                    <button class="ADMIN-BTN-GREY" onclick="exportData()">📤 Backup</button>
+                    <button class="ADMIN-BTN-GREY" onclick="document.getElementById('importFile').click()">📥 Restore</button>
                     <input type="file" id="importFile" hidden onchange="importData(event)" accept=".csv">
                 </div>
-                <button class="SU-NUCLEAR-BTN" onclick="nuclearReset()">☢️ FACTORY RESET DATA</button>
+                <button class="ADMIN-BTN-RED" onclick="nuclearReset()">☢️ FACTORY RESET DATA</button>
             </div>
         </section>
 
-        <section id="weeks-root" class="tab-content"><button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button><div class="WK-HUB-GRID"><button class="WK-TILE" onclick="viewWeek(1)">Week 1</button><button class="WK-TILE" onclick="viewWeek(2)">Week 2</button><button class="WK-TILE" onclick="viewWeek(3)">Week 3</button><button class="WK-TILE" onclick="viewWeek(4)">Week 4</button><button class="WK-TILE WK-FULL" onclick="viewWeek(5)">Week 5</button></div></section>
+        <section id="master-root" class="tab-content">
+            <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
+            <div class="SEARCH-LOCKED-WRAP"><input type="text" id="mainSearch" placeholder="🔍 Search Name/Street..." oninput="renderMaster()"></div>
+            <div id="master-list-container"></div>
+        </section>
+
+        <section id="stats-root" class="tab-content">
+            <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
+            <div id="stats-dashboard-container"></div>
+        </section>
+
+        <section id="ledger-root" class="tab-content">
+            <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
+            <div class="LD-LOCKED-HERO"><small>TOTAL SPEND</small><div id="ledgerTotalDisplay">£0.00</div></div>
+            <div class="VAULT-CARD">
+                <div class="VAULT-ROW"><input type="text" id="expDesc" placeholder="Description"></div>
+                <div class="VAULT-ROW"><input type="number" id="expAmt" placeholder="Amount £"></div>
+                <div class="VAULT-ROW">
+                    <select id="expCat" class="VAULT-SELECT">
+                        <option value="⛽ Fuel">⛽ Fuel</option><option value="🛠️ Gear">🛠️ Gear</option>
+                        <option value="🍔 Food">🍔 Food</option><option value="📦 Misc">📦 Misc</option>
+                    </select>
+                </div>
+                <button class="VAULT-SAVE-BTN" onclick="addExpense()">Add Expense</button>
+            </div>
+            <div id="ledger-list-container"></div>
+        </section>
+
+        <section id="weeks-root" class="tab-content">
+            <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
+            <div class="FIXED-GRID">
+                <button class="GRID-BTN" onclick="viewWeek(1)">Week 1</button>
+                <button class="GRID-BTN" onclick="viewWeek(2)">Week 2</button>
+                <button class="GRID-BTN" onclick="viewWeek(3)">Week 3</button>
+                <button class="GRID-BTN" onclick="viewWeek(4)">Week 4</button>
+                <button class="GRID-BTN FULL-W" onclick="viewWeek(5)">Week 5</button>
+            </div>
+        </section>
+
+        <section id="week-view-root" class="tab-content">
+            <div class="NAV-VAULT"><button onclick="openTab('weeks-root')">⬅️ Back</button><button onclick="openTab('home-root')">🏠 Hub</button></div>
+            <div class="DAY-VAULT">
+                <button class="D-BTN active" onclick="setWorkingDay('Mon', this)">M</button>
+                <button class="D-BTN" onclick="setWorkingDay('Tue', this)">T</button>
+                <button class="D-BTN" onclick="setWorkingDay('Wed', this)">W</button>
+                <button class="D-BTN" onclick="setWorkingDay('Thu', this)">T</button>
+                <button class="D-BTN" onclick="setWorkingDay('Fri', this)">F</button>
+                <button class="D-BTN" onclick="setWorkingDay('Sat', this)">S</button>
+                <button class="D-BTN" onclick="setWorkingDay('Sun', this)">S</button>
+            </div>
+            <div id="week-list-container"></div>
+        </section>
     </main>
+
+    <div id="briefingModal" class="modal-overlay hidden" onclick="closeBriefing()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div id="briefingData"></div>
+            <div id="quickSettleContainer"></div>
+            <div id="receiptActionBox"></div>
+            <button class="MD-EDIT" id="briefEditBtn">⚙️ Edit Profile</button>
+            <button class="MD-CLOSE" onclick="closeBriefing()">CLOSE</button>
+        </div>
+    </div>
 
     <div id="editModal" class="modal-overlay hidden" onclick="closeEditModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h2 style="margin-top:0; color:var(--accent); text-align:center;">Edit Profile</h2>
+            <h2 style="margin:0 0 20px; color:var(--accent); text-align:center;">Edit Profile</h2>
             <input type="hidden" id="eEditId">
-            <div class="SU-ROW"><span>👤</span><input type="text" id="eName"></div>
-            <div class="SU-ROW"><span>💰</span><input type="number" id="ePrice"></div>
-            <textarea id="eNotes" class="SU-NOTES"></textarea>
-            <button class="MD-SAVE-BTN" onclick="updateCustomerFromModal()">💾 SAVE & EXIT</button>
-            <button class="MD-CLOSE-BTN" onclick="closeEditModal()">CANCEL</button>
+            <div class="VAULT-ROW"><span>👤</span><input type="text" id="eName"></div>
+            <div class="VAULT-ROW"><span>💰</span><input type="number" id="ePrice"></div>
+            <textarea id="eNotes" class="VAULT-NOTES"></textarea>
+            <button class="VAULT-SAVE-BTN" onclick="updateCustomerFromModal()">💾 SAVE CHANGES</button>
+            <button class="ADMIN-BTN-GREY" style="margin-top:10px;" onclick="closeEditModal()">CANCEL</button>
         </div>
     </div>
     
-    <footer id="version-label">v40.9 ANTI-SHRINK LOCK</footer>
-    <script src="app.js?v=409"></script>
+    <footer id="version-label">v41.1 FORTRESS</footer>
+    <script src="app.js?v=411"></script>
 </body>
 </html>
