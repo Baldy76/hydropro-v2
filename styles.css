@@ -1,94 +1,149 @@
-/* --- INDUSTRIAL CORE v39.4 --- */
-:root { 
-    --accent: #007aff; --bg: #f2f2f7; --card: #ffffff; --text: #000; 
-    --success: #34C759; --danger: #ff453a; --ios-grey: #e9e9eb; 
-    --grad: linear-gradient(135deg, #007aff 0%, #0051a8 100%);
+const DB_KEY = 'HydroPro_Gold_V36';
+const W_API_KEY = "4c00e61833ea94d3c4a1bff9d2c32969"; 
+
+let db = { customers: [], expenses: [], history: [] };
+const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
+let curWeek = 1;
+let workingDay = 'Mon';
+
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        const saved = localStorage.getItem(DB_KEY);
+        if (saved) db = JSON.parse(saved);
+        if (!db.history) db.history = [];
+        const isDark = localStorage.getItem('HP_Theme') === 'true';
+        document.body.classList.toggle('dark-mode', isDark);
+        document.getElementById('themeCheckbox').checked = isDark;
+        document.getElementById('themeCheckbox').addEventListener('change', (e) => {
+            const dark = e.target.checked;
+            document.body.classList.toggle('dark-mode', dark);
+            localStorage.setItem('HP_Theme', dark);
+        });
+        updateHeader(); renderAll(); initWeather();
+    } catch(e) { console.error("Boot Error", e); }
+});
+
+/* --- 🌦️ WEATHER --- */
+async function initWeather() {
+    const options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+        try {
+            const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&appid=${W_API_KEY}&units=metric`);
+            const data = await res.json();
+            const iconMap = { "Clear": "☀️", "Clouds": "☁️", "Rain": "🌧️", "Drizzle": "🌦️", "Thunderstorm": "⛈️", "Snow": "❄️", "Mist": "🌫️" };
+            document.getElementById('w-icon').innerText = iconMap[data.weather[0].main] || "🌤️";
+            document.getElementById('w-text').innerText = `${Math.round(data.main.temp)}°C ${data.weather[0].main.toUpperCase()}`;
+        } catch (err) { document.getElementById('w-text').innerText = "OFFLINE"; }
+    }, (err) => { document.getElementById('w-text').innerText = "GPS REQUIRED"; }, options);
 }
-body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; --ios-grey: #39393d; }
 
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, sans-serif; }
-body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; width: 100vw; font-size: 18px; }
+window.launchWeatherApp = () => {
+    if (navigator.userAgent.match(/(iPhone|iPod|iPad)/)) {
+        window.location.href = "weather://";
+        setTimeout(() => window.open("https://weather.com/", "_blank"), 500);
+    } else { window.open("https://www.google.com/search?q=weather", "_blank"); }
+};
 
-.tab-content { display: none !important; width: 100%; }
-.tab-content.active { display: flex !important; flex-direction: column; width: 100%; }
+/* --- 👥 MASTER LIST & FULL MODAL --- */
+window.renderMaster = () => {
+    const container = document.getElementById('master-list-container'); if(!container) return;
+    container.innerHTML = '';
+    const search = (document.getElementById('mainSearch').value || "").toLowerCase();
+    db.customers.forEach(c => {
+        if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
+            const div = document.createElement('div'); div.className = 'CT-PILL';
+            div.onclick = () => openEditModal(c.id);
+            div.innerHTML = `<div class="CT-TEXT-STACK"><strong>${c.name}</strong><small>${c.houseNum} ${c.street}</small></div><div style="font-weight:900; color:var(--success); font-size:26px;">£${n(c.price).toFixed(2)}</div>`;
+            container.appendChild(div);
+        }
+    });
+};
 
-/* HEADER & WEATHER */
-#G-HEADER { width: 100%; text-align: center; padding: 20px 0; }
-.G-LOGO-WRAP img { width: 80%; max-width: 380px; height: auto; display: block; margin: 0 auto; }
-#dateText { font-size: 32px; font-weight: 900; color: var(--accent); margin: 15px 0; display: block; }
-.G-WEATHER-PILL { display: inline-flex; align-items: center; gap: 12px; background: var(--ios-grey); padding: 12px 25px; border-radius: 35px; cursor: pointer; border: 1px solid rgba(0,0,0,0.05); }
+window.openEditModal = (id) => {
+    const c = db.customers.find(x => x.id === id); if(!c) return;
+    document.getElementById('eEditId').value = c.id;
+    document.getElementById('eName').value = c.name;
+    document.getElementById('ePhone').value = c.phone || '';
+    document.getElementById('eHouseNum').value = c.houseNum || '';
+    document.getElementById('eStreet').value = c.street || '';
+    document.getElementById('ePostcode').value = c.postcode || '';
+    document.getElementById('eDay').value = c.day || 'Mon';
+    document.getElementById('eWeek').value = c.week || '1';
+    document.getElementById('ePrice').value = c.price || 0;
+    document.getElementById('eNotes').value = c.notes || '';
+    document.getElementById('editModal').classList.remove('hidden');
+};
 
-/* HUB MENU */
-.HM-GRID { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; padding: 30px; }
-.HM-GRID button { height: 150px; border-radius: 40px; background: var(--card); border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.08); color: var(--text); }
-.HM-GRID button small { font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 5px; }
-.HM-GRID span { font-size: 55px; }
-.HM-FULL { grid-column: 1 / -1; background: var(--grad) !important; color: white !important; height: 160px !important; }
-.HM-SYNC-ZONE { padding: 40px 30px 60px; text-align: center; }
-.HM-SYNC-BTN { width: 100%; height: 75px; border-radius: 25px; border: 3px solid var(--accent); background: transparent; color: var(--accent); font-weight: 900; font-size: 18px; text-transform: uppercase; }
+window.updateCustomerFromModal = () => {
+    const id = document.getElementById('eEditId').value;
+    const idx = db.customers.findIndex(c => c.id === id);
+    if(idx > -1) {
+        db.customers[idx].name = document.getElementById('eName').value;
+        db.customers[idx].phone = document.getElementById('ePhone').value;
+        db.customers[idx].houseNum = document.getElementById('eHouseNum').value;
+        db.customers[idx].street = document.getElementById('eStreet').value;
+        db.customers[idx].postcode = document.getElementById('ePostcode').value.toUpperCase();
+        db.customers[idx].day = document.getElementById('eDay').value;
+        db.customers[idx].week = document.getElementById('eWeek').value;
+        db.customers[idx].price = n(document.getElementById('ePrice').value);
+        db.customers[idx].notes = document.getElementById('eNotes').value;
+        saveData(); closeEditModal(); renderMaster();
+    }
+};
 
-/* 👥 CUST TILES (Adjusted Size) */
-.CT-SEARCH-WRAP { padding: 0 30px 25px; }
-#mainSearch { width: 100%; height: 75px; border-radius: 25px; border: 3px solid var(--accent); background: var(--card); padding: 0 30px; font-size: 20px; font-weight: 700; color: var(--text); }
-.CT-PILL { background: var(--card); padding: 30px; border-radius: 40px; display: flex; justify-content: space-between; align-items: center; margin: 0 30px 20px; min-height: 120px; box-shadow: 0 10px 20px rgba(0,0,0,0.04); }
-.CT-TEXT-STACK { display: flex; flex-direction: column; gap: 8px; text-align: left; max-width: 70%; }
-.CT-TEXT-STACK strong { 
-    font-size: 20px; /* Reduced from 24px to prevent wrapping */
-    color: var(--text); 
-    font-weight: 900; 
-    line-height: 1.1; 
-}
-.CT-TEXT-STACK small { font-size: 16px; color: var(--accent); font-weight: 800; text-transform: uppercase; }
+/* --- 📊 STATS & LEDGER --- */
+window.renderStats = () => {
+    const container = document.getElementById('stats-container'); if(!container) return;
+    let t = 0, coll = 0, fuel = 0, gear = 0, food = 0, misc = 0;
+    db.customers.forEach(c => { t += n(c.price); coll += n(c.paidThisMonth); });
+    db.expenses.forEach(e => { const cat = (e.cat||"").toLowerCase(); if(cat.includes('fuel')) fuel += n(e.amt); else if(cat.includes('gear')) gear += n(e.amt); else if(cat.includes('food')) food += n(e.amt); else misc += n(e.amt); });
+    const spend = fuel + gear + food + misc;
+    const prog = t > 0 ? Math.min(Math.round((coll / t) * 100), 100) : 0;
+    container.innerHTML = `<div class="ST-HERO"><div>£${(coll - spend).toFixed(2)}</div><small>NET PROFIT</small></div><div class="ST-GRID"><div class="ST-BUBBLE">INCOME<strong>£${coll.toFixed(2)}</strong></div><div class="ST-BUBBLE">SPEND<strong>£${spend.toFixed(2)}</strong></div></div><div class="ST-PROG-CARD" style="padding:30px; border-radius:40px; background:var(--card); margin:0 30px 30px;"><strong>Progress: ${prog}%</strong><div style="background:var(--bg); height:20px; border-radius:15px; margin-top:15px; overflow:hidden;"><div style="background:var(--accent); width:${prog}%; height:100%; transition:1s;"></div></div></div><div class="SU-CARD" style="margin:0 30px;"><div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(0,0,0,0.05); font-weight:800;"><span>⛽ Fuel</span><span>£${fuel.toFixed(2)}</span></div><div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(0,0,0,0.05); font-weight:800;"><span>🛠️ Gear</span><span>£${gear.toFixed(2)}</span></div><div style="display:flex; justify-content:space-between; padding:12px 0; font-weight:800;"><span>📦 Misc</span><span>£${misc.toFixed(2)}</span></div></div>`;
+};
 
-/* STATS & LEDGER */
-.ST-HERO { background: var(--card); border: 4px solid var(--accent); padding: 50px 25px; border-radius: 50px; text-align: center; margin: 0 30px 30px; }
-.ST-HERO div { font-size: 65px; font-weight: 900; }
-.ST-GRID { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 0 30px; margin-bottom: 35px; }
-.ST-BUBBLE { background: var(--card); padding: 30px 20px; border-radius: 35px; text-align: center; }
-.ST-BUBBLE strong { font-size: 26px; font-weight: 900; display: block; }
-.ST-PROG-CARD { background: var(--card); margin: 0 30px 30px; padding: 35px; border-radius: 45px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
-.ST-PROG-TRACK { background: var(--bg); height: 20px; border-radius: 15px; overflow: hidden; margin-top: 15px; }
-.ST-PROG-FILL { background: var(--accent); height: 100%; width: 0%; transition: width 1s; }
+window.renderLedger = () => {
+    const list = document.getElementById('ledger-list-container'); if(!list) return;
+    list.innerHTML = ''; let total = 0;
+    db.expenses.slice().reverse().forEach(e => { total += n(e.amt); const div = document.createElement('div'); div.className = 'LD-PILL'; div.ondblclick = () => { if(confirm("Delete?")) { db.expenses = db.expenses.filter(x => x.id !== e.id); saveData(); renderLedger(); renderStats(); } }; div.innerHTML = `<div style="text-align:left;"><strong>${e.cat} ${e.desc}</strong><br><small>${e.date}</small></div><div style="color:var(--danger); font-weight:900; font-size:22px;">-£${n(e.amt).toFixed(2)}</div>`; list.appendChild(div); });
+    document.getElementById('ledgerTotalDisplay').innerText = `£${total.toFixed(2)}`;
+};
 
-.LD-HERO { background: var(--card); border: 4px solid var(--danger); margin: 0 30px 30px; padding: 45px; border-radius: 50px; text-align: center; }
-.LD-INPUT-CARD { background: var(--card); margin: 0 30px 30px; padding: 35px; border-radius: 40px; display: flex; flex-direction: column; gap: 20px; }
-.LD-FIELD, .LD-SELECT-FIXED { height: 75px !important; border-radius: 20px; border: none; background: var(--bg); padding: 0 25px; font-size: 20px; font-weight: 700; color: var(--text); }
-.LD-ADD-BTN { height: 80px; background: var(--accent); color: white; border-radius: 20px; border: none; font-weight: 900; font-size: 22px; }
-.LD-PILL { background: var(--card); padding: 30px; border-radius: 40px; display: flex; justify-content: space-between; align-items: center; margin: 0 30px 20px; border-left: 10px solid var(--danger); }
-
-/* WEEKS & JOBS */
-.JOB-CARD { background: var(--card); padding: 35px; border-radius: 45px; margin: 0 30px 30px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
-.JOB-ACTIONS { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 18px; margin-top: 30px; }
-.BTN-ACTION { height: 75px !important; border-radius: 22px; border: none; font-size: 32px; color: white; display: flex; align-items: center; justify-content: center; }
-
-/* MODALS */
-.modal-overlay { position: fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:9999; display:flex; align-items:center; justify-content:center; }
-.modal-content { background:var(--card); padding:45px; border-radius:55px; width:94%; max-height: 90vh; overflow-y: auto; color: var(--text); }
-.MD-SAVE-BTN { width: 100%; height: 85px; background: var(--success); color: white; border: none; border-radius: 25px; font-weight: 900; font-size: 24px; margin-top: 25px; }
-.MD-CLOSE-BTN { width: 100%; height: 70px; background: var(--ios-grey); color: var(--text); border: none; border-radius: 25px; font-weight: 800; font-size: 18px; margin-top: 15px; }
-
-/* SETUP */
-.SU-CARD { background: var(--card); margin: 0 30px 35px; padding: 35px; border-radius: 45px; }
-.SU-ROW { display: flex; align-items: center; height: 85px; border-bottom: 1px solid rgba(0,0,0,0.05); gap: 20px; }
-.SU-ROW span { font-size: 28px; width: 40px; text-align: center; }
-.SU-ROW input, .SU-SELECT { flex: 1; border: none; background: transparent; font-size: 22px; color: var(--text); outline: none; }
-.SU-NOTES { width: 100%; min-height: 140px; border-radius: 25px; background: var(--bg); border: none; padding: 20px; margin: 25px 0; color: var(--text); font-size: 20px; }
-.SU-SAVE-BTN { width: 100%; height: 85px; border-radius: 30px; border: none; background: var(--grad); color: white; font-weight: 900; font-size: 24px; margin-top: 15px; }
-.SU-LOCKDOWN-ZONE { background: var(--card); margin: 40px 30px 100px; padding: 45px 30px; border-radius: 50px; border: 3px solid var(--ios-grey); display: flex; flex-direction: column; gap: 20px; }
-.SU-CYCLE-BTN { width: 100%; min-height: 85px; background: var(--success); color: white; border: none; border-radius: 25px; font-weight: 900; font-size: 22px; }
-
-/* TOGGLE */
-.ios-switch { position: relative; display: inline-block; width: 100px; height: 40px; }
-.ios-switch input { opacity: 0; width: 0; height: 0; }
-.ios-slider { position: absolute; cursor: pointer; top:0; left:0; right:0; bottom:0; background: var(--ios-grey); border-radius: 40px; transition: 0.4s; }
-.ios-slider:after { content: "DARK"; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 12px; font-weight: 900; color: #000; }
-.ios-slider:before { content: ""; position: absolute; height: 34px; width: 34px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.4s; z-index: 2; }
-input:checked + .ios-slider { background-color: var(--success); }
-input:checked + .ios-slider:before { transform: translateX(60px); }
-input:checked + .ios-slider:after { content: ""; }
-.ios-slider-label-light { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); font-size: 12px; font-weight: 900; color: #fff; opacity: 0; pointer-events: none; }
-input:checked ~ .ios-slider-label-light { opacity: 1; }
-
-.BACK-BTN { width: calc(100% - 60px); height: 80px; border-radius: 40px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 22px; margin: 0 30px 30px; display: block; }
-.hidden { display: none !important; }
-#version-label { width: 100%; text-align: center; padding: 80px 0; font-size: 14px; opacity: 0.3; font-weight: 900; }
+/* --- SHARED CORE --- */
+window.openTab = (id) => { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); renderAll(); };
+window.renderAll = () => { renderMaster(); renderStats(); renderLedger(); updateHeader(); if(typeof renderWeek === 'function') renderWeek(); };
+window.saveData = () => localStorage.setItem(DB_KEY, JSON.stringify(db));
+window.updateHeader = () => { document.getElementById('dateText').innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }); };
+window.closeEditModal = () => document.getElementById('editModal').classList.add('hidden');
+window.closeBriefing = () => document.getElementById('briefingModal').classList.add('hidden');
+window.addExpense = () => { const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value), c = document.getElementById('expCat').value; if(!d || a <= 0) return alert("Details Required"); db.expenses.push({ id: Date.now(), desc: d, amt: a, cat: c, date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) }); saveData(); renderLedger(); renderStats(); document.getElementById('expDesc').value=''; document.getElementById('expAmt').value=''; };
+window.saveCustomer = () => { const name = document.getElementById('cName').value; if(!name) return alert("Name required"); db.customers.push({ id: Date.now().toString(), name, phone: document.getElementById('cPhone').value, houseNum: document.getElementById('cHouseNum').value, street: document.getElementById('cStreet').value, postcode: document.getElementById('cPostcode').value.toUpperCase(), day: document.getElementById('cDay').value, week: document.getElementById('cWeek').value, price: n(document.getElementById('cPrice').value), notes: document.getElementById('cNotes').value, cleaned: false, paidThisMonth: 0 }); saveData(); alert("Added!"); document.getElementById('cName').value = ''; };
+window.viewWeek = (w) => { curWeek = w; openTab('week-view-root'); renderWeek(); };
+window.setWorkingDay = (day, btn) => { workingDay = day; document.querySelectorAll('.DAY-BTN').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderWeek(); };
+window.renderWeek = () => {
+    const list = document.getElementById('week-list-container'); if(!list) return; list.innerHTML = '';
+    const jobs = db.customers.filter(c => c.week == curWeek && c.day == workingDay);
+    jobs.forEach(c => {
+        const div = document.createElement('div'); div.className = 'JOB-CARD';
+        div.onclick = () => showJobBriefing(c.id);
+        div.innerHTML = `<div style="text-align:left;"><strong style="font-size:24px;">${c.name} ${c.cleaned?'✅':''}</strong><br><small style="color:var(--accent); font-weight:800; font-size:18px;">${c.houseNum} ${c.street}</small></div><div class="JOB-ACTIONS" onclick="event.stopPropagation()"><button class="BTN-ACTION" style="background:var(--accent)" onclick="window.open('tel:${c.phone}')">📱</button><button class="BTN-ACTION" style="background:#ffeb3b; color:#333" onclick="window.open('http://maps.apple.com/?q=${encodeURIComponent(c.houseNum+' '+c.street+' '+c.postcode)}')">📍</button><button class="BTN-ACTION" style="background:${c.cleaned?'var(--success)':'#aaa'}" onclick="handleClean('${c.id}')">🧼</button><button class="BTN-ACTION" style="background:${n(c.paidThisMonth)>0?'var(--accent)':'#aaa'}" onclick="markAsPaid('${c.id}')">£</button></div>`;
+        list.appendChild(div);
+    });
+};
+window.showJobBriefing = (id) => {
+    const c = db.customers.find(x => x.id === id); if(!c) return;
+    const history = (db.history || []).filter(h => h.custId === id).slice(-3).reverse();
+    let htm = ''; history.forEach(h => { htm += `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(0,0,0,0.05); font-weight:800; font-size:16px;"><span>${h.date}</span><span style="color:var(--success)">+£${n(h.amt).toFixed(2)}</span></div>`; });
+    document.getElementById('briefingData').innerHTML = `<div style="font-size:40px; font-weight:900; color:var(--accent);">${c.name}</div><div style="margin:30px 0; display:flex; flex-direction:column; gap:12px;"><div style="background:var(--bg); padding:25px; border-radius:25px; font-weight:800; font-size:20px;">🏠 ${c.houseNum} ${c.street}</div><div style="background:var(--bg); padding:25px; border-radius:25px; font-weight:800; font-size:20px; color:var(--success);">💰 Rate: £${n(c.price).toFixed(2)}</div></div><div class="MD-HIST-WRAP"><small style="text-transform:uppercase; font-weight:900; opacity:0.4; font-size:12px;">Recent Payments</small>${htm || '<p>No history</p>'}</div>`;
+    document.getElementById('receiptActionBox').innerHTML = n(c.paidThisMonth) > 0 ? `<button style="height:70px; background:#5856d6; color:white; border:none; border-radius:20px; font-weight:900; font-size:18px; margin-bottom:15px;" onclick="sendSmsReceipt('${c.id}')">💬 TEXT RECEIPT</button><button style="height:70px; background:var(--ios-grey); color:var(--text); border:none; border-radius:20px; font-weight:900; font-size:18px; margin-bottom:15px;" onclick="printReceipt('${c.id}')">🖨️ PRINT / PDF</button>` : '';
+    document.getElementById('briefEditBtn').onclick = () => { closeBriefing(); openEditModal(id); };
+    document.getElementById('briefingModal').classList.remove('hidden');
+};
+window.sendSmsReceipt = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; const msg = encodeURIComponent(`Hi ${c.name}, thanks for your payment of £${n(c.price).toFixed(2)} to Hydro Pro. Your windows are all sparkling! 🧼`); window.location.href = `sms:${c.phone}?&body=${msg}`; };
+window.printReceipt = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; const win = window.open('', '_blank'); win.document.write(`<html><body style="font-family:sans-serif;text-align:center;padding:50px;"><h1>HYDRO PRO</h1><p>PAID IN FULL</p><hr><p>Customer: ${c.name}</p><p>Amount: £${n(c.price).toFixed(2)}</p><script>window.onload=function(){window.print();}</script></body></html>`); win.document.close(); };
+window.handleClean = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; c.cleaned = !c.cleaned; saveData(); renderWeek(); };
+window.markAsPaid = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; const amt = prompt(`Paid:`, c.price); if(amt) { c.paidThisMonth = n(amt); db.history.push({ custId: id, amt: n(amt), date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) }); saveData(); renderWeek(); renderStats(); renderLedger(); } };
+window.exportData = () => { const d = new Date().toLocaleDateString().replace(/\//g, '-'); let csv = "\ufeff--- CUSTOMERS ---\nName,Phone,HouseNum,Street,Postcode,Day,Price,Week,Notes,Cleaned,PaidThisMonth\n"; db.customers.forEach(c => { csv += `"${c.name}","${c.phone||''}","${c.houseNum||''}","${c.street||''}","${c.postcode||''}","${c.day}","${c.price}","${c.week}","${(c.notes||'').replace(/"/g,'""')}","${c.cleaned}","${c.paidThisMonth}"\n`; }); const b = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); const u = URL.createObjectURL(b); const l = document.createElement("a"); l.href = u; l.download = `HP_MASTER_${d}.csv`; l.click(); };
+window.importData = (event) => { const file = event.target.files[0]; if(!file) return; const r = new FileReader(); r.onload = (e) => { const lines = e.target.result.split('\n'); if(!confirm("Import data?")) return; let s = ""; lines.forEach(line => { const trim = line.trim(); if(!trim) return; if(trim.includes("--- CUSTOMERS ---")) { s = "C"; return; } const cols = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || []; const cl = (v) => (v||"").replace(/"/g, "").trim(); if(s === "C" && cols.length >= 7) { db.customers.push({ id: Date.now().toString()+Math.random().toString(36).substr(2,5), name: cl(cols[0]), phone: cl(cols[1]), houseNum: cl(cols[2]), street: cl(cols[3]), postcode: cl(cols[4]), day: cl(cols[5]), price: n(cl(cols[6])), week: cl(cols[7])||"1", notes: cl(cols[8])||"", cleaned: cl(cols[9])==="true", paidThisMonth: n(cl(cols[10])) }); } }); saveData(); location.reload(); }; r.readAsText(file); };
+window.completeCycle = () => { if(confirm("Clear month?")) { db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload(); } };
+window.nuclearReset = () => { if(confirm("☢️ DELETE EVERYTHING?")) { localStorage.removeItem(DB_KEY); location.reload(); } };
