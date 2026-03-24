@@ -51,15 +51,8 @@ window.renderLedger = () => {
     const container = document.getElementById('ledger-list-container'), totalEl = document.getElementById('ledgerTotal');
     if(!container) return; container.innerHTML = ''; let total = 0;
     db.expenses.forEach(e => total += n(e.amt)); if(totalEl) totalEl.innerText = `£${total.toFixed(2)}`;
-    
-    if(db.expenses.length === 0) {
-        container.innerHTML = '<div style="text-align:center; opacity:0.3; padding:20px;">No spend logged yet.</div>';
-        return;
-    }
-
     db.expenses.slice().reverse().forEach(e => {
         const div = document.createElement('div'); div.className = 'exp-pill';
-        // Double-tap to delete implementation
         div.ondblclick = () => deleteExpense(e.id);
         div.innerHTML = `<div><strong>${e.desc}</strong><br><small style="opacity:0.5; font-weight:700;">📅 ${e.date}</small></div>
                          <div style="color:var(--danger); font-weight:900; font-size:18px;">-£${n(e.amt).toFixed(2)}</div>`;
@@ -99,7 +92,8 @@ window.renderWeek = () => {
     db.customers.filter(c => c.week == curWeek).forEach(c => {
         const div = document.createElement('div'); div.className = 'job-card';
         div.innerHTML = `<div><strong style="font-size:20px;">${c.name} ${c.cleaned?'✅':''}</strong><br><small style="color:var(--accent); font-weight:700;">${c.houseNum} ${c.street}</small></div>
-            <div class="job-actions" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:20px;">
+            <div class="job-actions">
+                <button class="btn-job" style="background:#3262d7" onclick="openMap('${c.houseNum} ${c.street} ${c.postcode}')">📍 MAP</button>
                 <button class="btn-job" style="background:${c.cleaned?'var(--success)':'#aaa'}" onclick="handleClean('${c.id}')">CLEAN</button>
                 <button class="btn-job" style="background:${n(c.paidThisMonth)>0?'var(--accent)':'#aaa'}" onclick="markAsPaid('${c.id}')">PAY</button>
             </div>`;
@@ -107,7 +101,13 @@ window.renderWeek = () => {
     });
 };
 
-/* --- SHARED CORE LOGIC --- */
+/* --- CORE LOGIC --- */
+window.openMap = (addr) => {
+    // Hard-locked to Google Maps Search URL
+    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
+    window.open(url, '_blank');
+};
+
 window.toggleBankLock = () => {
     const fields = document.querySelectorAll('.bank-field-fixed'), lockBtn = document.getElementById('bankLockBtn'), saveBtn = document.getElementById('bankSaveBtn');
     const isLocked = fields[0].readOnly; fields.forEach(f => f.readOnly = !isLocked);
