@@ -1,4 +1,4 @@
-/* --- ARCHITECTURE QUARANTINE v37.9 --- */
+/* --- ARCHITECTURE QUARANTINE v38.0 --- */
 :root { --accent: #007aff; --bg: #f2f2f7; --card: #ffffff; --text: #000; --success: #34C759; --danger: #ff453a; --ios-grey: #e9e9eb; --grad: linear-gradient(135deg, #007aff 0%, #0051a8 100%); }
 body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; --ios-grey: #39393d; }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, sans-serif; }
@@ -17,6 +17,7 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-hei
 .G-WEATHER-PILL span { font-size: 16px; }
 .G-WEATHER-PILL small { font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
 
+/* (Rest of layout same as v37.9) */
 .G-SWITCH-WRAP { margin-top: 15px; display: flex; justify-content: center; }
 .ios-switch { position: relative; display: inline-block; width: 51px; height: 31px; }
 .ios-switch input { opacity: 0; width: 0; height: 0; }
@@ -25,7 +26,6 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-hei
 input:checked + .ios-slider { background-color: var(--success); }
 input:checked + .ios-slider:before { transform: translateX(20px); }
 
-/* HOME HUB */
 .HM-GRID { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
 .HM-GRID button { height: 125px; border-radius: 30px; background: var(--card); border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 15px rgba(0,0,0,0.05); color: var(--text); }
 .HM-GRID span { font-size: 40px; color: var(--accent); }
@@ -33,16 +33,12 @@ input:checked + .ios-slider:before { transform: translateX(20px); }
 .HM-FULL { grid-column: 1 / -1; background: var(--grad) !important; color: white !important; }
 .HM-SYNC-ZONE { padding: 10px 20px 40px; text-align: center; }
 .HM-SYNC-BTN { background: transparent; border: 2px solid var(--accent); color: var(--accent); padding: 12px 25px; border-radius: 50px; font-size: 13px; font-weight: 800; text-transform: uppercase; }
-
-/* MASTER LIST */
 .CT-SEARCH-WRAP { padding: 0 20px 20px; }
-#mainSearch { width: 100%; height: 65px; border-radius: 20px; border: none; background: var(--card); padding: 0 25px; font-size: 18px; color: var(--text); box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+#mainSearch { width: 100%; height: 65px; border-radius: 20px; border: none; background: var(--card); padding: 0 25px; font-size: 18px; color: var(--text); }
 .CT-PILL { background: var(--card); padding: 20px 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 15px; min-height: 100px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
 .CT-TEXT-STACK { display: flex; flex-direction: column; gap: 4px; text-align: left; }
 .CT-TEXT-STACK strong { font-size: 20px; }
 .CT-TEXT-STACK small { color: var(--accent); font-weight: 700; font-size: 15px; }
-
-/* SETUP & ADMIN */
 .SU-CARD { background: var(--card); margin: 0 20px 25px; padding: 25px; border-radius: 35px; }
 .SU-ROW { display: flex; align-items: center; height: 75px !important; border-bottom: 1px solid rgba(0,0,0,0.05); gap: 15px; }
 .SU-ROW span { font-size: 22px; width: 35px; text-align: center; }
@@ -54,8 +50,6 @@ input:checked + .ios-slider:before { transform: translateX(20px); }
 .SU-IO-BTN { flex: 1; height: 65px; border-radius: 20px; border: 2px solid var(--accent); background: var(--card); color: var(--accent); font-weight: 900; font-size: 14px; }
 .SU-RESET-BTN { width: 100%; height: 70px; border-radius: 20px; border: none; background: var(--danger); color: white; font-weight: 900; font-size: 17px; }
 .SU-DANGER-BTN { width: 100%; height: 60px; border-radius: 20px; border: 2px dashed var(--danger); background: transparent; color: var(--danger); font-weight: 800; margin-top: 15px; }
-
-/* STATS & PROGRESS */
 .ST-HERO { background: var(--card); border: 3px solid var(--accent); padding: 40px 20px; border-radius: 40px; text-align: center; margin: 0 20px 25px; }
 .ST-HERO div { font-size: 55px; font-weight: 900; }
 .ST-GRID { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px; margin-bottom: 25px; }
@@ -70,16 +64,9 @@ input:checked + .ios-slider:before { transform: translateX(20px); }
 .ST-ITEM { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-weight: 700; font-size: 15px; }
 .ST-TOTAL { display: flex; justify-content: space-between; padding-top: 15px; font-weight: 900; font-size: 18px; color: var(--danger); }
 .ST-ARREARS { background: var(--danger); color: white; padding: 30px; border-radius: 35px; text-align: center; font-weight: 900; font-size: 24px; margin: 0 20px 60px; }
-
-/* LEDGER */
 .LD-HERO { background: var(--card); border: 3px solid var(--danger); margin: 0 20px 25px; padding: 35px; border-radius: 40px; text-align: center; }
 .LD-HERO div { font-size: 50px; font-weight: 900; }
-.LD-INPUT-CARD { background: var(--card); margin: 0 20px 25px; padding: 25px; border-radius: 30px; display: flex; flex-direction: column; gap: 15px; }
-.LD-FIELD, .LD-SELECT { background: var(--bg); height: 60px !important; border-radius: 15px; border: none; padding: 0 15px; color: var(--text); font-size: 17px; font-weight: 700; }
-.LD-ADD-BTN { height: 65px; background: var(--accent); color: white; border-radius: 15px; border: none; font-weight: 900; font-size: 18px; }
 .LD-PILL { background: var(--card); padding: 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 15px; border-left: 6px solid var(--danger); }
-
-/* WEEKLY */
 .WK-HUB-GRID { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 0 20px; }
 .WK-TILE { height: 115px !important; border-radius: 25px; border: none; background: var(--grad); color: white; font-weight: 900; font-size: 24px; }
 .WK-FULL { grid-column: 1 / -1; }
@@ -88,13 +75,9 @@ input:checked + .ios-slider:before { transform: translateX(20px); }
 .WK-DAY-PICKER { display: flex; justify-content: space-between; padding: 0 10px; margin-bottom: 15px; gap: 4px; }
 .DAY-BTN { flex: 1; height: 50px; border: none; background: var(--card); color: var(--text); font-weight: 800; border-radius: 10px; font-size: 13px; }
 .DAY-BTN.active { background: var(--accent); color: white; }
-.WK-PLAN-BTN { width: calc(100% - 40px); height: 65px; margin: 0 20px 20px; border-radius: 20px; border: none; background: #5856d6; color: white; font-weight: 900; }
-.WK-LEGEND { display: flex; justify-content: center; gap: 15px; padding-bottom: 20px; font-size: 11px; font-weight: 800; opacity: 0.6; }
 .JOB-CARD { background: var(--card); padding: 25px; border-radius: 35px; margin: 0 20px 25px; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
 .JOB-ACTIONS { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
 .BTN-ACTION { height: 55px; border-radius: 15px; border: none; font-weight: 900; font-size: 18px; color: white; }
-
-/* MODAL */
 .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; display:flex; align-items:center; justify-content:center; }
 .modal-content { background:var(--card); padding:30px; border-radius:40px; width:90%; max-height: 85vh; overflow-y: auto; color: var(--text); }
 .MD-INFO-LIST { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; text-align: left; }
