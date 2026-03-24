@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v39.1</title>
+    <title>Hydro Pro v39.2</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="AppIcon.png">
-    <link rel="icon" type="image/png" href="AppIcon.png">
-    <link rel="stylesheet" href="styles.css?v=391">
+    <link rel="stylesheet" href="styles.css?v=392">
 </head>
 <body class="light-mode">
 
@@ -48,18 +47,13 @@
 
         <section id="ledger-root" class="tab-content">
             <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="LD-HERO">
-                <small>TOTAL SPEND THIS MONTH</small>
-                <div id="ledgerTotalDisplay">£0.00</div>
-            </div>
+            <div class="LD-HERO"><small>TOTAL SPEND</small><div id="ledgerTotalDisplay">£0.00</div></div>
             <div class="LD-INPUT-CARD">
-                <input type="text" id="expDesc" class="LD-FIELD" placeholder="What did you buy?">
-                <input type="number" id="expAmt" class="LD-FIELD" placeholder="£ 0.00">
+                <input type="text" id="expDesc" class="LD-FIELD" placeholder="Description">
+                <input type="number" id="expAmt" class="LD-FIELD" placeholder="Amount £">
                 <select id="expCat" class="LD-SELECT-FIXED">
-                    <option value="⛽ Fuel">⛽ Fuel</option>
-                    <option value="🛠️ Gear">🛠️ Gear</option>
-                    <option value="🍔 Food">🍔 Food</option>
-                    <option value="📦 Misc">📦 Misc</option>
+                    <option value="⛽ Fuel">⛽ Fuel</option><option value="🛠️ Gear">🛠️ Gear</option>
+                    <option value="🍔 Food">🍔 Food</option><option value="📦 Misc">📦 Misc</option>
                 </select>
                 <button class="LD-ADD-BTN" onclick="addExpense()">Add Expense</button>
             </div>
@@ -68,7 +62,7 @@
 
         <section id="master-root" class="tab-content">
             <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="CT-SEARCH-WRAP"><input type="text" id="mainSearch" placeholder="🔍 Search Name or Street..." oninput="renderMaster()"></div>
+            <div class="CT-SEARCH-WRAP"><input type="text" id="mainSearch" placeholder="🔍 Search..." oninput="renderMaster()"></div>
             <div id="master-list-container"></div>
         </section>
 
@@ -88,22 +82,16 @@
                         <option value="Sun">Sunday</option>
                     </select>
                 </div>
-                <div class="SU-ROW"><span>📅</span>
-                    <select id="cWeek" class="SU-SELECT">
-                        <option value="1">Week 1</option><option value="2">Week 2</option>
-                        <option value="3">Week 3</option><option value="4">Week 4</option>
-                        <option value="5">Week 5</option>
-                    </select>
-                </div>
                 <div class="SU-ROW"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
-                <textarea id="cNotes" class="SU-NOTES" placeholder="Access codes / Notes..."></textarea>
-                <button class="SU-SAVE-BTN" onclick="saveCustomer()">✨ Save Customer</button>
+                <textarea id="cNotes" class="SU-NOTES" placeholder="Notes..."></textarea>
+                <button class="SU-SAVE-BTN" onclick="saveCustomer()">✨ Save New Customer</button>
             </div>
-            <div class="SU-ADMIN-ZONE">
+
+            <div class="SU-LOCKDOWN-ZONE">
                 <button class="SU-CYCLE-BTN" onclick="completeCycle()">🚀 START NEW MONTH</button>
                 <div class="SU-BACKUP-ROW">
-                    <button class="SU-IO-BTN" onclick="exportData()">📤 Backup Master</button>
-                    <button class="SU-IO-BTN" onclick="document.getElementById('importFile').click()">📥 Restore Master</button>
+                    <button class="SU-IO-BTN" onclick="exportData()">📤 Backup CSV</button>
+                    <button class="SU-IO-BTN" onclick="document.getElementById('importFile').click()">📥 Restore CSV</button>
                     <input type="file" id="importFile" hidden onchange="importData(event)" accept=".csv">
                 </div>
                 <button class="SU-DANGER-BTN" onclick="nuclearReset()">⚠️ FACTORY RESET DATA</button>
@@ -140,14 +128,8 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <h2 style="margin-top:0; color:var(--accent);">Edit Customer</h2>
             <input type="hidden" id="eEditId">
-            <div class="SU-ROW"><span>👤</span><input type="text" id="eName" placeholder="Name"></div>
-            <div class="SU-ROW"><span>📱</span><input type="tel" id="ePhone" placeholder="Phone"></div>
-            <div class="SU-ROW"><span>🏠</span><input type="text" id="eHouseNum" placeholder="House No."></div>
-            <div class="SU-ROW"><span>🛣️</span><input type="text" id="eStreet" placeholder="Street"></div>
-            <div class="SU-ROW"><span>📍</span><input type="text" id="ePostcode" placeholder="Postcode"></div>
-            <div class="SU-ROW"><span>📅</span><select id="eDay" class="SU-SELECT"><option value="Mon">Monday</option><option value="Tue">Tuesday</option><option value="Wed">Wednesday</option><option value="Thu">Thursday</option><option value="Fri">Friday</option><option value="Sat">Saturday</option><option value="Sun">Sunday</option></select></div>
-            <div class="SU-ROW"><span>📅</span><select id="eWeek" class="SU-SELECT"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option><option value="5">Week 5</option></select></div>
-            <div class="SU-ROW"><span>💰</span><input type="number" id="ePrice" placeholder="Price"></div>
+            <div class="SU-ROW"><span>👤</span><input type="text" id="eName"></div>
+            <div class="SU-ROW"><span>💰</span><input type="number" id="ePrice"></div>
             <textarea id="eNotes" class="SU-NOTES"></textarea>
             <button class="MD-SAVE-BTN" onclick="updateCustomerFromModal()">💾 SAVE & EXIT</button>
             <button class="MD-CLOSE-BTN" onclick="closeEditModal()">CANCEL</button>
@@ -164,7 +146,7 @@
         </div>
     </div>
     
-    <footer id="version-label">v39.1 FINANCIAL RESTORE</footer>
-    <script src="app.js?v=391"></script>
+    <footer id="version-label">v39.2 VAULT LOCKDOWN</footer>
+    <script src="app.js?v=392"></script>
 </body>
 </html>
