@@ -1,4 +1,3 @@
-/* 1. ATOMIC ROOTS */
 :root { 
     --accent: #007aff; --bg: #f2f2f7; --card: #ffffff; --text: #000; 
     --success: #32d74b; --danger: #ff453a; --gap: 25px; 
@@ -7,16 +6,16 @@
 body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; --grad: linear-gradient(135deg, #007aff 0%, #0a84ff 100%); }
 
 .tab-content { display: none !important; }
-.tab-content.active { display: block !important; }
+.tab-content.active { display: flex !important; flex-direction: column; } /* Forces vertical stretching */
+
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, sans-serif; }
 body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; }
 
-/* 2. HEADER PRECISION */
+/* 🛡️ HEADER */
 #global-shield { padding: 40px 20px 10px; }
 .header-nav-top { display: flex; justify-content: space-between; align-items: center; max-width: 440px; margin: 0 auto; }
 .logo-container img { height: 70px; width: auto; object-fit: contain; }
-.theme-container { flex: 0 0 auto; margin-left: 15px; }
-.theme-slider { position: relative; width: 60px; height: 34px; display: block; }
+.theme-slider { position: relative; width: 60px; height: 34px; }
 .theme-slider input { opacity: 0; width: 0; height: 0; }
 .slider-round { position: absolute; top:0; left:0; right:0; bottom:0; background-color: #ccc; border-radius: 34px; cursor: pointer; transition: 0.4s; }
 .slider-round:before { position: absolute; content: "☀️"; height: 26px; width: 26px; left: 4px; bottom: 4px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.4s; }
@@ -25,47 +24,63 @@ input:checked + .slider-round:before { transform: translateX(26px); content: "�
 .header-text { text-align: center; margin-top: 25px; }
 #dateText { font-size: 26px; font-weight: 900; color: var(--accent); }
 
-/* 3. HUB GRID */
+/* 🏠 HUB */
 .main-hub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
 .hub-tile { height: 125px; border-radius: 30px; background: var(--card); border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text); box-shadow: 0 8px 15px rgba(0,0,0,0.05); }
 .hub-tile span { font-size: 40px; color: var(--accent); margin-bottom: 5px; }
 .hub-tile small { font-size: 16px; font-weight: 900; text-transform: uppercase; }
 .tile-full { grid-column: 1 / -1; background: var(--grad) !important; color: white !important; }
 
-/* 4. FORMS & INPUTS */
-.form-row { display: flex; align-items: center; height: 75px; border-bottom: 1px solid rgba(0,0,0,0.05); gap: 15px; }
-.form-row span { font-size: 20px; width: 30px; text-align: center; }
-.form-row input, .custom-select-pro { flex: 1; border: none; background: transparent; font-size: 18px; color: var(--text); outline: none; }
-textarea { width: 100%; min-height: 120px; border-radius: 20px; background: var(--bg); border: none; padding: 15px; margin-top: 15px; color: var(--text); font-size: 16px; }
-.btn-action-primary { width: 100%; height: 75px !important; border-radius: 25px; border: none; background: var(--grad); color: white; font-weight: 900; font-size: 20px; margin-top: 15px; }
+/* ✨ SETUP Restored */
+#setup-root .setup-form-card { background: var(--card); margin: 0 20px var(--gap); padding: 25px; border-radius: 35px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); }
+.setup-form-row { display: flex; align-items: center; height: 75px !important; border-bottom: 1px solid rgba(0,0,0,0.05); gap: 15px; }
+.setup-form-row span { font-size: 22px; width: 35px; text-align: center; }
+.setup-form-row input, .setup-select { flex: 1; border: none; background: transparent; font-size: 18px; color: var(--text); outline: none; height: 100%; }
+#setup-root textarea { width: 100%; min-height: 120px; border-radius: 20px; background: var(--bg); border: none; padding: 15px; margin: 15px 0; color: var(--text); font-size: 16px; }
+.btn-setup-save { width: 100%; height: 75px !important; border-radius: 25px; border: none; background: var(--grad); color: white; font-weight: 900; font-size: 20px; }
+.btn-reset-month { width: 100%; height: 75px !important; border-radius: 25px; border: none; background: var(--danger); color: white; font-weight: 900; font-size: 18px; }
+.reset-area { padding: 0 20px 50px; text-align: center; }
 
-/* 5. WEEK VIEW & JOB CARDS */
+/* 💸 LEDGER Restored */
+.ledger-hero-box { background: var(--card); border: 3px solid var(--danger); margin: 0 20px var(--gap); padding: 35px; border-radius: 40px; text-align: center; }
+.ledger-hero-box div { font-size: 50px; font-weight: 900; }
+.ledger-input-card { background: var(--card); margin: 0 20px var(--gap); padding: 25px; border-radius: 30px; display: flex; flex-direction: column; gap: 15px; }
+.ledger-input-card input, .ledger-cat-select { background: var(--bg); height: 55px !important; border-radius: 12px; border: none; padding: 0 15px; color: var(--text); font-size: 16px; font-weight: 600; width: 100%; }
+.btn-ledger-add { height: 65px !important; border-radius: 15px; border: none; background: var(--accent); color: white; font-weight: 900; font-size: 18px; }
+.expense-pill { background: var(--card); padding: 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 15px; border-left: 6px solid var(--danger); box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+
+/* 📊 STATS Restored */
+.stats-hero-card { background: var(--card); border: 3px solid var(--accent); padding: 40px 20px; border-radius: 40px; text-align: center; margin: 0 20px var(--gap); }
+.stats-hero-card div { font-size: 55px; font-weight: 900; }
+.stats-split-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 20px var(--gap); }
+.stats-box { background: var(--card); padding: 25px 15px; border-radius: 30px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+.stats-box strong { font-size: 22px; font-weight: 900; display: block; margin-top: 5px; }
+.arrears-banner { background: var(--danger); color: white; padding: 25px; border-radius: 30px; text-align: center; font-weight: 900; font-size: 24px; margin: 0 20px 50px; }
+
+/* 📅 WEEKS HUB */
 .weeks-grid-master { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 0 20px; }
-.week-tile { height: 110px !important; border-radius: 25px; border: none; background: var(--grad); color: white; font-weight: 900; font-size: 22px; margin-bottom: 5px; }
+.week-tile { height: 110px !important; border-radius: 25px; border: none; background: var(--grad); color: white; font-weight: 900; font-size: 22px; }
 .week-tile-full { grid-column: 1 / -1; }
 
+/* 🃏 WEEK VIEW & CARDS */
 .job-card { background: var(--card); padding: 25px; border-radius: 35px; margin: 0 20px var(--gap); box-shadow: 0 4px 12px rgba(0,0,0,0.04); position: relative; }
-.job-actions-grid { display: grid; grid-template-columns: 1fr 1fr 1.5fr 1.5fr; gap: 10px; margin-top: 20px; }
-.btn-job-mini { height: 55px; border-radius: 18px; border: none; font-weight: 900; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.job-actions-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
+.btn-job-mini { height: 50px; border-radius: 12px; border: none; font-weight: 900; display: flex; align-items: center; justify-content: center; font-size: 18px; }
 .btn-blue { background: rgba(0,122,255,0.1); color: var(--accent); }
 .btn-yellow { background: rgba(255,235,59,0.2); color: #857b00; }
 .btn-grey { background: var(--bg); color: var(--text); opacity: 0.6; }
 .btn-active-success { background: var(--success) !important; color: white !important; opacity: 1; }
 .btn-active-accent { background: var(--accent) !important; color: white !important; opacity: 1; }
 
-/* 6. MODALS */
-.modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; display:flex; align-items:center; justify-content:center; padding: 20px; }
-.modal-content { background:var(--card); padding:35px; border-radius:40px; width:100%; max-width: 400px; text-align: center; }
-.briefing-box { text-align: left; max-height: 85vh; overflow-y: auto; padding: 30px !important; }
-.btn-settle-arrears { width: 100%; height: 75px; background: var(--success); color: white; border: none; border-radius: 25px; font-weight: 900; font-size: 18px; margin: 15px 0; }
-
-/* 7. HELPERS */
-.btn-back-global { width: calc(100% - 40px); height: 60px; border-radius: 30px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px; margin: 0 20px var(--gap); display: block; }
+/* 🛠️ NAVIGATION & HELPERS */
+.btn-back-global { width: calc(100% - 40px); height: 60px; border-radius: 30px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px; margin: 0 20px var(--gap); display: block; flex-shrink: 0; }
 .nav-spread-row { display: flex; justify-content: space-between; padding: 0 20px; margin-bottom: 20px; }
 .nav-spread-row button { height: 60px; width: calc(50% - 10px); border-radius: 20px; border: none; background: var(--card); color: var(--accent); font-weight: 900; }
 .day-picker-container { display: flex; justify-content: space-between; padding: 0 20px; margin-bottom: 20px; }
 .day-btn { flex: 1; height: 50px; border: none; background: var(--card); color: var(--text); font-weight: 800; border-radius: 12px; margin: 0 2px; }
 .day-btn.active { background: var(--accent); color: white; }
 .btn-plan-route { width: calc(100% - 40px); height: 65px; margin: 0 20px 20px; border-radius: 20px; border: none; background: #5856d6; color: white; font-weight: 900; }
-.hidden { display: none !important; }
+.modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; display:flex; align-items:center; justify-content:center; padding: 20px; }
+.modal-content { background:var(--card); padding:35px; border-radius:40px; width:100%; max-width: 400px; text-align: center; }
 #version-label { width: 100%; text-align: center; padding: 40px 0; font-size: 10px; opacity: 0.3; font-weight: 900; }
+.hidden { display: none !important; }
