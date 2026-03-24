@@ -7,6 +7,7 @@ body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, sans-serif; }
 body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; transition: background 0.3s; }
 
+/* 🛡️ HEADER */
 #global-shield { padding: 30px 0 20px; display: flex; flex-direction: column; align-items: center; }
 .nav-container-transparent { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 440px; padding: 0 20px; }
 .logo-wrap-surgical-expansion { flex-grow: 1; display: flex; justify-content: flex-start; align-items: center; margin-right: 15px; }
@@ -22,63 +23,58 @@ input:checked + .slider-round:before { transform: translateX(26px); content: "�
 #dateText { font-size: 26px; font-weight: 900; color: var(--accent); display: block; text-align: center; }
 #greetText { display: block; font-size: 13px; font-weight: 800; opacity: 0.6; letter-spacing: 1.5px; text-transform: uppercase; text-align: center; margin-bottom: 5px; }
 
+/* 🏠 HOME GRID */
 .home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
 .home-grid button { height: 125px; border-radius: 30px; background: var(--card); border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text); box-shadow: 0 8px 15px rgba(0,0,0,0.05); }
 .icon-blue-tint { color: var(--accent); font-size: 40px; margin-bottom: 5px; }
 .home-grid button small { font-size: 16px; font-weight: 900; text-transform: uppercase; }
 .full-tile { grid-column: 1 / -1; background: var(--accent) !important; color: white !important; height: 130px !important; }
 
+/* 🛠️ NAVIGATION - v31.3 RESTORED SCALING */
+.nav-back { width: calc(100% - 40px); height: 60px; border-radius: 30px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px; margin: 0 20px 25px; display: block; }
+.dual-nav-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px 25px; }
+
+/* New Surgical class to prevent button shrinkage */
+.nav-half-surgical { 
+    height: 60px !important; 
+    border-radius: 20px; 
+    border: none; 
+    background: var(--card); 
+    color: var(--accent); 
+    font-weight: 900; 
+    font-size: 18px !important; 
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
 .search-box-surgical { width: 100%; padding: 0 20px; margin-bottom: 25px; }
 .search-box-surgical input { width: 100%; height: 65px; border-radius: 20px; border: none; background: var(--card); padding: 0 25px; font-size: 18px; color: var(--text); }
 
 .ledger-hero-display { background: var(--card); border: 2px solid var(--danger); margin: 0 20px 25px; padding: 30px; border-radius: 35px; text-align: center; }
 .ledger-hero-display div { font-size: 45px; font-weight: 900; }
-.ledger-entry-card { background: var(--card); margin: 0 20px 20px; padding: 20px; border-radius: 25px; display: flex; flex-direction: column; gap: 10px; }
-.ledger-entry-card input { background: var(--bg); border: none; height: 50px; border-radius: 12px; padding: 0 15px; color: var(--text); font-size: 16px; }
-.ledger-entry-card button { height: 55px; border-radius: 12px; border: none; background: var(--accent); color: white; font-weight: 900; }
-.ledger-actions-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px 20px; }
-.ledger-actions-row button { height: 50px; border-radius: 15px; border: none; background: #4ea03b; color: white; font-weight: 800; font-size: 12px; }
 .exp-pill { background: var(--card); padding: 20px; border-radius: 25px; display: flex; justify-content: space-between; margin-bottom: 12px; border-left: 5px solid var(--danger); }
 
 .stats-hero-surgical { background: var(--card); border: 3px solid var(--accent); padding: 35px 20px; border-radius: 40px; text-align: center; margin-bottom: 20px; }
 .stats-hero-surgical div { font-size: 50px; font-weight: 900; }
-.stats-grid-surgical { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-.stats-card-surgical { background: var(--card); padding: 20px; border-radius: 25px; text-align: center; }
-.stats-progress-box { background: var(--card); padding: 25px; border-radius: 35px; margin-bottom: 20px; }
-.progress-bar-bg { background: #eee; height: 10px; border-radius: 5px; margin: 10px 0; overflow: hidden; }
-.progress-bar-fill { background: var(--accent); height: 100%; transition: width 0.5s; }
-.stats-arrears-alert { background: var(--danger); color: white; padding: 25px; border-radius: 30px; text-align: center; font-weight: 900; }
 
-.nav-back { width: calc(100% - 40px); height: 60px; border-radius: 30px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px; margin: 0 20px 25px; display: block; }
-.setup-card { background: var(--card); margin: 0 20px 25px; padding: 25px; border-radius: 35px; }
-.entry-row { display: flex; align-items: center; height: 65px; border-bottom: 1px solid rgba(0,0,0,0.05); gap: 15px; }
-.entry-row input { color: var(--text); font-size: 17px; width: 100%; border:none; background:transparent; outline:none; }
-
-/* 🏦 BANK VAULT v31.2 AIRGAP */
 .bank-vault { background: var(--card); margin: 0 20px 40px; padding: 30px; border-radius: 35px; border: 2.5px solid rgba(0,122,255,0.15); }
 .vault-button-stack { display: flex; flex-direction: column; gap: 8px; }
 .vault-btn-common { min-width: 120px; height: 42px; border-radius: 12px; font-weight: 900; font-size: 11px; border: none; text-transform: uppercase; }
-.vault-unlock-surgical { background: var(--accent); color: white; }
-.vault-copy-btn { background: #8e8e93; color: white; }
-
 .bank-field-fixed { width: 100%; height: 55px; background: var(--bg); border-radius: 15px; margin-bottom: 10px; padding: 0 15px; color: var(--text); border:none; display:block; font-weight: 600; }
-/* SURGICAL AIRGAP v31.2 */
 .bank-airgap { margin-top: 30px !important; }
 
-.reset-area-surgical { background: var(--card); margin: 0 20px 50px; padding: 35px; border-radius: 35px; text-align: center; }
 .btn-reset-surgical { width: 100%; height: 75px; border-radius: 25px; border: none; background: var(--danger); color: white; font-weight: 900; font-size: 18px; }
-
-.cust-pill { background: var(--card); padding: 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 15px; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
+.cust-pill { background: var(--card); padding: 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 15px; position: relative; }
 .arrears-badge { background: var(--danger); color: white; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 8px; position: absolute; top: -5px; right: 20px; }
+
 .weeks-hub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
 .weeks-hub-grid button { height: 110px; border-radius: 25px; border: none; background: #1c1c1e; color: white; font-weight: 900; font-size: 22px; }
 .job-card { background: var(--card); padding: 25px; border-radius: 35px; margin: 0 20px 15px; }
 .job-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
 .btn-job { height: 50px; border-radius: 12px; border: none; font-weight: 900; color: white; font-size: 11px; }
 .btn-map-yellow { background: #ffeb3b !important; color: #333 !important; }
+
 .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; display:flex; align-items:center; justify-content:center; }
 .modal-overlay.hidden { display: none !important; }
 .modal-content { background:var(--card); padding:30px; border-radius:35px; width:90%; text-align: center; }
 .btn-primary-large { width: 100%; height: 75px; border-radius: 25px; border: none; background: var(--accent); color: white; font-weight: 900; font-size: 20px; }
-.hidden { display: none !important; }
 #global-version-footer { width: 100%; text-align: center; padding: 30px 0; font-size: 10px; font-weight: 900; opacity: 0.3; text-transform: uppercase; }
