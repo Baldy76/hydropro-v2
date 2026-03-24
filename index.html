@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v29.5</title>
-    <link rel="stylesheet" href="styles.css?v=295">
+    <title>Hydro Pro v29.6</title>
+    <link rel="stylesheet" href="styles.css?v=296">
 </head>
 <body class="light-mode">
 
@@ -47,9 +47,9 @@
             <div class="bank-vault">
                 <div class="vault-header">
                     <h3>🏦 Bank Vault</h3>
-                    <div style="display:flex; gap:8px;">
-                        <button id="copyBankBtn" class="vault-copy-btn" onclick="copyBankDetails()">📋 COPY</button>
-                        <button id="bankLockBtn" class="vault-unlock-surgical" onclick="toggleBankLock()">🔓 UNLOCK</button>
+                    <div class="vault-button-stack">
+                        <button id="copyBankBtn" class="vault-btn-common vault-copy-btn" onclick="copyBankDetails()">📋 COPY</button>
+                        <button id="bankLockBtn" class="vault-btn-common vault-unlock-surgical" onclick="toggleBankLock()">🔓 UNLOCK</button>
                     </div>
                 </div>
                 <input type="text" id="bankName" class="bank-field-fixed" readonly placeholder="Account Name">
@@ -101,10 +101,10 @@
         </section>
     </div>
 
-    <footer id="global-version-footer">v29.5</footer>
+    <footer id="global-version-footer">v29.6</footer>
 
     <div id="msgModal" class="modal-overlay hidden" onclick="closeMsgModal()"><div class="modal-content" onclick="event.stopPropagation()"><h3>Send Invoice?</h3><p id="msgPreview" style="white-space: pre-wrap; text-align: left; font-size: 13px; line-height: 1.5; background: var(--bg); padding: 15px; border-radius: 15px; margin-bottom: 20px; color: var(--text); font-weight: 500;"></p><div id="modalButtons"></div></div></div>
 
-    <script src="app.js?v=295"></script>
+    <script src="app.js?v=296"></script>
 </body>
 </html>
