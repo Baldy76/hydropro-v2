@@ -21,6 +21,16 @@ window.openTab = (name) => {
     document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
     const target = document.getElementById(name);
     if(target) target.classList.add("active");
+    
+    // NAVIGATION LOGIC v20.9
+    const globalNav = document.getElementById('globalNav');
+    // Hide "Back to Home" pill if on Home OR inside an individual week card view
+    if (name === 'home' || name.startsWith('week') && name !== 'weeksHub') {
+        globalNav.classList.add('hidden');
+    } else {
+        globalNav.classList.remove('hidden');
+    }
+    
     window.scrollTo({ top: 0, behavior: 'instant' });
     renderAll();
 };
@@ -72,6 +82,7 @@ window.renderMasterTable = () => {
 window.renderWeekLists = () => {
     for (let i = 1; i <= 5; i++) {
         const container = document.getElementById(`week${i}`); if (!container) continue;
+        // DUAL NAVIGATION Area within weeks (Only place where global pill is hidden)
         container.innerHTML = `<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 15px 15px;"><button class="tile" style="height:44px; font-size:13px; font-weight:800; background:#e5e5ea; border:none; border-radius:20px;" onclick="openTab('weeksHub')">⬅️ Weekly Hub</button><button class="tile" style="height:44px; font-size:13px; font-weight:800; background:#e5e5ea; border:none; border-radius:20px;" onclick="openTab('home')">🏠 Home Hub</button></div>`;
         db.customers.filter(c => c.week == i).forEach(c => {
             const isPaid = n(c.paidThisMonth) >= n(c.price);
@@ -83,14 +94,13 @@ window.renderWeekLists = () => {
 };
 
 window.renderStats = () => {
-    let totalTarget = 0, totalPaid = 0, totalArrears = 0, totalSpend = 0;
-    db.customers.forEach(c => {
-        totalTarget += n(c.price); totalPaid += n(c.paidThisMonth);
-        if (c.cleaned && n(c.paidThisMonth) < n(c.price)) totalArrears += (n(c.price) - n(c.paidThisMonth));
-    });
+    const monthYearEl = document.getElementById('currentMonthYear');
+    if (monthYearEl) monthYearEl.innerText = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) + " Summary";
+    let target = 0, paid = 0, arrears = 0, spend = 0;
+    db.customers.forEach(c => { target += n(c.price); paid += n(c.paidThisMonth); if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth)); });
     db.expenses.forEach(e => totalSpend += n(e.amt));
-    const profit = totalPaid - totalSpend; const progress = totalTarget > 0 ? (totalPaid / totalTarget) * 100 : 0;
-    const map = { 'currProfit': `£${profit.toFixed(2)}`, 'statsIncome': `£${totalPaid.toFixed(2)}`, 'statsSpend': `£${totalSpend.toFixed(2)}`, 'statsArrears': `£${totalArrears.toFixed(2)}`, 'statsTarget': `£${totalTarget.toFixed(2)}`, 'statsRemaining': `£${(totalTarget - totalPaid).toFixed(2)}`, 'progressPercent': `${Math.round(progress)}%` };
+    const profit = paid - spend; const progress = target > 0 ? (paid / target) * 100 : 0;
+    const map = { 'currProfit': `£${profit.toFixed(2)}`, 'statsIncome': `£${paid.toFixed(2)}`, 'statsSpend': `£${spend.toFixed(2)}`, 'statsArrears': `£${arrears.toFixed(2)}`, 'statsTarget': `£${target.toFixed(2)}`, 'statsRemaining': `£${(target - paid).toFixed(2)}`, 'progressPercent': `${Math.round(progress)}%` };
     for (let [id, val] of Object.entries(map)) { const el = document.getElementById(id); if(el) el.innerText = val; }
     const bar = document.getElementById('progressBarFill'); if(bar) bar.style.width = `${progress}%`;
     const histBox = document.getElementById('monthlyHistoryContainer');
