@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v36.6</title>
-    <link rel="stylesheet" href="styles.css?v=366">
+    <title>Hydro Pro v36.7</title>
+    <link rel="stylesheet" href="styles.css?v=367">
 </head>
 <body class="light-mode">
 
@@ -15,7 +15,6 @@
         <div class="header-content-stack">
             <span id="greetText"></span>
             <span id="dateText"></span>
-            
             <div class="slider-wrapper">
                 <label class="ios-switch">
                     <input type="checkbox" id="themeCheckbox">
@@ -39,7 +38,7 @@
         <section id="master-root" class="tab-content">
             <button class="btn-back-global" onclick="openTab('home-root')">🏠 Home</button>
             <div class="search-box-wrap">
-                <input type="text" id="mainSearch" placeholder="🔍 Search customers or streets..." oninput="renderMaster()">
+                <input type="text" id="mainSearch" placeholder="🔍 Search customers..." oninput="renderMaster()">
             </div>
             <div id="master-list-container"></div>
         </section>
@@ -58,8 +57,7 @@
                     <select id="cDay" class="setup-select">
                         <option value="Mon">Monday</option><option value="Tue">Tuesday</option>
                         <option value="Wed">Wednesday</option><option value="Thu">Thursday</option>
-                        <option value="Fri">Friday</option><option value="Sat">Saturday</option>
-                        <option value="Sun">Sunday</option>
+                        <option value="Fri">Friday</option>
                     </select>
                 </div>
                 <div class="setup-form-row"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
@@ -76,9 +74,9 @@
                 <div id="ledgerTotalDisplay">£0.00</div>
             </div>
             <div class="ledger-input-card">
-                <input type="text" id="expDesc" placeholder="Description">
-                <input type="number" id="expAmt" placeholder="Amount £">
-                <select id="expCat" class="ledger-cat-select">
+                <input type="text" id="expDesc" class="heavy-input" placeholder="Description">
+                <input type="number" id="expAmt" class="heavy-input" placeholder="Amount £">
+                <select id="expCat" class="heavy-select">
                     <option value="⛽ Fuel">⛽ Fuel</option>
                     <option value="🛠️ Gear">🛠️ Gear</option>
                     <option value="🍔 Food">🍔 Food</option>
@@ -114,23 +112,23 @@
                 <button class="day-btn" onclick="setWorkingDay('Thu', this)">T</button>
                 <button class="day-btn" onclick="setWorkingDay('Fri', this)">F</button>
             </div>
-            <div class="planning-action-row">
-                <button class="btn-plan-route" onclick="launchRoutePlanner()">🗺️ Plan Route</button>
-            </div>
-            <div class="legend-pill-wrap">
-                <div class="legend-pill">
-                    <span>📱 Call</span><span>📍 Map</span><span>🧼 Clean</span><span>£ Paid</span>
-                </div>
-            </div>
-            <div id="bulk-box" class="bulk-container"></div>
+            <div class="planning-action-row"><button class="btn-plan-route" onclick="launchRoutePlanner()">🗺️ Plan Route</button></div>
+            <div class="legend-pill-wrap"><div class="legend-pill"><span>📱 Call</span><span>📍 Map</span><span>🧼 Clean</span><span>£ Paid</span></div></div>
             <div id="week-list-container"></div>
         </section>
     </main>
 
-    <div id="msgModal" class="modal-overlay hidden"><div class="modal-content"><h3>Send Invoice?</h3><p id="msgPreview"></p><div id="modalButtons"></div></div></div>
-    <div id="briefingModal" class="modal-overlay hidden" onclick="closeBriefing()"><div class="modal-content briefing-box" onclick="event.stopPropagation()"><div id="briefingData"></div><div id="quickSettleContainer"></div><div class="briefing-footer"><button class="btn-brief-edit" id="briefEditBtn">⚙️ Edit Info</button><button class="btn-brief-close" onclick="closeBriefing()">CLOSE</button></div></div></div>
+    <div id="briefingModal" class="modal-overlay hidden" onclick="closeBriefing()">
+        <div class="modal-content briefing-box" onclick="event.stopPropagation()">
+            <div id="briefingData"></div>
+            <div id="quickSettleContainer"></div>
+            <div class="briefing-footer">
+                <button class="btn-brief-edit" id="briefEditBtn">⚙️ Edit Info</button>
+                <button class="btn-brief-close" onclick="closeBriefing()">CLOSE</button>
+            </div>
+        </div>
+    </div>
 
-    <footer id="version-label">v36.6 GOLD STANDARD</footer>
-    <script src="app.js?v=366"></script>
+    <script src="app.js?v=367"></script>
 </body>
 </html>
