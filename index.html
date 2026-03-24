@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v36.2</title>
-    <link rel="stylesheet" href="styles.css?v=362">
+    <title>Hydro Pro v36.3</title>
+    <link rel="stylesheet" href="styles.css?v=363">
 </head>
 <body class="light-mode">
 
@@ -37,7 +37,9 @@
 
         <section id="master-root" class="tab-content">
             <button class="btn-back-global" onclick="openTab('home-root')">🏠 Home</button>
-            <div class="search-container"><input type="text" id="mainSearch" placeholder="🔍 Search..." oninput="renderMaster()"></div>
+            <div class="search-box-wrap">
+                <input type="text" id="mainSearch" placeholder="🔍 Search customers or streets..." oninput="renderMaster()">
+            </div>
             <div id="master-list-container"></div>
         </section>
 
@@ -45,10 +47,10 @@
             <button class="btn-back-global" onclick="openTab('home-root')">🏠 Home</button>
             <div class="setup-form-card">
                 <input type="hidden" id="editId">
-                <div class="setup-form-row"><span>👤</span><input type="text" id="cName" placeholder="Customer Name"></div>
-                <div class="setup-form-row"><span>📱</span><input type="tel" id="cPhone" placeholder="Phone Number"></div>
+                <div class="setup-form-row"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
+                <div class="setup-form-row"><span>📱</span><input type="tel" id="cPhone" placeholder="Phone"></div>
                 <div class="setup-form-row"><span>🏠</span><input type="text" id="cHouseNum" placeholder="House No."></div>
-                <div class="setup-form-row"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street Name"></div>
+                <div class="setup-form-row"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
                 <div class="setup-form-row"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
                 <div class="setup-form-row">
                     <span>📅</span>
@@ -119,7 +121,7 @@
     <div id="msgModal" class="modal-overlay hidden"><div class="modal-content"><h3>Send Invoice?</h3><p id="msgPreview"></p><div id="modalButtons"></div></div></div>
     <div id="briefingModal" class="modal-overlay hidden" onclick="closeBriefing()"><div class="modal-content briefing-box" onclick="event.stopPropagation()"><div id="briefingData"></div><div id="quickSettleContainer"></div><div class="briefing-footer"><button class="btn-brief-edit" id="briefEditBtn">⚙️ Edit Info</button><button class="btn-brief-close" onclick="closeBriefing()">CLOSE</button></div></div></div>
 
-    <footer id="version-label">v36.2 - Restoration</footer>
-    <script src="app.js?v=362"></script>
+    <footer id="version-label">v36.3 - Global Baseline</footer>
+    <script src="app.js?v=363"></script>
 </body>
 </html>
