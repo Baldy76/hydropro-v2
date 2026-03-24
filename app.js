@@ -41,7 +41,6 @@ window.renderMaster = () => {
             const div = document.createElement('div'); div.className = 'cust-pill';
             div.onclick = () => editCust(c.id);
             
-            // Arrears Flag Logic
             let badgeHtml = "";
             if (c.cleaned && n(c.paidThisMonth) === 0) {
                 badgeHtml = `<div class="arrears-badge">UNPAID 🚩</div>`;
@@ -101,7 +100,7 @@ window.renderWeek = () => {
         const div = document.createElement('div'); div.className = 'job-card';
         div.innerHTML = `<div><strong style="font-size:20px;">${c.name} ${c.cleaned?'✅':''}</strong><br><small style="color:var(--accent); font-weight:700;">${c.houseNum} ${c.street}</small></div>
             <div class="job-actions">
-                <button class="btn-job" style="background:#3262d7" onclick="openMap('${c.houseNum} ${c.street} ${c.postcode}')">📍 MAP</button>
+                <button class="btn-job btn-map-yellow" onclick="openMap('${c.houseNum} ${c.street} ${c.postcode}')">📍 MAP</button>
                 <button class="btn-job" style="background:${c.cleaned?'var(--success)':'#aaa'}" onclick="handleClean('${c.id}')">CLEAN</button>
                 <button class="btn-job" style="background:${n(c.paidThisMonth)>0?'var(--accent)':'#aaa'}" onclick="markAsPaid('${c.id}')">PAY</button>
             </div>`;
