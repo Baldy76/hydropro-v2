@@ -1,18 +1,24 @@
 const DB_KEY = 'HydroPro_V25_Master';
-let db = { customers: [], expenses: [], history: [], bank: {} };
+let db = { customers: [], expenses: [], history: [], bank: { name: '', sort: '', acc: '' } };
 
 window.onload = () => {
     const saved = localStorage.getItem(DB_KEY);
     if (saved) db = JSON.parse(saved);
+    if (!db.bank) db.bank = { name: '', sort: '', acc: '' };
 
     // Initial Theme Load
     const isDark = localStorage.getItem('HP_Theme') === 'true';
-    if (isDark) {
-        document.body.classList.add('dark-mode');
-        document.getElementById('themeToggleBtn').innerText = '☀️';
-    } else {
-        document.body.classList.remove('dark-mode');
-        document.getElementById('themeToggleBtn').innerText = '🌙';
+    document.body.classList.toggle('dark-mode', isDark);
+    document.getElementById('themeToggleBtn').innerText = isDark ? '☀️' : '🌙';
+
+    // Mask for Sort Code on Setup page
+    const bSort = document.getElementById('bankSort');
+    if(bSort) {
+        bSort.addEventListener('input', (e) => {
+            let val = e.target.value.replace(/\D/g, '');
+            if (val.length > 6) val = val.substring(0, 6);
+            e.target.value = val.match(/.{1,2}/g)?.join('-') || val;
+        });
     }
 
     updateHeader();
@@ -32,6 +38,60 @@ window.openTab = (fenceId) => {
     renderAll();
 };
 
+/* --- FENCE: SETUP ROBOTS --- */
+
+window.toggleBankLock = () => {
+    const fields = document.querySelectorAll('.bank-field');
+    const lockBtn = document.getElementById('bankLockBtn');
+    const saveBtn = document.getElementById('bankSaveBtn');
+    const isLocked = fields[0].readOnly;
+
+    fields.forEach(f => f.readOnly = !isLocked);
+    lockBtn.innerText = isLocked ? "🔒 LOCK" : "🔓 UNLOCK";
+    saveBtn.classList.toggle('hidden', !isLocked);
+};
+
+window.saveBankDetails = () => {
+    db.bank = {
+        name: document.getElementById('bankName').value,
+        sort: document.getElementById('bankSort').value,
+        acc: document.getElementById('bankAcc').value
+    };
+    saveData();
+    toggleBankLock();
+    alert("Bank Details Secured! 🏦");
+};
+
+window.saveCustomer = () => {
+    const name = document.getElementById('cName').value;
+    if(!name) return alert("Please enter a name");
+    
+    const id = document.getElementById('editId').value || Date.now().toString();
+    const entry = {
+        id, name,
+        phone: document.getElementById('cPhone').value,
+        houseNum: document.getElementById('cHouseNum').value,
+        street: document.getElementById('cStreet').value,
+        postcode: document.getElementById('cPostcode').value.toUpperCase(),
+        price: parseFloat(document.getElementById('cPrice').value) || 0,
+        notes: document.getElementById('cNotes').value,
+        week: "1", cleaned: false, paidThisMonth: 0
+    };
+
+    const idx = db.customers.findIndex(c => c.id === id);
+    if(idx > -1) db.customers[idx] = entry; else db.customers.push(entry);
+    
+    saveData();
+    alert("Customer Saved! ✨");
+    openTab('fence-home');
+    // Clear fields
+    ['editId', 'cName', 'cPhone', 'cHouseNum', 'cStreet', 'cPostcode', 'cPrice', 'cNotes'].forEach(id => {
+        document.getElementById(id).value = '';
+    });
+};
+
+/* --- FENCE: STATS ROBOTS --- */
+
 window.renderStatsFence = () => {
     const container = document.getElementById('stats-dashboard-container');
     if (!container) return;
@@ -45,7 +105,6 @@ window.renderStatsFence = () => {
         }
     });
     db.expenses.forEach(e => spend += (parseFloat(e.amt) || 0));
-    
     const profit = paid - spend;
     const progress = target > 0 ? Math.round((paid / target) * 100) : 0;
 
@@ -55,36 +114,38 @@ window.renderStatsFence = () => {
             <span class="main-amt">£${profit.toFixed(2)}</span>
             <small style="font-weight:600; opacity:0.7">💰 Total Profit in Pocket</small>
         </div>
-        
         <div class="progress-bubble">
             <strong style="font-size:18px;">Monthly Progress ${progress}%</strong>
             <div class="bar-bg"><div class="bar-fill" style="width:${progress}%"></div></div>
-            <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700; opacity:0.5; text-transform:uppercase;">
+            <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700; opacity:0.5;">
                 <span>TARGET: £${target.toFixed(2)}</span>
                 <span>REMAINING: £${(target - paid).toFixed(2)}</span>
             </div>
         </div>
-
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; padding:0 20px 20px;">
             <div class="progress-bubble" style="margin:0; text-align:center; padding:20px 10px;">
-                <small style="font-size:11px; font-weight:800; opacity:0.5; display:block; margin-bottom:5px;">INCOME 🔍</small>
-                <div style="color:var(--success); font-size:26px; font-weight:800">£${paid.toFixed(2)}</div>
+                <small style="font-size:11px; display:block; margin-bottom:5px;">INCOME 🔍</small>
+                <div style="color:var(--success); font-size:24px; font-weight:800">£${paid.toFixed(2)}</div>
             </div>
             <div class="progress-bubble" style="margin:0; text-align:center; padding:20px 10px;">
-                <small style="font-size:11px; font-weight:800; opacity:0.5; display:block; margin-bottom:5px;">SPEND 🔍</small>
-                <div style="color:var(--danger); font-size:26px; font-weight:800">£${spend.toFixed(2)}</div>
+                <small style="font-size:11px; display:block; margin-bottom:5px;">SPEND 🔍</small>
+                <div style="color:var(--danger); font-size:24px; font-weight:800">£${spend.toFixed(2)}</div>
             </div>
         </div>
-
         <div class="arrears-bubble">Arrears 🔍 £${arrears.toFixed(2)}</div>
-        
-        <h3 style="color:var(--success); font-size:22px; font-weight:900; margin-left:25px; margin-bottom:15px;">🏆 The Hall of Fame</h3>
-        <div class="progress-bubble" style="text-align:center; opacity:0.5; font-weight:700;">Snapshots appear here.</div>
     `;
 };
 
+/* --- GLOBAL TOOLS --- */
+
+window.saveData = () => localStorage.setItem(DB_KEY, JSON.stringify(db));
+
 window.renderAll = () => {
     renderStatsFence();
+    // Load existing bank data into setup fields
+    document.getElementById('bankName').value = db.bank.name || '';
+    document.getElementById('bankSort').value = db.bank.sort || '';
+    document.getElementById('bankAcc').value = db.bank.acc || '';
 };
 
 window.updateHeader = () => {
