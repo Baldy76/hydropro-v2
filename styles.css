@@ -1,66 +1,41 @@
-/* --- v42.7 TOTAL RESTORATION --- */
+/* --- v42.8 ABSOLUTE ZERO --- */
 :root { --accent: #007aff; --bg: #f2f2f7; --card: #ffffff; --text: #000; --success: #34C759; --danger: #ff453a; --ios-grey: #e9e9eb; --grad: linear-gradient(135deg, #007aff 0%, #0051a8 100%); }
 body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; --ios-grey: #39393d; }
 
+/* 🛡️ FORBIDDEN BROWSER RESIZING */
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; flex-shrink: 0 !important; }
 body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; width: 100vw; overflow-x: hidden; font-family: -apple-system, sans-serif; }
 
 .tab-content { display: none !important; width: 100%; opacity: 0; }
-.tab-content.active { display: block !important; opacity: 1; }
+.tab-content.active { display: flex !important; flex-direction: column; opacity: 1; padding-top: 240px; }
 
-/* HEADER */
-#G-HEADER { width: 100%; height: 230px !important; text-align: center; padding-top: 15px; flex-shrink: 0; z-index: 50; position: relative; background: var(--bg); }
-.G-LOGO-WRAP img { width: 220px; height: auto; display: block; margin: 0 auto 10px; }
-.CENTRAL-STATUS-POD { display: flex; justify-content: center; align-items: center; gap: 15px; width: 100%; height: 50px; margin-bottom: 10px; }
-.G-WEATHER-PILL { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--ios-grey); width: 120px; height: 45px; border-radius: 25px; cursor: pointer; }
-.G-SWITCH-WRAP { display: flex; align-items: center; height: 45px; }
-.ios-switch { position: relative; display: inline-block; width: 60px; height: 32px; }
-.ios-switch input { opacity: 0; width: 0; height: 0; }
-.ios-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--ios-grey); transition: .4s; border-radius: 34px; }
-.ios-slider:before { position: absolute; content: ""; height: 24px; width: 24px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-input:checked + .ios-slider { background-color: var(--success); }
-input:checked + .ios-slider:before { transform: translateX(28px); }
-#dateText { font-size: 24px !important; font-weight: 950; color: var(--accent); }
+/* HEADER - FIXED TO TOP TO PREVENT BOUNCE */
+#G-HEADER { 
+    position: fixed; top: 0; left: 0; width: 100%; height: 230px !important; 
+    text-align: center; padding-top: 15px; z-index: 1000; background: var(--bg);
+}
+.G-LOGO-WRAP img { width: 220px; height: auto; margin: 0 auto 10px; }
+.CENTRAL-STATUS-POD { display: flex; justify-content: center; align-items: center; gap: 15px; height: 50px; }
+.G-WEATHER-PILL { background: var(--ios-grey); width: 120px; height: 45px; border-radius: 25px; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; }
+.DATE-CONTAINER { height: 40px; margin-top: 5px; }
+#dateText { font-size: 24px; font-weight: 950; color: var(--accent); }
 
 /* HUB LOCK */
-.HUB-LOCK-CONTAINER { width: 380px; margin: 10px auto; display: block; }
+.HUB-LOCK-CONTAINER { width: 380px; margin: 0 auto; display: block; }
 .GRID-ROW { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
 .BLOCK-BTN { width: 175px !important; height: 150px !important; border-radius: 35px; background: var(--card); border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 15px rgba(0,0,0,0.08); color: var(--text); }
 .FULL-W { width: 365px !important; background: var(--grad) !important; color: white !important; }
-.I-LOCK { font-size: 45px !important; display: block; pointer-events: none; }
-.T-LOCK { font-size: 16px !important; font-weight: 900; text-transform: uppercase; margin-top: 8px; display: block; pointer-events: none; }
 
 /* VAULTS */
-.VAULT-CARD { background: var(--card); margin: 25px; padding: 30px; border-radius: 45px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-.VAULT-ROW { display: flex; align-items: center; height: 80px !important; border-bottom: 2px solid var(--ios-grey); gap: 15px; }
-.VAULT-ROW input { flex: 1; border: none; background: transparent; font-size: 18px; font-weight: 700; height: 100%; outline: none; }
-.VAULT-NOTES-XL { width: 100%; height: 200px; border-radius: 25px; background: var(--bg); border: none; padding: 20px; color: var(--text); font-size: 18px; margin: 20px 0; }
-.VAULT-SAVE-BTN { width: 100%; height: 80px; border-radius: 30px; border: none; background: var(--grad); color: white; font-weight: 950; font-size: 20px; text-transform: uppercase; }
-
-/* SEARCH */
-.CONCRETE-SEARCH-VAULT { padding: 0 25px 25px; height: 100px; }
-#mainSearch { width: 100%; height: 75px; border-radius: 25px; border: 3px solid var(--accent); background: var(--card); padding: 0 30px; font-size: 20px; font-weight: 700; color: var(--text); outline: none; }
-
-/* ADMIN */
-.ADMIN-VAULT { background: var(--card); margin: 40px 25px 120px; padding: 45px 30px; border-radius: 50px; border: 4px solid var(--ios-grey); display: flex; flex-direction: column; gap: 20px; }
-.ADMIN-BTN-BLUE { width: 100%; height: 80px; background: var(--accent); color: white; border: none; border-radius: 25px; font-weight: 950; font-size: 18px; }
-.ADMIN-ROW { display: flex; gap: 15px; height: 80px; }
-.ADMIN-BTN-GREY { flex: 1; height: 80px; background: var(--ios-grey); color: var(--text); border: none; border-radius: 25px; font-weight: 900; }
-.ADMIN-BTN-RED { width: 100%; height: 70px; background: transparent; border: 3px dashed var(--danger); color: var(--danger); border-radius: 25px; font-weight: 950; margin-top: 10px; }
-
-/* STATS */
-.ST-HERO { background: var(--card); border: 5px solid var(--accent); padding: 45px; border-radius: 50px; text-align: center; margin: 0 25px 25px; }
-.ST-HERO div { font-size: 60px; font-weight: 950; }
-.ST-ARREARS-VAULT { background: var(--danger); color: white; padding: 30px; border-radius: 40px; text-align: center; margin: 0 25px 25px; }
+.VAULT-CARD { background: var(--card); margin: 20px; padding: 25px; border-radius: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+.VAULT-ROW { display: flex; align-items: center; height: 75px !important; border-bottom: 2px solid var(--ios-grey); gap: 15px; }
+.VAULT-ROW input { flex: 1; border: none; background: transparent; font-size: 18px !important; font-weight: 700; height: 100%; outline: none; color: var(--text); }
+.VAULT-HDR { margin: 0 0 15px; opacity: 0.5; font-size: 13px; text-transform: uppercase; }
 
 /* MODALS */
 .modal-overlay { position: fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:9999; display:flex; align-items:center; justify-content:center; }
 .modal-overlay.hidden { display: none !important; }
-.modal-content { background:var(--card); padding:45px; border-radius:55px; width:94%; max-height: 90vh; overflow-y: auto; color: var(--text); }
+.modal-content { background:var(--card); padding:40px; border-radius:50px; width:94%; max-height: 90vh; overflow-y: auto; color: var(--text); }
 
-/* SHARED */
-.FIXED-BACK-BTN { width: 340px; height: 75px; border-radius: 35px; border: none; background: var(--card); color: var(--accent); font-weight: 950; font-size: 18px; margin: 0 auto 30px; display: flex; align-items: center; justify-content: center; }
-.DAY-LOCKED-BAR { display: flex; justify-content: space-between; padding: 0 15px 20px; gap: 6px; }
-.D-BTN-LOCKED { flex: 1; height: 60px; border: none; background: var(--card); color: var(--text); font-weight: 950; border-radius: 15px; font-size: 14px; }
-.D-BTN-LOCKED.active { background: var(--accent); color: white; }
+.FIXED-BACK-BTN { width: 340px; height: 75px; border-radius: 35px; background: var(--card); color: var(--accent); font-weight: 950; font-size: 18px; margin: 0 auto 20px; border: none; display: flex; align-items: center; justify-content: center; }
 .hidden { display: none !important; }
