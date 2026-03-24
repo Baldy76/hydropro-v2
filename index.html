@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v20.5</title>
-    <link rel="stylesheet" href="styles.css?v=205">
+    <title>Hydro Pro v20.7</title>
+    <link rel="stylesheet" href="styles.css?v=207">
 </head>
 <body class="light-mode">
 
@@ -50,27 +50,27 @@
             </div>
         </div>
 
-        <div id="weeksHub" class="tab-content">
-            <div class="weeks-grid">
-                <button class="tile-week-blue" onclick="openTab('week1')">Week 1</button>
-                <button class="tile-week-blue" onclick="openTab('week2')">Week 2</button>
-                <button class="tile-week-blue" onclick="openTab('week3')">Week 3</button>
-                <button class="tile-week-blue" onclick="openTab('week4')">Week 4</button>
-                <button class="tile-week-blue tile-week-5" onclick="openTab('week5')">Week 5</button>
-            </div>
-        </div>
-
         <div id="stats" class="tab-content">
             <div class="stats-hero-card">
                 <div id="currentMonthYear" class="stats-summary-title">Summary</div>
                 <div id="currProfit" class="stats-main-amount">£0.00</div>
                 <div class="stats-hero-sub">💰 Total Profit in Pocket</div>
             </div>
-            <div class="stats-card">
-                <div class="progress-header"><span>Monthly Progress</span><span id="progressPercent">0%</span></div>
-                <div class="progress-bar-bg"><div id="progressBarFill" class="progress-bar-fill"></div></div>
-                <div class="progress-footer"><span>TARGET: <strong id="statsTarget">£0.00</strong></span><span>REMAINING: <strong id="statsRemaining">£0.00</strong></span></div>
+
+            <div class="customer-pill-bubble stats-progress-bubble">
+                <div class="progress-header-centered">
+                    <small>MONTHLY PROGRESS</small>
+                    <div id="progressPercent" class="amt-blue-bold">0%</div>
+                </div>
+                <div class="progress-bar-bg">
+                    <div id="progressBarFill" class="progress-bar-fill"></div>
+                </div>
+                <div class="progress-footer">
+                    <span>TARGET: <strong id="statsTarget">£0.00</strong></span>
+                    <span>REMAINING: <strong id="statsRemaining">£0.00</strong></span>
+                </div>
             </div>
+
             <div class="stats-grid-2x1">
                 <div class="stats-mini-card">
                     <small>MONTH INCOME 🔍</small>
@@ -81,6 +81,7 @@
                     <div class="amt-red" id="statsSpend">£0.00</div>
                 </div>
             </div>
+
             <div class="arrears-pill">Arrears 🔍 <span id="statsArrears">£0.00</span></div>
             <h3 class="hall-of-fame-title">🏆 The Hall of Fame</h3>
             <div id="monthlyHistoryContainer"></div>
@@ -95,21 +96,40 @@
         <div id="admin" class="tab-content">
             <div class="card creative-form-card">
                 <input type="hidden" id="editId">
-                <div class="fun-input-group"><div class="fun-icon">👤</div><div class="fun-field-stack"><label>Name</label><input type="text" id="cName" class="creative-input" placeholder="Full Name"></div></div>
-                <div class="fun-input-group"><div class="fun-icon">🏠</div><div class="fun-field-stack"><label>House No.</label><input type="text" id="cHouseNum" class="creative-input" placeholder="e.g. 22"></div></div>
-                <div class="fun-input-group"><div class="fun-icon">🛣️</div><div class="fun-field-stack"><label>Street</label><input type="text" id="cStreet" class="creative-input" placeholder="Street Name"></div></div>
-                <div class="fun-input-group"><div class="fun-icon">📍</div><div class="fun-field-stack"><label>Postcode</label><input type="text" id="cPostcode" class="creative-input postcode-input" placeholder="Postcode"></div></div>
-                <div class="fun-input-group"><div class="fun-icon">💰</div><div class="fun-field-stack"><label>Price £</label><input type="number" id="cPrice" class="creative-input" placeholder="0.00"></div></div>
-                <div class="fun-input-group" style="border:none"><div class="fun-icon">📝</div><div class="fun-field-stack"><label>Private Notes</label><textarea id="cNotes" class="creative-textarea"></textarea></div></div>
+                <div class="fun-input-group">
+                    <div class="fun-icon" style="background:rgba(0,122,255,0.1)">👤</div>
+                    <div class="fun-field-stack"><label>Customer Name</label><input type="text" id="cName" class="creative-input" placeholder="Full Name"></div>
+                </div>
+                <div class="fun-input-group">
+                    <div class="fun-icon" style="background:rgba(255,149,0,0.15)">🏠</div>
+                    <div class="fun-field-stack"><label>House No.</label><input type="text" id="cHouseNum" class="creative-input" placeholder="e.g. 22"></div>
+                </div>
+                <div class="fun-input-group">
+                    <div class="fun-icon" style="background:rgba(52,199,89,0.15)">🛣️</div>
+                    <div class="fun-field-stack"><label>Street</label><input type="text" id="cStreet" class="creative-input" placeholder="Street Name"></div>
+                </div>
+                <div class="fun-input-group">
+                    <div class="fun-icon" style="background:rgba(175,82,222,0.15)">📍</div>
+                    <div class="fun-field-stack"><label>Postcode</label><input type="text" id="cPostcode" class="creative-input postcode-input" placeholder="Postcode"></div>
+                </div>
+                <div class="fun-input-group">
+                    <div class="fun-icon" style="background:rgba(255, 59, 48, 0.15);">💰</div>
+                    <div class="fun-field-stack"><label>Price £</label><input type="number" id="cPrice" class="creative-input" placeholder="0.00"></div>
+                </div>
+                <div class="fun-input-group" style="border:none">
+                    <div class="fun-icon" style="background:rgba(142,142,147,0.15)">📝</div>
+                    <div class="fun-field-stack"><label>Private Notes</label><textarea id="cNotes" class="creative-textarea"></textarea></div>
+                </div>
                 <button class="creative-save-btn" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
         </div>
 
+        <div id="weeksHub" class="tab-content"><div class="weeks-grid"><button class="tile-week-blue" onclick="openTab('week1')">Week 1</button><button class="tile-week-blue" onclick="openTab('week2')">Week 2</button><button class="tile-week-blue" onclick="openTab('week3')">Week 3</button><button class="tile-week-blue" onclick="openTab('week4')">Week 4</button><button class="tile-week-blue tile-week-5" onclick="openTab('week5')">Week 5</button></div></div>
         <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
         <div id="spend" class="tab-content"><div id="expenseList"></div></div>
     </div>
 
-    <div class="page-version-footer">v20.5 - Hardened Infrastructure</div>
-    <script src="app.js?v=205"></script>
+    <div class="page-version-footer">v20.7 - Bubble Alignment Lock</div>
+    <script src="app.js?v=207"></script>
 </body>
 </html>
