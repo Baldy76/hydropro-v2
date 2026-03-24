@@ -11,11 +11,9 @@ window.onload = () => {
     if (!db.customers) db.customers = [];
     if (!db.expenses) db.expenses = [];
     if (!db.history) db.history = [];
-    
     const isDark = localStorage.getItem('Hydro_Dark_Pref') === 'true';
     document.body.className = isDark ? 'dark-mode' : 'light-mode';
     if(document.getElementById('darkModeToggle')) document.getElementById('darkModeToggle').checked = isDark;
-    
     renderAll();
 };
 
@@ -47,21 +45,14 @@ window.saveCustomer = () => {
     const id = document.getElementById('editId').value || Date.now().toString();
     const idx = db.customers.findIndex(x => x.id === id);
     const existing = idx > -1 ? db.customers[idx] : null;
-
     const entry = {
-        id, name, houseNum: document.getElementById('cHouseNum').value, 
-        street: document.getElementById('cStreet').value,
-        postcode: document.getElementById('cPostcode').value.toUpperCase(), 
-        price: n(document.getElementById('cPrice').value),
-        notes: document.getElementById('cNotes').value, 
-        week: existing ? existing.week : "1", 
-        cleaned: existing ? existing.cleaned : false, 
-        paidThisMonth: existing ? existing.paidThisMonth : 0
+        id, name, houseNum: document.getElementById('cHouseNum').value, street: document.getElementById('cStreet').value,
+        postcode: document.getElementById('cPostcode').value.toUpperCase(), price: n(document.getElementById('cPrice').value),
+        notes: document.getElementById('cNotes').value, week: existing ? existing.week : "1", 
+        cleaned: existing ? existing.cleaned : false, paidThisMonth: existing ? existing.paidThisMonth : 0
     };
-
     if(idx > -1) db.customers[idx] = entry; else db.customers.push(entry);
-    saveData();
-    alert("Customer Saved Successfully! ✨");
+    saveData(); alert("Customer Saved Successfully! ✨");
     ['editId', 'cName', 'cHouseNum', 'cStreet', 'cPostcode', 'cPrice', 'cNotes'].forEach(f => {
         const el = document.getElementById(f); if(el) el.value = "";
     });
@@ -127,7 +118,7 @@ window.updateGreeting = () => {
 };
 
 window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
-window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); renderLedger(); };
+window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); };
 window.editCust = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; openTab('admin'); document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cHouseNum').value = c.houseNum; document.getElementById('cStreet').value = c.street; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPrice').value = c.price; document.getElementById('cNotes').value = c.notes; };
 window.toggleCleaned = (id) => { const c = db.customers.find(x => x.id === id); if (c) { c.cleaned = !c.cleaned; saveData(); renderAll(); } };
 window.markAsPaid = (id) => { const c = db.customers.find(x => x.id === id); if (!c) return; const isPaid = n(c.paidThisMonth) >= n(c.price); c.paidThisMonth = isPaid ? 0 : c.price; saveData(); renderAll(); };
