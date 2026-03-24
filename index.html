@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v42.0</title>
+    <title>Hydro Pro v42.2</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="AppIcon.png">
     <link rel="icon" type="image/png" href="AppIcon.png">
-    <link rel="stylesheet" href="styles.css?v=420">
+    <link rel="stylesheet" href="styles.css?v=422">
 </head>
 <body class="light-mode">
 
@@ -24,7 +24,6 @@
                 <label class="ios-switch">
                     <input type="checkbox" id="themeCheckbox">
                     <span class="ios-slider"></span>
-                    <span class="ios-slider-label-light">LIGHT</span>
                 </label>
             </div>
         </div>
@@ -47,6 +46,7 @@
 
         <section id="setup-root" class="tab-content">
             <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
+            
             <div class="VAULT-CARD">
                 <div class="VAULT-ROW"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
                 <div class="VAULT-ROW"><span>📱</span><input type="tel" id="cPhone" placeholder="Phone"></div>
@@ -54,9 +54,18 @@
                 <div class="VAULT-ROW"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
                 <div class="VAULT-ROW"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
                 <div class="VAULT-ROW"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
-                <textarea id="cNotes" class="VAULT-NOTES" placeholder="Private Notes..."></textarea>
+                <textarea id="cNotes" class="VAULT-NOTES-XL" placeholder="Detailed job notes and access info..."></textarea>
                 <button class="VAULT-SAVE-BTN" onclick="saveCustomer()">✨ SAVE CUSTOMER</button>
             </div>
+
+            <div class="VAULT-CARD">
+                <h3 style="margin-top:0; opacity:0.5; font-size:14px; text-transform:uppercase;">Business Bank Details</h3>
+                <div class="VAULT-ROW"><span>🏦</span><input type="text" id="bName" placeholder="Account Name"></div>
+                <div class="VAULT-ROW"><span>🔢</span><input type="text" id="bSort" placeholder="Sort Code"></div>
+                <div class="VAULT-ROW"><span>💳</span><input type="text" id="bAcc" placeholder="Account Number"></div>
+                <button class="VAULT-SAVE-BTN" style="background:var(--accent); margin-top:20px;" onclick="saveBank()">💾 SAVE BANK DETAILS</button>
+            </div>
+
             <div class="ADMIN-VAULT">
                 <button class="ADMIN-BTN-BLUE" onclick="completeCycle()">🚀 START NEW MONTH</button>
                 <div class="ADMIN-ROW">
@@ -137,7 +146,7 @@
         </div>
     </div>
     
-    <footer id="version-label">v42.0 FINAL SEAL</footer>
-    <script src="app.js?v=420"></script>
+    <footer id="version-label">v42.2 THE IRON VAULT</footer>
+    <script src="app.js?v=422"></script>
 </body>
 </html>
