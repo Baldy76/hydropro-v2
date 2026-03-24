@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v23.4</title>
-    <link rel="stylesheet" href="styles.css?v=234">
+    <title>Hydro Pro v23.5</title>
+    <link rel="stylesheet" href="styles.css?v=235">
 </head>
 <body class="light-mode">
 
@@ -34,6 +34,18 @@
     </div>
 
     <div class="main-container">
+        <div id="master" class="tab-content">
+            <div class="search-shield">
+                <input type="text" id="mainSearch" class="search-input-pill" placeholder="🔍 Search customers..." oninput="renderMasterTable()">
+            </div>
+            <div id="masterTableBody" class="iron-spaced-stack"></div>
+            <div class="fixed-bottom-shield">
+                <div class="action-card-green">
+                    <button class="btn-clear-large" onclick="completeCycle()">🚀 START NEW MONTH</button>
+                </div>
+            </div>
+        </div>
+
         <div id="home" class="tab-content active">
             <div class="home-grid-ironclad">
                 <button class="tile-restore" onclick="openTab('admin')"><span>✨</span><small>Setup</small></button>
@@ -44,18 +56,47 @@
             </div>
         </div>
 
-        <div id="stats" class="tab-content"></div>
+        <div id="stats" class="tab-content">
+            <div class="stats-hero-card">
+                <div id="statsMonthLabel" class="stats-summary-title">Summary</div>
+                <div id="currProfit" class="stats-main-amount">£0.00</div>
+                <div class="stats-hero-sub">💰 Total Profit in Pocket</div>
+            </div>
+            <div class="customer-pill-bubble stats-progress-bubble stats-spacer">
+                <div class="progress-label-row"><strong>Progress <span id="progressPercent">0%</span></strong></div>
+                <div class="progress-bar-bg"><div id="progressBarFill" class="progress-bar-fill"></div></div>
+                <div class="progress-footer">
+                    <span>TARGET: <strong id="statsTarget">£0.00</strong></span>
+                    <span>PAID: <strong id="statsIncome">£0.00</strong></span>
+                </div>
+            </div>
+            <div class="stats-grid-2x1 stats-spacer">
+                <div class="customer-pill-bubble stats-mini-card">
+                    <small>MONTH SPEND 🔍</small>
+                    <div class="amt-red-bold" id="statsSpend">£0.00</div>
+                </div>
+                <div class="customer-pill-bubble stats-mini-card">
+                    <small>MONTH REMAINING 🔍</small>
+                    <div class="amt-blue-bold-small" id="statsRemaining">£0.00</div>
+                </div>
+            </div>
+            <div class="arrears-pill-bubble stats-spacer">
+                Arrears 🔍 <span id="statsArrears">£0.00</span>
+            </div>
+            <div id="monthlyHistoryContainer" class="iron-spaced-stack"></div>
+        </div>
+
         <div id="spend" class="tab-content"></div>
-        <div id="master" class="tab-content"></div>
         <div id="admin" class="tab-content"></div>
         <div id="weeksHub" class="tab-content"></div>
+        <div id="week1" class="tab-content"></div><div id="week2" class="tab-content"></div><div id="week3" class="tab-content"></div><div id="week4" class="tab-content"></div><div id="week5" class="tab-content"></div>
     </div>
 
     <div class="bottom-theme-shelf">
         <button id="themeToggleBtn" class="theme-pill-mini" onclick="toggleDarkMode()">🌙 Dark</button>
-        <div class="centered-version-footer">v23.4 - Shrunk Header</div>
+        <div class="centered-version-footer">v23.5 - Proportional Sync</div>
     </div>
 
-    <script src="app.js?v=234"></script>
+    <script src="app.js?v=235"></script>
 </body>
 </html>
