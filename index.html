@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="AppIcon.png">
     <link rel="icon" type="image/png" href="AppIcon.png">
-    <link rel="stylesheet" href="styles.css?v=380">
+    <link rel="stylesheet" href="styles.css?v=382">
 </head>
 <body class="light-mode">
 
@@ -28,6 +28,7 @@
                 <label class="ios-switch">
                     <input type="checkbox" id="themeCheckbox">
                     <span class="ios-slider"></span>
+                    <span class="ios-slider-label-light">LIGHT</span>
                 </label>
             </div>
         </div>
@@ -82,7 +83,7 @@
                     <button class="SU-IO-BTN" onclick="document.getElementById('importFile').click()">📥 Restore CSV</button>
                     <input type="file" id="importFile" hidden onchange="importData(event)" accept=".csv">
                 </div>
-                <button class="SU-DANGER-BTN" onclick="nuclearReset()">⚠️ RESET ALL DATA</button>
+                <button class="SU-DANGER-BTN" onclick="nuclearReset()">⚠️ FACTORY RESET DATA</button>
             </div>
         </section>
 
@@ -113,7 +114,7 @@
 
     <div id="briefingModal" class="modal-overlay hidden" onclick="closeBriefing()"><div class="modal-content" onclick="event.stopPropagation()"><div id="briefingData"></div><div id="quickSettleContainer"></div><button class="MD-EDIT" id="briefEditBtn">⚙️ Edit Info</button><button class="MD-CLOSE" onclick="closeBriefing()">CLOSE</button></div></div>
     
-    <footer id="version-label">v38.0 GOLD</footer>
-    <script src="app.js?v=380"></script>
+    <footer id="version-label">v38.2 GOLD</footer>
+    <script src="app.js?v=382"></script>
 </body>
 </html>
