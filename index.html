@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v36.91</title>
-    <link rel="stylesheet" href="styles.css?v=3691">
+    <title>Hydro Pro v37.0</title>
+    <link rel="stylesheet" href="styles.css?v=370">
 </head>
 <body class="light-mode">
 
@@ -53,7 +53,8 @@
                     <select id="cDay" class="SU-SELECT">
                         <option value="Mon">Monday</option><option value="Tue">Tuesday</option>
                         <option value="Wed">Wednesday</option><option value="Thu">Thursday</option>
-                        <option value="Fri">Friday</option>
+                        <option value="Fri">Friday</option><option value="Sat">Saturday</option>
+                        <option value="Sun">Sunday</option>
                     </select>
                 </div>
                 <div class="SU-ROW"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
@@ -107,6 +108,8 @@
                 <button class="DAY-BTN" onclick="setWorkingDay('Wed', this)">W</button>
                 <button class="DAY-BTN" onclick="setWorkingDay('Thu', this)">T</button>
                 <button class="DAY-BTN" onclick="setWorkingDay('Fri', this)">F</button>
+                <button class="DAY-BTN" onclick="setWorkingDay('Sat', this)">S</button>
+                <button class="DAY-BTN" onclick="setWorkingDay('Sun', this)">S</button>
             </div>
             <div class="WK-PLAN-ROW"><button class="WK-PLAN-BTN" onclick="launchRoutePlanner()">🗺️ Plan Route</button></div>
             <div class="WK-LEGEND"><span>📱 Call</span><span>📍 Map</span><span>🧼 Clean</span><span>£ Paid</span></div>
@@ -123,6 +126,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=3691"></script>
+    <script src="app.js?v=370"></script>
 </body>
 </html>
