@@ -1,17 +1,12 @@
-/* 🧱 ARCHITECTURE QUARANTINE v37.7 */
-:root { 
-    --accent: #007aff; --bg: #f2f2f7; --card: #ffffff; --text: #000; 
-    --success: #34C759; --danger: #ff453a; 
-    --ios-grey: #e9e9eb; --grad: linear-gradient(135deg, #007aff 0%, #0051a8 100%);
-}
+/* --- ARCHITECTURE QUARANTINE v37.8 --- */
+:root { --accent: #007aff; --bg: #f2f2f7; --card: #ffffff; --text: #000; --success: #34C759; --danger: #ff453a; --ios-grey: #e9e9eb; --grad: linear-gradient(135deg, #007aff 0%, #0051a8 100%); }
 body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; --ios-grey: #39393d; }
-
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, sans-serif; }
-body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; transition: background 0.3s; }
+body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; }
 .tab-content { display: none !important; }
 .tab-content.active { display: flex !important; flex-direction: column; width: 100%; }
 
-/* 🛡️ HEADER */
+/* HEADER */
 #G-HEADER { width: 100%; }
 .G-LOGO-WRAP { width: 100%; display: flex; justify-content: center; padding: 15px 0; }
 .G-LOGO-WRAP img { width: 100%; height: auto; display: block; object-fit: contain; }
@@ -21,11 +16,11 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-hei
 .ios-switch { position: relative; display: inline-block; width: 51px; height: 31px; }
 .ios-switch input { opacity: 0; width: 0; height: 0; }
 .ios-slider { position: absolute; cursor: pointer; top:0; left:0; right:0; bottom:0; background: var(--ios-grey); border-radius: 31px; transition: .3s; }
-.ios-slider:before { position: absolute; content: ""; height: 27px; width: 27px; left: 2px; bottom: 2px; background: white; border-radius: 50%; transition: .3s; box-shadow: 0 3px 8px rgba(0,0,0,0.15); }
+.ios-slider:before { position: absolute; content: ""; height: 27px; width: 27px; left: 2px; bottom: 2px; background: white; border-radius: 50%; transition: .3s; }
 input:checked + .ios-slider { background-color: var(--success); }
 input:checked + .ios-slider:before { transform: translateX(20px); }
 
-/* 🏠 HOME & SYNC */
+/* HUB */
 .HM-GRID { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
 .HM-GRID button { height: 125px; border-radius: 30px; background: var(--card); border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 15px rgba(0,0,0,0.05); color: var(--text); }
 .HM-GRID span { font-size: 40px; color: var(--accent); }
@@ -34,15 +29,15 @@ input:checked + .ios-slider:before { transform: translateX(20px); }
 .HM-SYNC-ZONE { padding: 10px 20px 40px; text-align: center; }
 .HM-SYNC-BTN { background: transparent; border: 2px solid var(--accent); color: var(--accent); padding: 12px 25px; border-radius: 50px; font-size: 13px; font-weight: 800; text-transform: uppercase; }
 
-/* 👥 MASTER LIST */
+/* MASTER LIST */
 .CT-SEARCH-WRAP { padding: 0 20px 20px; }
-#mainSearch { width: 100%; height: 65px; border-radius: 20px; border: none; background: var(--card); padding: 0 25px; font-size: 18px; color: var(--text); box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+#mainSearch { width: 100%; height: 65px; border-radius: 20px; border: none; background: var(--card); padding: 0 25px; font-size: 18px; color: var(--text); }
 .CT-PILL { background: var(--card); padding: 20px 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 15px; min-height: 100px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
 .CT-TEXT-STACK { display: flex; flex-direction: column; gap: 4px; text-align: left; }
 .CT-TEXT-STACK strong { font-size: 20px; }
 .CT-TEXT-STACK small { color: var(--accent); font-weight: 700; font-size: 15px; }
 
-/* ✨ SETUP & ADMIN */
+/* SETUP & ADMIN */
 .SU-CARD { background: var(--card); margin: 0 20px 25px; padding: 25px; border-radius: 35px; }
 .SU-ROW { display: flex; align-items: center; height: 75px !important; border-bottom: 1px solid rgba(0,0,0,0.05); gap: 15px; }
 .SU-ROW span { font-size: 22px; width: 35px; text-align: center; }
@@ -55,7 +50,7 @@ input:checked + .ios-slider:before { transform: translateX(20px); }
 .SU-RESET-BTN { width: 100%; height: 70px; border-radius: 20px; border: none; background: var(--danger); color: white; font-weight: 900; font-size: 17px; }
 .SU-DANGER-BTN { width: 100%; height: 60px; border-radius: 20px; border: 2px dashed var(--danger); background: transparent; color: var(--danger); font-weight: 800; margin-top: 15px; }
 
-/* 📊 STATS & PROGRESS */
+/* STATS */
 .ST-HERO { background: var(--card); border: 3px solid var(--accent); padding: 40px 20px; border-radius: 40px; text-align: center; margin: 0 20px 25px; }
 .ST-HERO div { font-size: 55px; font-weight: 900; }
 .ST-GRID { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px; margin-bottom: 25px; }
@@ -71,7 +66,7 @@ input:checked + .ios-slider:before { transform: translateX(20px); }
 .ST-TOTAL { display: flex; justify-content: space-between; padding-top: 15px; font-weight: 900; font-size: 18px; color: var(--danger); }
 .ST-ARREARS { background: var(--danger); color: white; padding: 30px; border-radius: 35px; text-align: center; font-weight: 900; font-size: 24px; margin: 0 20px 60px; }
 
-/* 💸 LEDGER */
+/* LEDGER */
 .LD-HERO { background: var(--card); border: 3px solid var(--danger); margin: 0 20px 25px; padding: 35px; border-radius: 40px; text-align: center; }
 .LD-HERO div { font-size: 50px; font-weight: 900; }
 .LD-INPUT-CARD { background: var(--card); margin: 0 20px 25px; padding: 25px; border-radius: 30px; display: flex; flex-direction: column; gap: 15px; }
@@ -79,7 +74,7 @@ input:checked + .ios-slider:before { transform: translateX(20px); }
 .LD-ADD-BTN { height: 65px; background: var(--accent); color: white; border-radius: 15px; border: none; font-weight: 900; font-size: 18px; }
 .LD-PILL { background: var(--card); padding: 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 15px; border-left: 6px solid var(--danger); }
 
-/* 📅 WEEKLY & DAY PICKER */
+/* WEEKLY */
 .WK-HUB-GRID { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 0 20px; }
 .WK-TILE { height: 115px !important; border-radius: 25px; border: none; background: var(--grad); color: white; font-weight: 900; font-size: 24px; }
 .WK-FULL { grid-column: 1 / -1; }
@@ -90,13 +85,11 @@ input:checked + .ios-slider:before { transform: translateX(20px); }
 .DAY-BTN.active { background: var(--accent); color: white; }
 .WK-PLAN-BTN { width: calc(100% - 40px); height: 65px; margin: 0 20px 20px; border-radius: 20px; border: none; background: #5856d6; color: white; font-weight: 900; }
 .WK-LEGEND { display: flex; justify-content: center; gap: 15px; padding-bottom: 20px; font-size: 11px; font-weight: 800; opacity: 0.6; }
-
-/* 🃏 JOB CARDS */
 .JOB-CARD { background: var(--card); padding: 25px; border-radius: 35px; margin: 0 20px 25px; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
 .JOB-ACTIONS { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
 .BTN-ACTION { height: 55px; border-radius: 15px; border: none; font-weight: 900; font-size: 18px; color: white; }
 
-/* 📱 MODAL */
+/* MODAL */
 .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; display:flex; align-items:center; justify-content:center; }
 .modal-content { background:var(--card); padding:30px; border-radius:40px; width:90%; max-height: 85vh; overflow-y: auto; color: var(--text); }
 .MD-INFO-LIST { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; text-align: left; }
@@ -108,7 +101,7 @@ input:checked + .ios-slider:before { transform: translateX(20px); }
 .MD-EDIT { width: 100%; height: 60px; background: var(--bg); border: 2px solid var(--accent); color: var(--accent); border-radius: 18px; font-weight: 800; margin-bottom: 10px; }
 .MD-CLOSE { width: 100%; height: 60px; background: var(--text); color: var(--card); border-radius: 18px; font-weight: 900; border: none; }
 
-/* 🛠️ HELPERS */
+/* HELPERS */
 .arrears-badge { background: var(--danger); color: white; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 8px; position: absolute; top: -5px; right: 20px; }
 .BACK-BTN { width: calc(100% - 40px); height: 60px; border-radius: 30px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px; margin: 0 20px 25px; display: block; }
 .hidden { display: none !important; }
