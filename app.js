@@ -1,21 +1,29 @@
 const MASTER_KEY = 'HydroPro_App_Production';
-let db = { customers: [], expenses: [], history: [], bank: { name: '', sort: '', acc: '' } }; 
+let db = { customers: [], expenses: [], history: [], bank: { name: '', sort: '', acc: '' } };
 const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 
 window.onload = () => {
     const saved = localStorage.getItem(MASTER_KEY);
     if (saved) db = JSON.parse(saved);
+    if (!db.bank) db.bank = { name: '', sort: '', acc: '' };
+
     const isDark = localStorage.getItem('Hydro_Dark_Pref') === 'true';
     document.body.className = isDark ? 'dark-mode' : 'light-mode';
-    updateGreeting(); renderAll();
+    
+    updateGreeting();
+    renderAll();
 };
 
+/* --- 1. MASTER LIST RENDER --- */
 window.renderMasterTable = () => {
-    const body = document.getElementById('masterTableBody'); if(!body) return; body.innerHTML = '';
+    const body = document.getElementById('masterTableBody');
+    if(!body) return;
+    body.innerHTML = '';
     const search = (document.getElementById('mainSearch').value || "").toLowerCase();
     db.customers.forEach(c => {
         if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
-            const tile = document.createElement('div'); tile.className = 'customer-pill-bubble';
+            const tile = document.createElement('div');
+            tile.className = 'customer-pill-bubble';
             tile.onclick = () => showActionModal(c.id);
             tile.innerHTML = `<div><strong style="display:block; font-size:20px;">${c.name}</strong><small style="color:var(--accent); font-weight:700;">${c.houseNum} ${c.street}</small></div><div style="font-weight:900; color:var(--success); font-size:18px;">£${n(c.price).toFixed(2)}</div>`;
             body.appendChild(tile);
@@ -23,37 +31,41 @@ window.renderMasterTable = () => {
     });
 };
 
+/* --- 2. WEEKLY RENDER (FIXED) --- */
 window.renderWeekLists = () => {
     for (let i = 1; i <= 5; i++) {
-        const container = document.getElementById(`week${i}`); if (!container) continue;
+        const container = document.getElementById(`week${i}`);
+        if (!container) continue;
         container.innerHTML = `
             <div class="iron-spaced-stack" style="padding-top:10px;">
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:0 20px;">
-                    <button class="tile-restore" style="height:60px; font-size:14px; background:#25d366; color:white" onclick="messageAll(${i}, 'whatsapp')">WA ALL</button>
-                    <button class="tile-restore" style="height:60px; font-size:14px; background:#ff9500; color:white" onclick="messageAll(${i}, 'sms')">SMS ALL</button>
-                    <button class="tile-restore" style="height:60px; font-size:14px; background:#e5e5ea; color:#000" onclick="openTab('weeksHub')">⬅️ Hub</button>
-                    <button class="tile-restore" style="height:60px; font-size:14px; background:#e5e5ea; color:#000" onclick="openTab('home')">🏠 Home</button>
+                    <button class="tile-restore" style="height:65px; font-size:14px; background:#25d366; color:white" onclick="messageAll(${i}, 'whatsapp')">WA ALL</button>
+                    <button class="tile-restore" style="height:65px; font-size:14px; background:#ff9500; color:white" onclick="messageAll(${i}, 'sms')">SMS ALL</button>
+                    <button class="tile-restore" style="height:65px; font-size:14px; background:#e5e5ea; color:#000" onclick="openTab('weeksHub')">⬅️ Hub</button>
+                    <button class="tile-restore" style="height:65px; font-size:14px; background:#e5e5ea; color:#000" onclick="openTab('home')">🏠 Home</button>
                 </div>
                 <div id="weekBody${i}" class="iron-spaced-stack"></div>
             </div>`;
         const body = document.getElementById(`weekBody${i}`);
         db.customers.filter(c => c.week == i).forEach(c => {
-            const card = document.createElement('div'); card.className = 'customer-pill-bubble';
-            card.style.flexDirection = 'column'; card.style.alignItems = 'stretch';
+            const card = document.createElement('div');
+            card.className = 'customer-pill-bubble';
+            card.style.flexDirection = 'column';
             const isPaid = n(c.paidThisMonth) > 0;
             card.innerHTML = `
                 <div><strong style="font-size:22px;">${c.name} ${c.cleaned ? '✅' : ''}</strong><br><small>${c.houseNum} ${c.street}</small></div>
                 <div class="week-action-grid">
                     <button class="btn-job-action" style="background:${c.cleaned ? 'var(--success)' : '#aaa'}" onclick="toggleCleaned('${c.id}')">CLEAN</button>
                     <button class="btn-job-action" style="background:${isPaid ? 'var(--accent)' : '#aaa'}" onclick="markAsPaid('${c.id}')">PAY</button>
-                    <button class="btn-job-action btn-job-edit" onclick="editCust('${c.id}')">EDIT</button>
-                    <button class="btn-job-action btn-job-edit" onclick="showActionModal('${c.id}')">DETAILS</button>
+                    <button class="btn-job-action" style="background:#8e8e93" onclick="editCust('${c.id}')">EDIT</button>
+                    <button class="btn-job-action" style="background:#8e8e93" onclick="showActionModal('${c.id}')">DETAILS</button>
                 </div>`;
             body.appendChild(card);
         });
     }
 };
 
+/* --- 3. STATS RENDER --- */
 window.renderStats = () => {
     let target = 0, paid = 0, arrears = 0, spend = 0;
     db.customers.forEach(c => {
@@ -74,14 +86,85 @@ window.renderStats = () => {
     document.getElementById('progressBarFill').style.width = `${progress}%`;
 };
 
-window.openTab = (name) => { closeModal(); document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active")); const t = document.getElementById(name); if(t) t.classList.add("active"); const nav = document.getElementById('globalNav'); if (name === 'home' || (name.startsWith('week') && name !== 'weeksHub')) nav.classList.add('hidden'); else nav.classList.remove('hidden'); window.scrollTo({ top: 0, behavior: 'instant' }); renderAll(); };
+/* --- 4. LEDGER RENDER --- */
+window.renderLedger = () => {
+    const list = document.getElementById('expenseList');
+    if(!list) return;
+    list.innerHTML = '';
+    db.expenses.slice().reverse().forEach(e => {
+        const div = document.createElement('div');
+        div.className = 'customer-pill-bubble';
+        div.innerHTML = `<div><strong>${e.desc}</strong><br><small>${e.date}</small></div><div style="color:var(--danger); font-weight:900">-£${n(e.amt).toFixed(2)}</div>`;
+        list.appendChild(div);
+    });
+};
+
+/* --- UTILS & CORE --- */
+window.openTab = (name) => {
+    document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+    const target = document.getElementById(name);
+    if(target) target.classList.add("active");
+    const nav = document.getElementById('globalNav');
+    if (name === 'home' || (name.startsWith('week') && name !== 'weeksHub')) nav.classList.add('hidden');
+    else nav.classList.remove('hidden');
+    renderAll();
+};
+
+window.saveCustomer = () => {
+    const name = document.getElementById('cName').value;
+    if(!name) return;
+    const id = document.getElementById('editId').value || Date.now().toString();
+    const entry = { id, name, phone: document.getElementById('cPhone').value, houseNum: document.getElementById('cHouseNum').value, street: document.getElementById('cStreet').value, postcode: document.getElementById('cPostcode').value.toUpperCase(), price: n(document.getElementById('cPrice').value), notes: document.getElementById('cNotes').value, week: "1", cleaned: false, paidThisMonth: 0 };
+    const idx = db.customers.findIndex(x => x.id === id);
+    if(idx > -1) db.customers[idx] = {...db.customers[idx], ...entry}; 
+    else db.customers.push(entry);
+    saveData(); renderAll(); openTab('home');
+};
+
+window.addExpense = () => {
+    const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value);
+    if(!d || a <= 0) return;
+    db.expenses.push({ id: Date.now(), desc: d, amt: a, date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) });
+    saveData(); renderAll();
+};
+
+window.toggleDarkMode = () => {
+    const isDark = !document.body.classList.contains('dark-mode');
+    document.body.className = isDark ? 'dark-mode' : 'light-mode';
+    localStorage.setItem('Hydro_Dark_Pref', isDark);
+    document.getElementById('themeToggleBtn').innerText = isDark ? '☀️ Light' : '🌙 Dark';
+};
+
 window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
-window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); };
-window.toggleDarkMode = () => { const isDark = !document.body.classList.contains('dark-mode'); document.body.className = isDark ? 'dark-mode' : 'light-mode'; localStorage.setItem('Hydro_Dark_Pref', isDark); document.getElementById('themeToggleBtn').innerText = isDark ? '☀️ Light' : '🌙 Dark'; };
-window.updateGreeting = () => { const hr = new Date().getHours(); const g = (hr < 12) ? "GOOD MORNING" : (hr < 18) ? "GOOD AFTERNOON" : "GOOD EVENING"; document.getElementById('greetingMsg').innerText = `${g}, PARTNER! ☕`; document.getElementById('headerDate').innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }); };
-window.completeCycle = () => { if(!confirm("Reset month?")) return; db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload(); };
-window.showActionModal = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; document.getElementById('modalCustomerName').innerText = c.name; document.getElementById('modalCustomerAddress').innerText = `${c.houseNum} ${c.street}`; document.getElementById('modalEditBtn').onclick = () => { closeModal(); editCust(c.id); }; document.getElementById('actionModal').classList.remove('hidden'); };
+window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); renderLedger(); };
 window.closeModal = () => document.getElementById('actionModal').classList.add('hidden');
-window.editCust = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; openTab('admin'); /* Add field fillers here */ };
 window.toggleCleaned = (id) => { const c = db.customers.find(x => x.id === id); if (c) { c.cleaned = !c.cleaned; saveData(); renderAll(); } };
 window.markAsPaid = (id) => { const c = db.customers.find(x => x.id === id); if (!c) return; c.paidThisMonth = (n(c.paidThisMonth) > 0) ? 0 : c.price; saveData(); renderAll(); };
+window.updateGreeting = () => { 
+    const hr = new Date().getHours(); 
+    const g = (hr < 12) ? "GOOD MORNING" : (hr < 18) ? "GOOD AFTERNOON" : "GOOD EVENING";
+    document.getElementById('greetingMsg').innerText = `${g}, PARTNER! ☕`;
+    document.getElementById('headerDate').innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' });
+};
+window.completeCycle = () => { if(!confirm("Reset month?")) return; db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload(); };
+window.showActionModal = (id) => { 
+    const c = db.customers.find(x => x.id === id); 
+    if(!c) return; 
+    document.getElementById('modalCustomerName').innerText = c.name; 
+    document.getElementById('modalCustomerAddress').innerText = `${c.houseNum} ${c.street}`; 
+    document.getElementById('modalEditBtn').onclick = () => { closeModal(); editCust(c.id); }; 
+    document.getElementById('actionModal').classList.remove('hidden'); 
+};
+window.editCust = (id) => {
+    const c = db.customers.find(x => x.id === id);
+    if(!c) return;
+    openTab('admin');
+    document.getElementById('editId').value = c.id;
+    document.getElementById('cName').value = c.name;
+    document.getElementById('cPhone').value = c.phone;
+    document.getElementById('cHouseNum').value = c.houseNum;
+    document.getElementById('cStreet').value = c.street;
+    document.getElementById('cPostcode').value = c.postcode;
+    document.getElementById('cPrice').value = c.price;
+    document.getElementById('cNotes').value = c.notes;
+};
