@@ -1,104 +1,78 @@
 :root { --accent: #007aff; --bg: #f2f2f7; --card: #ffffff; --text: #000; --success: #32d74b; --danger: #ff453a; }
 body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; }
 
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; transition: background 0.3s; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, sans-serif; }
+body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; transition: background 0.3s; }
 
-/* 🛡️ v30.2 FULL WIDTH NAV BAR */
+/* 🛡️ NAV BAR STABILIZED */
 #global-shield { padding: 30px 0 20px; display: flex; flex-direction: column; align-items: center; }
-.nav-container-transparent {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    /* Max width increased slightly (or removed completely if desired) */
-    max-width: 440px; 
-    padding: 0 20px; 
-    margin-bottom: 10px;
-}
+.nav-container-transparent { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 440px; padding: 0 20px; margin-bottom: 10px; }
 
-/* LOGO EXPANSION (v30.2) */
-.logo-wrap-expanded { 
-    flex-grow: 1; /* Stretch to fill space */
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    /* v30.2 Surgical Wall: Ensures 15px gap from slider */
-    margin-right: 15px; 
-}
-.logo-fluid { height: 60px !important; width: auto !important; object-fit: contain; transition: opacity 0.2s ease-in-out; }
+.logo-wrap-expanded { flex-grow: 1; display: flex; justify-content: flex-start; align-items: center; margin-right: 15px; }
+.logo-fluid { height: 60px !important; width: auto !important; object-fit: contain; transition: opacity 0.2s ease; }
 
-/* THE THEME SLIDER TOGGLE */
-.toggle-wrap-surgical { flex-shrink: 0; /* Prevents toggle from shrinking */ }
+/* 🎚️ SLIDER */
+.toggle-wrap-surgical { flex-shrink: 0; }
 .theme-slider { position: relative; display: inline-block; width: 60px; height: 34px; }
 .theme-slider input { opacity: 0; width: 0; height: 0; }
 .slider-round { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
-.slider-round:before { position: absolute; content: "☀️"; display: flex; align-items: center; justify-content: center; font-size: 14px; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+.slider-round:before { position: absolute; content: "☀️"; display: flex; align-items: center; justify-content: center; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
 input:checked + .slider-round { background-color: var(--accent); }
 input:checked + .slider-round:before { transform: translateX(26px); content: "🌙"; }
 
-/* HEADER GREET */
 #dateText { font-size: 26px; font-weight: 900; color: var(--accent); display: block; text-align: center; }
-#greetText { display: block; font-family: -apple-system, sans-serif; font-size: 13px; font-weight: 800; opacity: 0.6; letter-spacing: 1.5px; text-transform: uppercase; text-align: center; margin-bottom: 5px; }
+#greetText { display: block; font-size: 13px; font-weight: 800; opacity: 0.6; letter-spacing: 1.5px; text-transform: uppercase; text-align: center; margin-bottom: 5px; }
 
-/* --- ALL PREVIOUS SURGICAL LOCKS PRESERVED --- */
-.nav-back { width: calc(100% - 40px); height: 60px !important; border-radius: 30px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px !important; margin: 0 20px 25px; display: block; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+/* 🏠 GRID */
+.home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
+.home-grid button { height: 125px; border-radius: 30px; background: var(--card); border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text); box-shadow: 0 8px 15px rgba(0,0,0,0.05); }
+.icon-blue { color: var(--accent); font-size: 40px; margin-bottom: 5px; }
+.home-grid button small { font-size: 16px; font-weight: 900; text-transform: uppercase; }
+.full-tile { grid-column: 1 / -1; background: var(--accent) !important; color: white !important; height: 130px !important; }
+
+/* 🛠️ SHARED UI */
+.nav-back { width: calc(100% - 40px); height: 60px !important; border-radius: 30px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px !important; margin: 0 20px 25px; display: block; }
 .dual-nav-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px 25px; }
-.nav-half { height: 60px !important; border-radius: 20px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px !important; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+.nav-half { height: 60px !important; border-radius: 20px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px !important; }
 
-#home-root .home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
-#home-root button { height: 125px; border-radius: 30px; background: var(--card); border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text); box-shadow: 0 8px 15px rgba(0,0,0,0.05); }
-#home-root button span { font-size: 40px; }
-#home-root button small { font-size: 16px; font-weight: 900; text-transform: uppercase; }
-#home-root .full-tile { grid-column: 1 / -1; background: var(--accent); color: white; height: 130px; }
-
-#setup-root .setup-card { background: var(--card); margin: 0 20px 25px; padding: 25px; border-radius: 35px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+#setup-root .setup-card { background: var(--card); margin: 0 20px 25px; padding: 25px; border-radius: 35px; }
 #setup-root .entry-row { display: flex; align-items: center; height: 70px; border-bottom: 1px solid rgba(0,0,0,0.05); gap: 15px; }
-#setup-root .entry-row input { font-size: 18px; color: var(--text); width: 100%; border: none; background: transparent; outline: none; }
-#setup-root textarea { width: 100%; height: 180px; background: var(--bg); border: none; border-radius: 20px; padding: 15px; margin-top: 15px; color: var(--text); font-size: 16px; }
+#setup-root input { width: 100%; border: none; background: transparent; outline: none; color: var(--text); font-size: 18px; }
+#setup-root textarea { width: 100%; height: 150px; background: var(--bg); border: none; border-radius: 20px; padding: 15px; color: var(--text); }
 
 .bank-vault { background: var(--card); margin: 0 20px 40px; padding: 30px; border-radius: 35px; border: 2.5px solid rgba(0,122,255,0.15); }
 .vault-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .vault-button-stack { display: flex; flex-direction: column; gap: 8px; }
-.vault-btn-common { min-width: 120px !important; width: 120px !important; height: 42px !important; border-radius: 12px; font-weight: 900; font-size: 11px !important; border: none; display: flex; align-items: center; justify-content: center; text-transform: uppercase; }
+.vault-btn-common { min-width: 120px !important; height: 42px !important; border-radius: 12px; font-weight: 900; font-size: 11px !important; border: none; text-transform: uppercase; }
 .vault-unlock-surgical { background: var(--accent); color: white; }
 .vault-copy-btn { background: #8e8e93; color: white; }
-.bank-field-fixed { width: 100% !important; height: 60px !important; background: var(--bg); border: none; border-radius: 15px; margin-bottom: 12px; padding: 0 20px; color: var(--text); font-size: 16px; font-weight: 600; display: block; }
+.bank-field-fixed { width: 100% !important; height: 60px !important; background: var(--bg); border-radius: 15px; margin-bottom: 12px; padding: 0 20px; color: var(--text); font-weight: 600; border:none; display:block; }
 
-.reset-area-surgical { background: var(--card); margin: 0 20px 50px; padding: 35px 30px; border-radius: 35px; text-align: center; border: 2px solid rgba(0,0,0,0.05); }
-.btn-reset-surgical { width: 100% !important; height: 75px !important; border-radius: 25px !important; border: none !important; background: var(--danger) !important; color: white !important; font-weight: 900 !important; font-size: 18px !important; box-shadow: 0 10px 20px rgba(255, 69, 58, 0.15) !important; text-transform: uppercase; }
+.reset-area-surgical { background: var(--card); margin: 0 20px 50px; padding: 35px; border-radius: 35px; text-align: center; border: 2px solid rgba(0,0,0,0.05); }
+.btn-reset-surgical { width: 100%; height: 75px; border-radius: 25px; border: none; background: var(--danger); color: white; font-weight: 900; font-size: 18px; text-transform: uppercase; }
 
-#master-root .search-box { padding: 0 20px 40px; }
-#master-root input { width: 100%; height: 65px; border-radius: 30px; border: none; background: var(--card); padding: 0 25px; font-size: 18px; color: var(--text); }
-#master-root #master-list-container { display: flex; flex-direction: column; gap: 15px; padding: 0 20px 50px; }
-.cust-pill { background: var(--card); padding: 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); position: relative; }
-.arrears-badge { background: var(--danger); color: white; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 8px; position: absolute; top: -5px; right: 20px; box-shadow: 0 4px 8px rgba(255,69,58,0.3); animation: pulse-badge 2s infinite; }
-@keyframes pulse-badge { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
-.btn-primary-large { width: 100%; height: 75px !important; border-radius: 25px; border: none; background: var(--accent); color: white; font-weight: 900; font-size: 20px !important; }
+.cust-pill { background: var(--card); padding: 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 15px; position: relative; }
+.arrears-badge { background: var(--danger); color: white; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 8px; position: absolute; top: -5px; right: 20px; }
 
 #ledger-root .ledger-hero-display { background: var(--card); border: 2px solid var(--danger); margin: 0 20px 25px; padding: 35px; border-radius: 40px; text-align: center; }
 #ledger-root .ledger-hero-display div { font-size: 50px; font-weight: 900; }
-#ledger-root .ledger-card-box { background: var(--card); margin: 0 20px 25px; padding: 25px; border-radius: 35px; }
-#ledger-root .ledger-field { width: 100%; height: 55px; background: var(--bg); border: none; border-radius: 15px; margin-bottom: 10px; padding: 0 15px; color: var(--text); }
-#ledger-root .ledger-btn-save { width: 100%; height: 60px; border-radius: 18px; border: none; background: var(--accent); color: white; font-weight: 900; }
-#ledger-root .ledger-qb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px 25px; }
-#ledger-root .ledger-qb-grid button { height: 60px; border-radius: 20px; border: none; background: #4ea03b; color: white; font-weight: 900; font-size: 13px; }
-#ledger-root .exp-pill { background: var(--card); padding: 20px; border-radius: 25px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 12px; border-left: 5px solid var(--danger); transition: transform 0.2s; user-select: none; }
+.exp-pill { background: var(--card); padding: 20px; border-radius: 25px; display: flex; justify-content: space-between; margin: 0 20px 12px; border-left: 5px solid var(--danger); }
 
 .weeks-hub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
 .weeks-hub-grid button { height: 110px; border-radius: 25px; border: none; background: #1c1c1e; color: white; font-weight: 900; font-size: 22px; }
 .weeks-hub-grid .full { grid-column: 1 / -1; }
-.job-card { background: var(--card); padding: 25px; border-radius: 35px; margin: 0 20px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
+.job-card { background: var(--card); padding: 25px; border-radius: 35px; margin: 0 20px 15px; }
 .job-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
 .btn-job { height: 50px; border-radius: 12px; border: none; font-weight: 900; color: white; font-size: 11px; }
 .btn-map-yellow { background: #ffeb3b !important; color: #333 !important; }
 #bulk-box { display: flex; flex-direction: column; gap: 12px; padding: 0 20px 25px; }
-.btn-wa { background: #25d366; color: white; height: 60px !important; width: 100%; border-radius: 15px; border: none; font-weight: 900; font-size: 14px !important; text-transform: uppercase; }
-.btn-sms { background: #007aff !important; color: white; height: 60px !important; width: 100%; border-radius: 15px; border: none; font-weight: 900; font-size: 14px !important; text-transform: uppercase; }
+.btn-wa { background: #25d366; color: white; height: 60px; border-radius: 15px; border: none; font-weight: 900; }
+.btn-sms { background: #007aff; color: white; height: 60px; border-radius: 15px; border: none; font-weight: 900; }
 
-#global-version-footer { width: 100%; text-align: center; padding: 30px 0; font-size: 10px; font-weight: 900; opacity: 0.3; text-transform: uppercase; }
+.btn-primary-large { width: 100%; height: 75px; border-radius: 25px; border: none; background: var(--accent); color: white; font-weight: 900; font-size: 20px; }
 .tab-content { display: none; }
 .tab-content.active { display: block !important; }
 .hidden { display: none !important; }
 .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; display:flex; align-items:center; justify-content:center; }
-.modal-content { background:var(--card); padding:30px; border-radius:35px; width:90%; text-align:center; color: var(--text); }
+.modal-content { background:var(--card); padding:30px; border-radius:35px; width:90%; color: var(--text); }
+#global-version-footer { width: 100%; text-align: center; padding: 30px 0; font-size: 10px; font-weight: 900; opacity: 0.3; text-transform: uppercase; }
