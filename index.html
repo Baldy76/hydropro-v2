@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v38.6</title>
+    <title>Hydro Pro v38.7</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="AppIcon.png">
-    <link rel="stylesheet" href="styles.css?v=386">
+    <link rel="stylesheet" href="styles.css?v=387">
 </head>
 <body class="light-mode">
 
@@ -15,9 +15,11 @@
         <div class="G-LOGO-WRAP"><img src="Logo.png" id="mainLogo" alt="HydroPro"></div>
         <div class="G-NAV-ZONE">
             <span id="dateText"></span>
+            
             <div id="weather-pill" class="G-WEATHER-PILL" onclick="launchWeatherApp()">
-                <span id="w-icon">🌤️</span><small id="w-text">Syncing GPS...</small>
+                <span id="w-icon">🌤️</span><small id="w-text">GPS SYNC...</small>
             </div>
+
             <div class="G-SWITCH-WRAP">
                 <label class="ios-switch">
                     <input type="checkbox" id="themeCheckbox">
@@ -50,10 +52,10 @@
             <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
             <div class="SU-CARD">
                 <input type="hidden" id="editId">
-                <div class="SU-ROW"><span>👤</span><input type="text" id="cName" placeholder="Customer Name"></div>
+                <div class="SU-ROW"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
                 <div class="SU-ROW"><span>📱</span><input type="tel" id="cPhone" placeholder="Phone Number"></div>
                 <div class="SU-ROW"><span>🏠</span><input type="text" id="cHouseNum" placeholder="House No."></div>
-                <div class="SU-ROW"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street Name"></div>
+                <div class="SU-ROW"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
                 <div class="SU-ROW"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
                 <div class="SU-ROW"><span>📅</span>
                     <select id="cDay" class="SU-SELECT">
@@ -71,14 +73,14 @@
                     </select>
                 </div>
                 <div class="SU-ROW"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
-                <textarea id="cNotes" class="SU-NOTES" placeholder="Access codes, dogs, ladders etc..."></textarea>
+                <textarea id="cNotes" class="SU-NOTES" placeholder="Access codes / Notes..."></textarea>
                 <button class="SU-SAVE-BTN" onclick="saveCustomer()">✨ Save Customer</button>
             </div>
             <div class="SU-ADMIN-ZONE">
                 <button class="SU-RESET-BTN" onclick="completeCycle()">🚀 START NEW MONTH</button>
                 <div class="SU-BACKUP-ROW">
-                    <button class="SU-IO-BTN" onclick="exportData()">📤 Backup CSV</button>
-                    <button class="SU-IO-BTN" onclick="document.getElementById('importFile').click()">📥 Restore CSV</button>
+                    <button class="SU-IO-BTN" onclick="exportData()">📤 Backup Master</button>
+                    <button class="SU-IO-BTN" onclick="document.getElementById('importFile').click()">📥 Restore Master</button>
                     <input type="file" id="importFile" hidden onchange="importData(event)" accept=".csv">
                 </div>
                 <button class="SU-DANGER-BTN" onclick="nuclearReset()">⚠️ FACTORY RESET DATA</button>
@@ -91,9 +93,9 @@
             <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
             <div class="LD-HERO"><small>TOTAL SPEND</small><div id="ledgerTotalDisplay">£0.00</div></div>
             <div class="LD-INPUT-CARD">
-                <input type="text" id="expDesc" class="LD-FIELD" placeholder="What did you buy?">
-                <input type="number" id="expAmt" class="LD-FIELD" placeholder="Amount £">
-                <select id="expCat" class="LD-SELECT">
+                <input type="text" id="expDesc" class="LD-FIELD" placeholder="Expense description...">
+                <input type="number" id="expAmt" class="LD-FIELD" placeholder="£ 0.00">
+                <select id="expCat" class="LD-SELECT-FIXED">
                     <option value="⛽ Fuel">⛽ Fuel</option><option value="🛠️ Gear">🛠️ Gear</option>
                     <option value="🍔 Food">🍔 Food</option><option value="📦 Misc">📦 Misc</option>
                 </select>
@@ -132,13 +134,13 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <div id="briefingData"></div>
             <div id="quickSettleContainer"></div>
-            <div id="receiptActionBox" style="display:flex; flex-direction:column; gap:10px; margin-bottom:15px;"></div>
+            <div id="receiptActionBox"></div>
             <button class="MD-EDIT" id="briefEditBtn">⚙️ Edit Info</button>
             <button class="MD-CLOSE" onclick="closeBriefing()">CLOSE</button>
         </div>
     </div>
     
-    <footer id="version-label">v38.6 TITAN FIXED</footer>
-    <script src="app.js?v=386"></script>
+    <footer id="version-label">v38.7 INDUSTRIAL GOLD</footer>
+    <script src="app.js?v=387"></script>
 </body>
 </html>
