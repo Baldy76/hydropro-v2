@@ -31,6 +31,7 @@ window.renderAll = () => {
     }
 };
 
+/* --- RENDERING ROBOTS --- */
 window.renderMaster = () => {
     const container = document.getElementById('master-list-container');
     if(!container) return; container.innerHTML = '';
@@ -91,6 +92,7 @@ window.renderWeek = () => {
     });
 };
 
+/* --- CORE LOGIC --- */
 window.toggleBankLock = () => {
     const fields = document.querySelectorAll('.bank-field-fixed'), lockBtn = document.getElementById('bankLockBtn'), saveBtn = document.getElementById('bankSaveBtn');
     const isLocked = fields[0].readOnly; fields.forEach(f => f.readOnly = !isLocked);
@@ -115,11 +117,12 @@ window.addExpense = () => {
     saveData(); document.getElementById('expDesc').value=''; document.getElementById('expAmt').value=''; renderLedger(); renderStats();
 };
 window.handleClean = (id) => {
-    const c = db.customers.find(x => x.id === id); if(!c) return; c.cleaned = !c.cleaned; saveData(); renderWeek();
+    const c = db.customers.find(x => x.id === id); if(!c) return;
+    c.cleaned = !c.cleaned; saveData(); renderWeek();
     if(c.cleaned) {
-        const msg = `Hi ${c.name}, windows cleaned at ${c.houseNum}. Price £${n(c.price).toFixed(2)}. \n\nBank: ${db.bank.name} \nSort: ${db.bank.sort} \nAcc: ${db.bank.acc}`;
+        const msg = `Hi ${c.name} your windows at ${c.houseNum}, ${c.street}, were cleaned today. If you would like to make a bank transfer payment for £${n(c.price).toFixed(2)}, please use the bank details below.\n\nThank you for your business\nJonathan\n\n${db.bank.name}\n${db.bank.sort}\n${db.bank.acc}`;
         document.getElementById('msgPreview').innerText = msg; document.getElementById('msgModal').classList.remove('hidden');
-        document.getElementById('modalButtons').innerHTML = `<button class="btn-wa" style="width:100%;margin-bottom:10px;height:55px;border-radius:15px;border:none;color:white;font-weight:900;" onclick="sendMsg('${c.phone}','wa','${encodeURIComponent(msg)}')">Send WhatsApp</button><button class="btn-sms" style="width:100%;margin-bottom:10px;height:55px;border-radius:15px;border:none;color:white;font-weight:900;" onclick="sendMsg('${c.phone}','sms','${encodeURIComponent(msg)}')">Send SMS</button><button onclick="closeMsgModal()" style="width:100%;height:50px;border-radius:15px;border:none;background:#8e8e93;color:white;font-weight:900;">Skip</button>`;
+        document.getElementById('modalButtons').innerHTML = `<button class="btn-wa" style="width:100%;margin-bottom:10px;height:60px;border-radius:15px;border:none;color:white;font-weight:900;" onclick="sendMsg('${c.phone}','wa','${encodeURIComponent(msg)}')">Send WhatsApp</button><button class="btn-sms" style="width:100%;margin-bottom:10px;height:60px;border-radius:15px;border:none;color:white;font-weight:900;" onclick="sendMsg('${c.phone}','sms','${encodeURIComponent(msg)}')">Send SMS</button><button onclick="closeMsgModal()" style="width:100%;height:50px;border-radius:15px;border:none;background:#8e8e93;color:white;font-weight:900;">Skip</button>`;
     }
 };
 window.sendMsg = (p, m, msg) => { const c = (p||"").replace(/\s+/g,''); window.open(m==='wa' ? `https://wa.me/${c}?text=${msg}` : `sms:${c}?body=${msg}`, '_blank'); closeMsgModal(); };
