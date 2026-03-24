@@ -34,7 +34,7 @@ input:checked + .slider-round:before { transform: translateX(26px); content: "�
 .home-grid button small { font-size: 16px; font-weight: 900; text-transform: uppercase; }
 .full-tile { grid-column: 1 / -1; background: var(--accent) !important; color: white !important; height: 130px !important; }
 
-/* ✨ SETUP LOCKDOWN */
+/* ✨ SETUP HARD LOCKDOWN */
 #setup-root .setup-card { background: var(--card); margin: 0 20px; padding: 25px; border-radius: 35px; box-shadow: 0 10px 20px rgba(0,0,0,0.04); }
 #setup-root .setup-row { display: flex; align-items: center; height: 75px !important; border-bottom: 1px solid rgba(0,0,0,0.05); gap: 15px; }
 #setup-root .setup-row span { font-size: 24px; width: 35px; text-align: center; }
@@ -42,11 +42,11 @@ input:checked + .slider-round:before { transform: translateX(26px); content: "�
 #setup-root textarea { width: 100%; min-height: 150px; background: var(--bg); border: none; border-radius: 20px; padding: 15px; color: var(--text); font-size: 16px; margin-top: 15px; }
 .btn-primary-heavy { width: 100%; height: 75px !important; border-radius: 25px; border: none; background: var(--accent); color: white; font-weight: 900; font-size: 20px; margin-top: 10px; }
 
-/* 🏦 VAULT LOCKDOWN */
-.bank-vault { background: var(--card); margin: 0 20px; padding: 30px; border-radius: 35px; border: 2.5px solid rgba(0,122,255,0.15); }
+/* 🏦 VAULT HARD LOCKDOWN */
+.bank-vault { background: var(--card); margin: 0 20px var(--gap); padding: 30px; border-radius: 35px; border: 2.5px solid rgba(0,122,255,0.15); }
 .vault-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
 .vault-button-stack { display: flex; flex-direction: column; gap: 10px; }
-.btn-vault-heavy { min-width: 130px; height: 50px !important; border-radius: 12px; font-weight: 900; font-size: 13px; border: none; text-transform: uppercase; color: white; }
+.btn-vault-heavy { min-width: 130px; height: 50px !important; border-radius: 12px; font-weight: 900; font-size: 11px; border: none; text-transform: uppercase; color: white; }
 .vault-blue { background: var(--accent); }
 .vault-grey { background: #8e8e93; }
 .bank-input { width: 100%; height: 60px; background: var(--bg); border-radius: 15px; margin-bottom: 10px; padding: 0 15px; color: var(--text); border:none; display:block; font-weight: 600; font-size: 16px; }
@@ -67,25 +67,37 @@ input:checked + .slider-round:before { transform: translateX(26px); content: "�
 .ledger-input-card button { height: 65px; border-radius: 15px; border: none; background: var(--accent); color: white; font-weight: 900; }
 .ledger-csv-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px; margin-bottom: var(--gap); }
 .ledger-csv-row button { height: 60px; border-radius: 18px; border: none; background: #4ea03b; color: white; font-weight: 900; font-size: 13px; }
-.exp-pill { background: var(--card); padding: 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px var(--gap); border-left: 6px solid var(--danger); }
+.exp-pill { background: var(--card); padding: 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 15px; border-left: 6px solid var(--danger); }
 
-/* 📊 STATS LOCKDOWN */
+/* 📈 STATS REBUILD */
 .stats-hero-main { background: var(--card); border: 3px solid var(--accent); padding: 40px 20px; border-radius: 40px; text-align: center; margin-bottom: var(--gap); }
 .stats-hero-main div { font-size: 55px; font-weight: 900; }
-.stats-grid-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: var(--gap); }
-.stats-mini-card { background: var(--card); padding: 20px; border-radius: 25px; text-align: center; }
+.stats-mini-card { background: var(--card); padding: 20px; border-radius: 25px; text-align: center; margin-bottom: var(--gap); }
 .stats-progress-box { background: var(--card); padding: 25px; border-radius: 35px; margin-bottom: var(--gap); }
 .progress-track { background: #eee; height: 12px; border-radius: 6px; margin: 15px 0; overflow: hidden; }
 .progress-fill-bar { background: var(--accent); height: 100%; transition: width 0.8s ease; }
 .stats-arrears-banner { background: var(--danger); color: white; padding: 25px; border-radius: 30px; text-align: center; font-weight: 900; font-size: 24px; margin-bottom: 50px; }
 
-/* 📅 WEEK VIEW LOCKDOWN - v32.0 Final Gap */
+/* 📅 WEEK HUB LOCKDOWN (v32.1 FIX) */
+.weeks-hub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 0 20px; }
+.week-tile-heavy { 
+    min-height: 110px !important; /* v32.1 Forced Grid Height */
+    border-radius: 25px; 
+    border: none; 
+    background: #1c1c1e; 
+    color: white; 
+    font-weight: 900; 
+    font-size: 22px; 
+    margin-bottom: var(--gap); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+}
+.week-full { grid-column: 1 / -1; }
+
+/* 🃏 WEEK VIEW LOCKDOWN */
 .spread-nav-row { display: flex; justify-content: space-between; padding: 0 20px; margin-bottom: var(--gap); }
 .nav-spread-btn { height: 65px !important; width: calc(50% - 10px) !important; border-radius: 20px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
-.weeks-hub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 0 20px; }
-.weeks-hub-grid button { height: 110px; border-radius: 25px; border: none; background: #1c1c1e; color: white; font-weight: 900; font-size: 22px; }
-
-/* v32.0: Surgical Airgap for Bulk Action Controls */
 .bulk-action-wrap { padding: 0 20px; margin-bottom: 35px !important; }
 .job-card { background: var(--card); padding: 25px; border-radius: 35px; margin: 0 20px var(--gap); box-shadow: 0 4px 12px rgba(0,0,0,0.04); position: relative; }
 .job-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
