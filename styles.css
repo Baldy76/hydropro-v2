@@ -1,4 +1,4 @@
-/* --- ARCHITECTURE QUARANTINE v38.2 --- */
+/* --- ARCHITECTURE baseline v38.3 --- */
 :root { --accent: #007aff; --bg: #f2f2f7; --card: #ffffff; --text: #000; --success: #34C759; --danger: #ff453a; --ios-grey: #e9e9eb; --grad: linear-gradient(135deg, #007aff 0%, #0051a8 100%); }
 body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; --ios-grey: #39393d; }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, sans-serif; }
@@ -16,54 +16,17 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-hei
 .G-WEATHER-PILL span { font-size: 16px; }
 .G-WEATHER-PILL small { font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-/* 🌓 INTUITIVE TOGGLE v38.2 */
+/* 🌓 INTUITIVE TOGGLE */
 .G-SWITCH-WRAP { margin-top: 20px; display: flex; justify-content: center; align-items: center; position: relative; }
 .ios-switch { position: relative; display: inline-block; width: 85px; height: 34px; }
 .ios-switch input { opacity: 0; width: 0; height: 0; }
 .ios-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--ios-grey); border-radius: 34px; transition: 0.4s; overflow: hidden; }
-
-.ios-slider:after {
-    content: "DARK";
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 10px;
-    font-weight: 900;
-    color: #000;
-    letter-spacing: 0.5px;
-}
-
-.ios-slider:before {
-    content: "";
-    position: absolute;
-    height: 28px;
-    width: 28px;
-    left: 3px;
-    bottom: 3px;
-    background: white;
-    border-radius: 50%;
-    transition: 0.4s;
-    z-index: 2;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
+.ios-slider:after { content: "DARK"; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 10px; font-weight: 900; color: #000; letter-spacing: 0.5px; }
+.ios-slider:before { content: ""; position: absolute; height: 28px; width: 28px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.4s; z-index: 2; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 input:checked + .ios-slider { background-color: var(--success); }
 input:checked + .ios-slider:before { transform: translateX(51px); }
 input:checked + .ios-slider:after { content: ""; }
-
-.ios-slider-label-light {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 10px;
-    font-weight: 900;
-    color: #fff;
-    opacity: 0;
-    pointer-events: none;
-    transition: 0.4s;
-}
+.ios-slider-label-light { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 10px; font-weight: 900; color: #fff; opacity: 0; pointer-events: none; transition: 0.4s; }
 input:checked ~ .ios-slider-label-light { opacity: 1; }
 
 /* LAYOUT CONSTANTS */
@@ -99,7 +62,7 @@ input:checked ~ .ios-slider-label-light { opacity: 1; }
 .ST-PROG-CARD { background: var(--card); margin: 0 20px 25px; padding: 25px; border-radius: 35px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
 .ST-PROG-HEADER { display: flex; justify-content: space-between; margin-bottom: 12px; font-weight: 900; font-size: 13px; text-transform: uppercase; }
 .ST-PROG-TRACK { background: var(--bg); height: 14px; border-radius: 10px; width: 100%; overflow: hidden; }
-.ST-PROG-FILL { background: var(--accent); height: 100%; width: 0%; transition: width 1s ease-in-out; border-radius: 10px; }
+.ST-PROG-FILL { background: var(--accent); height: 100%; width: 0%; transition: width 1s ease-in-out, background 0.5s; border-radius: 10px; }
 .ST-PROG-FOOTER { display: flex; justify-content: space-between; margin-top: 10px; font-size: 11px; font-weight: 800; opacity: 0.5; }
 .ST-LIST-CARD { background: var(--card); margin: 0 20px 25px; padding: 25px; border-radius: 35px; }
 .ST-ITEM { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-weight: 700; font-size: 15px; }
