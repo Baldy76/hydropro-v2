@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v40.1</title>
+    <title>Hydro Pro v40.2</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="AppIcon.png">
-    <link rel="icon" type="image/png" href="AppIcon.png">
-    <link rel="stylesheet" href="styles.css?v=401">
+    <link rel="stylesheet" href="styles.css?v=402">
 </head>
 <body class="light-mode">
 
@@ -43,7 +42,7 @@
 
         <section id="stats-root" class="tab-content">
             <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div id="stats-container"></div>
+            <div id="stats-dashboard-container"></div>
         </section>
 
         <section id="ledger-root" class="tab-content">
@@ -63,7 +62,9 @@
 
         <section id="master-root" class="tab-content">
             <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="CT-SEARCH-WRAP"><input type="text" id="mainSearch" placeholder="🔍 Search Customers..." oninput="renderMaster()"></div>
+            <div class="CT-SEARCH-WRAP">
+                <input type="text" id="mainSearch" placeholder="🔍 Search Name or Street..." oninput="renderMaster()">
+            </div>
             <div id="master-list-container"></div>
         </section>
 
@@ -97,14 +98,12 @@
 
             <div class="SU-LOCKDOWN-ZONE">
                 <button class="SU-CYCLE-BTN" onclick="completeCycle()">🚀 START NEW MONTH</button>
-                
                 <div class="SU-BACKUP-ROW">
                     <button class="SU-IO-BTN" onclick="exportData()">📤 Backup</button>
                     <button class="SU-IO-BTN" onclick="document.getElementById('importFile').click()">📥 Restore</button>
                     <input type="file" id="importFile" hidden onchange="importData(event)" accept=".csv">
                 </div>
-
-                <button class="SU-DANGER-BTN" onclick="nuclearReset()">☢️ FACTORY RESET ALL DATA</button>
+                <button class="SU-DANGER-BTN" onclick="nuclearReset()">☢️ FACTORY RESET DATA</button>
             </div>
         </section>
 
@@ -127,16 +126,16 @@
 
     <div id="editModal" class="modal-overlay hidden" onclick="closeEditModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h2 style="margin-top:0; color:var(--accent); text-align:center;">Edit Customer</h2>
+            <h2 style="margin-top:0; color:var(--accent); text-align:center;">Edit Profile</h2>
             <input type="hidden" id="eEditId">
-            <div class="SU-ROW"><span>👤</span><input type="text" id="eName"></div>
-            <div class="SU-ROW"><span>📱</span><input type="tel" id="ePhone"></div>
-            <div class="SU-ROW"><span>🏠</span><input type="text" id="eHouseNum"></div>
-            <div class="SU-ROW"><span>🛣️</span><input type="text" id="eStreet"></div>
-            <div class="SU-ROW"><span>📍</span><input type="text" id="ePostcode"></div>
+            <div class="SU-ROW"><span>👤</span><input type="text" id="eName" placeholder="Name"></div>
+            <div class="SU-ROW"><span>📱</span><input type="tel" id="ePhone" placeholder="Phone"></div>
+            <div class="SU-ROW"><span>🏠</span><input type="text" id="eHouseNum" placeholder="House No."></div>
+            <div class="SU-ROW"><span>🛣️</span><input type="text" id="eStreet" placeholder="Street"></div>
+            <div class="SU-ROW"><span>📍</span><input type="text" id="ePostcode" placeholder="Postcode"></div>
             <div class="SU-ROW"><span>📅</span><select id="eDay" class="SU-SELECT"><option value="Mon">Mon</option><option value="Tue">Tue</option><option value="Wed">Wed</option><option value="Thu">Thu</option><option value="Fri">Fri</option><option value="Sat">Sat</option><option value="Sun">Sun</option></select></div>
             <div class="SU-ROW"><span>📅</span><select id="eWeek" class="SU-SELECT"><option value="1">Wk 1</option><option value="2">Wk 2</option><option value="3">Wk 3</option><option value="4">Wk 4</option><option value="5">Wk 5</option></select></div>
-            <div class="SU-ROW"><span>💰</span><input type="number" id="ePrice"></div>
+            <div class="SU-ROW"><span>💰</span><input type="number" id="ePrice" placeholder="Price"></div>
             <textarea id="eNotes" class="SU-NOTES"></textarea>
             <button class="MD-SAVE-BTN" onclick="updateCustomerFromModal()">💾 SAVE & EXIT</button>
             <button class="MD-CLOSE-BTN" onclick="closeEditModal()">CANCEL</button>
@@ -152,7 +151,7 @@
         </div>
     </div>
     
-    <footer id="version-label">v40.1 IRON VAULT</footer>
-    <script src="app.js?v=401"></script>
+    <footer id="version-label">v40.2 DASHBOARD REBUILD</footer>
+    <script src="app.js?v=402"></script>
 </body>
 </html>
