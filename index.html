@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v30.9</title>
-    <link rel="stylesheet" href="styles.css?v=309">
+    <title>Hydro Pro v31.0</title>
+    <link rel="stylesheet" href="styles.css?v=310">
 </head>
 <body class="light-mode">
 
@@ -15,7 +15,7 @@
             </div>
             <div class="toggle-wrap-surgical">
                 <label class="theme-slider">
-                    <input type="checkbox" id="themeCheckbox" onchange="toggleDarkMode()">
+                    <input type="checkbox" id="themeCheckbox">
                     <span class="slider-round"></span>
                 </label>
             </div>
@@ -38,7 +38,7 @@
         </section>
 
         <section id="master-root" class="tab-content">
-            <button class="nav-back" onclick="openTab('home-root')">🏠 Back to Home</button>
+            <button class="nav-back" onclick="openTab('home-root')">🏠 Home</button>
             <div class="search-box-surgical">
                 <input type="text" id="mainSearch" placeholder="🔍 Search customers..." oninput="renderMaster()">
             </div>
@@ -46,7 +46,7 @@
         </section>
 
         <section id="setup-root" class="tab-content">
-            <button class="nav-back" onclick="openTab('home-root')">🏠 Back to Home</button>
+            <button class="nav-back" onclick="openTab('home-root')">🏠 Home</button>
             <div class="setup-card">
                 <input type="hidden" id="editId">
                 <div class="entry-row"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
@@ -60,17 +60,16 @@
             </div>
             
             <div class="bank-vault">
-                <div class="vault-header">
-                    <h3>🏦 Bank Vault</h3>
+                <div class="vault-header"><h3>🏦 Bank Vault</h3>
                     <div class="vault-button-stack">
                         <button id="copyBankBtn" class="vault-btn-common vault-copy-btn" onclick="copyBankDetails()">📋 COPY</button>
                         <button id="bankLockBtn" class="vault-btn-common vault-unlock-surgical" onclick="toggleBankLock()">🔓 UNLOCK</button>
                     </div>
                 </div>
-                <input type="text" id="bankName" class="bank-field-fixed" readonly placeholder="Account Name">
-                <input type="text" id="bankSort" class="bank-field-fixed" readonly placeholder="Sort Code">
-                <input type="number" id="bankAcc" class="bank-field-fixed" readonly placeholder="Account Number">
-                <button id="bankSaveBtn" class="hidden btn-primary-large" style="background:var(--success); margin-top:15px;" onclick="saveBankDetails()">💾 Save Details</button>
+                <input type="text" id="bankName" class="bank-field-fixed" readonly>
+                <input type="text" id="bankSort" class="bank-field-fixed" readonly>
+                <input type="text" id="bankAcc" class="bank-field-fixed" readonly>
+                <button id="bankSaveBtn" class="hidden btn-primary-large" style="background:var(--success); margin-top:15px;" onclick="saveBankDetails()">💾 Save Bank Info</button>
             </div>
 
             <div class="reset-area-surgical">
@@ -79,34 +78,42 @@
         </section>
 
         <section id="ledger-root" class="tab-content">
-            <button class="nav-back" onclick="openTab('home-root')">🏠 Back to Home</button>
-            <div class="ledger-hero-display"><small>MONTH SPEND</small><div id="ledgerTotal">£0.00</div></div>
-            <div class="ledger-card-box">
-                <input type="text" id="expDesc" placeholder="Description" class="ledger-field">
-                <input type="number" id="expAmt" placeholder="Amount £" class="ledger-field">
-                <button class="ledger-btn-save" onclick="addExpense()">Add Expense</button>
+            <button class="nav-back" onclick="openTab('home-root')">🏠 Home</button>
+            <div class="ledger-hero-display">
+                <small>MONTH SPEND</small>
+                <div id="ledgerTotalDisplay">£0.00</div>
             </div>
-            <div class="ledger-qb-grid"><button onclick="exportToCSV('income')">💹 Income CSV</button><button onclick="exportToCSV('spend')">📋 Spend CSV</button></div>
-            <div id="ledger-list-container"></div>
+            <div class="ledger-entry-card">
+                <input type="text" id="expDesc" placeholder="Description (e.g. Fuel)">
+                <input type="number" id="expAmt" placeholder="Amount £">
+                <button onclick="addExpense()">Add Expense</button>
+            </div>
+            <div class="ledger-actions-row">
+                <button onclick="exportCSV('income')">💹 Income CSV</button>
+                <button onclick="exportCSV('spend')">📋 Spend CSV</button>
+            </div>
+            <div id="ledger-list-container" style="padding: 0 20px 100px;"></div>
         </section>
 
         <section id="stats-root" class="tab-content">
-            <button class="nav-back" onclick="openTab('home-root')">🏠 Back to Home</button>
+            <button class="nav-back" onclick="openTab('home-root')">🏠 Home</button>
             <div id="stats-container" style="padding: 0 20px;"></div>
         </section>
 
         <section id="weeks-root" class="tab-content">
-            <button class="nav-back" onclick="openTab('home-root')">🏠 Back to Home</button>
+            <button class="nav-back" onclick="openTab('home-root')">🏠 Home</button>
             <div class="weeks-hub-grid">
-                <button onclick="viewWeek(1)">Week 1</button><button onclick="viewWeek(2)">Week 2</button>
-                <button onclick="viewWeek(3)">Week 3</button><button onclick="viewWeek(4)">Week 4</button>
+                <button onclick="viewWeek(1)">Week 1</button>
+                <button onclick="viewWeek(2)">Week 2</button>
+                <button onclick="viewWeek(3)">Week 3</button>
+                <button onclick="viewWeek(4)">Week 4</button>
                 <button class="full" onclick="viewWeek(5)">Week 5</button>
             </div>
         </section>
 
         <section id="week-view-root" class="tab-content">
             <div class="dual-nav-row">
-                <button class="nav-half" onclick="openTab('weeks-root')">⬅️ Hub</button>
+                <button class="nav-half" onclick="openTab('weeks-root')">⬅️ Back</button>
                 <button class="nav-half" onclick="openTab('home-root')">🏠 Home</button>
             </div>
             <div id="bulk-box"></div>
@@ -114,10 +121,16 @@
         </section>
     </div>
 
-    <footer id="global-version-footer">v30.9 - Full Dashboard</footer>
+    <footer id="global-version-footer">v31.0 - Ultimate Monolith</footer>
 
-    <div id="msgModal" class="modal-overlay hidden" onclick="closeMsgModal()"><div class="modal-content" onclick="event.stopPropagation()"><h3>Send Invoice?</h3><p id="msgPreview" style="white-space: pre-wrap; text-align: left; font-size: 13px; line-height: 1.5; background: var(--bg); padding: 15px; border-radius: 15px; margin-bottom: 20px; color: var(--text); font-weight: 500;"></p><div id="modalButtons"></div></div></div>
+    <div id="msgModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3>Send Invoice?</h3>
+            <p id="msgPreview" style="white-space: pre-wrap; text-align: left; font-size: 13px; background: var(--bg); padding: 15px; border-radius: 15px; margin-bottom: 20px; color: var(--text);"></p>
+            <div id="modalButtons"></div>
+        </div>
+    </div>
 
-    <script src="app.js?v=309"></script>
+    <script src="app.js?v=310"></script>
 </body>
 </html>
