@@ -31,7 +31,6 @@ window.renderAll = () => {
     }
 };
 
-/* --- ROBOTS --- */
 window.renderMaster = () => {
     const container = document.getElementById('master-list-container');
     if(!container) return; container.innerHTML = '';
@@ -40,8 +39,8 @@ window.renderMaster = () => {
         if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
             const div = document.createElement('div'); div.className = 'cust-pill';
             div.onclick = () => editCust(c.id);
-            div.innerHTML = `<div><strong style="font-size:20px;">${c.name}</strong><br><small style="color:var(--accent);font-weight:700;">${c.houseNum} ${c.street}</small></div>
-                             <div style="font-weight:900; color:var(--success);">£${n(c.price).toFixed(2)}</div>`;
+            div.innerHTML = `<div><strong style="font-size:20px; display:block;">${c.name}</strong><small style="color:var(--accent);font-weight:700;">${c.houseNum} ${c.street}</small></div>
+                             <div style="font-weight:900; color:var(--success); font-size:18px;">£${n(c.price).toFixed(2)}</div>`;
             container.appendChild(div);
         }
     });
@@ -53,7 +52,8 @@ window.renderLedger = () => {
     db.expenses.forEach(e => total += n(e.amt)); if(totalEl) totalEl.innerText = `£${total.toFixed(2)}`;
     db.expenses.slice().reverse().forEach(e => {
         const div = document.createElement('div'); div.className = 'exp-pill';
-        div.innerHTML = `<div><strong>${e.desc}</strong><br><small>${e.date}</small></div><div style="color:var(--danger); font-weight:900;">-£${n(e.amt).toFixed(2)}</div>`;
+        div.innerHTML = `<div><strong>${e.desc}</strong><br><small style="opacity:0.5; font-weight:700;">📅 ${e.date}</small></div>
+                         <div style="color:var(--danger); font-weight:900; font-size:18px;">-£${n(e.amt).toFixed(2)}</div>`;
         container.appendChild(div);
     });
 };
@@ -91,7 +91,7 @@ window.renderWeek = () => {
     });
 };
 
-/* --- LOGIC --- */
+/* --- CORE LOGIC --- */
 window.toggleBankLock = () => {
     const fields = document.querySelectorAll('.bank-field-fixed'), lockBtn = document.getElementById('bankLockBtn'), saveBtn = document.getElementById('bankSaveBtn');
     const isLocked = fields[0].readOnly; fields.forEach(f => f.readOnly = !isLocked);
@@ -120,7 +120,7 @@ window.handleClean = (id) => {
     if(c.cleaned) {
         const msg = `Hi ${c.name}, windows cleaned at ${c.houseNum}. Price £${n(c.price).toFixed(2)}. \n\nBank: ${db.bank.name} \nSort: ${db.bank.sort} \nAcc: ${db.bank.acc}`;
         document.getElementById('msgPreview').innerText = msg; document.getElementById('msgModal').classList.remove('hidden');
-        document.getElementById('modalButtons').innerHTML = `<button class="btn-wa" style="width:100%;margin-bottom:10px;height:60px;border-radius:15px;border:none;color:white;font-weight:900;" onclick="sendMsg('${c.phone}','wa','${encodeURIComponent(msg)}')">Send WhatsApp</button><button class="btn-sms" style="width:100%;margin-bottom:10px;height:60px;border-radius:15px;border:none;color:white;font-weight:900;" onclick="sendMsg('${c.phone}','sms','${encodeURIComponent(msg)}')">Send SMS</button><button onclick="closeMsgModal()" style="width:100%;height:50px;border-radius:15px;border:none;background:#8e8e93;color:white;font-weight:900;">Skip</button>`;
+        document.getElementById('modalButtons').innerHTML = `<button class="btn-wa" style="width:100%;margin-bottom:10px;height:55px;border-radius:15px;border:none;color:white;font-weight:900;" onclick="sendMsg('${c.phone}','wa','${encodeURIComponent(msg)}')">Send WhatsApp</button><button class="btn-sms" style="width:100%;margin-bottom:10px;height:55px;border-radius:15px;border:none;color:white;font-weight:900;" onclick="sendMsg('${c.phone}','sms','${encodeURIComponent(msg)}')">Send SMS</button><button onclick="closeMsgModal()" style="width:100%;height:50px;border-radius:15px;border:none;background:#8e8e93;color:white;font-weight:900;">Skip</button>`;
     }
 };
 window.sendMsg = (p, m, msg) => { const c = (p||"").replace(/\s+/g,''); window.open(m==='wa' ? `https://wa.me/${c}?text=${msg}` : `sms:${c}?body=${msg}`, '_blank'); closeMsgModal(); };
