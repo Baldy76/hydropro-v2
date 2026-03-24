@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v40.2</title>
+    <title>Hydro Pro v40.3</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="AppIcon.png">
-    <link rel="stylesheet" href="styles.css?v=402">
+    <link rel="icon" type="image/png" href="AppIcon.png">
+    <link rel="stylesheet" href="styles.css?v=403">
 </head>
 <body class="light-mode">
 
@@ -49,11 +50,13 @@
             <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
             <div class="LD-HERO"><small>TOTAL SPEND</small><div id="ledgerTotalDisplay">£0.00</div></div>
             <div class="LD-INPUT-CARD">
-                <input type="text" id="expDesc" class="LD-FIELD" placeholder="Expense description">
+                <input type="text" id="expDesc" class="LD-FIELD" placeholder="What did you buy?">
                 <input type="number" id="expAmt" class="LD-FIELD" placeholder="Amount £">
                 <select id="expCat" class="LD-SELECT-FIXED">
-                    <option value="⛽ Fuel">⛽ Fuel</option><option value="🛠️ Gear">🛠️ Gear</option>
-                    <option value="🍔 Food">🍔 Food</option><option value="📦 Misc">📦 Misc</option>
+                    <option value="⛽ Fuel">⛽ Fuel</option>
+                    <option value="🛠️ Gear">🛠️ Gear</option>
+                    <option value="🍔 Food">🍔 Food</option>
+                    <option value="📦 Misc">📦 Misc</option>
                 </select>
                 <button class="LD-ADD-BTN" onclick="addExpense()">Add Expense</button>
             </div>
@@ -62,9 +65,7 @@
 
         <section id="master-root" class="tab-content">
             <button class="BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="CT-SEARCH-WRAP">
-                <input type="text" id="mainSearch" placeholder="🔍 Search Name or Street..." oninput="renderMaster()">
-            </div>
+            <div class="CT-SEARCH-WRAP"><input type="text" id="mainSearch" placeholder="🔍 Search Name or Street..." oninput="renderMaster()"></div>
             <div id="master-list-container"></div>
         </section>
 
@@ -95,7 +96,6 @@
                 <textarea id="cNotes" class="SU-NOTES" placeholder="Private Notes..."></textarea>
                 <button class="SU-SAVE-BTN" onclick="saveCustomer()">✨ Save New Customer</button>
             </div>
-
             <div class="SU-LOCKDOWN-ZONE">
                 <button class="SU-CYCLE-BTN" onclick="completeCycle()">🚀 START NEW MONTH</button>
                 <div class="SU-BACKUP-ROW">
@@ -128,14 +128,14 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <h2 style="margin-top:0; color:var(--accent); text-align:center;">Edit Profile</h2>
             <input type="hidden" id="eEditId">
-            <div class="SU-ROW"><span>👤</span><input type="text" id="eName" placeholder="Name"></div>
-            <div class="SU-ROW"><span>📱</span><input type="tel" id="ePhone" placeholder="Phone"></div>
-            <div class="SU-ROW"><span>🏠</span><input type="text" id="eHouseNum" placeholder="House No."></div>
-            <div class="SU-ROW"><span>🛣️</span><input type="text" id="eStreet" placeholder="Street"></div>
-            <div class="SU-ROW"><span>📍</span><input type="text" id="ePostcode" placeholder="Postcode"></div>
+            <div class="SU-ROW"><span>👤</span><input type="text" id="eName"></div>
+            <div class="SU-ROW"><span>📱</span><input type="tel" id="ePhone"></div>
+            <div class="SU-ROW"><span>🏠</span><input type="text" id="eHouseNum"></div>
+            <div class="SU-ROW"><span>🛣️</span><input type="text" id="eStreet"></div>
+            <div class="SU-ROW"><span>📍</span><input type="text" id="ePostcode"></div>
             <div class="SU-ROW"><span>📅</span><select id="eDay" class="SU-SELECT"><option value="Mon">Mon</option><option value="Tue">Tue</option><option value="Wed">Wed</option><option value="Thu">Thu</option><option value="Fri">Fri</option><option value="Sat">Sat</option><option value="Sun">Sun</option></select></div>
             <div class="SU-ROW"><span>📅</span><select id="eWeek" class="SU-SELECT"><option value="1">Wk 1</option><option value="2">Wk 2</option><option value="3">Wk 3</option><option value="4">Wk 4</option><option value="5">Wk 5</option></select></div>
-            <div class="SU-ROW"><span>💰</span><input type="number" id="ePrice" placeholder="Price"></div>
+            <div class="SU-ROW"><span>💰</span><input type="number" id="ePrice"></div>
             <textarea id="eNotes" class="SU-NOTES"></textarea>
             <button class="MD-SAVE-BTN" onclick="updateCustomerFromModal()">💾 SAVE & EXIT</button>
             <button class="MD-CLOSE-BTN" onclick="closeEditModal()">CANCEL</button>
@@ -151,7 +151,7 @@
         </div>
     </div>
     
-    <footer id="version-label">v40.2 DASHBOARD REBUILD</footer>
-    <script src="app.js?v=402"></script>
+    <footer id="version-label">v40.3 MASTER RESET</footer>
+    <script src="app.js?v=403"></script>
 </body>
 </html>
