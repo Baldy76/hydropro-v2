@@ -1,29 +1,22 @@
-/* 🧱 ARCHITECTURE QUARANTINE v37.0 */
+/* 🧱 SHARED FOUNDATION */
 :root { 
     --accent: #007aff; --bg: #f2f2f7; --card: #ffffff; --text: #000; 
     --success: #34C759; --danger: #ff453a; 
     --ios-grey: #e9e9eb;
     --grad: linear-gradient(135deg, #007aff 0%, #0051a8 100%);
 }
-body.dark-mode { 
-    --bg: #000; --card: #1c1c1e; --text: #fff; --ios-grey: #39393d;
-    --grad: linear-gradient(135deg, #007aff 0%, #0a84ff 100%); 
-}
-
+body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; --ios-grey: #39393d; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, sans-serif; }
+body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; transition: background 0.3s; }
 .tab-content { display: none !important; }
 .tab-content.active { display: flex !important; flex-direction: column; width: 100%; }
 
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, sans-serif; }
-body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; transition: background 0.3s; }
-
-/* 🛡️ HEADER */
-#G-HEADER { width: 100%; }
+/* 🛡️ HEADER & iOS TOGGLE */
+#G-HEADER { width: 100%; background: transparent; }
 .G-LOGO-WRAP { width: 100%; display: flex; justify-content: center; padding: 15px 0; }
 .G-LOGO-WRAP img { width: 100%; height: auto; display: block; object-fit: contain; }
 .G-NAV-ZONE { text-align: center; padding-bottom: 20px; }
 #dateText { font-size: 26px; font-weight: 900; color: var(--accent); }
-
-/* iOS SWITCH */
 .G-SWITCH-WRAP { margin-top: 15px; display: flex; justify-content: center; }
 .ios-switch { position: relative; display: inline-block; width: 51px; height: 31px; }
 .ios-switch input { opacity: 0; width: 0; height: 0; }
@@ -41,7 +34,7 @@ input:checked + .ios-slider:before { transform: translateX(20px); }
 
 /* 👥 MASTER LIST */
 .CT-SEARCH-WRAP { padding: 0 20px 20px; }
-#mainSearch { width: 100%; height: 65px; border-radius: 20px; border: none; background: var(--card); padding: 0 25px; font-size: 18px; color: var(--text); box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+#mainSearch { width: 100%; height: 65px; border-radius: 20px; border: none; background: var(--card); padding: 0 25px; font-size: 18px; color: var(--text); }
 .CT-PILL { background: var(--card); padding: 20px 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 15px; min-height: 100px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
 .CT-TEXT-STACK { display: flex; flex-direction: column; gap: 4px; }
 .CT-TEXT-STACK strong { font-size: 20px; }
@@ -76,14 +69,14 @@ input:checked + .ios-slider:before { transform: translateX(20px); }
 .LD-ADD-BTN { height: 65px; background: var(--accent); color: white; border-radius: 15px; border: none; font-weight: 900; font-size: 18px; }
 .LD-PILL { background: var(--card); padding: 25px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; margin: 0 20px 15px; border-left: 6px solid var(--danger); }
 
-/* 📅 WEEKLY & DAY PICKER (v37.0 Full Week) */
+/* 📅 WEEKLY & DAY PICKER */
 .WK-HUB-GRID { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 0 20px; }
 .WK-TILE { height: 115px !important; border-radius: 25px; border: none; background: var(--grad); color: white; font-weight: 900; font-size: 24px; }
 .WK-FULL { grid-column: 1 / -1; }
 .WK-NAV-ROW { display: flex; justify-content: space-between; padding: 0 20px 15px; }
 .WK-NAV-ROW button { height: 60px; width: calc(50% - 10px); border-radius: 20px; border: none; background: var(--card); color: var(--accent); font-weight: 900; }
 
-.WK-DAY-PICKER { display: flex; justify-content: space-between; padding: 0 15px; margin-bottom: 15px; gap: 4px; }
+.WK-DAY-PICKER { display: flex; justify-content: space-between; padding: 0 10px; margin-bottom: 15px; gap: 4px; }
 .DAY-BTN { flex: 1; height: 50px; border: none; background: var(--card); color: var(--text); font-weight: 800; border-radius: 10px; padding: 0; font-size: 14px; }
 .DAY-BTN.active { background: var(--accent); color: white; }
 
@@ -95,11 +88,19 @@ input:checked + .ios-slider:before { transform: translateX(20px); }
 .JOB-ACTIONS { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
 .BTN-ACTION { height: 55px; border-radius: 15px; border: none; font-weight: 900; font-size: 18px; color: white; }
 
-/* 🛠️ MODALS */
+/* 📱 MODAL & LIST VIEWS (v37.1) */
 .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; display:flex; align-items:center; justify-content:center; }
-.modal-content { background:var(--card); padding:35px; border-radius:40px; width:90%; max-height: 85vh; overflow-y: auto; color: var(--text); }
+.modal-content { background:var(--card); padding:30px; border-radius:40px; width:90%; max-height: 85vh; overflow-y: auto; color: var(--text); }
+.MD-INFO-LIST { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; text-align: left; }
+.MD-INFO-ITEM { display: flex; align-items: center; gap: 12px; padding: 12px 15px; background: var(--bg); border-radius: 15px; font-size: 14px; font-weight: 700; }
+.MD-INFO-ITEM span { font-size: 18px; width: 25px; text-align: center; }
+.MD-HIST-WRAP { background: rgba(0,122,255,0.05); padding: 15px; border-radius: 20px; margin-bottom: 20px; text-align: left; }
+.MD-HIST-TITLE { font-size: 10px; font-weight: 900; text-transform: uppercase; opacity: 0.5; margin-bottom: 8px; display: block; }
+.MD-HIST-ROW { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 14px; font-weight: 800; }
 .MD-EDIT { width: 100%; height: 60px; background: var(--bg); border: 2px solid var(--accent); color: var(--accent); border-radius: 18px; font-weight: 800; margin-bottom: 10px; }
 .MD-CLOSE { width: 100%; height: 60px; background: var(--text); color: var(--card); border-radius: 18px; font-weight: 900; border: none; }
+
+/* 🛠️ SHARED HELPERS */
 .arrears-badge { background: var(--danger); color: white; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 8px; position: absolute; top: -5px; right: 20px; }
 .BACK-BTN { width: calc(100% - 40px); height: 60px; border-radius: 30px; border: none; background: var(--card); color: var(--accent); font-weight: 900; font-size: 18px; margin: 0 20px 25px; display: block; }
 .hidden { display: none !important; }
