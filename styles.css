@@ -61,18 +61,16 @@ body { font-family: -apple-system, sans-serif; background: var(--bg); color: var
 .weeks-hub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
 .weeks-hub-grid button { height: 110px; border-radius: 25px; border: none; background: #1c1c1e; color: white; font-weight: 900; font-size: 22px; }
 .weeks-hub-grid .full { grid-column: 1 / -1; }
+
 .job-card { background: var(--card); padding: 25px; border-radius: 35px; margin: 0 20px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
 .job-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
 .btn-job { height: 50px; border-radius: 12px; border: none; font-weight: 900; color: white; font-size: 11px; }
+.btn-map-yellow { background: #ffeb3b !important; color: #333 !important; }
 
-/* MAP BUTTON COLOUR (v29.3 YELLOW) */
-.btn-map-yellow { 
-    background: #ffeb3b !important; 
-    color: #333 !important; /* Dark text for readability */
-}
-
-.btn-wa { background: #25d366; color: white; height: 55px; border-radius: 15px; border: none; font-weight: 900; }
-.btn-sms { background: #ff9500; color: white; height: 55px; border-radius: 15px; border: none; font-weight: 900; }
+/* 📱 VERTICAL BULK ACTIONS (v29.4 ALIGNMENT FIX) */
+#bulk-box { display: flex; flex-direction: column; gap: 12px; padding: 0 20px 25px; }
+.btn-wa { background: #25d366; color: white; height: 60px !important; width: 100%; border-radius: 15px; border: none; font-weight: 900; font-size: 14px !important; text-transform: uppercase; }
+.btn-sms { background: #007aff !important; color: white; height: 60px !important; width: 100%; border-radius: 15px; border: none; font-weight: 900; font-size: 14px !important; text-transform: uppercase; }
 
 .tab-content { display: none; }
 .tab-content.active { display: block !important; }
