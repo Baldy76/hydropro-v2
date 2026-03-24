@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v30.2</title>
-    <link rel="stylesheet" href="styles.css?v=302">
+    <title>Hydro Pro v30.4</title>
+    <link rel="stylesheet" href="styles.css?v=304">
 </head>
 <body class="light-mode">
 
@@ -15,7 +15,7 @@
             </div>
             <div class="toggle-wrap-surgical">
                 <label class="theme-slider">
-                    <input type="checkbox" id="themeCheckbox" onclick="toggleDarkMode()">
+                    <input type="checkbox" id="themeCheckbox" onchange="toggleDarkMode()">
                     <span class="slider-round"></span>
                 </label>
             </div>
@@ -29,10 +29,10 @@
     <div id="app-viewport">
         <section id="home-root" class="tab-content active">
             <div class="home-grid">
-                <button onclick="openTab('setup-root')"><span>✨</span><small>Setup</small></button>
-                <button onclick="openTab('master-root')"><span>👥</span><small>Custs</small></button>
-                <button onclick="openTab('stats-root')"><span>📊</span><small>Stats</small></button>
-                <button onclick="openTab('ledger-root')"><span>💸</span><small>Ledger</small></button>
+                <button onclick="openTab('setup-root')"><span class="icon-blue">✨</span><small>Setup</small></button>
+                <button onclick="openTab('master-root')"><span class="icon-blue">👥</span><small>Custs</small></button>
+                <button onclick="openTab('stats-root')"><span class="icon-blue">📊</span><small>Stats</small></button>
+                <button onclick="openTab('ledger-root')"><span class="icon-blue">💸</span><small>Ledger</small></button>
                 <button class="full-tile" onclick="openTab('weeks-root')"><span>📅</span><small>Weekly Work</small></button>
             </div>
         </section>
@@ -73,7 +73,7 @@
 
             <div class="reset-area-surgical">
                 <button class="btn-reset-surgical" onclick="completeCycle()">🚀 START NEW MONTH</button>
-                <p style="font-size:12px; opacity:0.5; margin-top:15px; line-height:1.4;">Resets all customers to 'uncleaned' and clears the monthly ledger spend.</p>
+                <p style="font-size:12px; opacity:0.5; margin-top:15px;">Resets cleaning statuses and monthly spend.</p>
             </div>
         </section>
 
@@ -86,7 +86,6 @@
                 <button class="ledger-btn-save" onclick="addExpense()">Add Expense</button>
             </div>
             <div class="ledger-qb-grid"><button onclick="exportToCSV('income')">💹 Income CSV</button><button onclick="exportToCSV('spend')">📋 Spend CSV</button></div>
-            <div style="text-align:center; margin-bottom:15px;"><small style="opacity:0.4; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Double-tap an entry to delete</small></div>
             <div id="ledger-list-container"></div>
         </section>
 
@@ -114,10 +113,10 @@
         </section>
     </div>
 
-    <footer id="global-version-footer">v30.2 - Wide Branding</footer>
+    <footer id="global-version-footer">v30.4 - Stabilized Monolith</footer>
 
     <div id="msgModal" class="modal-overlay hidden" onclick="closeMsgModal()"><div class="modal-content" onclick="event.stopPropagation()"><h3>Send Invoice?</h3><p id="msgPreview" style="white-space: pre-wrap; text-align: left; font-size: 13px; line-height: 1.5; background: var(--bg); padding: 15px; border-radius: 15px; margin-bottom: 20px; color: var(--text); font-weight: 500;"></p><div id="modalButtons"></div></div></div>
 
-    <script src="app.js?v=302"></script>
+    <script src="app.js?v=304"></script>
 </body>
 </html>
