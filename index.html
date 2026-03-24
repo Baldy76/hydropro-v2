@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v28.0</title>
-    <link rel="stylesheet" href="styles.css?v=280">
+    <title>Hydro Pro v28.1</title>
+    <link rel="stylesheet" href="styles.css?v=281">
 </head>
 <body class="light-mode">
 
@@ -49,7 +49,7 @@
                 <input type="text" id="bankName" class="bank-field" readonly placeholder="Account Name">
                 <input type="text" id="bankSort" class="bank-field" readonly placeholder="Sort Code">
                 <input type="number" id="bankAcc" class="bank-field" readonly placeholder="Account Number">
-                <button id="bankSaveBtn" class="hidden" onclick="saveBankDetails()">💾 Save Details</button>
+                <button id="bankSaveBtn" class="hidden save-btn" onclick="saveBankDetails()">💾 Save Details</button>
             </div>
         </section>
 
@@ -59,7 +59,7 @@
             <div class="ledger-card">
                 <input type="text" id="expDesc" placeholder="Description">
                 <input type="number" id="expAmt" placeholder="Amount £">
-                <button onclick="addExpense()">Add Expense</button>
+                <button class="save-btn" style="background:var(--accent)" onclick="addExpense()">Add Expense</button>
             </div>
             <div class="qb-box"><button onclick="exportToCSV('income')">💹 Income CSV</button><button onclick="exportToCSV('spend')">📋 Spend CSV</button></div>
             <div id="ledger-list-container"></div>
@@ -80,14 +80,19 @@
         </section>
 
         <section id="week-view-root" class="tab-content">
-            <button class="nav-back" onclick="openTab('weeks-root')">⬅️ Back to Hub</button>
+            <div class="dual-nav-row">
+                <button class="nav-half" onclick="openTab('weeks-root')">⬅️ Hub</button>
+                <button class="nav-half" onclick="openTab('home-root')">🏠 Home</button>
+            </div>
             <div id="bulk-box"></div>
             <div id="week-list-container"></div>
         </section>
     </div>
 
+    <footer id="global-version-footer">v28.1 - Shadow Wall Protocol</footer>
+
     <div id="msgModal" class="modal-overlay hidden" onclick="closeMsgModal()"><div class="modal-content" onclick="event.stopPropagation()"><h3>Send Invoice?</h3><p id="msgPreview"></p><div id="modalButtons"></div></div></div>
 
-    <script src="app.js?v=280"></script>
+    <script src="app.js?v=281"></script>
 </body>
 </html>
