@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (oldData && !newData) { db = JSON.parse(oldData); saveData(); } 
     else if (newData) { db = JSON.parse(newData); }
 
-    // 2. Theme Implementation
+    // 2. Theme State Logic
     const isDark = localStorage.getItem('HP_Theme') === 'true';
     document.body.classList.toggle('dark-mode', isDark);
     document.getElementById('themeCheckbox').checked = isDark;
@@ -93,12 +93,10 @@ window.renderStats = () => {
     const profit = paid - spend, progress = target > 0 ? Math.min(Math.round((paid / target) * 100), 100) : 0;
     container.innerHTML = `
         <div class="stats-hero-main"><div>£${profit.toFixed(2)}</div><small>PROFIT IN POCKET</small></div>
-        <div class="stats-grid-row">
-            <div class="stats-mini-card"><small style="color:var(--success);font-weight:800;display:block;font-size:10px;">INCOME</small><strong>£${paid.toFixed(2)}</strong></div>
-            <div class="stats-mini-card"><small style="color:var(--danger);font-weight:800;display:block;font-size:10px;">SPEND</small><strong>£${spend.toFixed(2)}</strong></div>
-        </div>
+        <div class="stats-mini-card airgap-card"><small style="color:var(--success);font-weight:800;display:block;font-size:10px;">MONTH INCOME</small><strong>£${paid.toFixed(2)}</strong></div>
+        <div class="stats-mini-card airgap-card"><small style="color:var(--danger);font-weight:800;display:block;font-size:10px;">MONTH SPEND</small><strong>£${spend.toFixed(2)}</strong></div>
         <div class="stats-progress-box">
-            <div style="display:flex;justify-content:space-between;font-weight:900;font-size:13px;"><span>PROGRESS</span><span>${progress}%</span></div>
+            <div style="display:flex;justify-content:space-between;font-weight:900;font-size:13px;"><span>TARGET PROGRESS</span><span>${progress}%</span></div>
             <div class="progress-track"><div class="progress-fill-bar" style="width:${progress}%"></div></div>
             <div style="display:flex;justify-content:space-between;font-size:11px;opacity:0.5;font-weight:800;"><span>GOAL £${target.toFixed(2)}</span><span>REMAINING £${(target - paid).toFixed(2)}</span></div>
         </div>
@@ -110,7 +108,6 @@ window.renderStats = () => {
 window.viewWeek = (w) => { curWeek = w; openTab('week-view-root'); };
 window.renderWeek = () => {
     const bulk = document.getElementById('bulk-box'), list = document.getElementById('week-list-container'); if(!list) return;
-    // v32.0 Final Gap Implementation on the buttons container
     bulk.innerHTML = `
         <button class="airgap-btn" style="background:#25d366;color:white;height:65px;width:100%;border-radius:20px;border:none;font-weight:900;margin-bottom:12px;" onclick="messageAll(${curWeek},'wa')">WA Message All W${curWeek}</button>
         <button style="background:#007aff;color:white;height:65px;width:100%;border-radius:20px;border:none;font-weight:900;" onclick="messageAll(${curWeek},'sms')">SMS Message All W${curWeek}</button>`;
@@ -130,7 +127,7 @@ window.editCust = (id) => { const c = db.customers.find(x => x.id === id); if(!c
 window.toggleBankLock = () => { const fields = document.querySelectorAll('.bank-input'), lockBtn = document.getElementById('bankLockBtn'), saveBtn = document.getElementById('bankSaveBtn'); const isLocked = fields[0].readOnly; fields.forEach(f => f.readOnly = !isLocked); lockBtn.innerText = isLocked ? "🔒 LOCK" : "🔓 UNLOCK"; saveBtn.classList.toggle('hidden', !isLocked); };
 window.saveBankDetails = () => { db.bank = { name: document.getElementById('bankName').value, sort: document.getElementById('bankSort').value, acc: document.getElementById('bankAcc').value }; saveData(); toggleBankLock(); alert("Bank Secured"); };
 window.copyBankDetails = () => { navigator.clipboard.writeText(`${db.bank.name}\n${db.bank.sort}\n${db.bank.acc}`).then(() => alert("Copied!")); };
-window.handleClean = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; c.cleaned = !c.cleaned; saveData(); renderWeek(); if(c.cleaned) { const msg = `Hi ${c.name} windows cleaned. £${n(c.price).toFixed(2)}.\n\nBank: ${db.bank.name} ${db.bank.sort} ${db.bank.acc}`; document.getElementById('msgPreview').innerText = msg; document.getElementById('msgModal').classList.remove('hidden'); document.getElementById('modalButtons').innerHTML = `<button onclick="sendMsg('${c.phone}','wa','${encodeURIComponent(msg)}')" style="width:100%;margin-bottom:10px;background:#25d366;color:white;height:55px;border:none;border-radius:15px;font-weight:900;">WhatsApp</button><button onclick="sendMsg('${c.phone}','sms','${encodeURIComponent(msg)}')" style="width:100%;margin-bottom:10px;background:#007aff;color:white;height:55px;border:none;border-radius:15px;font-weight:900;">SMS</button><button onclick="closeMsgModal()" style="width:100%;height:45px;border:none;border-radius:15px;background:#8e8e93;color:white;">Skip</button>`; } };
+window.handleClean = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; c.cleaned = !c.cleaned; saveData(); renderWeek(); if(c.cleaned) { const msg = `Hi ${c.name} windows cleaned today. £${n(c.price).toFixed(2)}.\n\nBank: ${db.bank.name} ${db.bank.sort} ${db.bank.acc}`; document.getElementById('msgPreview').innerText = msg; document.getElementById('msgModal').classList.remove('hidden'); document.getElementById('modalButtons').innerHTML = `<button onclick="sendMsg('${c.phone}','wa','${encodeURIComponent(msg)}')" style="width:100%;margin-bottom:10px;background:#25d366;color:white;height:55px;border:none;border-radius:15px;font-weight:900;">WhatsApp</button><button onclick="sendMsg('${c.phone}','sms','${encodeURIComponent(msg)}')" style="width:100%;margin-bottom:10px;background:#007aff;color:white;height:55px;border:none;border-radius:15px;font-weight:900;">SMS</button><button onclick="closeMsgModal()" style="width:100%;height:45px;border:none;border-radius:15px;background:#8e8e93;color:white;">Skip</button>`; } };
 window.sendMsg = (p, m, msg) => { const c = (p||"").replace(/\s+/g,''); window.open(m==='wa' ? `https://wa.me/${c}?text=${msg}` : `sms:${c}?body=${msg}`, '_blank'); closeMsgModal(); };
 window.openMap = (addr) => { window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`, '_blank'); };
 window.closeMsgModal = () => document.getElementById('msgModal').classList.add('hidden');
