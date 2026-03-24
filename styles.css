@@ -1,190 +1,60 @@
-const MASTER_KEY = 'HydroPro_App_Production';
-let db = { customers: [], expenses: [], history: [], bank: { name: '', sort: '', acc: '' } }; 
-const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
+:root { 
+    --primary: #1c1c1e; --accent: #007aff; --danger: #ff453a; --success: #32d74b;
+    --bg: #f2f2f7; --card-bg: #ffffff; --input-bg: #f2f2f7; --text: #000000;
+}
+body.dark-mode { --bg: #000000; --card-bg: #1c1c1e; --input-bg: #2c2c2e; --text: #ffffff; }
 
-window.onload = () => {
-    const saved = localStorage.getItem(MASTER_KEY);
-    if (saved) db = JSON.parse(saved);
-    if (!db.bank) db.bank = { name: '', sort: '', acc: '' };
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; }
 
-    // Bank Detail Loader
-    const bN = document.getElementById('bankName'), bS = document.getElementById('bankSort'), bA = document.getElementById('bankAcc');
-    if(bN) bN.value = db.bank.name || "";
-    if(bS) {
-        bS.value = db.bank.sort || "";
-        bS.addEventListener('input', (e) => {
-            let val = e.target.value.replace(/\D/g, '');
-            if (val.length > 6) val = val.substring(0, 6);
-            let formatted = val.match(/.{1,2}/g)?.join('-') || val;
-            e.target.value = formatted;
-        });
-    }
-    if(bA) bA.value = db.bank.acc || "";
+/* 🌙 NEW THEME TOGGLE ICON */
+.header-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0 25px; margin-bottom: 5px; }
+.theme-icon-btn { background: var(--card-bg); border: none; width: 50px; height: 50px; border-radius: 25px; font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; }
 
-    const isDark = localStorage.getItem('Hydro_Dark_Pref') === 'true';
-    document.body.className = isDark ? 'dark-mode' : 'light-mode';
-    if(document.getElementById('darkModeToggle')) document.getElementById('darkModeToggle').checked = isDark;
-    
-    updateGreeting();
-    renderAll();
-};
+#branding-shield { display: flex; flex-direction: column; align-items: center; padding: 30px 0 15px 0; text-align: center; }
+.logo-img { height: 110px !important; margin: 0; }
+.home-greeting-ironclad { font-size: 13px !important; font-weight: 900; opacity: 0.6; text-transform: uppercase; margin-top: 10px; }
+.home-date-ironclad { font-size: 24px !important; font-weight: 900; color: var(--accent); }
 
-/* --- CORE RENDERING --- */
+/* 🏠 HOME HUB */
+.home-grid-ironclad { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 20px !important; padding: 20px !important; }
+.tile-restore { height: 125px !important; border-radius: 32px; border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--card-bg); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
+.tile-restore span { font-size: 42px !important; margin-bottom: 5px; }
+.tile-restore small { font-size: 18px !important; font-weight: 900; text-transform: uppercase; color: var(--text); }
+.tile-weekly-hub-ironclad { background: var(--accent) !important; grid-column: 1 / -1 !important; height: 135px !important; }
+.tile-weekly-hub-ironclad small { color: #fff !important; }
 
-window.renderStats = () => {
-    const monthYear = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
-    document.getElementById('statsMonthLabel').innerText = `${monthYear} Summary`;
+/* 📊 STATS RESTORED (IMAGE ACCURACY) */
+.stats-hero-card { background: var(--card-bg); margin: 20px; padding: 45px 20px; border-radius: 40px; text-align: center; border: 2.5px solid var(--accent); }
+.stats-main-amount { font-size: 72px !important; font-weight: 800; }
+.stats-progress-bubble { flex-direction: column !important; align-items: stretch !important; padding: 25px !important; }
+.progress-bar-bg { background: #eee; height: 18px; border-radius: 9px; overflow: hidden; margin-bottom: 15px; }
+.progress-bar-fill { background: var(--accent); height: 100%; width: 0%; border-radius: 9px; transition: width 0.5s ease; }
+.stats-grid-2x1 { display: flex; justify-content: space-between; padding: 0 20px 15px; gap: 15px; }
+.stats-mini-card { width: 48% !important; margin: 0 !important; padding: 25px 10px !important; display: flex; flex-direction: column; align-items: center; }
+.amt-green-bold { color: var(--success); font-size: 26px !important; font-weight: 800; }
+.amt-red-bold { color: var(--danger); font-size: 26px !important; font-weight: 800; }
+.arrears-pill-bubble { background: #f05445; color: white; margin: 0 20px 30px; padding: 25px; border-radius: 30px; text-align: center; font-weight: 800; font-size: 22px; box-shadow: 0 8px 25px rgba(240,84,69,0.35); }
 
-    let target = 0, paid = 0, arrears = 0, spend = 0;
-    db.customers.forEach(c => {
-        target += n(c.price);
-        paid += n(c.paidThisMonth);
-        if (c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth));
-    });
-    db.expenses.forEach(e => spend += n(e.amt));
+/* 🔒 SETUP & BANK */
+.ironclad-card { background: var(--card-bg); border-radius: 35px; padding: 30px; margin: 0 20px 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
+.iron-input-row { display: flex !important; align-items: center !important; gap: 15px !important; height: 75px !important; border-bottom: 2px solid rgba(0,0,0,0.05); }
+.iron-input { font-size: 20px !important; font-weight: 600; border: none; background: transparent; color: var(--text); outline: none; width: 100%; }
+.iron-textarea-expanded { width: 100% !important; height: 200px !important; background: var(--input-bg); border-radius: 20px; border: none; padding: 15px; font-size: 17px !important; font-weight: 600; color: var(--text); outline: none; resize: none; margin-top: 10px; }
+.ironclad-save-btn { height: 75px !important; color: #fff; font-weight: 900; border-radius: 25px; width: 100%; border: none; font-size: 22px !important; cursor: pointer; background: var(--accent); }
+.bank-unlock-ironclad { width: 120px !important; height: 55px !important; border-radius: 20px !important; border: none; background: var(--accent); color: white; font-weight: 900; font-size: 15px; }
 
-    const profit = paid - spend;
-    const progress = target > 0 ? (paid / target) * 100 : 0;
+/* 👥 MASTER & LEDGER */
+.iron-spaced-stack { display: flex !important; flex-direction: column !important; gap: 20px !important; padding: 0 20px 150px 20px !important; }
+.search-input-pill { width: 100% !important; height: 70px !important; padding: 0 30px; border-radius: 35px; background: var(--card-bg); font-size: 19px; font-weight: 600; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+.ledger-input-iron { background: #f1f1f1; border: none; height: 65px; border-radius: 20px; padding: 0 20px; font-size: 18px; font-weight: 600; width: 100%; margin-bottom: 15px; }
+.ledger-grid-dual { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.btn-qb-export-iron { background: #4ea03b; color: white; border: none; height: 65px; border-radius: 32px; font-weight: 900; font-size: 15px; }
 
-    document.getElementById('currProfit').innerText = `£${profit.toFixed(2)}`;
-    document.getElementById('statsIncome').innerText = `£${paid.toFixed(2)}`;
-    document.getElementById('statsSpend').innerText = `£${spend.toFixed(2)}`;
-    document.getElementById('statsArrears').innerText = `£${arrears.toFixed(2)}`;
-    document.getElementById('statsTarget').innerText = `£${target.toFixed(2)}`;
-    document.getElementById('statsRemaining').innerText = `£${(target - paid).toFixed(2)}`;
-    document.getElementById('progressPercent').innerText = `${Math.round(progress)}%`;
-    document.getElementById('progressBarFill').style.width = `${progress}%`;
-
-    const histBox = document.getElementById('monthlyHistoryContainer');
-    if(histBox) {
-        histBox.innerHTML = '';
-        if(db.history.length === 0) histBox.innerHTML = '<div class="empty-history-msg">Month-end snapshots appear here.</div>';
-        db.history.slice().reverse().forEach(h => {
-            const div = document.createElement('div'); div.className = 'customer-pill-bubble';
-            div.innerHTML = `<div><strong>${h.month} ${h.year}</strong></div><div style="font-weight:900; color:var(--success)">£${n(h.profit).toFixed(2)}</div>`;
-            histBox.appendChild(div);
-        });
-    }
-};
-
-window.renderMasterTable = () => {
-    const body = document.getElementById('masterTableBody'); if(!body) return; body.innerHTML = '';
-    const search = (document.getElementById('mainSearch').value || "").toLowerCase();
-    db.customers.forEach(c => {
-        if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
-            const tile = document.createElement('div'); tile.className = 'customer-pill-bubble';
-            tile.onclick = () => showActionModal(c.id);
-            tile.innerHTML = `<div><strong style="display:block; font-size:22px;">${c.name}</strong><small style="color:var(--accent); font-weight:700; font-size:16px;">${c.houseNum} ${c.street}</small></div><div style="font-weight:900; color:var(--success); font-size:20px;">£${n(c.price).toFixed(2)}</div>`;
-            body.appendChild(tile);
-        }
-    });
-};
-
-window.renderWeekLists = () => {
-    for (let i = 1; i <= 5; i++) {
-        const container = document.getElementById(`week${i}`); if (!container) continue;
-        container.innerHTML = `
-            <div class="iron-spaced-stack">
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:10px;">
-                    <button class="tile-restore" style="height:65px; font-size:15px; background:#25d366; color:white" onclick="messageAll(${i}, 'whatsapp')">WA ALL</button>
-                    <button class="tile-restore" style="height:65px; font-size:15px; background:#ff9500; color:white" onclick="messageAll(${i}, 'sms')">SMS ALL</button>
-                    <button class="tile-restore" style="height:65px; font-size:15px; background:#e5e5ea; color:#000" onclick="openTab('weeksHub')">⬅️ Hub</button>
-                    <button class="tile-restore" style="height:65px; font-size:15px; background:#e5e5ea; color:#000" onclick="openTab('home')">🏠 Home</button>
-                </div>
-                <div id="weekBody${i}" class="iron-spaced-stack"></div>
-            </div>`;
-        const body = document.getElementById(`weekBody${i}`);
-        db.customers.filter(c => c.week == i).forEach(c => {
-            const card = document.createElement('div'); card.className = 'customer-pill-bubble';
-            card.style.flexDirection = 'column'; card.style.alignItems = 'stretch';
-            card.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div><strong style="font-size:22px;">${c.name} ${c.cleaned ? '✅' : ''}</strong><br><small>${c.houseNum} ${c.street}</small></div>
-                    <button class="bank-toggle-btn" style="background:#007aff; color:white;" onclick="sendReminder('${c.id}', 'whatsapp')">WA</button>
-                </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:15px;">
-                    <button class="bank-toggle-btn" style="${c.cleaned ? 'background:var(--success); color:white;' : ''}" onclick="toggleCleaned('${c.id}')">Clean</button>
-                    <button class="bank-toggle-btn" style="${n(c.paidThisMonth)>0 ? 'background:var(--accent); color:white;' : ''}" onclick="markAsPaid('${c.id}')">Pay</button>
-                    <button class="bank-toggle-btn" onclick="showActionModal('${c.id}')">Edit</button>
-                </div>`;
-            body.appendChild(card);
-        });
-    }
-};
-
-window.renderLedger = () => {
-    const list = document.getElementById('expenseList'); if(!list) return; list.innerHTML = '';
-    db.expenses.slice().reverse().forEach(e => {
-        const div = document.createElement('div'); div.className = 'customer-pill-bubble';
-        div.innerHTML = `<div><strong>${e.desc}</strong><br><small>${e.date}</small></div><div style="color:var(--danger); font-weight:900">-£${n(e.amt).toFixed(2)}</div>`;
-        list.appendChild(div);
-    });
-};
-
-/* --- CORE FUNCTIONS --- */
-
-window.saveCustomer = () => {
-    const name = document.getElementById('cName').value; if(!name) return;
-    const id = document.getElementById('editId').value || Date.now().toString();
-    const entry = { id, name, phone: document.getElementById('cPhone').value, houseNum: document.getElementById('cHouseNum').value, street: document.getElementById('cStreet').value, postcode: document.getElementById('cPostcode').value.toUpperCase(), price: n(document.getElementById('cPrice').value), notes: document.getElementById('cNotes').value, week: "1", cleaned: false, paidThisMonth: 0 };
-    const idx = db.customers.findIndex(x => x.id === id);
-    if(idx > -1) db.customers[idx] = {...db.customers[idx], ...entry}; else db.customers.push(entry);
-    saveData(); alert("Customer Saved! ✨"); openTab('home');
-};
-
-window.saveBankDetails = () => {
-    db.bank = { name: document.getElementById('bankName').value, sort: document.getElementById('bankSort').value, acc: document.getElementById('bankAcc').value };
-    saveData(); toggleBankLock(); alert("Bank Saved! 🏦");
-};
-
-window.toggleBankLock = () => {
-    const fields = document.querySelectorAll('.bank-field');
-    const lockBtn = document.getElementById('bankLockBtn');
-    const isLocked = fields[0].readOnly;
-    fields.forEach(f => f.readOnly = !isLocked);
-    lockBtn.innerText = isLocked ? "🔒 LOCK" : "🔓 UNLOCK";
-    document.getElementById('bankSaveBtn').classList.toggle('hidden');
-};
-
-window.openTab = (name) => {
-    closeModal();
-    document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-    const target = document.getElementById(name); if(target) target.classList.add("active");
-    const nav = document.getElementById('globalNav');
-    if (name === 'home' || (name.startsWith('week') && name !== 'weeksHub')) nav.classList.add('hidden'); else nav.classList.remove('hidden');
-    window.scrollTo({ top: 0, behavior: 'instant' }); renderAll();
-};
-
-window.showActionModal = (id) => {
-    const c = db.customers.find(x => x.id === id); if(!c) return;
-    document.getElementById('modalCustomerName').innerText = c.name;
-    document.getElementById('modalCustomerAddress').innerText = `${c.houseNum} ${c.street}`;
-    document.getElementById('modalEditBtn').onclick = () => { closeModal(); editCust(c.id); };
-    document.getElementById('actionModal').classList.remove('hidden');
-};
-
-window.addExpense = () => {
-    const d = document.getElementById('expDesc').value, a = n(document.getElementById('expAmt').value);
-    if(!d || a <= 0) return;
-    db.expenses.push({ id: Date.now(), desc: d, amt: a, date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) });
-    saveData(); renderAll();
-};
-
-window.exportToCSV = (type) => {
-    let csv = type === 'income' ? 'Name,Amount\n' : 'Desc,Amount\n';
-    if(type === 'income') db.customers.filter(c => n(c.paidThisMonth) > 0).forEach(c => csv += `${c.name},${c.paidThisMonth}\n`);
-    else db.expenses.forEach(e => csv += `${e.desc},${e.amt}\n`);
-    const b = new Blob([csv], { type: 'text/csv' }); const u = window.URL.createObjectURL(b);
-    const a = document.createElement('a'); a.setAttribute('href', u); a.setAttribute('download', `HydroPro_${type}.csv`);
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-};
-
-window.closeModal = () => { const m = document.getElementById('actionModal'); if(m) m.classList.add('hidden'); };
-window.saveData = () => localStorage.setItem(MASTER_KEY, JSON.stringify(db));
-window.renderAll = () => { renderMasterTable(); renderWeekLists(); renderStats(); renderLedger(); };
-window.editCust = (id) => { const c = db.customers.find(x => x.id === id); if(!c) return; openTab('admin'); document.getElementById('editId').value = c.id; document.getElementById('cName').value = c.name; document.getElementById('cPhone').value = c.phone||""; document.getElementById('cHouseNum').value = c.houseNum; document.getElementById('cStreet').value = c.street; document.getElementById('cPostcode').value = c.postcode; document.getElementById('cPrice').value = c.price; document.getElementById('cNotes').value = c.notes; };
-window.toggleCleaned = (id) => { const c = db.customers.find(x => x.id === id); if (c) { c.cleaned = !c.cleaned; saveData(); renderAll(); } };
-window.markAsPaid = (id) => { const c = db.customers.find(x => x.id === id); if (!c) return; const isPaid = n(c.paidThisMonth) >= n(c.price); c.paidThisMonth = isPaid ? 0 : c.price; saveData(); renderAll(); };
-window.toggleDarkMode = () => { const isDark = document.getElementById('darkModeToggle').checked; document.body.className = isDark ? 'dark-mode' : 'light-mode'; localStorage.setItem('Hydro_Dark_Pref', isDark); };
-window.updateGreeting = () => { const hr = new Date().getHours(); const g = (hr < 12) ? "GOOD MORNING" : (hr < 18) ? "GOOD AFTERNOON" : "GOOD EVENING"; document.getElementById('greetingMsg').innerText = `${g}, PARTNER! ☕`; document.getElementById('headerDate').innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }); };
-window.completeCycle = () => { if(!confirm("Start New Month?")) return; db.history.push({ month: new Date().toLocaleDateString('en-GB', {month:'long'}), year: new Date().getFullYear(), profit: (n(document.getElementById('statsIncome')?.innerText.replace('£','')) - n(document.getElementById('statsSpend')?.innerText.replace('£',''))) }); db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload(); };
+/* UTILS */
+.back-pill-ironclad { width: calc(100% - 40px) !important; height: 65px !important; border-radius: 32px; border: none; background: var(--card-bg); color: var(--accent); font-weight: 900; font-size: 20px !important; margin: 0 20px 25px; box-shadow: 0 8px 15px rgba(0,0,0,0.1); display: block !important; }
+.fixed-bottom-shield { position: fixed; bottom: 0; left: 0; width: 100%; padding: 25px 20px; background: linear-gradient(transparent, var(--bg) 20%); z-index: 999; }
+.btn-clear-large { background: linear-gradient(135deg, #28a745, #34c759); color: white; border: none; font-weight: 900; width: 100% !important; height: 75px !important; font-size: 22px !important; border-radius: 25px; }
+.tab-content { display: none; }
+.tab-content.active { display: block !important; }
+.hidden { display: none !important; }
