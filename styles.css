@@ -8,8 +8,8 @@
     --danger: #ff453a;
     --ios-grey: #e9e9eb;
     --grad: linear-gradient(135deg, #007aff 0%, #0051a8 100%);
-    --h-header: 165px; /* RECLAIMED SCREEN SPACE! Used to be 235px */
-    --h-nav: 65px; /* SMALLER NAV! Used to be 85px */
+    --h-header: 125px; /* RECLAIMED MORE SCREEN SPACE! (Was 165px) */
+    --h-nav: 65px; 
 }
 body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; --ios-grey: #39393d; }
 
@@ -29,13 +29,13 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-hei
 }
 .tab-content.active { display: flex !important; flex-direction: column; padding-top: calc(var(--h-header) + 20px); padding-bottom: calc(var(--h-nav) + 30px); animation: fadeSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
-#G-HEADER { position: fixed; top: 0; left: 0; width: 100%; height: var(--h-header) !important; z-index: 1000; background: rgba(242, 242, 247, 0.75); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; padding-bottom: 15px; }
+#G-HEADER { position: fixed; top: 0; left: 0; width: 100%; height: var(--h-header) !important; z-index: 1000; background: rgba(242, 242, 247, 0.75); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: flex-start; gap: 10px; padding-top: 15px; }
 body.dark-mode #G-HEADER { background: rgba(0, 0, 0, 0.75); border-bottom: 1px solid rgba(255,255,255,0.05); }
 
-.G-LOGO-STRETCH-WRAP { width: 100%; padding: 15px 0 5px; display: flex; justify-content: center; }
-.G-LOGO-STRETCH-WRAP img { width: 275px !important; height: auto; display: block; }
+.G-LOGO-STRETCH-WRAP { width: 100%; display: flex; justify-content: center; }
+.G-LOGO-STRETCH-WRAP img { width: 250px !important; height: auto; display: block; }
 
-.CENTRAL-STATUS-POD { display: flex; justify-content: space-evenly; align-items: center; height: 50px; width: 100%; max-width: 400px; margin: 0 auto; }
+.CENTRAL-STATUS-POD { display: flex; justify-content: center; align-items: center; height: 50px; width: 100%; max-width: 400px; margin: 0 auto; }
 .G-WEATHER-PILL-PASSIVE { background: var(--ios-grey); padding: 0 20px; height: 40px; border-radius: 20px; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 950; }
 
 .ios-switch { position: relative; width: 70px; height: 36px; }
@@ -45,11 +45,7 @@ body.dark-mode #G-HEADER { background: rgba(0, 0, 0, 0.75); border-bottom: 1px s
 input:checked + .ios-slider { background-color: var(--success); }
 input:checked + .ios-slider:before { transform: translateX(34px); }
 
-/* SMALLER DATE */
-.DATE-CONTAINER { width: 100%; text-align: center; height: 25px; display: flex; justify-content: center; align-items: center; margin-top: 5px; }
-#dateText { font-size: 16px !important; font-weight: 900; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px;}
-
-/* BOTTOM NAV (Slimmer with smaller icons) */
+/* BOTTOM NAV */
 #BOTTOM-NAV { position: fixed; bottom: 0; left: 0; width: 100%; height: calc(var(--h-nav) + env(safe-area-inset-bottom)); background: rgba(242, 242, 247, 0.85); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-top: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-around; align-items: center; padding-bottom: env(safe-area-inset-bottom); z-index: 1000; }
 body.dark-mode #BOTTOM-NAV { background: rgba(0, 0, 0, 0.85); border-top: 1px solid rgba(255,255,255,0.05); }
 .nav-item { background: none; border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text); opacity: 0.4; transition: 0.2s ease; width: 20%; height: 100%; padding-top: 5px; }
@@ -109,6 +105,8 @@ body.dark-mode #BOTTOM-NAV { background: rgba(0, 0, 0, 0.85); border-top: 1px so
 .week-4 { background: linear-gradient(135deg, #ff2d55, #a3001f); }
 .week-5.full { width: 365px !important; background: linear-gradient(135deg, #34c759, #1b7e28); }
 
+.WEE-sub-nav { display: flex; justify-content: center; margin-bottom: 20px; width: 100%; max-width: 380px; margin-left: auto; margin-right: auto; }
+.WEE-sub-nav button { width: calc(100% - 40px); height: 60px; border-radius: 20px; border: none; background: var(--card); color: var(--accent); font-weight: 950; font-size: 16px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
 .WEE-day-selector { display: flex; justify-content: center; gap: 5px; padding-bottom: 25px; }
 .WEE-day-btn { width: 45px; height: 55px; border-radius: 12px; border: none; background: var(--card); color: var(--text); font-weight: 950; }
 .WEE-day-btn.active { background: var(--accent); color: white; }
