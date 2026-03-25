@@ -23,12 +23,12 @@ const escapeHTML = (str) => {
     }[tag] || tag));
 };
 
-/* --- 📊 CORE ARREARS CALCULATION ENGINE (V59.1 UPDATE) --- */
+/* --- 📊 CORE ARREARS CALCULATION ENGINE --- */
 window.getArrearsData = (c) => {
     const currentMonthStr = new Date().toLocaleString('en-GB', { month: 'short' });
     let pastLog = c.pastArrears || [];
     
-    // HUGE FIX: Only charge them for this month IF you have marked them as cleaned!
+    // Only charge them for this month IF you have marked them as cleaned!
     let thisMonthCharge = c.cleaned ? (parseFloat(c.price) || 0) : 0;
     let currentOwed = thisMonthCharge - (parseFloat(c.paidThisMonth) || 0);
     
@@ -99,13 +99,14 @@ window.renderAllSafe = () => {
     } catch (err) { console.error("Render Error:", err); }
 };
 
-/* --- ⚙️ ADMIN LOGIC (V59.1 UPDATE) --- */
+/* --- ⚙️ ADMIN LOGIC --- */
 window.saveCustomer = () => {
     const name = document.getElementById('cName').value.trim();
     if(!name) return alert("Name required!");
     db.customers.push({ id: Date.now().toString(), name, houseNum: document.getElementById('cHouseNum').value.trim(), street: document.getElementById('cStreet').value.trim(), postcode: document.getElementById('cPostcode').value.trim(), phone: document.getElementById('cPhone').value.trim(), price: parseFloat(document.getElementById('cPrice').value) || 0, cleaned: false, paidThisMonth: 0, pastArrears: [], week: "1", day: "Mon" });
     saveData(); alert("Saved!"); location.reload();
 };
+
 window.saveBank = () => { db.bank.name = document.getElementById('bName').value; db.bank.acc = document.getElementById('bAcc').value; saveData(); alert("Secured!"); };
 
 /* ENGINE: COMPLETE CYCLE */
@@ -178,7 +179,8 @@ window.routeMyDay = () => {
     let destination = stops.pop(); 
     let waypoints = stops.join('|'); 
     
-    let url = `http://googleusercontent.com/maps.google.com/dir/?api=1&destination=${destination}`;
+    // Official Universal Google Maps Link
+    let url = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
     if(waypoints) url += `&waypoints=${waypoints}`;
     
     window.open(url, '_blank');
@@ -228,12 +230,10 @@ window.cmdSMS = (id) => {
         msg += `Everything looks great, you have no outstanding balance. Have a wonderful day!`;
     }
     
-    // Auto-detects the right SMS format for iPhones vs Androids
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     const separator = isIOS ? '&' : '?';
     window.open(`sms:${phone}${separator}body=${encodeURIComponent(msg)}`, '_blank');
 };
-
 
 /* --- 💡 COMMAND VAULT (MODAL LOGIC) --- */
 const generateHistoryHtml = (id) => { 
@@ -248,12 +248,15 @@ const generateArrearsHtml = (arrData) => {
     return `<div class="CMD-alert-danger"><div class="CMD-alert-danger-title">⚠️ TOTAL OUTSTANDING: £${arrData.total.toFixed(2)}</div><ul class="CMD-arrears-list">${listHtml}</ul></div>`;
 };
 
-// 1. JOB CARD (Includes 3-Column Action Grid)
+// 1. JOB CARD (Includes 3-Column Action Grid & Corrected Google Maps Link)
 window.showJobBriefing = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
     const container = document.getElementById('briefingData');
     const arrData = window.getArrearsData(c);
+    
+    // Official Universal Google Maps Search Link
     const mapQuery = encodeURIComponent(`${c.houseNum} ${c.street}, ${c.postcode || ''}`);
+    const navUrl = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
 
     container.innerHTML = `
         <div class="CMD-header"><h2>${escapeHTML(c.name)}</h2><div class="CMD-header-sub">${escapeHTML(c.houseNum)} ${escapeHTML(c.street)}</div></div>
@@ -261,7 +264,7 @@ window.showJobBriefing = (id) => {
         <div class="CMD-action-grid">
             <button class="CMD-action-btn clean" onclick="cmdToggleClean('${c.id}')"><span style="font-size:24px;">🧼</span> <br>${c.cleaned ? 'UNDO CLEAN' : 'MARK CLEAN'}</button>
             <button class="CMD-action-btn pay" onclick="cmdSettlePaid('${c.id}', 'job')"><span style="font-size:24px;">💰</span> <br>COLLECT £</button>
-            <button class="CMD-action-btn route" onclick="window.open('http://googleusercontent.com/maps.google.com/dir/?api=1&destination=${mapQuery}', '_blank')"><span style="font-size:24px;">📍</span> <br>NAVIGATE</button>
+            <button class="CMD-action-btn route" onclick="window.open('${navUrl}', '_blank')"><span style="font-size:24px;">📍</span> <br>NAVIGATE</button>
             <button class="CMD-action-btn call" onclick="window.location.href='tel:${escapeHTML(c.phone)}'"><span style="font-size:24px;">📞</span> <br>CALL</button>
             <button class="CMD-action-btn whatsapp" onclick="cmdWhatsApp('${c.id}')"><span style="font-size:24px;">💬</span> <br>WA REC</button>
             <button class="CMD-action-btn sms" onclick="cmdSMS('${c.id}')"><span style="font-size:24px;">📱</span> <br>SMS REC</button>
