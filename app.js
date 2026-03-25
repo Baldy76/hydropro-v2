@@ -8,6 +8,11 @@ let curWeek = 1;
 let workingDay = 'Mon';
 let financeChartInstance = null; 
 
+// Variables to hold state for the new Checkout Modal
+let currentPayId = null;
+let currentPayContext = null;
+let currentPayTotal = 0;
+
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').catch(err => console.error('PWA Reg Failed:', err));
@@ -231,10 +236,17 @@ const generateHistoryHtml = (id) => {
     return history.map(h => `<div class="CMD-history-row"><span>${escapeHTML(h.date)}</span><span>£${parseFloat(h.amt).toFixed(2)}</span></div>`).join('');
 };
 
-const generateArrearsHtml = (arrData) => { 
+/* --- NEW: INTERACTIVE ARREARS HTML --- */
+const generateArrearsHtml = (arrData, cId, context) => { 
     if (!arrData.isOwed) return `<div class="CMD-alert-success">✅ FULLY PAID UP</div>`;
     let listHtml = arrData.breakdown.map(b => `<li>£${b.amt.toFixed(2)} - ${escapeHTML(b.month)}</li>`).join('');
-    return `<div class="CMD-alert-danger"><div class="CMD-alert-danger-title">⚠️ TOTAL OUTSTANDING: £${arrData.total.toFixed(2)}</div><ul class="CMD-arrears-list">${listHtml}</ul></div>`;
+    
+    // Notice the onclick triggers the new Checkout Modal!
+    return `<div class="CMD-alert-danger" onclick="cmdSettlePaid('${cId}', '${context}')" style="cursor:pointer; transition: 0.2s;">
+                <div class="CMD-alert-danger-title">⚠️ TOTAL OUTSTANDING: £${arrData.total.toFixed(2)}</div>
+                <ul class="CMD-arrears-list">${listHtml}</ul>
+                <div style="margin-top: 15px; font-size: 11px; font-weight: 900; opacity: 0.8; text-transform: uppercase;">👆 Tap to settle account</div>
+            </div>`;
 };
 
 window.showJobBriefing = (id) => {
@@ -249,7 +261,7 @@ window.showJobBriefing = (id) => {
     container.innerHTML = `
         <div class="CMD-header"><h2>${escapeHTML(c.name)}</h2><div class="CMD-header-sub">${escapeHTML(c.houseNum)} ${escapeHTML(c.street)}</div></div>
         ${notesHtml}
-        ${generateArrearsHtml(arrData)}
+        ${generateArrearsHtml(arrData, c.id, 'job')}
         <div class="CMD-action-grid">
             <button class="CMD-action-btn clean" onclick="cmdToggleClean('${c.id}')"><span style="font-size:24px;">🧼</span> <br>${c.cleaned ? 'UNDO CLEAN' : 'MARK CLEAN'}</button>
             <button class="CMD-action-btn pay" onclick="cmdSettlePaid('${c.id}', 'job')"><span style="font-size:24px;">💰</span> <br>COLLECT £</button>
@@ -279,7 +291,7 @@ window.showCustomerBriefing = (id) => {
             <div class="CMD-detail-row"><span>📆 Day</span><span>${escapeHTML(c.day)}</span></div>
         </div>
         ${notesHtml}
-        ${generateArrearsHtml(arrData)}
+        ${generateArrearsHtml(arrData, c.id, 'cust')}
         <h3 class="CMD-history-hdr">Rolling History</h3><div class="CMD-history-box">${generateHistoryHtml(c.id)}</div>
     `;
     document.getElementById('briefingModal').classList.remove('hidden');
@@ -289,27 +301,76 @@ window.closeBriefing = () => document.getElementById('briefingModal').classList.
 
 window.cmdToggleClean = (id) => { const c = db.customers.find(x => x.id === id); c.cleaned = !c.cleaned; window.saveData(); window.renderAllSafe(); window.showJobBriefing(id); };
 
+/* --- ✨ NEW SMART CHECKOUT ENGINE ✨ --- */
 window.cmdSettlePaid = (id, context) => { 
-    const c = db.customers.find(x => x.id === id); const arrData = window.getArrearsData(c);
-    const amtStr = prompt(`Process payment for ${c.name}?\nTotal Owed: £${arrData.total.toFixed(2)}`, arrData.total.toFixed(2)); 
-    if(amtStr !== null && amtStr !== "") { 
-        let amtPaid = parseFloat(amtStr); if (isNaN(amtPaid) || amtPaid <= 0) return alert("Invalid amount.");
-        c.paidThisMonth = (parseFloat(c.paidThisMonth) || 0) + amtPaid; 
-        let thisMonthCharge = c.cleaned ? (parseFloat(c.price) || 0) : 0;
-        let overpay = c.paidThisMonth - thisMonthCharge;
-        if(overpay > 0.01 && c.pastArrears && c.pastArrears.length > 0) {
-            let remaining = overpay;
-            for(let i=0; i<c.pastArrears.length; i++) {
-                if(remaining >= c.pastArrears[i].amt) { remaining -= c.pastArrears[i].amt; c.pastArrears[i].amt = 0; } 
-                else { c.pastArrears[i].amt -= remaining; remaining = 0; break; }
-            }
-            c.pastArrears = c.pastArrears.filter(a => a.amt > 0.01);
-        }
-        if(!db.history) db.history = []; db.history.push({ custId: id, amt: amtPaid, date: new Date().toLocaleDateString('en-GB') }); 
-        window.saveData(); window.renderAllSafe(); 
-        if (context === 'job') window.showJobBriefing(id); else window.showCustomerBriefing(id);
-    } 
+    const c = db.customers.find(x => x.id === id); 
+    const arrData = window.getArrearsData(c);
+    
+    currentPayId = id;
+    currentPayContext = context;
+    currentPayTotal = arrData.total;
+
+    document.getElementById('pay-name').innerText = c.name;
+    
+    const arrearsBox = document.getElementById('pay-arrears-box');
+    if(arrData.isOwed) {
+        let listHtml = arrData.breakdown.map(b => `<li>£${b.amt.toFixed(2)} - ${escapeHTML(b.month)}</li>`).join('');
+        arrearsBox.innerHTML = `<div class="CMD-alert-danger-title" style="margin-bottom: 5px;">⚠️ BREAKDOWN</div><ul class="CMD-arrears-list">${listHtml}</ul>`;
+        arrearsBox.style.display = 'block';
+    } else {
+        arrearsBox.style.display = 'none';
+    }
+
+    document.getElementById('pay-full-btn').innerText = `PAY IN FULL (£${arrData.total.toFixed(2)})`;
+    document.getElementById('pay-custom-amt').value = '';
+
+    // Hide briefing, show checkout!
+    document.getElementById('briefingModal').classList.add('hidden');
+    document.getElementById('paymentModal').classList.remove('hidden');
 };
+
+window.closePaymentModal = () => {
+    document.getElementById('paymentModal').classList.add('hidden');
+    currentPayId = null;
+};
+
+window.processPayment = (type) => {
+    if(!currentPayId) return;
+    const c = db.customers.find(x => x.id === currentPayId);
+
+    let amtPaid = 0;
+    if(type === 'full') {
+        amtPaid = currentPayTotal;
+    } else {
+        amtPaid = parseFloat(document.getElementById('pay-custom-amt').value);
+    }
+
+    if (isNaN(amtPaid) || amtPaid <= 0) return alert("Please enter a valid amount.");
+
+    // The FIFO Accounting Logic (Unchanged, it's perfect)
+    c.paidThisMonth = (parseFloat(c.paidThisMonth) || 0) + amtPaid; 
+    let thisMonthCharge = c.cleaned ? (parseFloat(c.price) || 0) : 0;
+    let overpay = c.paidThisMonth - thisMonthCharge;
+    
+    if(overpay > 0.01 && c.pastArrears && c.pastArrears.length > 0) {
+        let remaining = overpay;
+        for(let i=0; i<c.pastArrears.length; i++) {
+            if(remaining >= c.pastArrears[i].amt) { remaining -= c.pastArrears[i].amt; c.pastArrears[i].amt = 0; } 
+            else { c.pastArrears[i].amt -= remaining; remaining = 0; break; }
+        }
+        c.pastArrears = c.pastArrears.filter(a => a.amt > 0.01);
+    }
+    
+    if(!db.history) db.history = []; db.history.push({ custId: currentPayId, amt: amtPaid, date: new Date().toLocaleDateString('en-GB') }); 
+    
+    window.saveData(); 
+    window.renderAllSafe(); 
+    closePaymentModal();
+    
+    if (currentPayContext === 'job') window.showJobBriefing(currentPayId); else window.showCustomerBriefing(currentPayId);
+};
+/* ------------------------------------------- */
+
 
 window.addFinanceExpense = () => { 
     const desc = document.getElementById('fExpDesc').value.trim(); const amt = parseFloat(document.getElementById('fExpAmt').value); const cat = document.getElementById('fExpCat').value;
@@ -318,7 +379,6 @@ window.addFinanceExpense = () => {
     saveData(); document.getElementById('fExpDesc').value = ''; document.getElementById('fExpAmt').value = ''; renderFinances();
 };
 
-/* --- ✨ 3D CANVAS SHADOW PLUGIN ✨ --- */
 const arc3DPlugin = {
     id: 'arc3DPlugin',
     beforeDatasetDraw: (chart, args, options) => {
@@ -400,7 +460,7 @@ window.renderFinances = () => {
         if (income > 0 || totalArrears > 0 || forecasted > 0) {
             financeChartInstance = new Chart(ctx, { 
                 type: 'doughnut', 
-                plugins: [arc3DPlugin], // INJECT 3D CANVAS SHADOW
+                plugins: [arc3DPlugin], 
                 data: { 
                     labels: labels, 
                     datasets: [{ 
@@ -416,7 +476,7 @@ window.renderFinances = () => {
                 options: { 
                     responsive: true, 
                     maintainAspectRatio: false, 
-                    cutout: '75%', // RESTORED TO FULL CIRCLE PROPORTIONS
+                    cutout: '75%', 
                     layout: { padding: 10 },
                     plugins: { 
                         legend: { 
