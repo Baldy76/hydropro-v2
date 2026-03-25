@@ -29,19 +29,10 @@ window.getArrearsData = (c) => {
     let currentOwed = thisMonthCharge - (parseFloat(c.paidThisMonth) || 0);
     
     let breakdown = pastLog.map(a => ({ month: a.month, amt: parseFloat(a.amt) }));
-    
-    if (currentOwed > 0.01) {
-        breakdown.push({ month: currentMonthStr, amt: currentOwed });
-    }
+    if (currentOwed > 0.01) breakdown.push({ month: currentMonthStr, amt: currentOwed });
     
     const totalOwed = breakdown.reduce((sum, item) => sum + item.amt, 0);
-    
-    return { 
-        isOwed: totalOwed > 0.01, 
-        total: totalOwed, 
-        monthsString: breakdown.map(b => b.month).join(', '), 
-        breakdown: breakdown 
-    };
+    return { isOwed: totalOwed > 0.01, total: totalOwed, monthsString: breakdown.map(b => b.month).join(', '), breakdown: breakdown };
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -77,7 +68,6 @@ function applyTheme(isDark) {
 
 window.saveData = () => localStorage.setItem(DB_KEY, JSON.stringify(db));
 
-/* --- 📱 UPGRADED TAB NAVIGATION FOR BOTTOM BAR --- */
 window.openTab = (id, btnEl = null) => {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     const target = document.getElementById(id);
@@ -87,7 +77,6 @@ window.openTab = (id, btnEl = null) => {
         document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
         btnEl.classList.add('active');
     }
-    
     window.scrollTo(0,0);
     renderAllSafe();
 };
@@ -117,16 +106,13 @@ window.completeCycle = () => {
         db.customers.forEach(c => { 
             const paid = parseFloat(c.paidThisMonth) || 0; 
             const price = c.cleaned ? (parseFloat(c.price) || 0) : 0; 
-            
             if (paid < price) { 
                 if (!c.pastArrears) c.pastArrears = []; 
                 c.pastArrears.push({ month: cycleMonth, amt: price - paid }); 
             } 
-            c.cleaned = false; 
-            c.paidThisMonth = 0; 
+            c.cleaned = false; c.paidThisMonth = 0; 
         }); 
-        db.expenses = []; 
-        saveData(); location.reload();
+        db.expenses = []; saveData(); location.reload();
     }
 };
 
@@ -138,7 +124,6 @@ window.nuclearReset = () => { if(confirm("☢️ DELETE ALL?")) { localStorage.r
 window.renderMaster = () => { 
     const list = document.getElementById('CST-list-container'); if(!list) return; list.innerHTML = '';
     const search = (document.getElementById('mainSearch')?.value || "").toLowerCase();
-    
     let renderedCount = 0;
     db.customers.forEach(c => {
         if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
@@ -150,10 +135,7 @@ window.renderMaster = () => {
             list.appendChild(div);
         }
     });
-    
-    if (renderedCount === 0) {
-        list.innerHTML = `<div class="empty-state"><span class="empty-icon">👻</span><div class="empty-text">No Customers Found</div><div class="empty-sub">Check your spelling or add a new customer.</div></div>`;
-    }
+    if (renderedCount === 0) list.innerHTML = `<div class="empty-state"><span class="empty-icon">👻</span><div class="empty-text">No Customers Found</div></div>`;
 };
 
 window.viewWeek = (num) => { curWeek = num; renderWeek(); };
@@ -162,12 +144,7 @@ window.setWorkingDay = (day, btn) => { workingDay = day; document.querySelectorA
 window.renderWeek = () => { 
     const list = document.getElementById('WEE-list-container'); if(!list) return; list.innerHTML = '';
     let customersToday = db.customers.filter(c => c.week == curWeek && c.day == workingDay);
-    
-    /* ✨ UPGRADE: Beautiful Empty State for Days Off */
-    if(customersToday.length === 0) {
-        list.innerHTML = `<div class="empty-state"><span class="empty-icon">🏖️</span><div class="empty-text">Zero Jobs Today</div><div class="empty-sub">Enjoy the day off, you've earned it.</div></div>`;
-        return;
-    }
+    if(customersToday.length === 0) return list.innerHTML = `<div class="empty-state"><span class="empty-icon">🏖️</span><div class="empty-text">Zero Jobs Today</div><div class="empty-sub">Enjoy the day off!</div></div>`;
 
     customersToday.forEach(c => {
         const arrData = window.getArrearsData(c);
@@ -183,48 +160,27 @@ window.routeMyDay = () => {
     let todaysJobs = db.customers.filter(c => c.week == curWeek && c.day == workingDay);
     if(todaysJobs.length === 0) return alert("No jobs to route today!");
     if(todaysJobs.length > 10) alert("Google Maps limits multi-stop routes to 10 stops. Routing your first 10 properties.");
-    
     let stops = todaysJobs.slice(0, 10).map(c => encodeURIComponent(`${c.houseNum} ${c.street}, ${c.postcode || ''}`));
-    let destination = stops.pop(); 
-    let waypoints = stops.join('|'); 
-    
+    let destination = stops.pop(); let waypoints = stops.join('|'); 
     let url = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
     if(waypoints) url += `&waypoints=${waypoints}`;
-    
     window.open(url, '_blank');
 };
 
 window.cmdWhatsApp = (id) => {
-    const c = db.customers.find(x => x.id === id);
-    if(!c.phone) return alert("No phone number saved for this customer.");
-    
-    let phone = c.phone.replace(/\D/g, '');
-    if(phone.startsWith('0')) phone = '44' + phone.substring(1); 
-
+    const c = db.customers.find(x => x.id === id); if(!c.phone) return alert("No phone number saved.");
+    let phone = c.phone.replace(/\D/g, ''); if(phone.startsWith('0')) phone = '44' + phone.substring(1); 
     const arrData = window.getArrearsData(c);
     let msg = `Hi ${c.name}, Hydro Pro here! We've just finished cleaning your windows. `;
-    
-    if(arrData.isOwed) {
-        msg += `Your outstanding balance is £${arrData.total.toFixed(2)}. `;
-        if (db.bank.name && db.bank.acc) { msg += `You can pay via bank transfer to ${db.bank.name}, Account: ${db.bank.acc}. Thank you!`; } else { msg += `Please let us know how you'd like to pay. Thank you!`; }
-    } else { msg += `Everything looks great, you have no outstanding balance. Have a wonderful day!`; }
-    
+    if(arrData.isOwed) { msg += `Your outstanding balance is £${arrData.total.toFixed(2)}. `; if (db.bank.name && db.bank.acc) { msg += `You can pay via bank transfer to ${db.bank.name}, Account: ${db.bank.acc}. Thank you!`; } else { msg += `Please let us know how you'd like to pay. Thank you!`; } } else { msg += `Everything looks great, you have no outstanding balance. Have a wonderful day!`; }
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
 };
 
 window.cmdSMS = (id) => {
-    const c = db.customers.find(x => x.id === id);
-    if(!c.phone) return alert("No phone number saved for this customer.");
-    
-    let phone = c.phone.replace(/\D/g, ''); 
-    const arrData = window.getArrearsData(c);
+    const c = db.customers.find(x => x.id === id); if(!c.phone) return alert("No phone number saved.");
+    let phone = c.phone.replace(/\D/g, ''); const arrData = window.getArrearsData(c);
     let msg = `Hi ${c.name}, Hydro Pro here! We've just finished cleaning your windows. `;
-    
-    if(arrData.isOwed) {
-        msg += `Your outstanding balance is £${arrData.total.toFixed(2)}. `;
-        if (db.bank.name && db.bank.acc) { msg += `You can pay via bank transfer to ${db.bank.name}, Account: ${db.bank.acc}. Thank you!`; } else { msg += `Please let us know how you'd like to pay. Thank you!`; }
-    } else { msg += `Everything looks great, you have no outstanding balance. Have a wonderful day!`; }
-    
+    if(arrData.isOwed) { msg += `Your outstanding balance is £${arrData.total.toFixed(2)}. `; if (db.bank.name && db.bank.acc) { msg += `You can pay via bank transfer to ${db.bank.name}, Account: ${db.bank.acc}. Thank you!`; } else { msg += `Please let us know how you'd like to pay. Thank you!`; } } else { msg += `Everything looks great, you have no outstanding balance. Have a wonderful day!`; }
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     const separator = isIOS ? '&' : '?';
     window.open(`sms:${phone}${separator}body=${encodeURIComponent(msg)}`, '_blank');
@@ -286,9 +242,7 @@ window.showCustomerBriefing = (id) => {
 
 window.closeBriefing = () => document.getElementById('briefingModal').classList.add('hidden');
 
-window.cmdToggleClean = (id) => { 
-    const c = db.customers.find(x => x.id === id); c.cleaned = !c.cleaned; window.saveData(); window.renderAllSafe(); window.showJobBriefing(id); 
-};
+window.cmdToggleClean = (id) => { const c = db.customers.find(x => x.id === id); c.cleaned = !c.cleaned; window.saveData(); window.renderAllSafe(); window.showJobBriefing(id); };
 
 window.cmdSettlePaid = (id, context) => { 
     const c = db.customers.find(x => x.id === id); const arrData = window.getArrearsData(c);
@@ -296,10 +250,8 @@ window.cmdSettlePaid = (id, context) => {
     if(amtStr !== null && amtStr !== "") { 
         let amtPaid = parseFloat(amtStr); if (isNaN(amtPaid) || amtPaid <= 0) return alert("Invalid amount.");
         c.paidThisMonth = (parseFloat(c.paidThisMonth) || 0) + amtPaid; 
-        
         let thisMonthCharge = c.cleaned ? (parseFloat(c.price) || 0) : 0;
         let overpay = c.paidThisMonth - thisMonthCharge;
-        
         if(overpay > 0.01 && c.pastArrears && c.pastArrears.length > 0) {
             let remaining = overpay;
             for(let i=0; i<c.pastArrears.length; i++) {
@@ -323,16 +275,12 @@ window.addFinanceExpense = () => {
 
 window.renderFinances = () => {
     const dash = document.getElementById('FIN-dashboard'); const ledger = document.getElementById('FIN-ledger'); if(!dash || !ledger) return;
-    
-    let income = 0, spend = 0, expected = 0, totalArrears = 0; 
-    let arrearsListHtml = '';
-
+    let income = 0, spend = 0, expected = 0, totalArrears = 0; let arrearsListHtml = '';
     db.customers.forEach(c => {
         income += (parseFloat(c.paidThisMonth) || 0); expected += (parseFloat(c.price) || 0);
         const arrData = window.getArrearsData(c);
         if(arrData.isOwed) { totalArrears += arrData.total; arrearsListHtml += `<div class="CMD-detail-row"><span>${escapeHTML(c.name)} <small style="opacity:0.7;">${escapeHTML(arrData.monthsString)}</small></span><span>£${arrData.total.toFixed(2)}</span></div>`; }
     });
-
     db.expenses.forEach(e => spend += (parseFloat(e.amt) || 0));
     const progressPct = expected > 0 ? Math.min((income / expected) * 100, 100) : 0;
     const netProfit = Math.max(0, income - spend);
@@ -345,20 +293,15 @@ window.renderFinances = () => {
     htmlBuilder += `<div style="padding: 0 25px; margin-bottom: 5px; font-weight: 950; font-size: 14px; color: var(--accent); display: flex; justify-content: space-between;"><span>COLLECTION PROGRESS</span><span>${Math.round(progressPct)}%</span></div>`;
     htmlBuilder += `<div class="FIN-progress-wrap"><div class="FIN-progress-fill" style="width: ${progressPct}%;"></div></div>`;
     htmlBuilder += `<div class="FIN-bubble-row"><div class="FIN-bubble"><small style="font-weight:800;">INCOME</small><br><strong style="font-size:22px;">£${income.toFixed(2)}</strong></div><div class="FIN-bubble"><small style="font-weight:800;">SPENT</small><br><strong style="font-size:22px; color:var(--danger);">£${spend.toFixed(2)}</strong></div></div>`;
-    
     dash.innerHTML = htmlBuilder;
     
     const ctx = document.getElementById('financeChartCanvas');
     if (ctx && typeof Chart !== 'undefined') {
         if (financeChartInstance) financeChartInstance.destroy(); 
-        
-        let expenseTotals = {};
-        db.expenses.forEach(e => { expenseTotals[e.cat] = (expenseTotals[e.cat] || 0) + parseFloat(e.amt); });
-        
+        let expenseTotals = {}; db.expenses.forEach(e => { expenseTotals[e.cat] = (expenseTotals[e.cat] || 0) + parseFloat(e.amt); });
         let labels = ['Net Profit']; let chartData = [netProfit]; let colors = ['#34C759']; 
         const catColors = { 'Fuel': '#ff9500', 'Equipment': '#007aff', 'Food': '#ff2d55', 'Marketing': '#af52de', 'Other': '#8e8e93' };
         for(let cat in expenseTotals) { labels.push(cat); chartData.push(expenseTotals[cat]); colors.push(catColors[cat] || '#8e8e93'); }
-
         if (income > 0 || spend > 0) {
             financeChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: labels, datasets: [{ data: chartData, backgroundColor: colors, borderWidth: 0, hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'right', labels: { color: document.body.classList.contains('dark-mode') ? '#fff' : '#000', font: { family: '"Plus Jakarta Sans", sans-serif', weight: 'bold' } } } } } });
         }
@@ -366,11 +309,9 @@ window.renderFinances = () => {
     
     const categories = {}; 
     db.expenses.forEach(e => { const cat = e.cat || 'Other'; if(!categories[cat]) categories[cat] = { total: 0, items: [] }; categories[cat].total += parseFloat(e.amt); categories[cat].items.push(e); });
-    
     let statementHtml = ''; 
-    if (Object.keys(categories).length === 0) { 
-        statementHtml = `<div class="empty-state"><span class="empty-icon">🧾</span><div class="empty-text">No Expenses Yet</div><div class="empty-sub">Your ledger is completely clean.</div></div>`; 
-    } else { 
+    if (Object.keys(categories).length === 0) { statementHtml = `<div class="empty-state"><span class="empty-icon">🧾</span><div class="empty-text">No Expenses Yet</div><div class="empty-sub">Your ledger is completely clean.</div></div>`; } 
+    else { 
         for (const [cat, data] of Object.entries(categories)) { 
             let catIcon = "🏢"; if(cat === 'Fuel') catIcon = "⛽"; if(cat === 'Equipment') catIcon = "🧽"; if(cat === 'Food') catIcon = "🍔"; if(cat === 'Marketing') catIcon = "📣"; 
             let itemsHtml = ''; data.items.slice().reverse().forEach(item => { itemsHtml += `<div class="FIN-exp-row"><span>${escapeHTML(item.desc)} <small style="opacity:0.5; font-size:12px;">(${escapeHTML(item.date)})</small></span><span style="color:var(--danger);">-£${parseFloat(item.amt).toFixed(2)}</span></div>`; }); 
@@ -380,9 +321,62 @@ window.renderFinances = () => {
     ledger.innerHTML = statementHtml;
 };
 
+/* --- 🌦️ WEATHER API (UPGRADED TO INCLUDE 5-DAY FORECAST) --- */
+const getIcon = (code) => {
+    const map = { '01d':'☀️','01n':'🌙','02d':'⛅','02n':'☁️','03d':'☁️','03n':'☁️','04d':'☁️','04n':'☁️','09d':'🌧️','09n':'🌧️','10d':'🌧️','10n':'🌧️','11d':'🌦️','11n':'🌧️','13d':'🌨️','13n':'🌨️','50d':'💨','50n':'💨' };
+    return map[code] || '🌤️';
+};
+
 async function initWeather() { 
-    const cachedW = localStorage.getItem('HP_Weather_Cache'); const wText = document.getElementById('w-text'); if(cachedW && wText) wText.innerText = cachedW;
+    const wText = document.getElementById('w-text'); const wIcon = document.getElementById('w-icon');
+    const wDash = document.getElementById('WTH-dashboard');
+    
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(async (pos) => { try { const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&appid=${W_API_KEY}&units=metric`); const data = await res.json(); const temp = `${Math.round(data.main.temp)}°C`; if (wText) wText.innerText = temp; localStorage.setItem('HP_Weather_Cache', temp); } catch (e) { if(!cachedW && wText) wText.innerText = "OFFLINE"; } });
+        navigator.geolocation.getCurrentPosition(async (pos) => { 
+            try { 
+                // 1. Fetch Current Weather for the Header Pill
+                const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&appid=${W_API_KEY}&units=metric`); 
+                const data = await res.json(); 
+                const temp = `${Math.round(data.main.temp)}°C`; 
+                const currentIcon = getIcon(data.weather[0].icon);
+                const currentDesc = data.weather[0].description;
+                
+                if (wText) wText.innerText = temp; 
+                if (wIcon) wIcon.innerText = currentIcon;
+
+                // 2. Fetch 5-Day Forecast for the Weather Tab
+                const fRes = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&appid=${W_API_KEY}&units=metric`);
+                const fData = await fRes.json();
+                
+                // Grab one forecast point per day (around noon)
+                const dailyData = fData.list.filter(item => item.dt_txt.includes('12:00:00')).slice(0, 5);
+                
+                let forecastHtml = dailyData.map(day => {
+                    const dateObj = new Date(day.dt * 1000);
+                    const dayName = dateObj.toLocaleDateString('en-GB', { weekday: 'short' }).toUpperCase();
+                    return `<div class="WTH-card">
+                                <span class="WTH-day">${dayName}</span>
+                                <span class="WTH-icon">${getIcon(day.weather[0].icon)}</span>
+                                <span class="WTH-temps">${Math.round(day.main.temp)}°C</span>
+                            </div>`;
+                }).join('');
+
+                if(wDash) {
+                    wDash.innerHTML = `
+                        <div class="WTH-hero">
+                            <div class="WTH-icon" style="font-size: 50px;">${currentIcon}</div>
+                            <div class="WTH-hero-temp">${temp}</div>
+                            <div class="WTH-hero-desc">${currentDesc}</div>
+                        </div>
+                        <h3 class="ADM-hdr" style="margin: 25px 0 10px;">5-Day Forecast</h3>
+                        ${forecastHtml}
+                    `;
+                }
+
+            } catch (e) { 
+                if (wText) wText.innerText = "OFFLINE"; 
+                if (wDash) wDash.innerHTML = `<div class="empty-state"><span class="empty-icon">📡</span><div class="empty-text">Weather Offline</div><div class="empty-sub">Check your connection to pull the radar.</div></div>`;
+            } 
+        });
     }
 }
