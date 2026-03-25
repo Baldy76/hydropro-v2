@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v47.0</title>
+    <title>Hydro Pro v47.2</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="styles.css?v=470">
+    <link rel="stylesheet" href="styles.css?v=472">
 </head>
 <body class="light-mode">
 
@@ -46,15 +46,17 @@
         <section id="admin-root" class="tab-content">
             <button class="ADM-nav-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
             <div class="ADM-card">
-                <h3 class="ADM-hdr">Add Customer</h3>
+                <h3 class="ADM-hdr">Quick Add Customer</h3>
                 <div class="ADM-row"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
                 <div class="ADM-row"><span>🏠</span><input type="text" id="cHouseNum" placeholder="No."></div>
                 <div class="ADM-row"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
+                <div class="ADM-row"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
+                <div class="ADM-row"><span>📞</span><input type="tel" id="cPhone" placeholder="Phone"></div>
                 <div class="ADM-row"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
                 <button class="ADM-save-btn" onclick="saveCustomer()">✨ SAVE CUSTOMER</button>
             </div>
             <div class="ADM-card">
-                <h3 class="ADM-hdr">Bank Details</h3>
+                <h3 class="ADM-hdr">Bank Vault</h3>
                 <div class="ADM-row"><span>🏦</span><input type="text" id="bName" placeholder="Name"></div>
                 <div class="ADM-row"><span>💳</span><input type="text" id="bAcc" placeholder="Acc No."></div>
                 <button class="ADM-save-btn" style="background:var(--accent);" onclick="saveBank()">🔒 SECURE BANK</button>
@@ -73,7 +75,7 @@
 
         <section id="master-root" class="tab-content">
             <button class="CST-nav-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="CST-search-bar"><input type="text" id="mainSearch" placeholder="🔍 Search..." oninput="renderMaster()"></div>
+            <div class="CST-search-bar"><input type="text" id="mainSearch" placeholder="🔍 Search Name or Street..." oninput="renderMaster()"></div>
             <div id="CST-list-container"></div>
         </section>
 
@@ -110,11 +112,11 @@
     <div id="briefingModal" class="modal-overlay hidden" onclick="closeBriefing()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div id="briefingData"></div>
-            <button class="ADM-save-btn" onclick="closeBriefing()">CLOSE BRIEFING</button>
+            <button class="ADM-save-btn" style="margin-top:20px;" onclick="closeBriefing()">CLOSE BRIEFING</button>
         </div>
     </div>
 
-    <footer id="G-FOOTER">v47.0 IRON ISLAND</footer>
-    <script src="app.js?v=470"></script>
+    <footer id="G-FOOTER">v47.2 AUDIT MASTER</footer>
+    <script src="app.js?v=472"></script>
 </body>
 </html>
