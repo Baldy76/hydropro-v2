@@ -1,35 +1,39 @@
-const DB_KEY = 'HydroPro_Gold_V36';
+"use strict";
+
+const DB_KEY = 'HydroPro_Gold_V36'; // Intentionally kept the same so we don't wipe your local storage
 const W_API_KEY = "4c00e61833ea94d3c4a1bff9d2c32969"; 
 
 let db = { customers: [], expenses: [], history: [], bank: { name: '', acc: '' } };
 let curWeek = 1; 
 let workingDay = 'Mon';
 
+/* --- 🛡️ SECURITY: XSS SANITIZER --- */
+const escapeHTML = (str) => {
+    if (!str) return '';
+    return String(str).replace(/[&<>'"]/g, tag => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+    }[tag] || tag));
+};
+
 /* --- 📊 CORE ARREARS CALCULATION ENGINE --- */
-// CRITICAL: Must be defined globally so all functions can access it without crashing
 window.getArrearsData = (c) => {
     const currentMonthStr = new Date().toLocaleString('en-GB', { month: 'short' });
     let pastLog = c.pastArrears || [];
     let currentOwed = (parseFloat(c.price) || 0) - (parseFloat(c.paidThisMonth) || 0);
     
-    let totalOwed = 0;
-    let months = [];
+    let breakdown = pastLog.map(a => ({ month: a.month, amt: parseFloat(a.amt) }));
     
-    pastLog.forEach(a => {
-        totalOwed += parseFloat(a.amt);
-        if(!months.includes(a.month)) months.push(a.month);
-    });
-    
-    // Safely handle floating point math to prevent 0.000001 errors
     if (currentOwed > 0.01) {
-        totalOwed += currentOwed;
-        if(!months.includes(currentMonthStr)) months.push(currentMonthStr);
+        breakdown.push({ month: currentMonthStr, amt: currentOwed });
     }
+    
+    const totalOwed = breakdown.reduce((sum, item) => sum + item.amt, 0);
     
     return {
         isOwed: totalOwed > 0.01,
         total: totalOwed,
-        monthsString: months.length > 0 ? `(${months.join(', ')})` : ''
+        monthsString: breakdown.map(b => b.month).join(', '),
+        breakdown: breakdown
     };
 };
 
@@ -44,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
             db.history = parsed.history || [];
             db.bank = parsed.bank || { name: '', acc: '' };
         }
-    } catch(err) { console.error("Database Boot Error."); }
+    } catch(err) { console.error("Database Boot Error.", err); }
 
     // 2. Theme Boot
     applyTheme(localStorage.getItem('HP_Theme') === 'true');
@@ -101,14 +105,15 @@ window.renderAllSafe = () => {
 
 /* --- ⚙️ ADMIN --- */
 window.saveCustomer = () => {
-    const name = document.getElementById('cName').value;
+    const name = document.getElementById('cName').value.trim();
     if(!name) return alert("Name required!");
     db.customers.push({
-        id: Date.now().toString(), name,
-        houseNum: document.getElementById('cHouseNum').value,
-        street: document.getElementById('cStreet').value,
-        postcode: document.getElementById('cPostcode').value,
-        phone: document.getElementById('cPhone').value,
+        id: Date.now().toString(), 
+        name,
+        houseNum: document.getElementById('cHouseNum').value.trim(),
+        street: document.getElementById('cStreet').value.trim(),
+        postcode: document.getElementById('cPostcode').value.trim(),
+        phone: document.getElementById('cPhone').value.trim(),
         price: parseFloat(document.getElementById('cPrice').value) || 0,
         cleaned: false, paidThisMonth: 0, pastArrears: [], week: "1", day: "Mon"
     });
@@ -137,8 +142,8 @@ window.completeCycle = () => {
 window.exportToQuickBooks = () => {
     let csv = "Date,Description,Amount,Type,Category\n";
     const today = new Date().toLocaleDateString('en-GB');
-    db.customers.forEach(c => { if(parseFloat(c.paidThisMonth) > 0) csv += `${today},Income: ${c.name},${c.paidThisMonth},Income,Service\n`; });
-    db.expenses.forEach(e => { csv += `${e.date},${e.desc},${e.amt},Expense,${e.cat || 'Other'}\n`; });
+    db.customers.forEach(c => { if(parseFloat(c.paidThisMonth) > 0) csv += `${today},Income: ${escapeHTML(c.name)},${c.paidThisMonth},Income,Service\n`; });
+    db.expenses.forEach(e => { csv += `${e.date},${escapeHTML(e.desc)},${e.amt},Expense,${escapeHTML(e.cat) || 'Other'}\n`; });
     const blob = new Blob([csv], { type: 'text/csv' }); const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = "HydroPro_QuickBooks.csv"; link.click();
 };
 window.exportData = () => { const blob = new Blob([JSON.stringify(db)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = "HydroPro_Backup.json"; link.click(); };
@@ -150,21 +155,22 @@ window.importData = (event) => {
 };
 window.nuclearReset = () => { if(confirm("☢️ DELETE ALL?")) { localStorage.removeItem(DB_KEY); location.reload(); } };
 
-/* --- 👥 MASTER LIST GENERATOR --- */
+/* --- 👥 MASTER LIST GENERATOR (CUSTOMER CARDS) --- */
 window.renderMaster = () => {
     const list = document.getElementById('CST-list-container'); if(!list) return; list.innerHTML = '';
     const search = (document.getElementById('mainSearch')?.value || "").toLowerCase();
+    
     db.customers.forEach(c => {
         if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
             const arrData = window.getArrearsData(c);
-            const arrearsBadge = arrData.isOwed ? `<span class="CST-badge badge-unpaid">OWES £${arrData.total.toFixed(2)} ${arrData.monthsString}</span>` : `<span class="CST-badge badge-paid">PAID</span>`;
+            const arrearsBadge = arrData.isOwed ? `<span class="CST-badge badge-unpaid">OWES £${arrData.total.toFixed(2)} ${escapeHTML(arrData.monthsString)}</span>` : `<span class="CST-badge badge-paid">PAID</span>`;
             
             const div = document.createElement('div');
             div.className = 'CST-card-item';
-            div.onclick = () => showBriefing(c.id);
+            div.onclick = () => showCustomerBriefing(c.id); // Directs to Customer Card Modal
             div.innerHTML = `
                 <div class="CST-card-top">
-                    <div><strong style="font-size:20px;">${c.name}</strong><br><small style="color:var(--accent); font-weight:800;">${c.houseNum} ${c.street}</small></div>
+                    <div><strong style="font-size:20px;">${escapeHTML(c.name)}</strong><br><small style="color:var(--accent); font-weight:800;">${escapeHTML(c.houseNum)} ${escapeHTML(c.street)}</small></div>
                     <div style="font-weight:950; font-size:22px;">£${(parseFloat(c.price)||0).toFixed(2)}</div>
                 </div>
                 <div class="CST-card-badges">${arrearsBadge}</div>
@@ -174,7 +180,7 @@ window.renderMaster = () => {
     });
 };
 
-/* --- 📅 WEEKS LIST GENERATOR --- */
+/* --- 📅 WEEKS LIST GENERATOR (JOB CARDS) --- */
 window.viewWeek = (num) => { curWeek = num; openTab('week-view-root'); renderWeek(); };
 window.setWorkingDay = (day, btn) => { workingDay = day; document.querySelectorAll('.WEE-day-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderWeek(); };
 
@@ -190,14 +196,14 @@ window.renderWeek = () => {
     customersToday.forEach(c => {
         const arrData = window.getArrearsData(c);
         const cleanBadge = c.cleaned ? `<span class="CST-badge badge-clean">✅ CLEANED</span>` : '';
-        const arrearsBadge = arrData.isOwed ? `<span class="CST-badge badge-unpaid">❌ OWES £${arrData.total.toFixed(2)} ${arrData.monthsString}</span>` : `<span class="CST-badge badge-paid">✅ PAID</span>`;
+        const arrearsBadge = arrData.isOwed ? `<span class="CST-badge badge-unpaid">❌ OWES £${arrData.total.toFixed(2)} ${escapeHTML(arrData.monthsString)}</span>` : `<span class="CST-badge badge-paid">✅ PAID</span>`;
 
         const div = document.createElement('div'); 
         div.className = 'CST-card-item';
-        div.onclick = () => showBriefing(c.id); 
+        div.onclick = () => showJobBriefing(c.id); // Directs to Job Card Modal
         div.innerHTML = `
             <div class="CST-card-top">
-                <div><strong style="font-size:20px;">${c.name}</strong><br><small style="color:var(--accent); font-weight:800;">${c.houseNum} ${c.street}</small></div>
+                <div><strong style="font-size:20px;">${escapeHTML(c.name)}</strong><br><small style="color:var(--accent); font-weight:800;">${escapeHTML(c.houseNum)} ${escapeHTML(c.street)}</small></div>
                 <div style="font-weight:950; font-size:22px;">£${(parseFloat(c.price)||0).toFixed(2)}</div>
             </div>
             <div class="CST-card-badges">${cleanBadge} ${arrearsBadge}</div>
@@ -206,49 +212,82 @@ window.renderWeek = () => {
     });
 };
 
-/* --- 💡 COMMAND VAULT (MODAL) --- */
-window.showBriefing = (id) => {
+/* --- 💡 COMMAND VAULT (MODAL LOGIC) --- */
+
+// Helper to generate history rows
+const generateHistoryHtml = (id) => {
+    const history = db.history.filter(h => h.custId === id).slice(-3).reverse();
+    if (history.length === 0) return '<p class="CMD-history-empty">No history</p>';
+    return history.map(h => `<div class="CMD-history-row"><span>${escapeHTML(h.date)}</span><span>£${parseFloat(h.amt).toFixed(2)}</span></div>`).join('');
+};
+
+// Helper to generate arrears HTML format
+const generateArrearsHtml = (arrData) => {
+    if (!arrData.isOwed) return `<div class="CMD-alert-success">✅ FULLY PAID UP</div>`;
+    
+    let listHtml = arrData.breakdown.map(b => `<li>£${b.amt.toFixed(2)} - ${escapeHTML(b.month)}</li>`).join('');
+    return `
+        <div class="CMD-alert-danger">
+            <div class="CMD-alert-danger-title">⚠️ TOTAL OUTSTANDING: £${arrData.total.toFixed(2)}</div>
+            <ul class="CMD-arrears-list">${listHtml}</ul>
+        </div>
+    `;
+};
+
+// 1. JOB CARD (Includes Actions, Updated Arrears List)
+window.showJobBriefing = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
     const container = document.getElementById('briefingData');
     
-    const isCleaned = c.cleaned;
     const arrData = window.getArrearsData(c);
-    
-    const arrearsHtml = arrData.isOwed ? `<div style="background:var(--danger); color:white; padding:15px; border-radius:20px; text-align:center; font-weight:950; margin:15px 0; font-size:18px;">⚠️ TOTAL OUTSTANDING: £${arrData.total.toFixed(2)} <br><small>${arrData.monthsString}</small></div>` : `<div style="color:var(--success); text-align:center; font-weight:950; margin:15px 0; font-size:18px;">✅ FULLY PAID UP</div>`;
-
-    const history = db.history.filter(h => h.custId === id).slice(-3).reverse();
-    let historyHtml = history.map(h => `<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(0,0,0,0.05); font-weight:800;"><span>${h.date}</span><span>£${parseFloat(h.amt).toFixed(2)}</span></div>`).join('') || '<p style="text-align:center; opacity:0.4; margin:0;">No history</p>';
-    
-    // Fixed: Google Maps URL Encoding
     const mapQuery = encodeURIComponent(`${c.houseNum} ${c.street}, ${c.postcode || ''}`);
 
     container.innerHTML = `
-        <div style="border-bottom:3px solid var(--accent); padding-bottom:15px; margin-bottom:15px;">
-            <h2 style="margin:0; font-size:32px; font-weight:950;">${c.name}</h2>
-            <div style="font-size:18px; opacity:0.6; font-weight:800; margin-top:5px;">${c.houseNum} ${c.street}</div>
+        <div class="CMD-header">
+            <h2>${escapeHTML(c.name)}</h2>
+            <div class="CMD-header-sub">${escapeHTML(c.houseNum)} ${escapeHTML(c.street)}</div>
         </div>
         
-        ${arrearsHtml}
+        ${generateArrearsHtml(arrData)}
 
         <div class="CMD-action-grid">
-            <button class="CMD-action-btn clean" onclick="cmdToggleClean('${c.id}')">
-                <span style="font-size:24px;">🧼</span> ${isCleaned ? 'UNDO CLEAN' : 'MARK CLEAN'}
-            </button>
-            <button class="CMD-action-btn pay" onclick="cmdSettlePaid('${c.id}')">
-                <span style="font-size:24px;">💰</span> COLLECT £
-            </button>
-            <button class="CMD-action-btn route" onclick="window.open('https://maps.google.com/?q=${mapQuery}', '_blank')">
-                <span style="font-size:24px;">📍</span> NAVIGATE
-            </button>
-            <button class="CMD-action-btn call" onclick="window.location.href='tel:${c.phone}'">
-                <span style="font-size:24px;">📞</span> CALL
-            </button>
+            <button class="CMD-action-btn clean" onclick="cmdToggleClean('${c.id}')"><span style="font-size:24px;">🧼</span> ${c.cleaned ? 'UNDO CLEAN' : 'MARK CLEAN'}</button>
+            <button class="CMD-action-btn pay" onclick="cmdSettlePaid('${c.id}', 'job')"><span style="font-size:24px;">💰</span> COLLECT £</button>
+            <button class="CMD-action-btn route" onclick="window.open('https://maps.google.com/?q=$$${mapQuery}', '_blank')"><span style="font-size:24px;">📍</span> NAVIGATE</button>
+            <button class="CMD-action-btn call" onclick="window.location.href='tel:${escapeHTML(c.phone)}'"><span style="font-size:24px;">📞</span> CALL</button>
         </div>
 
-        <div style="margin-top:25px;">
-            <h3 style="font-size:12px; opacity:0.5; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">Rolling History</h3>
-            <div style="background:var(--ios-grey); padding:15px; border-radius:20px;">${historyHtml}</div>
+        <h3 class="CMD-history-hdr">Rolling History</h3>
+        <div class="CMD-history-box">${generateHistoryHtml(c.id)}</div>
+    `;
+    document.getElementById('briefingModal').classList.remove('hidden');
+};
+
+// 2. CUSTOMER CARD (No Actions, Added Full Details, Updated Arrears List)
+window.showCustomerBriefing = (id) => {
+    const c = db.customers.find(x => x.id === id); if(!c) return;
+    const container = document.getElementById('briefingData');
+    const arrData = window.getArrearsData(c);
+
+    container.innerHTML = `
+        <div class="CMD-header">
+            <h2>${escapeHTML(c.name)}</h2>
+            <div class="CMD-header-sub">${escapeHTML(c.houseNum)} ${escapeHTML(c.street)} <br>${escapeHTML(c.postcode || '')}</div>
         </div>
+        
+        <div class="CMD-details-box">
+            <div class="CMD-detail-row"><span>📞 Phone</span><span>${escapeHTML(c.phone) || 'N/A'}</span></div>
+            <div class="CMD-detail-row"><span>💰 Price</span><span>£${parseFloat(c.price).toFixed(2)}</span></div>
+            <div class="CMD-detail-row"><span>📅 Week</span><span>Week ${escapeHTML(c.week)}</span></div>
+            <div class="CMD-detail-row"><span>📆 Day</span><span>${escapeHTML(c.day)}</span></div>
+        </div>
+
+        ${generateArrearsHtml(arrData)}
+        
+        ${arrData.isOwed ? `<button class="ADM-save-btn" style="background:var(--success); margin-bottom:15px;" onclick="cmdSettlePaid('${c.id}', 'cust')">💰 COLLECT PAYMENT</button>` : ''}
+
+        <h3 class="CMD-history-hdr">Rolling History</h3>
+        <div class="CMD-history-box">${generateHistoryHtml(c.id)}</div>
     `;
     document.getElementById('briefingModal').classList.remove('hidden');
 };
@@ -260,16 +299,19 @@ window.cmdToggleClean = (id) => {
     c.cleaned = !c.cleaned; 
     window.saveData(); 
     window.renderAllSafe(); 
-    window.showBriefing(id); 
+    window.showJobBriefing(id); 
 };
 
-window.cmdSettlePaid = (id) => { 
+// Accepts 'context' to know which modal to refresh after payment
+window.cmdSettlePaid = (id, context) => { 
     const c = db.customers.find(x => x.id === id); 
     const arrData = window.getArrearsData(c);
     
     const amtStr = prompt(`Process payment for ${c.name}?\nTotal Owed: £${arrData.total.toFixed(2)}`, arrData.total.toFixed(2)); 
     if(amtStr !== null && amtStr !== "") { 
         let amtPaid = parseFloat(amtStr); 
+        if (isNaN(amtPaid) || amtPaid <= 0) return alert("Invalid amount.");
+
         c.paidThisMonth = (parseFloat(c.paidThisMonth) || 0) + amtPaid; 
         
         let overpay = c.paidThisMonth - parseFloat(c.price);
@@ -290,18 +332,28 @@ window.cmdSettlePaid = (id) => {
 
         if(!db.history) db.history = [];
         db.history.push({ custId: id, amt: amtPaid, date: new Date().toLocaleDateString('en-GB') }); 
+        
         window.saveData(); 
         window.renderAllSafe(); 
-        window.showBriefing(id); 
+        
+        if (context === 'job') window.showJobBriefing(id);
+        else window.showCustomerBriefing(id);
     } 
 };
 
 /* --- 💰 FINANCES VAULT LOGIC --- */
 window.addFinanceExpense = () => {
-    const desc = document.getElementById('fExpDesc').value; const amt = parseFloat(document.getElementById('fExpAmt').value); const cat = document.getElementById('fExpCat').value;
-    if(!desc || !amt || amt <= 0) return alert("Valid Description and Amount required.");
+    const desc = document.getElementById('fExpDesc').value.trim(); 
+    const amt = parseFloat(document.getElementById('fExpAmt').value); 
+    const cat = document.getElementById('fExpCat').value;
+    
+    if(!desc || isNaN(amt) || amt <= 0) return alert("Valid Description and Amount required.");
+    
     db.expenses.push({ id: Date.now(), desc, amt, cat, date: new Date().toLocaleDateString('en-GB') });
-    saveData(); document.getElementById('fExpDesc').value = ''; document.getElementById('fExpAmt').value = ''; renderFinances();
+    saveData(); 
+    document.getElementById('fExpDesc').value = ''; 
+    document.getElementById('fExpAmt').value = ''; 
+    renderFinances();
 };
 
 window.renderFinances = () => {
@@ -316,7 +368,7 @@ window.renderFinances = () => {
         const arrData = window.getArrearsData(c);
         if(arrData.isOwed) {
             totalArrears += arrData.total;
-            arrearsListHtml += `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.2); font-size:16px; font-weight:800;"><span>${c.name} <small style="opacity:0.7;">${arrData.monthsString}</small></span><span>£${arrData.total.toFixed(2)}</span></div>`;
+            arrearsListHtml += `<div class="CMD-detail-row"><span>${escapeHTML(c.name)} <small style="opacity:0.7;">${escapeHTML(arrData.monthsString)}</small></span><span>£${arrData.total.toFixed(2)}</span></div>`;
         }
     });
 
@@ -346,8 +398,8 @@ window.renderFinances = () => {
         for (const [cat, data] of Object.entries(categories)) { 
             let catIcon = "🏢"; if(cat === 'Fuel') catIcon = "⛽"; if(cat === 'Equipment') catIcon = "🧽"; if(cat === 'Food') catIcon = "🍔"; if(cat === 'Marketing') catIcon = "📣"; 
             let itemsHtml = ''; 
-            data.items.slice().reverse().forEach(item => { itemsHtml += `<div class="FIN-exp-row"><span>${item.desc} <small style="opacity:0.5; font-size:12px;">(${item.date})</small></span><span style="color:var(--danger);">-£${parseFloat(item.amt).toFixed(2)}</span></div>`; }); 
-            statementHtml += `<div class="FIN-cat-card"><div class="FIN-cat-hdr"><span>${catIcon} ${cat.toUpperCase()}</span><span style="color:var(--danger);">£${data.total.toFixed(2)}</span></div>${itemsHtml}</div>`; 
+            data.items.slice().reverse().forEach(item => { itemsHtml += `<div class="FIN-exp-row"><span>${escapeHTML(item.desc)} <small style="opacity:0.5; font-size:12px;">(${escapeHTML(item.date)})</small></span><span style="color:var(--danger);">-£${parseFloat(item.amt).toFixed(2)}</span></div>`; }); 
+            statementHtml += `<div class="FIN-cat-card"><div class="FIN-cat-hdr"><span>${catIcon} ${escapeHTML(cat).toUpperCase()}</span><span style="color:var(--danger);">£${data.total.toFixed(2)}</span></div>${itemsHtml}</div>`; 
         } 
     }
     ledger.innerHTML = statementHtml;
@@ -356,5 +408,17 @@ window.renderFinances = () => {
 /* --- 🌦️ WEATHER --- */
 async function initWeather() {
     const cachedW = localStorage.getItem('HP_Weather_Cache'); const wText = document.getElementById('w-text'); if(cachedW && wText) wText.innerText = cachedW;
-    navigator.geolocation.getCurrentPosition(async (pos) => { try { const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&appid=${W_API_KEY}&units=metric`); const data = await res.json(); const temp = `${Math.round(data.main.temp)}°C`; if (wText) wText.innerText = temp; localStorage.setItem('HP_Weather_Cache', temp); } catch (e) { if(!cachedW && wText) wText.innerText = "OFFLINE"; } });
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (pos) => { 
+            try { 
+                const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&appid=${W_API_KEY}&units=metric`); 
+                const data = await res.json(); 
+                const temp = `${Math.round(data.main.temp)}°C`; 
+                if (wText) wText.innerText = temp; 
+                localStorage.setItem('HP_Weather_Cache', temp); 
+            } catch (e) { 
+                if(!cachedW && wText) wText.innerText = "OFFLINE"; 
+            } 
+        });
+    }
 }
