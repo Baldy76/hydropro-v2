@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v49.0</title>
+    <title>Hydro Pro v50.0</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="styles.css?v=490">
+    <link rel="stylesheet" href="styles.css?v=500">
 </head>
 <body class="light-mode">
 
@@ -32,15 +32,11 @@
 
     <main id="G-VIEWPORT">
         <section id="home-root" class="tab-content active">
-            <div class="HUB-grid-vault">
-                <div class="HUB-row">
-                    <button class="HUB-btn" onclick="openTab('admin-root')"><span class="HUB-icon">⚙️</span><small class="HUB-label">Admin</small></button>
-                    <button class="HUB-btn" onclick="openTab('master-root')"><span class="HUB-icon">👥</span><small class="HUB-label">Custs</small></button>
-                </div>
-                <div class="HUB-row">
-                    <button class="HUB-btn" onclick="openTab('finances-root')"><span class="HUB-icon">💰</span><small class="HUB-label">Finances</small></button>
-                    <button class="HUB-btn" onclick="openTab('weeks-root')"><span class="HUB-icon">📅</span><small class="HUB-label">Weeks</small></button>
-                </div>
+            <div class="HUB-grid-matrix">
+                <button class="HUB-btn" onclick="openTab('admin-root')"><span class="HUB-icon">⚙️</span><small class="HUB-label">Admin</small></button>
+                <button class="HUB-btn" onclick="openTab('master-root')"><span class="HUB-icon">👥</span><small class="HUB-label">Custs</small></button>
+                <button class="HUB-btn" onclick="openTab('finances-root')"><span class="HUB-icon">💰</span><small class="HUB-label">Finances</small></button>
+                <button class="HUB-btn" onclick="openTab('weeks-root')"><span class="HUB-icon">📅</span><small class="HUB-label">Weeks</small></button>
             </div>
             <div class="HUB-sync-area">
                 <button class="HUB-sync-btn" onclick="location.reload(true)">🔄 SYNC UPDATES</button>
@@ -128,11 +124,11 @@
     <div id="briefingModal" class="modal-overlay hidden" onclick="closeBriefing()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div id="briefingData"></div>
-            <button class="ADM-save-btn" onclick="closeBriefing()">CLOSE BRIEFING</button>
+            <button class="ADM-save-btn" style="margin-top:25px;" onclick="closeBriefing()">CLOSE BRIEFING</button>
         </div>
     </div>
 
-    <footer id="G-FOOTER">v49.0 THE WINNER'S BUILD</footer>
-    <script src="app.js?v=490"></script>
+    <footer id="G-FOOTER">v50.0 TITANIUM CORE</footer>
+    <script src="app.js?v=500"></script>
 </body>
 </html>
