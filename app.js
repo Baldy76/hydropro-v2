@@ -1,6 +1,6 @@
 "use strict";
 
-const DB_KEY = 'HydroPro_Gold_V36'; // Intentionally kept the same so we don't wipe your local storage
+const DB_KEY = 'HydroPro_Gold_V36'; 
 const W_API_KEY = "4c00e61833ea94d3c4a1bff9d2c32969"; 
 
 let db = { customers: [], expenses: [], history: [], bank: { name: '', acc: '' } };
@@ -11,7 +11,7 @@ let workingDay = 'Mon';
 const escapeHTML = (str) => {
     if (!str) return '';
     return String(str).replace(/[&<>'"]/g, tag => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+        '&': '&', '<': '<', '>': '>', "'": '&#39;', '"': '&quot;'
     }[tag] || tag));
 };
 
@@ -38,7 +38,6 @@ window.getArrearsData = (c) => {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. FAULT-TOLERANT DATA HYDRATION
     try {
         const saved = localStorage.getItem(DB_KEY);
         if (saved) {
@@ -50,7 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     } catch(err) { console.error("Database Boot Error.", err); }
 
-    // 2. Theme Boot
     applyTheme(localStorage.getItem('HP_Theme') === 'true');
     const cb = document.getElementById('themeCheckbox');
     if(cb) {
@@ -61,13 +59,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 3. Admin Bank Pre-fill
     const bNameEl = document.getElementById('bName');
     const bAccEl = document.getElementById('bAcc');
     if(bNameEl) bNameEl.value = db.bank.name;
     if(bAccEl) bAccEl.value = db.bank.acc;
 
-    // 4. Init Systems
     updateHeaderDate(); 
     renderAllSafe(); 
     initWeather();
@@ -119,6 +115,7 @@ window.saveCustomer = () => {
     });
     saveData(); alert("Saved!"); location.reload();
 };
+
 window.saveBank = () => { db.bank.name = document.getElementById('bName').value; db.bank.acc = document.getElementById('bAcc').value; saveData(); alert("Secured!"); };
 
 window.completeCycle = () => {
@@ -146,13 +143,16 @@ window.exportToQuickBooks = () => {
     db.expenses.forEach(e => { csv += `${e.date},${escapeHTML(e.desc)},${e.amt},Expense,${escapeHTML(e.cat) || 'Other'}\n`; });
     const blob = new Blob([csv], { type: 'text/csv' }); const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = "HydroPro_QuickBooks.csv"; link.click();
 };
+
 window.exportData = () => { const blob = new Blob([JSON.stringify(db)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = "HydroPro_Backup.json"; link.click(); };
+
 window.importData = (event) => {
     const reader = new FileReader();
     reader.onload = (e) => {
         try { const imported = JSON.parse(e.target.result); db.customers = imported.customers || []; db.expenses = imported.expenses || []; db.history = imported.history || []; db.bank = imported.bank || { name: '', acc: '' }; saveData(); alert("Restored!"); location.reload(); } catch (err) { alert("Invalid Format."); }
     }; reader.readAsText(event.target.files[0]);
 };
+
 window.nuclearReset = () => { if(confirm("☢️ DELETE ALL?")) { localStorage.removeItem(DB_KEY); location.reload(); } };
 
 /* --- 👥 MASTER LIST GENERATOR (CUSTOMER CARDS) --- */
@@ -163,11 +163,11 @@ window.renderMaster = () => {
     db.customers.forEach(c => {
         if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
             const arrData = window.getArrearsData(c);
-            const arrearsBadge = arrData.isOwed ? `<span class="CST-badge badge-unpaid">OWES £${arrData.total.toFixed(2)} ${escapeHTML(arrData.monthsString)}</span>` : `<span class="CST-badge badge-paid">PAID</span>`;
+            const arrearsBadge = arrData.isOwed ? `<span class="CST-badge badge-unpaid">OWES £${arrData.total.toFixed(2)}</span>` : `<span class="CST-badge badge-paid">PAID</span>`;
             
             const div = document.createElement('div');
             div.className = 'CST-card-item';
-            div.onclick = () => showCustomerBriefing(c.id); // Directs to Customer Card Modal
+            div.onclick = () => showCustomerBriefing(c.id);
             div.innerHTML = `
                 <div class="CST-card-top">
                     <div><strong style="font-size:20px;">${escapeHTML(c.name)}</strong><br><small style="color:var(--accent); font-weight:800;">${escapeHTML(c.houseNum)} ${escapeHTML(c.street)}</small></div>
@@ -196,11 +196,11 @@ window.renderWeek = () => {
     customersToday.forEach(c => {
         const arrData = window.getArrearsData(c);
         const cleanBadge = c.cleaned ? `<span class="CST-badge badge-clean">✅ CLEANED</span>` : '';
-        const arrearsBadge = arrData.isOwed ? `<span class="CST-badge badge-unpaid">❌ OWES £${arrData.total.toFixed(2)} ${escapeHTML(arrData.monthsString)}</span>` : `<span class="CST-badge badge-paid">✅ PAID</span>`;
+        const arrearsBadge = arrData.isOwed ? `<span class="CST-badge badge-unpaid">❌ OWES £${arrData.total.toFixed(2)}</span>` : `<span class="CST-badge badge-paid">✅ PAID</span>`;
 
         const div = document.createElement('div'); 
         div.className = 'CST-card-item';
-        div.onclick = () => showJobBriefing(c.id); // Directs to Job Card Modal
+        div.onclick = () => showJobBriefing(c.id);
         div.innerHTML = `
             <div class="CST-card-top">
                 <div><strong style="font-size:20px;">${escapeHTML(c.name)}</strong><br><small style="color:var(--accent); font-weight:800;">${escapeHTML(c.houseNum)} ${escapeHTML(c.street)}</small></div>
@@ -214,14 +214,12 @@ window.renderWeek = () => {
 
 /* --- 💡 COMMAND VAULT (MODAL LOGIC) --- */
 
-// Helper to generate history rows
 const generateHistoryHtml = (id) => {
     const history = db.history.filter(h => h.custId === id).slice(-3).reverse();
     if (history.length === 0) return '<p class="CMD-history-empty">No history</p>';
     return history.map(h => `<div class="CMD-history-row"><span>${escapeHTML(h.date)}</span><span>£${parseFloat(h.amt).toFixed(2)}</span></div>`).join('');
 };
 
-// Helper to generate arrears HTML format
 const generateArrearsHtml = (arrData) => {
     if (!arrData.isOwed) return `<div class="CMD-alert-success">✅ FULLY PAID UP</div>`;
     
@@ -234,7 +232,7 @@ const generateArrearsHtml = (arrData) => {
     `;
 };
 
-// 1. JOB CARD (Includes Actions, Updated Arrears List)
+// 1. JOB CARD (Includes Actions, No Details, Updated Arrears List)
 window.showJobBriefing = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
     const container = document.getElementById('briefingData');
@@ -253,7 +251,7 @@ window.showJobBriefing = (id) => {
         <div class="CMD-action-grid">
             <button class="CMD-action-btn clean" onclick="cmdToggleClean('${c.id}')"><span style="font-size:24px;">🧼</span> ${c.cleaned ? 'UNDO CLEAN' : 'MARK CLEAN'}</button>
             <button class="CMD-action-btn pay" onclick="cmdSettlePaid('${c.id}', 'job')"><span style="font-size:24px;">💰</span> COLLECT £</button>
-            <button class="CMD-action-btn route" onclick="window.open('https://maps.google.com/?q=$$${mapQuery}', '_blank')"><span style="font-size:24px;">📍</span> NAVIGATE</button>
+            <button class="CMD-action-btn route" onclick="window.open('http://googleusercontent.com/maps.google.com/3{mapQuery}', '_blank')"><span style="font-size:24px;">📍</span> NAVIGATE</button>
             <button class="CMD-action-btn call" onclick="window.location.href='tel:${escapeHTML(c.phone)}'"><span style="font-size:24px;">📞</span> CALL</button>
         </div>
 
@@ -263,7 +261,7 @@ window.showJobBriefing = (id) => {
     document.getElementById('briefingModal').classList.remove('hidden');
 };
 
-// 2. CUSTOMER CARD (No Actions, Added Full Details, Updated Arrears List)
+// 2. CUSTOMER CARD (No Actions, Full Details, Updated Arrears List, NO Payment Button)
 window.showCustomerBriefing = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
     const container = document.getElementById('briefingData');
@@ -283,8 +281,6 @@ window.showCustomerBriefing = (id) => {
         </div>
 
         ${generateArrearsHtml(arrData)}
-        
-        ${arrData.isOwed ? `<button class="ADM-save-btn" style="background:var(--success); margin-bottom:15px;" onclick="cmdSettlePaid('${c.id}', 'cust')">💰 COLLECT PAYMENT</button>` : ''}
 
         <h3 class="CMD-history-hdr">Rolling History</h3>
         <div class="CMD-history-box">${generateHistoryHtml(c.id)}</div>
@@ -302,7 +298,6 @@ window.cmdToggleClean = (id) => {
     window.showJobBriefing(id); 
 };
 
-// Accepts 'context' to know which modal to refresh after payment
 window.cmdSettlePaid = (id, context) => { 
     const c = db.customers.find(x => x.id === id); 
     const arrData = window.getArrearsData(c);
