@@ -318,6 +318,22 @@ window.addFinanceExpense = () => {
     saveData(); document.getElementById('fExpDesc').value = ''; document.getElementById('fExpAmt').value = ''; renderFinances();
 };
 
+/* --- ✨ 3D CANVAS SHADOW PLUGIN ✨ --- */
+const arc3DPlugin = {
+    id: 'arc3DPlugin',
+    beforeDatasetDraw: (chart, args, options) => {
+        const ctx = chart.ctx;
+        ctx.save();
+        ctx.shadowColor = document.body.classList.contains('dark-mode') ? 'rgba(0, 0, 0, 0.8)' : 'rgba(0, 0, 0, 0.2)';
+        ctx.shadowBlur = 15;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 10;
+    },
+    afterDatasetDraw: (chart, args, options) => {
+        chart.ctx.restore();
+    }
+};
+
 window.renderFinances = () => {
     const dash = document.getElementById('FIN-dashboard'); const ledger = document.getElementById('FIN-ledger'); if(!dash || !ledger) return;
     
@@ -368,18 +384,15 @@ window.renderFinances = () => {
     
     dash.innerHTML = htmlBuilder;
     
-    /* --- 📊 THE UPGRADED HALF-DOUGHNUT GAUGE & DYNAMIC LABELS --- */
     const ctx = document.getElementById('financeChartCanvas');
     if (ctx && typeof Chart !== 'undefined') {
         if (financeChartInstance) financeChartInstance.destroy(); 
         
-        // Exact values hardcoded into the labels
         let labels = [
             `Collected: £${income.toFixed(2)}`, 
             `Debt: £${totalArrears.toFixed(2)}`, 
             `Forecasted: £${forecasted.toFixed(2)}`
         ]; 
-        
         let chartData = [income, totalArrears, forecasted]; 
         let colors = ['#34C759', '#ff453a', '#007aff'];
         let isDarkMode = document.body.classList.contains('dark-mode');
@@ -387,6 +400,7 @@ window.renderFinances = () => {
         if (income > 0 || totalArrears > 0 || forecasted > 0) {
             financeChartInstance = new Chart(ctx, { 
                 type: 'doughnut', 
+                plugins: [arc3DPlugin], // INJECT 3D CANVAS SHADOW
                 data: { 
                     labels: labels, 
                     datasets: [{ 
@@ -402,10 +416,8 @@ window.renderFinances = () => {
                 options: { 
                     responsive: true, 
                     maintainAspectRatio: false, 
-                    cutout: '82%', 
-                    rotation: -90, // Start drawing from the left
-                    circumference: 180, // Stop drawing halfway
-                    layout: { padding: 5 },
+                    cutout: '75%', // RESTORED TO FULL CIRCLE PROPORTIONS
+                    layout: { padding: 10 },
                     plugins: { 
                         legend: { 
                             position: 'bottom', 
