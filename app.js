@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (saved) db = JSON.parse(saved);
     if (!db.bank) db.bank = { name: '', acc: '' };
     
-    // Theme
+    // Theme Initializer
     const isDark = localStorage.getItem('HP_Theme') === 'true';
     applyTheme(isDark);
     const cb = document.getElementById('themeCheckbox');
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Load Bank Fields
+    // Load Admin Fields
     if(document.getElementById('bName')) {
         document.getElementById('bName').value = db.bank.name || '';
         document.getElementById('bAcc').value = db.bank.acc || '';
@@ -35,27 +35,43 @@ function applyTheme(isDark) {
     if(logo) logo.src = isDark ? "Logo-Dark.png" : "Logo.png";
 }
 
-window.saveBank = () => {
-    db.bank.name = document.getElementById('bName').value;
-    db.bank.acc = document.getElementById('bAcc').value;
-    saveData(); alert("Bank Secured! 🔒");
+/* --- 🔥 ENGINE ROOM --- */
+window.openTab = (id) => {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0,0); renderAll();
 };
 
-window.saveCustomer = () => {
-    const name = document.getElementById('cName').value;
-    if(!name) return alert("Name required");
-    db.customers.push({ 
-        id: Date.now().toString(), name, 
-        houseNum: document.getElementById('cHouseNum').value, 
-        street: document.getElementById('cStreet').value, 
-        price: n(document.getElementById('cPrice').value), 
-        cleaned: false, paidThisMonth: 0, week: "1", day: "Mon" 
+window.renderMaster = () => {
+    const list = document.getElementById('master-list-container'); if(!list) return; list.innerHTML = '';
+    const search = (document.getElementById('mainSearch')?.value || "").toLowerCase();
+    db.customers.forEach(c => {
+        if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
+            const div = document.createElement('div');
+            div.className = 'CST-card';
+            div.onclick = () => showBriefing(c.id);
+            div.innerHTML = `<div><strong style="font-size:20px;">${c.name}</strong><br><small style="color:var(--accent); font-weight:800;">${c.houseNum} ${c.street}</small></div><div style="font-weight:950; color:var(--success); font-size:22px;">£${n(c.price).toFixed(2)}</div>`;
+            list.appendChild(div);
+        }
     });
-    saveData(); alert("Saved!"); location.reload();
 };
 
+window.showBriefing = (id) => {
+    const c = db.customers.find(x => x.id === id);
+    const modal = document.getElementById('briefingModal');
+    const container = document.getElementById('briefingData');
+    const isPaid = n(c.paidThisMonth) >= n(c.price);
+    const arrearsHtml = !isPaid ? `<div style="background:var(--danger); color:white; padding:15px; border-radius:20px; text-align:center; font-weight:900; margin:10px 0;">⚠️ PAYMENT MISSED THIS MONTH</div>` : `<div style="color:var(--success); text-align:center; font-weight:900; margin:10px 0;">✅ PAID THIS MONTH</div>`;
+    const history = (db.history || []).filter(h => h.custId === id).slice(-3).reverse();
+    let historyHtml = history.map(h => `<div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(0,0,0,0.05); font-weight:700;"><span>${h.date}</span><span>£${n(h.amt).toFixed(2)}</span></div>`).join('') || '<p style="text-align:center; opacity:0.5;">No history found</p>';
+
+    container.innerHTML = `<h2 style="color:var(--accent); font-size:28px; margin:0;">${c.name}</h2><p style="opacity:0.6; font-weight:800; margin-bottom:20px;">${c.houseNum} ${c.street}</p><div style="border-bottom:2px solid #eee; padding-bottom:10px;"><strong>Price:</strong> £${n(c.price).toFixed(2)}</div>${arrearsHtml}<div style="margin-top:20px;"><h3 style="font-size:14px; opacity:0.4; text-transform:uppercase;">3-Month History</h3>${historyHtml}</div>`;
+    modal.classList.remove('hidden');
+};
+
+/* --- 🌦️ UTILS --- */
 window.saveData = () => localStorage.setItem(DB_KEY, JSON.stringify(db));
-window.openTab = (id) => { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); renderAll(); };
+window.closeBriefing = () => document.getElementById('briefingModal').classList.add('hidden');
 window.updateHeader = () => { if(el = document.getElementById('dateText')) el.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }); };
 window.renderAll = () => { if(document.getElementById('master-root').classList.contains('active')) renderMaster(); };
 async function initWeather() { navigator.geolocation.getCurrentPosition(async (pos) => { try { const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&appid=${W_API_KEY}&units=metric`); const data = await res.json(); document.getElementById('w-icon').innerText = "🌤️"; document.getElementById('w-text').innerText = `${Math.round(data.main.temp)}°C`; } catch (err) { } }); }
