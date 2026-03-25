@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v60.1</title>
+    <title>Hydro Pro v60.2</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#007aff">
@@ -16,7 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-    <link rel="stylesheet" href="styles.css?v=601">
+    <link rel="stylesheet" href="styles.css?v=602">
 </head>
 <body class="light-mode">
 
@@ -25,7 +25,6 @@
         <div class="CENTRAL-STATUS-POD">
             <div id="weather-pill" class="G-WEATHER-PILL-PASSIVE"><span id="w-icon">🌤️</span><small id="w-text">SYNC...</small></div>
         </div>
-        <div class="DATE-CONTAINER"><span id="dateText"></span></div>
     </header>
 
     <main id="G-VIEWPORT">
@@ -45,7 +44,15 @@
                 </div>
             </div>
             
-            <div class="WEE-day-selector" style="margin-top: 20px;">
+            <button class="ADM-save-btn" style="width: calc(100% - 40px); margin: 40px 20px; background: transparent; border: 3px solid var(--accent); color: var(--accent); box-shadow: none;" onclick="location.reload(true)">🔄 SYNC APP UPDATES</button>
+        </section>
+
+        <section id="week-view-root" class="tab-content">
+            <div class="WEE-sub-nav">
+                <button onclick="openTab('weeks-root')">⬅️ BACK TO WEEKS</button>
+            </div>
+            
+            <div class="WEE-day-selector">
                 <button class="WEE-day-btn active" onclick="setWorkingDay('Mon', this)">M</button>
                 <button class="WEE-day-btn" onclick="setWorkingDay('Tue', this)">T</button>
                 <button class="WEE-day-btn" onclick="setWorkingDay('Wed', this)">W</button>
@@ -58,8 +65,6 @@
             <button class="ADM-save-btn" style="width: calc(100% - 40px); margin: 0 20px 20px; background: var(--text); color: var(--bg);" onclick="routeMyDay()">📍 ROUTE MY DAY</button>
             
             <div id="WEE-list-container"></div>
-            
-            <button class="ADM-save-btn" style="width: calc(100% - 40px); margin: 20px 20px; background: transparent; border: 3px solid var(--accent); color: var(--accent); box-shadow: none;" onclick="location.reload(true)">🔄 SYNC UPDATES</button>
         </section>
 
         <section id="master-root" class="tab-content">
@@ -137,7 +142,7 @@
                 </div>
                 <button class="ADM-util-btn green" onclick="completeCycle()">🚀 START NEW MONTH</button>
                 <button class="ADM-util-btn red" onclick="nuclearReset()">☢️ FACTORY RESET</button>
-                <footer id="G-FOOTER">HYDRO PRO // v60.1 ENTERPRISE PWA</footer>
+                <footer id="G-FOOTER">HYDRO PRO // v60.2 ENTERPRISE PWA</footer>
             </div>
         </section>
 
@@ -158,6 +163,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=601" defer></script>
+    <script src="app.js?v=602" defer></script>
 </body>
 </html>
