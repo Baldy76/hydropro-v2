@@ -32,8 +32,9 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-hei
 #G-HEADER { position: fixed; top: 0; left: 0; width: 100%; height: var(--h-header) !important; z-index: 1000; background: rgba(242, 242, 247, 0.75); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: row; justify-content: center; align-items: center; }
 body.dark-mode #G-HEADER { background: rgba(0, 0, 0, 0.75); border-bottom: 1px solid rgba(255,255,255,0.05); }
 
-.G-LOGO-STRETCH-WRAP { padding: 0; display: flex; justify-content: center; margin-top: 10px; }
-.G-LOGO-STRETCH-WRAP img { width: 220px !important; height: auto; display: block; }
+/* --- LOGO FULL WIDTH FIX --- */
+.G-LOGO-STRETCH-WRAP { width: 100%; height: 100%; padding: 0; margin: 0; display: flex; justify-content: center; align-items: center; }
+.G-LOGO-STRETCH-WRAP img { width: 100% !important; height: 100% !important; object-fit: contain; display: block; padding: 10px; }
 
 .ios-switch { position: relative; width: 70px; height: 36px; }
 .ios-switch input { opacity: 0; width: 0; height: 0; }
