@@ -23,15 +23,29 @@ const escapeHTML = (str) => {
     }[tag] || tag));
 };
 
-/* --- 📊 CORE ARREARS CALCULATION ENGINE --- */
+/* --- 📊 CORE ARREARS CALCULATION ENGINE (V59.1 UPDATE) --- */
 window.getArrearsData = (c) => {
     const currentMonthStr = new Date().toLocaleString('en-GB', { month: 'short' });
     let pastLog = c.pastArrears || [];
-    let currentOwed = (parseFloat(c.price) || 0) - (parseFloat(c.paidThisMonth) || 0);
+    
+    // HUGE FIX: Only charge them for this month IF you have marked them as cleaned!
+    let thisMonthCharge = c.cleaned ? (parseFloat(c.price) || 0) : 0;
+    let currentOwed = thisMonthCharge - (parseFloat(c.paidThisMonth) || 0);
+    
     let breakdown = pastLog.map(a => ({ month: a.month, amt: parseFloat(a.amt) }));
-    if (currentOwed > 0.01) breakdown.push({ month: currentMonthStr, amt: currentOwed });
+    
+    if (currentOwed > 0.01) {
+        breakdown.push({ month: currentMonthStr, amt: currentOwed });
+    }
+    
     const totalOwed = breakdown.reduce((sum, item) => sum + item.amt, 0);
-    return { isOwed: totalOwed > 0.01, total: totalOwed, monthsString: breakdown.map(b => b.month).join(', '), breakdown: breakdown };
+    
+    return { 
+        isOwed: totalOwed > 0.01, 
+        total: totalOwed, 
+        monthsString: breakdown.map(b => b.month).join(', '), 
+        breakdown: breakdown 
+    };
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -85,7 +99,7 @@ window.renderAllSafe = () => {
     } catch (err) { console.error("Render Error:", err); }
 };
 
-/* --- ⚙️ ADMIN LOGIC --- */
+/* --- ⚙️ ADMIN LOGIC (V59.1 UPDATE) --- */
 window.saveCustomer = () => {
     const name = document.getElementById('cName').value.trim();
     if(!name) return alert("Name required!");
@@ -93,12 +107,28 @@ window.saveCustomer = () => {
     saveData(); alert("Saved!"); location.reload();
 };
 window.saveBank = () => { db.bank.name = document.getElementById('bName').value; db.bank.acc = document.getElementById('bAcc').value; saveData(); alert("Secured!"); };
+
+/* ENGINE: COMPLETE CYCLE */
 window.completeCycle = () => {
     const cycleMonth = new Date().toLocaleString('en-GB', { month: 'short', year: '2-digit' });
     if(confirm(`Start new month?`)) {
-        db.customers.forEach(c => { const paid = parseFloat(c.paidThisMonth) || 0; const price = parseFloat(c.price) || 0; if (paid < price) { if (!c.pastArrears) c.pastArrears = []; c.pastArrears.push({ month: cycleMonth, amt: price - paid }); } c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload();
+        db.customers.forEach(c => { 
+            const paid = parseFloat(c.paidThisMonth) || 0; 
+            // Only carry over unpaid arrears if they were actually cleaned this month
+            const price = c.cleaned ? (parseFloat(c.price) || 0) : 0; 
+            
+            if (paid < price) { 
+                if (!c.pastArrears) c.pastArrears = []; 
+                c.pastArrears.push({ month: cycleMonth, amt: price - paid }); 
+            } 
+            c.cleaned = false; 
+            c.paidThisMonth = 0; 
+        }); 
+        db.expenses = []; 
+        saveData(); location.reload();
     }
 };
+
 window.exportToQuickBooks = () => { let csv = "Date,Description,Amount,Type,Category\n"; const today = new Date().toLocaleDateString('en-GB'); db.customers.forEach(c => { if(parseFloat(c.paidThisMonth) > 0) csv += `${today},Income: ${escapeHTML(c.name)},${c.paidThisMonth},Income,Service\n`; }); db.expenses.forEach(e => { csv += `${e.date},${escapeHTML(e.desc)},${e.amt},Expense,${escapeHTML(e.cat) || 'Other'}\n`; }); const blob = new Blob([csv], { type: 'text/csv' }); const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = "HydroPro_QuickBooks.csv"; link.click(); };
 window.exportData = () => { const blob = new Blob([JSON.stringify(db)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = "HydroPro_Backup.json"; link.click(); };
 window.importData = (event) => { const reader = new FileReader(); reader.onload = (e) => { try { const imported = JSON.parse(e.target.result); db.customers = imported.customers || []; db.expenses = imported.expenses || []; db.history = imported.history || []; db.bank = imported.bank || { name: '', acc: '' }; saveData(); alert("Restored!"); location.reload(); } catch (err) { alert("Invalid Format."); } }; reader.readAsText(event.target.files[0]); };
@@ -148,13 +178,13 @@ window.routeMyDay = () => {
     let destination = stops.pop(); 
     let waypoints = stops.join('|'); 
     
-    let url = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
+    let url = `http://googleusercontent.com/maps.google.com/dir/?api=1&destination=${destination}`;
     if(waypoints) url += `&waypoints=${waypoints}`;
     
     window.open(url, '_blank');
 };
 
-/* --- 💬 WHATSAPP INVOICE GENERATOR --- */
+/* --- 💬 RECEIPT GENERATORS --- */
 window.cmdWhatsApp = (id) => {
     const c = db.customers.find(x => x.id === id);
     if(!c.phone) return alert("No phone number saved for this customer.");
@@ -163,7 +193,7 @@ window.cmdWhatsApp = (id) => {
     if(phone.startsWith('0')) phone = '44' + phone.substring(1); 
 
     const arrData = window.getArrearsData(c);
-    let msg = `Hi ${c.name}, Hydro Pro here! We've just finished cleaning your property. `;
+    let msg = `Hi ${c.name}, Hydro Pro here! We've just finished cleaning your windows. `;
     
     if(arrData.isOwed) {
         msg += `Your outstanding balance is £${arrData.total.toFixed(2)}. `;
@@ -179,6 +209,32 @@ window.cmdWhatsApp = (id) => {
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
 };
 
+window.cmdSMS = (id) => {
+    const c = db.customers.find(x => x.id === id);
+    if(!c.phone) return alert("No phone number saved for this customer.");
+    
+    let phone = c.phone.replace(/\D/g, ''); 
+    const arrData = window.getArrearsData(c);
+    let msg = `Hi ${c.name}, Hydro Pro here! We've just finished cleaning your windows. `;
+    
+    if(arrData.isOwed) {
+        msg += `Your outstanding balance is £${arrData.total.toFixed(2)}. `;
+        if (db.bank.name && db.bank.acc) {
+            msg += `You can pay via bank transfer to ${db.bank.name}, Account: ${db.bank.acc}. Thank you!`;
+        } else {
+            msg += `Please let us know how you'd like to pay. Thank you!`;
+        }
+    } else {
+        msg += `Everything looks great, you have no outstanding balance. Have a wonderful day!`;
+    }
+    
+    // Auto-detects the right SMS format for iPhones vs Androids
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const separator = isIOS ? '&' : '?';
+    window.open(`sms:${phone}${separator}body=${encodeURIComponent(msg)}`, '_blank');
+};
+
+
 /* --- 💡 COMMAND VAULT (MODAL LOGIC) --- */
 const generateHistoryHtml = (id) => { 
     const history = db.history.filter(h => h.custId === id).slice(-3).reverse();
@@ -192,7 +248,7 @@ const generateArrearsHtml = (arrData) => {
     return `<div class="CMD-alert-danger"><div class="CMD-alert-danger-title">⚠️ TOTAL OUTSTANDING: £${arrData.total.toFixed(2)}</div><ul class="CMD-arrears-list">${listHtml}</ul></div>`;
 };
 
-// 1. JOB CARD (Includes new WhatsApp button)
+// 1. JOB CARD (Includes 3-Column Action Grid)
 window.showJobBriefing = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
     const container = document.getElementById('briefingData');
@@ -203,11 +259,12 @@ window.showJobBriefing = (id) => {
         <div class="CMD-header"><h2>${escapeHTML(c.name)}</h2><div class="CMD-header-sub">${escapeHTML(c.houseNum)} ${escapeHTML(c.street)}</div></div>
         ${generateArrearsHtml(arrData)}
         <div class="CMD-action-grid">
-            <button class="CMD-action-btn clean" onclick="cmdToggleClean('${c.id}')"><span style="font-size:24px;">🧼</span> ${c.cleaned ? 'UNDO CLEAN' : 'MARK CLEAN'}</button>
-            <button class="CMD-action-btn pay" onclick="cmdSettlePaid('${c.id}', 'job')"><span style="font-size:24px;">💰</span> COLLECT £</button>
-            <button class="CMD-action-btn route" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${mapQuery}', '_blank')"><span style="font-size:24px;">📍</span> NAVIGATE</button>
-            <button class="CMD-action-btn call" onclick="window.location.href='tel:${escapeHTML(c.phone)}'"><span style="font-size:24px;">📞</span> CALL</button>
-            <button class="CMD-action-btn whatsapp" onclick="cmdWhatsApp('${c.id}')"><span style="font-size:24px;">💬</span> TEXT REC</button>
+            <button class="CMD-action-btn clean" onclick="cmdToggleClean('${c.id}')"><span style="font-size:24px;">🧼</span> <br>${c.cleaned ? 'UNDO CLEAN' : 'MARK CLEAN'}</button>
+            <button class="CMD-action-btn pay" onclick="cmdSettlePaid('${c.id}', 'job')"><span style="font-size:24px;">💰</span> <br>COLLECT £</button>
+            <button class="CMD-action-btn route" onclick="window.open('http://googleusercontent.com/maps.google.com/dir/?api=1&destination=${mapQuery}', '_blank')"><span style="font-size:24px;">📍</span> <br>NAVIGATE</button>
+            <button class="CMD-action-btn call" onclick="window.location.href='tel:${escapeHTML(c.phone)}'"><span style="font-size:24px;">📞</span> <br>CALL</button>
+            <button class="CMD-action-btn whatsapp" onclick="cmdWhatsApp('${c.id}')"><span style="font-size:24px;">💬</span> <br>WA REC</button>
+            <button class="CMD-action-btn sms" onclick="cmdSMS('${c.id}')"><span style="font-size:24px;">📱</span> <br>SMS REC</button>
         </div>
         <h3 class="CMD-history-hdr">Rolling History</h3><div class="CMD-history-box">${generateHistoryHtml(c.id)}</div>
     `;
@@ -235,14 +292,25 @@ window.showCustomerBriefing = (id) => {
 };
 
 window.closeBriefing = () => document.getElementById('briefingModal').classList.add('hidden');
-window.cmdToggleClean = (id) => { const c = db.customers.find(x => x.id === id); c.cleaned = !c.cleaned; window.saveData(); window.renderAllSafe(); window.showJobBriefing(id); };
+
+window.cmdToggleClean = (id) => { 
+    const c = db.customers.find(x => x.id === id); 
+    c.cleaned = !c.cleaned; 
+    window.saveData(); 
+    window.renderAllSafe(); 
+    window.showJobBriefing(id); 
+};
+
 window.cmdSettlePaid = (id, context) => { 
     const c = db.customers.find(x => x.id === id); const arrData = window.getArrearsData(c);
     const amtStr = prompt(`Process payment for ${c.name}?\nTotal Owed: £${arrData.total.toFixed(2)}`, arrData.total.toFixed(2)); 
     if(amtStr !== null && amtStr !== "") { 
         let amtPaid = parseFloat(amtStr); if (isNaN(amtPaid) || amtPaid <= 0) return alert("Invalid amount.");
         c.paidThisMonth = (parseFloat(c.paidThisMonth) || 0) + amtPaid; 
-        let overpay = c.paidThisMonth - parseFloat(c.price);
+        
+        let thisMonthCharge = c.cleaned ? (parseFloat(c.price) || 0) : 0;
+        let overpay = c.paidThisMonth - thisMonthCharge;
+        
         if(overpay > 0.01 && c.pastArrears && c.pastArrears.length > 0) {
             let remaining = overpay;
             for(let i=0; i<c.pastArrears.length; i++) {
@@ -272,7 +340,8 @@ window.renderFinances = () => {
     let arrearsListHtml = '';
 
     db.customers.forEach(c => {
-        income += (parseFloat(c.paidThisMonth) || 0); expected += (parseFloat(c.price) || 0);
+        income += (parseFloat(c.paidThisMonth) || 0); 
+        expected += (parseFloat(c.price) || 0);
         const arrData = window.getArrearsData(c);
         if(arrData.isOwed) { totalArrears += arrData.total; arrearsListHtml += `<div class="CMD-detail-row"><span>${escapeHTML(c.name)} <small style="opacity:0.7;">${escapeHTML(arrData.monthsString)}</small></span><span>£${arrData.total.toFixed(2)}</span></div>`; }
     });
