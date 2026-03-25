@@ -8,7 +8,7 @@
     --danger: #ff453a;
     --ios-grey: #e9e9eb;
     --grad: linear-gradient(135deg, #007aff 0%, #0051a8 100%);
-    --h-header: 90px; 
+    --h-header: 85px; 
     --h-nav: 65px; 
 }
 body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; --ios-grey: #39393d; }
@@ -27,15 +27,17 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-hei
     from { opacity: 0; transform: translateY(15px); }
     to { opacity: 1; transform: translateY(0); }
 }
-.tab-content.active { display: flex !important; flex-direction: column; padding-top: calc(var(--h-header) + 20px); padding-bottom: calc(var(--h-nav) + 30px); animation: fadeSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
-#G-HEADER { position: fixed; top: 0; left: 0; width: 100%; height: var(--h-header) !important; z-index: 1000; background: rgba(242, 242, 247, 0.75); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: row; justify-content: center; align-items: center; }
+/* FIX: Ensure content is pushed down far enough to clear the header AND the dynamic island */
+.tab-content.active { display: flex !important; flex-direction: column; padding-top: calc(var(--h-header) + env(safe-area-inset-top) + 20px); padding-bottom: calc(var(--h-nav) + env(safe-area-inset-bottom) + 30px); animation: fadeSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+/* FIX: The header now adds the exact pixel height of the camera notch to its height and padding */
+#G-HEADER { position: fixed; top: 0; left: 0; width: 100%; height: calc(var(--h-header) + env(safe-area-inset-top)) !important; padding-top: env(safe-area-inset-top); z-index: 1000; background: rgba(242, 242, 247, 0.75); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: row; justify-content: center; align-items: center; }
 body.dark-mode #G-HEADER { background: rgba(0, 0, 0, 0.75); border-bottom: 1px solid rgba(255,255,255,0.05); }
 
 .G-LOGO-STRETCH-WRAP { width: 100%; height: 100%; padding: 0; margin: 0; display: flex; justify-content: center; align-items: center; }
 .G-LOGO-STRETCH-WRAP img { width: 100% !important; height: 100% !important; object-fit: contain; display: block; padding: 10px; margin-top: 15px; }
 
-/* --- PERFECTION: NATIVE IOS SWITCH PROPORTIONS --- */
 .ios-switch { position: relative; width: 60px; height: 34px; display: inline-flex; }
 .ios-switch input { opacity: 0; width: 0; height: 0; }
 .ios-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--ios-grey); border-radius: 34px; transition: .3s ease-in-out; box-shadow: inset 0 0 5px rgba(0,0,0,0.1); }
@@ -43,7 +45,6 @@ body.dark-mode #G-HEADER { background: rgba(0, 0, 0, 0.75); border-bottom: 1px s
 input:checked + .ios-slider { background-color: var(--success); }
 input:checked + .ios-slider:before { transform: translateX(26px); }
 
-/* LARGE PROMINENT TOGGLE VARIANT */
 .ios-switch.toggle-large { width: 70px; height: 40px; }
 .ios-switch.toggle-large .ios-slider { border-radius: 40px; }
 .ios-switch.toggle-large .ios-slider:before { height: 34px; width: 34px; left: 3px; bottom: 3px; }
@@ -97,9 +98,11 @@ body.dark-mode #BOTTOM-NAV { background: rgba(0, 0, 0, 0.85); border-top: 1px so
 .FIN-arrears-card { background: var(--danger); color: white; padding: 25px; border-radius: 35px; text-align: center; margin: 0 20px 20px; box-shadow: 0 8px 20px rgba(255, 69, 58, 0.3); }
 .FIN-progress-wrap { background: var(--ios-grey); height: 22px; border-radius: 11px; margin: 10px 25px 25px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
 .FIN-progress-fill { background: var(--success); height: 100%; transition: width 0.8s ease-in-out; border-radius: 11px; }
-.FIN-cat-card { background: var(--card); margin: 0 20px 20px; padding: 20px; border-radius: 30px; border: 1px solid rgba(0,0,0,0.02); box-shadow: 0 10px 30px rgba(0,0,0,0.04) !important; transition: transform 0.2s ease, box-shadow 0.2s ease; }
-.FIN-cat-hdr { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--ios-grey); padding-bottom: 15px; margin-bottom: 15px; font-weight: 950; font-size: 20px; color: var(--accent); }
-.FIN-exp-row { display: flex; justify-content: space-between; padding: 10px 0; font-weight: 800; font-size: 16px; opacity: 0.85; }
+
+.FIN-unified-ledger { background: var(--card); margin: 0 20px 20px; padding: 20px; border-radius: 30px; border: 1px solid rgba(0,0,0,0.02); box-shadow: 0 10px 30px rgba(0,0,0,0.04) !important; }
+.FIN-exp-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-weight: 800; font-size: 15px; }
+.FIN-exp-row:last-of-type { border-bottom: none; }
+.FIN-exp-total-row { display: flex; justify-content: space-between; align-items: center; padding-top: 15px; margin-top: 5px; border-top: 2px dashed var(--ios-grey); font-weight: 950; font-size: 18px; color: var(--danger); }
 
 .WEE-selection-grid { width: 380px; margin: 0 auto; display: block; }
 .WEE-grid-row { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
@@ -140,11 +143,8 @@ body.dark-mode #BOTTOM-NAV { background: rgba(0, 0, 0, 0.85); border-top: 1px so
 .CMD-alert-danger { background: var(--danger); color: white; padding: 15px; border-radius: 20px; text-align: center; margin: 15px 0; }
 .CMD-alert-danger-title { font-weight: 950; font-size: 18px; }
 .CMD-arrears-list { list-style: none; padding: 0; margin: 10px 0 0 0; font-size: 16px; font-weight: 800; }
-
-/* NEW: BEAUTIFUL NOTES BOX */
 .CMD-notes-box { background: rgba(255, 149, 0, 0.15); color: #cc7700; padding: 15px; border-radius: 20px; font-weight: 800; font-size: 14px; margin-bottom: 15px; border: 1px solid rgba(255, 149, 0, 0.3); line-height: 1.4; }
 body.dark-mode .CMD-notes-box { color: #ff9500; }
-
 .CMD-details-box { background: var(--ios-grey); padding: 15px; border-radius: 20px; margin-bottom: 15px; }
 .CMD-detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-weight: 800; }
 .CMD-detail-row:last-child { border-bottom: none; }
