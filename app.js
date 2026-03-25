@@ -14,10 +14,11 @@ if ('serviceWorker' in navigator) {
     });
 }
 
+// FIX: Safely escaped quotes without crashing the JavaScript parser!
 const escapeHTML = (str) => {
     if (!str) return '';
     return String(str).replace(/[&<>'"]/g, tag => ({
-        '&': '&', '<': '<', '>': '>', "'": ''', '"': '"'
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
     }[tag] || tag));
 };
 
@@ -179,6 +180,7 @@ window.renderWeek = () => {
     });
 };
 
+/* FIX: PERFECT UNIVERSAL GOOGLE MAPS ROUTING */
 window.routeMyDay = () => {
     let todaysJobs = db.customers.filter(c => c.week == curWeek && c.day == workingDay);
     if(todaysJobs.length === 0) return alert("No jobs to route today!");
@@ -352,7 +354,6 @@ window.renderFinances = () => {
     
     dash.innerHTML = htmlBuilder;
     
-    // EXPLICIT FIX: The Doughnut Chart Logic
     const ctx = document.getElementById('financeChartCanvas');
     if (ctx && typeof Chart !== 'undefined') {
         if (financeChartInstance) financeChartInstance.destroy(); 
@@ -363,14 +364,13 @@ window.renderFinances = () => {
         
         if (income > 0 || totalArrears > 0 || forecasted > 0) {
             financeChartInstance = new Chart(ctx, { 
-                type: 'doughnut', // HARD CODED TO DOUGHNUT
+                type: 'doughnut', 
                 data: { labels: labels, datasets: [{ data: chartData, backgroundColor: colors, borderWidth: 2, borderColor: document.body.classList.contains('dark-mode') ? '#1c1c1e' : '#ffffff', hoverOffset: 4 }] }, 
-                options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'bottom', labels: { padding: 15, color: document.body.classList.contains('dark-mode') ? '#fff' : '#000', font: { family: '"Plus Jakarta Sans", sans-serif', weight: 'bold' } } } } } 
+                options: { responsive: true, maintainAspectRatio: false, cutout: '80%', plugins: { legend: { position: 'bottom', labels: { padding: 15, color: document.body.classList.contains('dark-mode') ? '#fff' : '#000', font: { family: '"Plus Jakarta Sans", sans-serif', weight: 'bold' } } } } } 
             });
         }
     }
     
-    // EXPLICIT FIX: The Unified Expense Table Ledger
     let statementHtml = ''; 
     if (db.expenses.length === 0) { 
         statementHtml = `<div class="empty-state"><span class="empty-icon">🧾</span><div class="empty-text">No Expenses Yet</div><div class="empty-sub">Your ledger is completely clean.</div></div>`; 
