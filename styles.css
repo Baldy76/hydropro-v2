@@ -8,7 +8,7 @@
     --danger: #ff453a;
     --ios-grey: #e9e9eb;
     --grad: linear-gradient(135deg, #007aff 0%, #0051a8 100%);
-    --h-header: 125px; /* RECLAIMED MORE SCREEN SPACE! (Was 165px) */
+    --h-header: 90px; /* HEADER SHRUNK MASSIVELY! Now perfectly sleek. */
     --h-nav: 65px; 
 }
 body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; --ios-grey: #39393d; }
@@ -29,14 +29,11 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-hei
 }
 .tab-content.active { display: flex !important; flex-direction: column; padding-top: calc(var(--h-header) + 20px); padding-bottom: calc(var(--h-nav) + 30px); animation: fadeSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
-#G-HEADER { position: fixed; top: 0; left: 0; width: 100%; height: var(--h-header) !important; z-index: 1000; background: rgba(242, 242, 247, 0.75); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: flex-start; gap: 10px; padding-top: 15px; }
+#G-HEADER { position: fixed; top: 0; left: 0; width: 100%; height: var(--h-header) !important; z-index: 1000; background: rgba(242, 242, 247, 0.75); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: row; justify-content: center; align-items: center; }
 body.dark-mode #G-HEADER { background: rgba(0, 0, 0, 0.75); border-bottom: 1px solid rgba(255,255,255,0.05); }
 
-.G-LOGO-STRETCH-WRAP { width: 100%; display: flex; justify-content: center; }
-.G-LOGO-STRETCH-WRAP img { width: 250px !important; height: auto; display: block; }
-
-.CENTRAL-STATUS-POD { display: flex; justify-content: center; align-items: center; height: 50px; width: 100%; max-width: 400px; margin: 0 auto; }
-.G-WEATHER-PILL-PASSIVE { background: var(--ios-grey); padding: 0 20px; height: 40px; border-radius: 20px; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 950; }
+.G-LOGO-STRETCH-WRAP { padding: 0; display: flex; justify-content: center; margin-top: 10px; }
+.G-LOGO-STRETCH-WRAP img { width: 220px !important; height: auto; display: block; }
 
 .ios-switch { position: relative; width: 70px; height: 36px; }
 .ios-switch input { opacity: 0; width: 0; height: 0; }
@@ -86,8 +83,17 @@ body.dark-mode #BOTTOM-NAV { background: rgba(0, 0, 0, 0.85); border-top: 1px so
 /* FINANCES VAULT */
 .FIN-hero-iron { background: var(--card); border: 4px solid var(--accent); padding: 30px; border-radius: 40px; text-align: center; margin: 0 20px 20px; box-shadow: 0 10px 25px rgba(0,122,255,0.1); }
 .FIN-hero-iron div { font-size: 50px; font-weight: 950; }
+
+/* NEW SLEEK INCOME/SPENT WIDGETS */
 .FIN-bubble-row { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; padding: 0 20px; }
-.FIN-bubble { background: var(--card); padding: 20px; border-radius: 25px; flex: 1; text-align: center; border: 1px solid rgba(0,0,0,0.02); box-shadow: 0 10px 30px rgba(0,0,0,0.04) !important; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.FIN-bubble { background: var(--card); padding: 15px; border-radius: 25px; flex: 1; display: flex; align-items: center; gap: 12px; border: 1px solid rgba(0,0,0,0.02); box-shadow: 0 10px 30px rgba(0,0,0,0.04) !important; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.bubble-icon { font-size: 26px; width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center; justify-content: center; }
+.FIN-bubble.income .bubble-icon { background: rgba(52, 199, 89, 0.15); }
+.FIN-bubble.spent .bubble-icon { background: rgba(255, 69, 58, 0.15); }
+.bubble-info { text-align: left; }
+.bubble-info small { font-weight: 800; opacity: 0.5; font-size: 11px; letter-spacing: 0.5px; }
+.bubble-info strong { font-size: 20px; color: var(--text); line-height: 1.2; display: block; }
+
 .FIN-arrears-card { background: var(--danger); color: white; padding: 25px; border-radius: 35px; text-align: center; margin: 0 20px 20px; box-shadow: 0 8px 20px rgba(255, 69, 58, 0.3); }
 .FIN-progress-wrap { background: var(--ios-grey); height: 22px; border-radius: 11px; margin: 10px 25px 25px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
 .FIN-progress-fill { background: var(--success); height: 100%; transition: width 0.8s ease-in-out; border-radius: 11px; }
