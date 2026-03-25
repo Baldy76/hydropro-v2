@@ -18,7 +18,6 @@ body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; --ios-grey: #39393d;
 
 /* HARDWARE ACCELERATION FOR BUTTONS */
 button, input, select { touch-action: manipulation; }
-
 body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; font-family: -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
 
 .tab-content { display: none !important; width: 100%; }
@@ -125,4 +124,25 @@ input:checked + .ios-slider:before { transform: translateX(34px); }
 }
 .modal-overlay.hidden .modal-content { transform: scale(0.9); }
 
-.CST-brief-item { display: flex; align-items: center; gap: 15px; background: var(--ios-grey); padding: 18px; border-radius: 20px; height: 70px !important; margin-
+/* --- NEW: MODAL BRIEFING CLEAN CLASSES --- */
+.CMD-header { border-bottom: 3px solid var(--accent); padding-bottom: 15px; margin-bottom: 15px; }
+.CMD-header h2 { margin: 0; font-size: 32px; font-weight: 950; }
+.CMD-header-sub { font-size: 18px; opacity: 0.6; font-weight: 800; margin-top: 5px; }
+
+.CMD-alert-success { color: var(--success); text-align: center; font-weight: 950; margin: 15px 0; font-size: 18px; }
+.CMD-alert-danger { background: var(--danger); color: white; padding: 15px; border-radius: 20px; text-align: center; margin: 15px 0; }
+.CMD-alert-danger-title { font-weight: 950; font-size: 18px; }
+.CMD-arrears-list { list-style: none; padding: 0; margin: 10px 0 0 0; font-size: 16px; font-weight: 800; }
+
+.CMD-details-box { background: var(--ios-grey); padding: 15px; border-radius: 20px; margin-bottom: 15px; }
+.CMD-detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-weight: 800; }
+.CMD-detail-row:last-child { border-bottom: none; }
+
+.CMD-history-hdr { font-size: 12px; opacity: 0.5; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; margin-top: 25px; }
+.CMD-history-box { background: var(--ios-grey); padding: 15px; border-radius: 20px; }
+.CMD-history-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-weight: 800; }
+.CMD-history-row:last-child { border-bottom: none; }
+.CMD-history-empty { text-align: center; opacity: 0.4; margin: 0; font-weight: 700; }
+
+.CMD-action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+.CMD-action-btn { background: var(--ios-grey); border: none; border-radius: 20px; padding: 15px; font-weight: 900; color: var(--text); display: flex; flex-direction: column; align-items: center; gap: 5px; }
