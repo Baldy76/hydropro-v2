@@ -1,10 +1,9 @@
-const CACHE_NAME = 'hydro-pro-v60-6';
+const CACHE_NAME = 'hydro-pro-v61-0';
 const ASSETS = [
     './index.html',
     './styles.css',
     './app.js',
     './Logo.png',
-    './Logo-Dark.png',
     './AppIcon.png',
     'https://cdn.jsdelivr.net/npm/chart.js'
 ];
