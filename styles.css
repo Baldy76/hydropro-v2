@@ -15,7 +15,7 @@ body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; --ios-grey: #39393d;
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; flex-shrink: 0 !important; }
 
-button, input, select { touch-action: manipulation; }
+button, input, select, textarea { touch-action: manipulation; }
 button { transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
 button:active { transform: scale(0.96) !important; opacity: 0.8; }
 
@@ -28,10 +28,8 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-hei
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* FIX: Ensure content is pushed down far enough to clear the header AND the dynamic island */
 .tab-content.active { display: flex !important; flex-direction: column; padding-top: calc(var(--h-header) + env(safe-area-inset-top) + 20px); padding-bottom: calc(var(--h-nav) + env(safe-area-inset-bottom) + 30px); animation: fadeSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
-/* FIX: The header now adds the exact pixel height of the camera notch to its height and padding */
 #G-HEADER { position: fixed; top: 0; left: 0; width: 100%; height: calc(var(--h-header) + env(safe-area-inset-top)) !important; padding-top: env(safe-area-inset-top); z-index: 1000; background: rgba(242, 242, 247, 0.75); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: row; justify-content: center; align-items: center; }
 body.dark-mode #G-HEADER { background: rgba(0, 0, 0, 0.75); border-bottom: 1px solid rgba(255,255,255,0.05); }
 
@@ -62,8 +60,13 @@ body.dark-mode #BOTTOM-NAV { background: rgba(0, 0, 0, 0.85); border-top: 1px so
 .ADM-hdr { margin: 0 0 15px; opacity: 0.5; font-size: 11px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; text-align: center; }
 .ADM-row { height: 70px !important; display: flex; align-items: center; border-bottom: 2px solid var(--ios-grey); gap: 15px; padding: 0 5px; }
 .ADM-row span { font-size: 24px; width: 35px; text-align: center; }
-.ADM-row input, .ADM-row select { flex: 1; border: none; background: transparent; font-size: 18px; font-weight: 700; color: var(--accent); outline: none; height: 100%; font-family: 'Plus Jakarta Sans', sans-serif; }
-.ADM-row input::placeholder { color: var(--text); opacity: 0.3; }
+
+/* FIX: Added textarea styling for the new notes box */
+.ADM-row input, .ADM-row select, .ADM-row textarea { flex: 1; border: none; background: transparent; font-size: 18px; font-weight: 700; color: var(--accent); outline: none; font-family: 'Plus Jakarta Sans', sans-serif; }
+.ADM-row input, .ADM-row select { height: 100%; }
+.ADM-row textarea { resize: none; padding-top: 5px; width: 100%; }
+.ADM-row input::placeholder, .ADM-row textarea::placeholder { color: var(--text); opacity: 0.3; }
+
 .ADM-save-btn { width: 100%; height: 75px !important; border-radius: 30px; border: none; background: var(--grad); color: white; font-weight: 950; font-size: 20px; text-transform: uppercase; margin-top: 20px; box-shadow: 0 8px 20px rgba(0, 122, 255, 0.25); letter-spacing: 1px; }
 .ADM-save-btn[style*="var(--success)"] { box-shadow: 0 8px 20px rgba(52, 199, 89, 0.25) !important; }
 
@@ -99,10 +102,14 @@ body.dark-mode #BOTTOM-NAV { background: rgba(0, 0, 0, 0.85); border-top: 1px so
 .FIN-progress-wrap { background: var(--ios-grey); height: 22px; border-radius: 11px; margin: 10px 25px 25px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
 .FIN-progress-fill { background: var(--success); height: 100%; transition: width 0.8s ease-in-out; border-radius: 11px; }
 
-.FIN-unified-ledger { background: var(--card); margin: 0 20px 20px; padding: 20px; border-radius: 30px; border: 1px solid rgba(0,0,0,0.02); box-shadow: 0 10px 30px rgba(0,0,0,0.04) !important; }
-.FIN-exp-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-weight: 800; font-size: 15px; }
-.FIN-exp-row:last-of-type { border-bottom: none; }
-.FIN-exp-total-row { display: flex; justify-content: space-between; align-items: center; padding-top: 15px; margin-top: 5px; border-top: 2px dashed var(--ios-grey); font-weight: 950; font-size: 18px; color: var(--danger); }
+/* --- NEW EXPENSE TABLE STYLES --- */
+.FIN-ledger-card { background: var(--card); margin: 0 20px 25px; border-radius: 25px; border: 1px solid rgba(0,0,0,0.02); box-shadow: 0 10px 30px rgba(0,0,0,0.04) !important; display: flex; flex-direction: column; overflow: hidden; }
+.FIN-ledger-wrapper { padding: 10px 20px 20px; }
+.FIN-ledger-table { width: 100%; border-collapse: collapse; }
+.FIN-ledger-table th, .FIN-ledger-table td { padding: 12px 10px; text-align: left; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 15px; font-weight: 800; }
+.FIN-ledger-table th { font-size: 11px; color: var(--text); opacity: 0.5; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--ios-grey); }
+.FIN-ledger-table tr:last-child td { border-bottom: none; }
+.FIN-ledger-total { background: rgba(255, 69, 58, 0.08); padding: 20px 25px; display: flex; justify-content: space-between; font-size: 18px; font-weight: 950; color: var(--danger); }
 
 .WEE-selection-grid { width: 380px; margin: 0 auto; display: block; }
 .WEE-grid-row { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
