@@ -1,93 +1,13 @@
 const DB_KEY = 'HydroPro_Gold_V36';
-const W_API_KEY = "4c00e61833ea94d3c4a1bff9d2c32969"; 
-let db = { customers: [], expenses: [], bank: { name:'', acc:'' }, history: [] };
+let db = { customers: [], expenses: [], history: [] };
 const n = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
-let curWeek = 1; let workingDay = 'Mon';
 
 document.addEventListener('DOMContentLoaded', () => {
-    try {
-        const saved = localStorage.getItem(DB_KEY);
-        if (saved) db = JSON.parse(saved);
-        if (!db.bank) db.bank = { name:'', acc:'' };
-        
-        const isDark = localStorage.getItem('HP_Theme') === 'true';
-        applyTheme(isDark);
-        const cb = document.getElementById('themeCheckbox');
-        if(cb) {
-            cb.checked = isDark;
-            cb.addEventListener('change', (e) => {
-                applyTheme(e.target.checked);
-                localStorage.setItem('HP_Theme', e.target.checked);
-            });
-        }
-        
-        if(document.getElementById('bName')) {
-            document.getElementById('bName').value = db.bank.name || '';
-            document.getElementById('bAcc').value = db.bank.acc || '';
-        }
-
-        updateHeader(); renderAll(); initWeather();
-    } catch(e) { console.error("Boot Error", e); }
+    const saved = localStorage.getItem(DB_KEY);
+    if (saved) db = JSON.parse(saved);
+    updateHeader(); renderAll();
 });
 
-function applyTheme(isDark) {
-    document.body.classList.toggle('dark-mode', isDark);
-    const logo = document.getElementById('mainLogo');
-    if(logo) logo.src = isDark ? "Logo-Dark.png" : "Logo.png";
-}
-
-/* --- 🛡️ NAVIGATION --- */
-window.openTab = (id) => {
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    const target = document.getElementById(id);
-    if(target) target.classList.add('active');
-    window.scrollTo(0,0);
-    renderAll();
-};
-
-window.renderAll = () => {
-    updateHeader();
-    if(document.getElementById('finances-root').classList.contains('active')) renderFinances();
-    if(document.getElementById('master-root').classList.contains('active')) renderMaster();
-    if(document.getElementById('week-view-root').classList.contains('active')) renderWeek();
-};
-
-/* --- 💰 FINANCES HUB --- */
-window.renderFinances = () => {
-    const dash = document.getElementById('finances-dashboard-container');
-    const statement = document.getElementById('finances-statement-container');
-    if(!dash || !statement) return;
-
-    let coll = 0, spend = 0, arrears = 0;
-    db.customers.forEach(c => {
-        coll += n(c.paidThisMonth);
-        if(c.cleaned && n(c.paidThisMonth) < n(c.price)) arrears += (n(c.price) - n(c.paidThisMonth));
-    });
-    db.expenses.forEach(e => spend += n(e.amt));
-
-    dash.innerHTML = `
-        <div class="FIN-HERO"><small style="opacity:0.4; font-weight:900;">NET PROFIT</small><div>£${(coll - spend).toFixed(2)}</div></div>
-        <div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px;">
-            <div class="FIN-BUBBLE"><small>INCOME</small><br><strong>£${coll.toFixed(2)}</strong></div>
-            <div class="FIN-BUBBLE"><small>SPENT</small><br><strong>£${spend.toFixed(2)}</strong></div>
-        </div>
-        <div class="VAULT-CARD"><h3 class="VAULT-HDR">Log Expense</h3><div class="VAULT-ROW"><input type="text" id="fExpDesc" placeholder="Description"></div><div class="VAULT-ROW"><input type="number" id="fExpAmt" placeholder="£"></div><button class="VAULT-SAVE-BTN" onclick="addFinanceExpense()">ADD</button></div>`;
-    
-    let htm = '<div class="VAULT-CARD"><h3 class="VAULT-HDR">Ledger</h3>';
-    db.expenses.slice().reverse().forEach(e => {
-        htm += `<div class="VAULT-ROW" style="justify-content:space-between; height:50px !important;"><span>${e.desc}</span><span style="color:var(--danger); font-weight:900;">-£${n(e.amt).toFixed(2)}</span></div>`;
-    });
-    statement.innerHTML = htm + '</div>';
-};
-
-window.addFinanceExpense = () => {
-    const d = document.getElementById('fExpDesc').value; const a = n(document.getElementById('fExpAmt').value);
-    if(!d || a <= 0) return;
-    db.expenses.push({ id: Date.now(), desc: d, amt: a, date: new Date().toLocaleDateString('en-GB', { day:'numeric', month:'short'}) });
-    saveData(); renderFinances();
-};
-
-/* --- 👥 CUSTOMERS --- */
 window.renderMaster = () => {
     const list = document.getElementById('master-list-container'); if(!list) return; list.innerHTML = '';
     const search = (document.getElementById('mainSearch')?.value || "").toLowerCase();
@@ -95,55 +15,58 @@ window.renderMaster = () => {
         if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
             const div = document.createElement('div');
             div.className = 'CUST-BLOCK';
-            div.innerHTML = `<div><strong>${c.name}</strong><br><small>${c.houseNum} ${c.street}</small></div><div style="font-weight:950; color:var(--success); font-size:20px;">£${n(c.price).toFixed(2)}</div>`;
+            div.onclick = () => showBriefing(c.id);
+            div.innerHTML = `<div><strong>${c.name}</strong><br><small>${c.houseNum} ${c.street}</small></div><div style="font-weight:950; color:var(--success);">£${n(c.price).toFixed(2)}</div>`;
             list.appendChild(div);
         }
     });
 };
 
-/* --- 📅 WEEKS --- */
-window.viewWeek = (w) => { curWeek = w; openTab('week-view-root'); renderWeek(); };
-window.setWorkingDay = (day, btn) => { workingDay = day; document.querySelectorAll('.D-BTN-LOCKED').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderWeek(); };
-window.renderWeek = () => {
-    const list = document.getElementById('week-list-container'); if(!list) return; list.innerHTML = '';
-    db.customers.filter(c => c.week == curWeek && c.day == workingDay).forEach(c => {
-        const div = document.createElement('div'); div.className = 'CUST-BLOCK';
-        div.innerHTML = `<div><strong>${c.name} ${c.cleaned?'✅':''}</strong><br><small>${c.houseNum} ${c.street}</small></div><div style="display:flex; gap:8px;"><button onclick="toggleClean('${c.id}')" style="background:#eee; border:none; padding:10px; border-radius:10px;">🧼</button><button onclick="settlePaid('${c.id}')" style="background:#eee; border:none; padding:10px; border-radius:10px;">£</button></div>`;
-        list.appendChild(div);
-    });
-};
-window.toggleClean = (id) => { const c = db.customers.find(x => x.id === id); c.cleaned = !c.cleaned; saveData(); renderWeek(); };
-window.settlePaid = (id) => { const c = db.customers.find(x => x.id === id); const amt = prompt("Amount paid?", c.price); if(amt) { c.paidThisMonth = n(amt); saveData(); renderWeek(); } };
+window.showBriefing = (id) => {
+    const c = db.customers.find(x => x.id === id);
+    const modal = document.getElementById('briefingModal');
+    const container = document.getElementById('briefingData');
+    
+    // Arrears Check
+    const isPaid = n(c.paidThisMonth) >= n(c.price);
+    const arrearsHtml = !isPaid ? `<div class="brief-arrears">⚠️ PAYMENT MISSED THIS MONTH (£${(n(c.price) - n(c.paidThisMonth)).toFixed(2)})</div>` : `<div style="color:var(--success); text-align:center; font-weight:900; margin:10px 0;">✅ PAID THIS MONTH</div>`;
 
-/* --- 🌦️ WEATHER --- */
-window.launchWeatherApp = () => {
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    if (isIOS) { window.location.href = "weather://"; setTimeout(() => { window.open("https://weather.com/", "_blank"); }, 300); }
-    else { window.open("https://www.google.com/search?q=weather", "_blank"); }
+    // History (Last 3 transactions)
+    const history = db.history.filter(h => h.custId === id).slice(-3).reverse();
+    let historyHtml = history.map(h => `<div class="brief-history-row"><span>${h.date}</span><span>£${n(h.amt).toFixed(2)}</span></div>`).join('') || '<p style="text-align:center; opacity:0.5;">No history found</p>';
+
+    container.innerHTML = `
+        <h2 style="margin:0; color:var(--accent);">${c.name}</h2>
+        <p style="margin:5px 0 20px; opacity:0.6; font-weight:800;">${c.houseNum} ${c.street}, ${c.postcode||''}</p>
+        
+        <div class="brief-section"><strong>Base Price:</strong> £${n(c.price).toFixed(2)}</div>
+        ${arrearsHtml}
+        
+        <div class="brief-section">
+            <h3 style="font-size:14px; margin-bottom:10px; opacity:0.4;">LAST 3 TRANSACTIONS</h3>
+            ${historyHtml}
+        </div>
+    `;
+    modal.classList.remove('hidden');
 };
 
-/* --- ⚙️ CORE --- */
-window.saveData = () => localStorage.setItem(DB_KEY, JSON.stringify(db));
-window.saveBank = () => { db.bank.name = document.getElementById('bName').value; db.bank.acc = document.getElementById('bAcc').value; saveData(); alert("Bank Secured! 🔒"); };
+window.closeBriefing = () => document.getElementById('briefingModal').classList.add('hidden');
+
 window.saveCustomer = () => {
-    const name = document.getElementById('cName').value; if(!name) return;
-    db.customers.push({ id: Date.now().toString(), name, houseNum: document.getElementById('cHouseNum').value, street: document.getElementById('cStreet').value, price: n(document.getElementById('cPrice').value), cleaned: false, paidThisMonth: 0, week: "1", day: "Mon" });
-    saveData(); location.reload();
+    const name = document.getElementById('cName').value;
+    if(!name) return alert("Required");
+    db.customers.push({ id: Date.now().toString(), name, houseNum: document.getElementById('cHouseNum').value, street: document.getElementById('cStreet').value, price: n(document.getElementById('cPrice').value), paidThisMonth: 0, cleaned: false });
+    localStorage.setItem(DB_KEY, JSON.stringify(db));
+    alert("Saved!"); location.reload();
 };
-window.exportToQuickBooks = () => {
-    let csv = "Date,Description,Amount,Type\n";
-    db.customers.forEach(c => { if(n(c.paidThisMonth) > 0) csv += `${new Date().toLocaleDateString()},Income: ${c.name},${n(c.paidThisMonth)},Income\n`; });
-    db.expenses.forEach(e => { csv += `${e.date},${e.desc},${n(e.amt)},Expense\n`; });
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a"); link.href = url; link.download = "QuickBooks_Export.csv"; link.click();
+
+window.openTab = (id) => {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0,0); renderAll();
 };
-window.exportData = () => {
-    const blob = new Blob([JSON.stringify(db)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a"); link.href = url; link.download = "HydroPro_Backup.json"; link.click();
+
+window.renderAll = () => {
+    if(document.getElementById('master-root').classList.contains('active')) renderMaster();
 };
 window.updateHeader = () => { if(el = document.getElementById('dateText')) el.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }); };
-async function initWeather() { navigator.geolocation.getCurrentPosition(async (pos) => { try { const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&appid=${W_API_KEY}&units=metric`); const data = await res.json(); document.getElementById('w-icon').innerText = "🌤️"; document.getElementById('w-text').innerText = `${Math.round(data.main.temp)}°C`; } catch (err) { } }); }
-window.nuclearReset = () => { if(confirm("☢️ DELETE ALL?")) { localStorage.removeItem(DB_KEY); location.reload(); } };
-window.completeCycle = () => { if(confirm("Start new month?")) { db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; }); db.expenses = []; saveData(); location.reload(); } };
