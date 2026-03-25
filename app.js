@@ -18,7 +18,6 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// 100% FIXED SYNTAX ERROR. NO MORE QUOTE CRASHES.
 const escapeHTML = (str) => {
     if (!str) return '';
     return String(str)
@@ -113,6 +112,7 @@ window.renderAllSafe = () => {
 window.openAddCustomerModal = () => document.getElementById('addCustomerModal').classList.remove('hidden');
 window.closeAddCustomerModal = () => document.getElementById('addCustomerModal').classList.add('hidden');
 
+/* --- FIX: CAPTURE WEEK AND DAY ON SAVE --- */
 window.saveCustomer = () => {
     const name = document.getElementById('cName').value.trim();
     if(!name) return alert("Name required!");
@@ -126,10 +126,15 @@ window.saveCustomer = () => {
         phone: document.getElementById('cPhone').value.trim(), 
         price: parseFloat(document.getElementById('cPrice').value) || 0, 
         notes: document.getElementById('cNotes').value.trim(), 
-        cleaned: false, paidThisMonth: 0, pastArrears: [], week: "1", day: "Mon" 
+        cleaned: false, 
+        paidThisMonth: 0, 
+        pastArrears: [], 
+        week: document.getElementById('cWeek').value, 
+        day: document.getElementById('cDay').value 
     });
     saveData(); 
     
+    // Clear inputs and reset dropdowns
     document.getElementById('cName').value = '';
     document.getElementById('cHouseNum').value = '';
     document.getElementById('cStreet').value = '';
@@ -137,6 +142,8 @@ window.saveCustomer = () => {
     document.getElementById('cPhone').value = '';
     document.getElementById('cPrice').value = '';
     document.getElementById('cNotes').value = '';
+    document.getElementById('cWeek').value = '1';
+    document.getElementById('cDay').value = 'Mon';
     
     closeAddCustomerModal();
     renderAllSafe(); 
@@ -200,7 +207,6 @@ window.renderWeek = () => {
     });
 };
 
-/* --- FIXED OFFICIAL GOOGLE MAPS UNIVERSAL LINKS --- */
 window.routeMyDay = () => {
     let todaysJobs = db.customers.filter(c => c.week == curWeek && c.day == workingDay);
     if(todaysJobs.length === 0) return alert("No jobs to route today!");
@@ -208,7 +214,6 @@ window.routeMyDay = () => {
     let stops = todaysJobs.slice(0, 10).map(c => encodeURIComponent(`${c.houseNum} ${c.street}, ${c.postcode || ''}`));
     let destination = stops.pop(); let waypoints = stops.join('|'); 
     
-    // Official Google Maps Directions URL
     let url = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
     if(waypoints) url += `&waypoints=${waypoints}`;
     window.open(url, '_blank');
@@ -256,7 +261,6 @@ window.showJobBriefing = (id) => {
     const arrData = window.getArrearsData(c);
     const mapQuery = encodeURIComponent(`${c.houseNum} ${c.street}, ${c.postcode || ''}`);
     
-    // Official Google Maps Universal Link
     const navUrl = `https://www.google.com/maps/dir/?api=1&destination=${mapQuery}`;
     
     const notesHtml = c.notes ? `<div class="CMD-notes-box">📝 ${escapeHTML(c.notes)}</div>` : '';
