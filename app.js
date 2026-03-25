@@ -79,7 +79,6 @@ function applyTheme(isDark) {
 window.setThemeMode = (isDark) => {
     applyTheme(isDark);
     localStorage.setItem('HP_Theme', isDark);
-    // Refresh the chart to update font and border colors instantly
     if(document.getElementById('finances-root').classList.contains('active')) renderFinances();
 };
 
@@ -369,15 +368,20 @@ window.renderFinances = () => {
     
     dash.innerHTML = htmlBuilder;
     
-    /* --- ✨ UPGRADED, BEAUTIFUL CHART.JS RENDERING ✨ --- */
+    /* --- 📊 THE UPGRADED HALF-DOUGHNUT GAUGE & DYNAMIC LABELS --- */
     const ctx = document.getElementById('financeChartCanvas');
     if (ctx && typeof Chart !== 'undefined') {
         if (financeChartInstance) financeChartInstance.destroy(); 
         
-        let labels = ['Collected', 'Customer Debt', 'Forecasted']; 
+        // Exact values hardcoded into the labels
+        let labels = [
+            `Collected: £${income.toFixed(2)}`, 
+            `Debt: £${totalArrears.toFixed(2)}`, 
+            `Forecasted: £${forecasted.toFixed(2)}`
+        ]; 
+        
         let chartData = [income, totalArrears, forecasted]; 
         let colors = ['#34C759', '#ff453a', '#007aff'];
-        
         let isDarkMode = document.body.classList.contains('dark-mode');
         
         if (income > 0 || totalArrears > 0 || forecasted > 0) {
@@ -388,24 +392,26 @@ window.renderFinances = () => {
                     datasets: [{ 
                         data: chartData, 
                         backgroundColor: colors, 
-                        borderWidth: 4, // Thicker, cleaner border gap
+                        borderWidth: 4, 
                         borderColor: isDarkMode ? '#1c1c1e' : '#ffffff', 
-                        borderRadius: 12, // Floating Pill Segments!
+                        borderRadius: 15, 
                         hoverOffset: 6,
-                        spacing: 4 // Creates physical gap between arcs
+                        spacing: 5 
                     }] 
                 }, 
                 options: { 
                     responsive: true, 
                     maintainAspectRatio: false, 
-                    cutout: '78%', 
-                    layout: { padding: 10 },
+                    cutout: '82%', 
+                    rotation: -90, // Start drawing from the left
+                    circumference: 180, // Stop drawing halfway
+                    layout: { padding: 5 },
                     plugins: { 
                         legend: { 
                             position: 'bottom', 
                             labels: { 
-                                padding: 20, 
-                                usePointStyle: true, // Perfect Circles in legend
+                                padding: 15, 
+                                usePointStyle: true, 
                                 pointStyle: 'circle',
                                 color: isDarkMode ? '#fff' : '#000', 
                                 font: { family: '"Plus Jakarta Sans", sans-serif', weight: 'bold', size: 13 } 
@@ -420,7 +426,7 @@ window.renderFinances = () => {
                             displayColors: false,
                             callbacks: {
                                 label: function(context) {
-                                    return ' £' + context.parsed.toFixed(2);
+                                    return ' ' + context.label;
                                 }
                             }
                         }
