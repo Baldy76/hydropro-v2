@@ -208,25 +208,46 @@ window.renderFinances = () => {
     if(!dash || !ledger) return;
 
     let income = 0, spend = 0, expected = 0, arrears = 0;
+    let arrearsListHtml = '';
 
     db.customers.forEach(c => {
         const paid = parseFloat(c.paidThisMonth) || 0;
         const price = parseFloat(c.price) || 0;
         income += paid;
         expected += price;
-        if(paid < price) arrears += (price - paid);
+        if(paid < price) {
+            const owed = price - paid;
+            arrears += owed;
+            arrearsListHtml += `
+                <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.2); font-size:16px; font-weight:800;">
+                    <span>${c.name}</span>
+                    <span>£${owed.toFixed(2)}</span>
+                </div>
+            `;
+        }
     });
 
     db.expenses.forEach(e => spend += (parseFloat(e.amt) || 0));
 
     const progressPct = expected > 0 ? Math.min((income / expected) * 100, 100) : 0;
 
+    let arrearsSection = '';
+    if (arrears > 0) {
+        arrearsSection = `
+        <div class="FIN-arrears-card">
+            <div style="font-size:20px; margin-bottom:15px;">⚠️ OUTSTANDING: £${arrears.toFixed(2)}</div>
+            <div style="text-align:left; background:rgba(0,0,0,0.15); padding:15px; border-radius:20px; max-height:150px; overflow-y:auto;">
+                ${arrearsListHtml}
+            </div>
+        </div>`;
+    }
+
     dash.innerHTML = `
         <div class="FIN-hero-iron">
             <small style="opacity:0.5; font-weight:900;">NET PROFIT</small>
             <div>£${(income - spend).toFixed(2)}</div>
         </div>
-        ${arrears > 0 ? `<div class="FIN-arrears-card">⚠️ OUTSTANDING ARREARS: £${arrears.toFixed(2)}</div>` : ''}
+        ${arrearsSection}
         
         <div style="padding: 0 25px; margin-bottom: 5px; font-weight: 950; font-size: 14px; color: var(--accent); display: flex; justify-content: space-between;">
             <span>COLLECTION PROGRESS</span><span>${Math.round(progressPct)}%</span>
@@ -257,6 +278,7 @@ window.renderFinances = () => {
             let catIcon = "🏢";
             if(cat === 'Fuel') catIcon = "⛽";
             if(cat === 'Equipment') catIcon = "🧽";
+            if(cat === 'Food') catIcon = "🍔";
             if(cat === 'Marketing') catIcon = "📣";
 
             let itemsHtml = '';
