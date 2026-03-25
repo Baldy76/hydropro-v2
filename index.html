@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v46.2</title>
-    <link rel="stylesheet" href="styles.css?v=462">
+    <title>Hydro Pro v47.0</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="styles.css?v=470">
 </head>
 <body class="light-mode">
 
@@ -28,7 +30,7 @@
 
     <main id="G-VIEWPORT">
         <section id="home-root" class="tab-content active">
-            <div class="HUB-grid">
+            <div class="HUB-grid-vault">
                 <div class="HUB-row">
                     <button class="HUB-btn" onclick="openTab('admin-root')"><span class="HUB-icon">⚙️</span><small class="HUB-label">Admin</small></button>
                     <button class="HUB-btn" onclick="openTab('master-root')"><span class="HUB-icon">👥</span><small class="HUB-label">Custs</small></button>
@@ -42,61 +44,66 @@
         </section>
 
         <section id="admin-root" class="tab-content">
-            <button class="ADM-back-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="ADM-vault">
-                <h3 class="ADM-title">Quick Add Customer</h3>
+            <button class="ADM-nav-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
+            <div class="ADM-card">
+                <h3 class="ADM-hdr">Add Customer</h3>
                 <div class="ADM-row"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
                 <div class="ADM-row"><span>🏠</span><input type="text" id="cHouseNum" placeholder="No."></div>
                 <div class="ADM-row"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
                 <div class="ADM-row"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
                 <button class="ADM-save-btn" onclick="saveCustomer()">✨ SAVE CUSTOMER</button>
             </div>
-            <div class="ADM-vault">
-                <h3 class="ADM-title">Bank Details</h3>
-                <div class="ADM-row"><span>🏦</span><input type="text" id="bName" placeholder="Acc Name"></div>
+            <div class="ADM-card">
+                <h3 class="ADM-hdr">Bank Details</h3>
+                <div class="ADM-row"><span>🏦</span><input type="text" id="bName" placeholder="Name"></div>
                 <div class="ADM-row"><span>💳</span><input type="text" id="bAcc" placeholder="Acc No."></div>
                 <button class="ADM-save-btn" style="background:var(--accent);" onclick="saveBank()">🔒 SECURE BANK</button>
+            </div>
+            <div class="ADM-util-vault">
+                <button class="ADM-util-btn blue" onclick="exportToQuickBooks()">📊 QUICKBOOKS EXPORT</button>
+                <div class="ADM-util-row">
+                    <button class="ADM-util-btn grey" onclick="exportData()">📤 Backup</button>
+                    <button class="ADM-util-btn grey" onclick="document.getElementById('importFile').click()">📥 Restore</button>
+                    <input type="file" id="importFile" hidden onchange="importData(event)" accept=".json">
+                </div>
+                <button class="ADM-util-btn green" onclick="completeCycle()">🚀 START NEW MONTH</button>
+                <button class="ADM-util-btn red" onclick="nuclearReset()">☢️ FACTORY RESET</button>
             </div>
         </section>
 
         <section id="master-root" class="tab-content">
-            <button class="CST-back-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="CST-search-vault">
-                <input type="text" id="mainSearch" placeholder="🔍 Search..." oninput="renderMaster()">
-            </div>
-            <div id="master-list-container"></div>
+            <button class="CST-nav-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
+            <div class="CST-search-bar"><input type="text" id="mainSearch" placeholder="🔍 Search..." oninput="renderMaster()"></div>
+            <div id="CST-list-container"></div>
         </section>
 
         <section id="finances-root" class="tab-content">
-            <button class="FIN-back-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
+            <button class="FIN-nav-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
             <div id="FIN-dashboard"></div>
             <div id="FIN-ledger"></div>
         </section>
 
         <section id="weeks-root" class="tab-content">
-            <button class="WEE-back-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="WEE-grid">
-                <div class="WEE-row"><button class="WEE-btn" onclick="viewWeek(1)">1</button><button class="WEE-btn" onclick="viewWeek(2)">2</button></div>
-                <div class="WEE-row"><button class="WEE-btn" onclick="viewWeek(3)">3</button><button class="WEE-btn" onclick="viewWeek(4)">4</button></div>
-                <div class="WEE-row"><button class="WEE-btn full" onclick="viewWeek(5)">5</button></div>
+            <button class="WEE-nav-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
+            <div class="WEE-selection-grid">
+                <div class="WEE-grid-row"><button class="WEE-btn" onclick="viewWeek(1)">1</button><button class="WEE-btn" onclick="viewWeek(2)">2</button></div>
+                <div class="WEE-grid-row"><button class="WEE-btn" onclick="viewWeek(3)">3</button><button class="WEE-btn" onclick="viewWeek(4)">4</button></div>
+                <div class="WEE-grid-row"><button class="WEE-btn full" onclick="viewWeek(5)">5</button></div>
             </div>
         </section>
 
         <section id="week-view-root" class="tab-content">
-            <div class="WEE-nav">
-                <button onclick="openTab('weeks-root')">⬅️ BACK</button>
-                <button onclick="openTab('home-root')">🏠 HUB</button>
+            <div class="WEE-sub-nav"><button onclick="openTab('weeks-root')">⬅️ BACK</button><button onclick="openTab('home-root')">🏠 HUB</button></div>
+            <div class="WEE-day-selector">
+                <button class="WEE-day-btn active" onclick="setWorkingDay('Mon', this)">M</button>
+                <button class="WEE-day-btn" onclick="setWorkingDay('Tue', this)">T</button>
+                <button class="WEE-day-btn" onclick="setWorkingDay('Wed', this)">W</button>
+                <button class="WEE-day-btn" onclick="setWorkingDay('Thu', this)">T</button>
+                <button class="WEE-day-btn" onclick="setWorkingDay('Fri', this)">F</button>
+                <button class="WEE-day-btn" onclick="setWorkingDay('Sat', this)">S</button>
+                <button class="WEE-day-btn" onclick="setWorkingDay('Sun', this)">S</button>
             </div>
-            <div class="WEE-day-bar">
-                <button class="WEE-day active" onclick="setWorkingDay('Mon', this)">M</button>
-                <button class="WEE-day" onclick="setWorkingDay('Tue', this)">T</button>
-                <button class="WEE-day" onclick="setWorkingDay('Wed', this)">W</button>
-                <button class="WEE-day" onclick="setWorkingDay('Thu', this)">T</button>
-                <button class="WEE-day" onclick="setWorkingDay('Fri', this)">F</button>
-                <button class="WEE-day" onclick="setWorkingDay('Sat', this)">S</button>
-                <button class="WEE-day" onclick="setWorkingDay('Sun', this)">S</button>
-            </div>
-            <div id="WEE-list"></div>
+            <div id="WEE-list-container"></div>
         </section>
     </main>
 
@@ -107,7 +114,7 @@
         </div>
     </div>
 
-    <footer id="G-FOOTER">v46.2 IRON PARTITION</footer>
-    <script src="app.js?v=462"></script>
+    <footer id="G-FOOTER">v47.0 IRON ISLAND</footer>
+    <script src="app.js?v=470"></script>
 </body>
 </html>
