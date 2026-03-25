@@ -26,18 +26,16 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-hei
 .G-LOGO-STRETCH-WRAP img { width: 275px !important; height: auto; display: block; }
 
 .CENTRAL-STATUS-POD { display: flex; justify-content: space-evenly; align-items: center; height: 60px; width: 100%; max-width: 400px; margin: 0 auto; }
-.G-WEATHER-PILL-PASSIVE { background: var(--ios-grey); width: 120px; height: 48px; border-radius: 24px; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 950; }
+.G-WEATHER-PILL-PASSIVE { background: var(--ios-grey); width: 110px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 950; }
 
-.G-SWITCH-WRAP { display: flex; align-items: center; gap: 10px; }
+.G-SWITCH-WRAP { display: flex; align-items: center; gap: 8px; }
 .MODE-LABEL { font-size: 11px; font-weight: 950; opacity: 0.6; }
-.ios-switch { position: relative; width: 80px; height: 40px; }
+.ios-switch { position: relative; width: 70px; height: 36px; }
 .ios-switch input { opacity: 0; width: 0; height: 0; }
-.ios-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--ios-grey); border-radius: 40px; transition: .3s; }
-.ios-slider:before { position: absolute; content: ""; height: 32px; width: 32px; left: 4px; bottom: 4px; background-color: white; border-radius: 50%; transition: .3s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+.ios-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--ios-grey); border-radius: 36px; transition: .3s; }
+.ios-slider:before { position: absolute; content: ""; height: 28px; width: 28px; left: 4px; bottom: 4px; background-color: white; border-radius: 50%; transition: .3s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 input:checked + .ios-slider { background-color: var(--success); }
-input:checked + .ios-slider:before { transform: translateX(40px); }
-
-.DATE-CONTAINER { width: 100%; text-align: center; height: 35px; display: flex; justify-content: center; align-items: center; margin-top: 5px; }
+input:checked + .ios-slider:before { transform: translateX(34px); }
 #dateText { font-size: 24px !important; font-weight: 950; color: var(--accent); }
 
 /* 🏠 HUB GRID */
@@ -45,16 +43,15 @@ input:checked + .ios-slider:before { transform: translateX(40px); }
 .HUB-btn { width: 100% !important; height: var(--h-hub-btn) !important; border-radius: 40px; background: var(--card); border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text); box-shadow: 0 10px 20px rgba(0,0,0,0.08); font-weight: 950; }
 .HUB-icon { font-size: 60px !important; display: block; }
 .HUB-label { font-size: 22px !important; text-transform: uppercase; margin-top: 5px; }
-.HUB-sync-area { width: 100%; display: flex; justify-content: center; margin-top: 20px; }
-.HUB-sync-btn { width: 340px; height: 75px !important; border-radius: 35px; border: 3px solid var(--accent); background: transparent; color: var(--accent); font-weight: 950; font-size: 20px; }
+.HUB-sync-btn { width: 340px; height: 75px !important; border-radius: 35px; border: 3px solid var(--accent); background: transparent; color: var(--accent); font-weight: 950; font-size: 20px; margin: 20px auto; display: block; }
 
 /* ⚙️ NAVIGATION & ADMIN FORMS */
 .ADM-nav-btn, .CST-nav-btn, .FIN-nav-btn, .WEE-nav-btn { width: 340px; height: var(--h-nav-btn); border-radius: 40px; background: var(--card); color: var(--accent); font-weight: 950; font-size: 22px; margin: 0 auto 20px; border: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
 .ADM-card { background: var(--card); margin: 0 20px 25px; padding: 25px; border-radius: 40px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
 .ADM-hdr { margin: 0 0 15px; opacity: 0.5; font-size: 11px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; text-align: center; }
-.ADM-row { height: 70px !important; display: flex; align-items: center; border-bottom: 2px solid var(--ios-grey); gap: 15px; }
+.ADM-row { height: 70px !important; display: flex; align-items: center; border-bottom: 2px solid var(--ios-grey); gap: 15px; padding: 0 5px; }
 .ADM-row span { font-size: 24px; width: 35px; text-align: center; }
-.ADM-row input, .ADM-row select { flex: 1; border: none; background: transparent; font-size: 18px; font-weight: 700; color: var(--text); outline: none; }
+.ADM-row input, .ADM-row select { flex: 1; border: none; background: transparent; font-size: 18px; font-weight: 700; color: var(--text); outline: none; height: 100%; }
 .ADM-save-btn { width: 100%; height: 75px !important; border-radius: 30px; border: none; background: var(--grad); color: white; font-weight: 950; font-size: 20px; text-transform: uppercase; margin-top: 20px; }
 
 .ADM-util-vault { background: var(--card); margin: 0 20px 100px; padding: 30px; border-radius: 45px; border: 4px solid var(--ios-grey); display: flex; flex-direction: column; gap: 15px; }
@@ -75,27 +72,24 @@ input:checked + .ios-slider:before { transform: translateX(40px); }
 .FIN-hero-iron div { font-size: 50px; font-weight: 950; }
 .FIN-bubble-row { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; padding: 0 20px; }
 .FIN-bubble { background: var(--card); padding: 20px; border-radius: 25px; flex: 1; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
-.FIN-arrears-card { background: var(--danger); color: white; padding: 20px; border-radius: 25px; text-align: center; margin: 0 20px 20px; font-weight: 950; font-size: 18px; box-shadow: 0 5px 15px rgba(255, 69, 58, 0.3); }
+.FIN-arrears-card { background: var(--danger); color: white; padding: 25px; border-radius: 35px; text-align: center; margin: 0 20px 20px; box-shadow: 0 8px 20px rgba(255, 69, 58, 0.3); }
 .FIN-progress-wrap { background: var(--ios-grey); height: 22px; border-radius: 11px; margin: 10px 25px 25px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
 .FIN-progress-fill { background: var(--success); height: 100%; transition: width 0.8s ease-in-out; border-radius: 11px; }
 .FIN-cat-card { background: var(--card); margin: 0 20px 20px; padding: 20px; border-radius: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
 .FIN-cat-hdr { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--ios-grey); padding-bottom: 15px; margin-bottom: 15px; font-weight: 950; font-size: 20px; color: var(--accent); }
 .FIN-exp-row { display: flex; justify-content: space-between; padding: 10px 0; font-weight: 800; font-size: 16px; opacity: 0.85; }
 
-/* 📅 WEEKS GRID */
+/* 📅 WEEKS GRID (VIBRANT APP STYLE) */
 .WEE-selection-grid { width: 380px; margin: 0 auto; display: block; }
 .WEE-grid-row { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
-.WEE-btn { width: 175px !important; height: 120px !important; border-radius: 35px; border: none; font-size: 24px !important; font-weight: 950; color: var(--text); box-shadow: 0 5px 15px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: center; }
-.week-1 { background-color: #e5e5ea; }
-.week-2 { background-color: #d1d1d6; }
-.week-3 { background-color: #c7c7cc; }
-.week-4 { background-color: #aeaeb2; }
-.week-5.full { width: 365px !important; background: var(--grad); color: white; }
+.WEE-btn { width: 175px !important; height: 120px !important; border-radius: 35px; border: none; font-size: 24px !important; font-weight: 950; color: white; box-shadow: 0 8px 20px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; }
 
-body.dark-mode .week-1 { background-color: #1c1c1e; }
-body.dark-mode .week-2 { background-color: #2c2c2e; }
-body.dark-mode .week-3 { background-color: #3a3a3c; }
-body.dark-mode .week-4 { background-color: #48484a; }
+/* Vibrant iOS-Style Gradients */
+.week-1 { background: linear-gradient(135deg, #007aff, #0051a8); } /* Blue */
+.week-2 { background: linear-gradient(135deg, #af52de, #5e14a7); } /* Purple */
+.week-3 { background: linear-gradient(135deg, #ff9500, #b94b00); } /* Orange */
+.week-4 { background: linear-gradient(135deg, #ff2d55, #a3001f); } /* Pink */
+.week-5.full { width: 365px !important; background: linear-gradient(135deg, #34c759, #1b7e28); } /* Green Finisher */
 
 .WEE-day-selector { display: flex; justify-content: center; gap: 5px; padding-bottom: 25px; }
 .WEE-day-btn { width: 45px; height: 55px; border-radius: 12px; border: none; background: var(--card); color: var(--text); font-weight: 950; }
