@@ -136,8 +136,9 @@ input:checked + .ios-slider:before { transform: translateX(34px); }
 .CMD-history-row:last-child { border-bottom: none; }
 .CMD-history-empty { text-align: center; opacity: 0.4; margin: 0; font-weight: 700; }
 
-.CMD-action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+.CMD-action-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; margin-top: 15px; }
 .CMD-action-btn { background: var(--ios-grey); border: none; border-radius: 20px; padding: 15px; font-weight: 900; color: var(--text); display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.CMD-action-btn.whatsapp { background: rgba(52, 199, 89, 0.15); color: var(--success); }
 
 /* --- 🏷️ VERSION CONTROL FOOTER --- */
 #G-FOOTER { text-align: center; font-size: 10px; font-weight: 900; opacity: 0.35; text-transform: uppercase; letter-spacing: 1.5px; padding: 30px 0 40px; width: 100%; color: var(--text); }
