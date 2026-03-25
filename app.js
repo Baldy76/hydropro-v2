@@ -14,11 +14,15 @@ if ('serviceWorker' in navigator) {
     });
 }
 
+// THE FIX: Completely rebuilt string escape to guarantee no javascript parser crashing!
 const escapeHTML = (str) => {
     if (!str) return '';
-    return String(str).replace(/[&<>'"]/g, tag => ({
-        '&': '&', '<': '<', '>': '>', "'": '&#39;', '"': '&quot;'
-    }[tag] || tag));
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
 };
 
 window.getArrearsData = (c) => {
@@ -185,7 +189,7 @@ window.routeMyDay = () => {
     if(todaysJobs.length > 10) alert("Google Maps limits multi-stop routes to 10 stops. Routing your first 10 properties.");
     let stops = todaysJobs.slice(0, 10).map(c => encodeURIComponent(`${c.houseNum} ${c.street}, ${c.postcode || ''}`));
     let destination = stops.pop(); let waypoints = stops.join('|'); 
-    let url = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
+    let url = `http://googleusercontent.com/maps.google.com/dir/?api=1&destination=${destination}`;
     if(waypoints) url += `&waypoints=${waypoints}`;
     window.open(url, '_blank');
 };
@@ -226,7 +230,7 @@ window.showJobBriefing = (id) => {
     const container = document.getElementById('briefingData');
     const arrData = window.getArrearsData(c);
     const mapQuery = encodeURIComponent(`${c.houseNum} ${c.street}, ${c.postcode || ''}`);
-    const navUrl = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
+    const navUrl = `http://googleusercontent.com/maps.google.com/dir/?api=1&destination=${mapQuery}`;
     
     const notesHtml = c.notes ? `<div class="CMD-notes-box">📝 ${escapeHTML(c.notes)}</div>` : '';
 
