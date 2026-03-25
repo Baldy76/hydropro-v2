@@ -8,14 +8,12 @@ let curWeek = 1;
 let workingDay = 'Mon';
 let financeChartInstance = null; 
 
-/* --- ⚡ PROGRESSIVE WEB APP REGISTRATION --- */
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').catch(err => console.error('PWA Reg Failed:', err));
     });
 }
 
-/* --- 🛡️ SECURITY: XSS SANITIZER --- */
 const escapeHTML = (str) => {
     if (!str) return '';
     return String(str).replace(/[&<>'"]/g, tag => ({
@@ -23,12 +21,10 @@ const escapeHTML = (str) => {
     }[tag] || tag));
 };
 
-/* --- 📊 CORE ARREARS CALCULATION ENGINE --- */
 window.getArrearsData = (c) => {
     const currentMonthStr = new Date().toLocaleString('en-GB', { month: 'short' });
     let pastLog = c.pastArrears || [];
     
-    // Only charge them for this month IF you have marked them as cleaned!
     let thisMonthCharge = c.cleaned ? (parseFloat(c.price) || 0) : 0;
     let currentOwed = thisMonthCharge - (parseFloat(c.paidThisMonth) || 0);
     
@@ -81,10 +77,17 @@ function applyTheme(isDark) {
 
 window.saveData = () => localStorage.setItem(DB_KEY, JSON.stringify(db));
 
-window.openTab = (id) => {
+/* --- 📱 UPGRADED TAB NAVIGATION FOR BOTTOM BAR --- */
+window.openTab = (id, btnEl = null) => {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     const target = document.getElementById(id);
     if(target) target.classList.add('active');
+    
+    if (btnEl) {
+        document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+        btnEl.classList.add('active');
+    }
+    
     window.scrollTo(0,0);
     renderAllSafe();
 };
@@ -95,11 +98,10 @@ window.renderAllSafe = () => {
     try {
         if(document.getElementById('master-root').classList.contains('active')) renderMaster();
         if(document.getElementById('finances-root').classList.contains('active')) renderFinances();
-        if(document.getElementById('week-view-root').classList.contains('active')) renderWeek();
+        if(document.getElementById('weeks-root').classList.contains('active')) renderWeek();
     } catch (err) { console.error("Render Error:", err); }
 };
 
-/* --- ⚙️ ADMIN LOGIC --- */
 window.saveCustomer = () => {
     const name = document.getElementById('cName').value.trim();
     if(!name) return alert("Name required!");
@@ -109,13 +111,11 @@ window.saveCustomer = () => {
 
 window.saveBank = () => { db.bank.name = document.getElementById('bName').value; db.bank.acc = document.getElementById('bAcc').value; saveData(); alert("Secured!"); };
 
-/* ENGINE: COMPLETE CYCLE */
 window.completeCycle = () => {
     const cycleMonth = new Date().toLocaleString('en-GB', { month: 'short', year: '2-digit' });
     if(confirm(`Start new month?`)) {
         db.customers.forEach(c => { 
             const paid = parseFloat(c.paidThisMonth) || 0; 
-            // Only carry over unpaid arrears if they were actually cleaned this month
             const price = c.cleaned ? (parseFloat(c.price) || 0) : 0; 
             
             if (paid < price) { 
@@ -135,12 +135,14 @@ window.exportData = () => { const blob = new Blob([JSON.stringify(db)], { type: 
 window.importData = (event) => { const reader = new FileReader(); reader.onload = (e) => { try { const imported = JSON.parse(e.target.result); db.customers = imported.customers || []; db.expenses = imported.expenses || []; db.history = imported.history || []; db.bank = imported.bank || { name: '', acc: '' }; saveData(); alert("Restored!"); location.reload(); } catch (err) { alert("Invalid Format."); } }; reader.readAsText(event.target.files[0]); };
 window.nuclearReset = () => { if(confirm("☢️ DELETE ALL?")) { localStorage.removeItem(DB_KEY); location.reload(); } };
 
-/* --- 👥 MASTER LIST GENERATOR (CUSTOMER CARDS) --- */
 window.renderMaster = () => { 
     const list = document.getElementById('CST-list-container'); if(!list) return; list.innerHTML = '';
     const search = (document.getElementById('mainSearch')?.value || "").toLowerCase();
+    
+    let renderedCount = 0;
     db.customers.forEach(c => {
         if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
+            renderedCount++;
             const arrData = window.getArrearsData(c);
             const arrearsBadge = arrData.isOwed ? `<span class="CST-badge badge-unpaid">OWES £${arrData.total.toFixed(2)}</span>` : `<span class="CST-badge badge-paid">PAID</span>`;
             const div = document.createElement('div'); div.className = 'CST-card-item'; div.onclick = () => showCustomerBriefing(c.id);
@@ -148,16 +150,24 @@ window.renderMaster = () => {
             list.appendChild(div);
         }
     });
+    
+    if (renderedCount === 0) {
+        list.innerHTML = `<div class="empty-state"><span class="empty-icon">👻</span><div class="empty-text">No Customers Found</div><div class="empty-sub">Check your spelling or add a new customer.</div></div>`;
+    }
 };
 
-/* --- 📅 WEEKS LIST GENERATOR (JOB CARDS) --- */
-window.viewWeek = (num) => { curWeek = num; openTab('week-view-root'); renderWeek(); };
+window.viewWeek = (num) => { curWeek = num; renderWeek(); };
 window.setWorkingDay = (day, btn) => { workingDay = day; document.querySelectorAll('.WEE-day-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderWeek(); };
 
 window.renderWeek = () => { 
     const list = document.getElementById('WEE-list-container'); if(!list) return; list.innerHTML = '';
     let customersToday = db.customers.filter(c => c.week == curWeek && c.day == workingDay);
-    if(customersToday.length === 0) return list.innerHTML = `<div style="text-align:center; padding:40px; opacity:0.4; font-weight:950; font-size:20px;">No jobs booked for ${workingDay}.</div>`;
+    
+    /* ✨ UPGRADE: Beautiful Empty State for Days Off */
+    if(customersToday.length === 0) {
+        list.innerHTML = `<div class="empty-state"><span class="empty-icon">🏖️</span><div class="empty-text">Zero Jobs Today</div><div class="empty-sub">Enjoy the day off, you've earned it.</div></div>`;
+        return;
+    }
 
     customersToday.forEach(c => {
         const arrData = window.getArrearsData(c);
@@ -169,7 +179,6 @@ window.renderWeek = () => {
     });
 };
 
-/* --- 📍 ROUTE MY DAY (SMART DISPATCH API) --- */
 window.routeMyDay = () => {
     let todaysJobs = db.customers.filter(c => c.week == curWeek && c.day == workingDay);
     if(todaysJobs.length === 0) return alert("No jobs to route today!");
@@ -179,14 +188,12 @@ window.routeMyDay = () => {
     let destination = stops.pop(); 
     let waypoints = stops.join('|'); 
     
-    // Official Universal Google Maps Link
     let url = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
     if(waypoints) url += `&waypoints=${waypoints}`;
     
     window.open(url, '_blank');
 };
 
-/* --- 💬 RECEIPT GENERATORS --- */
 window.cmdWhatsApp = (id) => {
     const c = db.customers.find(x => x.id === id);
     if(!c.phone) return alert("No phone number saved for this customer.");
@@ -199,14 +206,8 @@ window.cmdWhatsApp = (id) => {
     
     if(arrData.isOwed) {
         msg += `Your outstanding balance is £${arrData.total.toFixed(2)}. `;
-        if (db.bank.name && db.bank.acc) {
-            msg += `You can pay via bank transfer to ${db.bank.name}, Account: ${db.bank.acc}. Thank you!`;
-        } else {
-            msg += `Please let us know how you'd like to pay. Thank you!`;
-        }
-    } else {
-        msg += `Everything looks great, you have no outstanding balance. Have a wonderful day!`;
-    }
+        if (db.bank.name && db.bank.acc) { msg += `You can pay via bank transfer to ${db.bank.name}, Account: ${db.bank.acc}. Thank you!`; } else { msg += `Please let us know how you'd like to pay. Thank you!`; }
+    } else { msg += `Everything looks great, you have no outstanding balance. Have a wonderful day!`; }
     
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
 };
@@ -221,24 +222,17 @@ window.cmdSMS = (id) => {
     
     if(arrData.isOwed) {
         msg += `Your outstanding balance is £${arrData.total.toFixed(2)}. `;
-        if (db.bank.name && db.bank.acc) {
-            msg += `You can pay via bank transfer to ${db.bank.name}, Account: ${db.bank.acc}. Thank you!`;
-        } else {
-            msg += `Please let us know how you'd like to pay. Thank you!`;
-        }
-    } else {
-        msg += `Everything looks great, you have no outstanding balance. Have a wonderful day!`;
-    }
+        if (db.bank.name && db.bank.acc) { msg += `You can pay via bank transfer to ${db.bank.name}, Account: ${db.bank.acc}. Thank you!`; } else { msg += `Please let us know how you'd like to pay. Thank you!`; }
+    } else { msg += `Everything looks great, you have no outstanding balance. Have a wonderful day!`; }
     
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     const separator = isIOS ? '&' : '?';
     window.open(`sms:${phone}${separator}body=${encodeURIComponent(msg)}`, '_blank');
 };
 
-/* --- 💡 COMMAND VAULT (MODAL LOGIC) --- */
 const generateHistoryHtml = (id) => { 
     const history = db.history.filter(h => h.custId === id).slice(-3).reverse();
-    if (history.length === 0) return '<p class="CMD-history-empty">No history</p>';
+    if (history.length === 0) return `<div class="empty-state" style="padding: 10px;"><div class="empty-text" style="font-size:14px;">No Payment History</div></div>`;
     return history.map(h => `<div class="CMD-history-row"><span>${escapeHTML(h.date)}</span><span>£${parseFloat(h.amt).toFixed(2)}</span></div>`).join('');
 };
 
@@ -248,13 +242,10 @@ const generateArrearsHtml = (arrData) => {
     return `<div class="CMD-alert-danger"><div class="CMD-alert-danger-title">⚠️ TOTAL OUTSTANDING: £${arrData.total.toFixed(2)}</div><ul class="CMD-arrears-list">${listHtml}</ul></div>`;
 };
 
-// 1. JOB CARD (Includes 3-Column Action Grid & Corrected Google Maps Link)
 window.showJobBriefing = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
     const container = document.getElementById('briefingData');
     const arrData = window.getArrearsData(c);
-    
-    // Official Universal Google Maps Search Link
     const mapQuery = encodeURIComponent(`${c.houseNum} ${c.street}, ${c.postcode || ''}`);
     const navUrl = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
 
@@ -274,7 +265,6 @@ window.showJobBriefing = (id) => {
     document.getElementById('briefingModal').classList.remove('hidden');
 };
 
-// 2. CUSTOMER CARD (No Actions)
 window.showCustomerBriefing = (id) => { 
     const c = db.customers.find(x => x.id === id); if(!c) return;
     const container = document.getElementById('briefingData');
@@ -297,11 +287,7 @@ window.showCustomerBriefing = (id) => {
 window.closeBriefing = () => document.getElementById('briefingModal').classList.add('hidden');
 
 window.cmdToggleClean = (id) => { 
-    const c = db.customers.find(x => x.id === id); 
-    c.cleaned = !c.cleaned; 
-    window.saveData(); 
-    window.renderAllSafe(); 
-    window.showJobBriefing(id); 
+    const c = db.customers.find(x => x.id === id); c.cleaned = !c.cleaned; window.saveData(); window.renderAllSafe(); window.showJobBriefing(id); 
 };
 
 window.cmdSettlePaid = (id, context) => { 
@@ -328,7 +314,6 @@ window.cmdSettlePaid = (id, context) => {
     } 
 };
 
-/* --- 💰 FINANCES VAULT LOGIC (WITH NEW DOUGHNUT CHART) --- */
 window.addFinanceExpense = () => { 
     const desc = document.getElementById('fExpDesc').value.trim(); const amt = parseFloat(document.getElementById('fExpAmt').value); const cat = document.getElementById('fExpCat').value;
     if(!desc || isNaN(amt) || amt <= 0) return alert("Valid Description and Amount required.");
@@ -343,8 +328,7 @@ window.renderFinances = () => {
     let arrearsListHtml = '';
 
     db.customers.forEach(c => {
-        income += (parseFloat(c.paidThisMonth) || 0); 
-        expected += (parseFloat(c.price) || 0);
+        income += (parseFloat(c.paidThisMonth) || 0); expected += (parseFloat(c.price) || 0);
         const arrData = window.getArrearsData(c);
         if(arrData.isOwed) { totalArrears += arrData.total; arrearsListHtml += `<div class="CMD-detail-row"><span>${escapeHTML(c.name)} <small style="opacity:0.7;">${escapeHTML(arrData.monthsString)}</small></span><span>£${arrData.total.toFixed(2)}</span></div>`; }
     });
@@ -364,7 +348,6 @@ window.renderFinances = () => {
     
     dash.innerHTML = htmlBuilder;
     
-    // CHART.JS ENGINE
     const ctx = document.getElementById('financeChartCanvas');
     if (ctx && typeof Chart !== 'undefined') {
         if (financeChartInstance) financeChartInstance.destroy(); 
@@ -372,22 +355,12 @@ window.renderFinances = () => {
         let expenseTotals = {};
         db.expenses.forEach(e => { expenseTotals[e.cat] = (expenseTotals[e.cat] || 0) + parseFloat(e.amt); });
         
-        let labels = ['Net Profit'];
-        let chartData = [netProfit];
-        let colors = ['#34C759']; 
-        
+        let labels = ['Net Profit']; let chartData = [netProfit]; let colors = ['#34C759']; 
         const catColors = { 'Fuel': '#ff9500', 'Equipment': '#007aff', 'Food': '#ff2d55', 'Marketing': '#af52de', 'Other': '#8e8e93' };
-        
-        for(let cat in expenseTotals) {
-            labels.push(cat); chartData.push(expenseTotals[cat]); colors.push(catColors[cat] || '#8e8e93');
-        }
+        for(let cat in expenseTotals) { labels.push(cat); chartData.push(expenseTotals[cat]); colors.push(catColors[cat] || '#8e8e93'); }
 
         if (income > 0 || spend > 0) {
-            financeChartInstance = new Chart(ctx, {
-                type: 'doughnut',
-                data: { labels: labels, datasets: [{ data: chartData, backgroundColor: colors, borderWidth: 0, hoverOffset: 4 }] },
-                options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'right', labels: { color: document.body.classList.contains('dark-mode') ? '#fff' : '#000', font: { family: '-apple-system', weight: 'bold' } } } } }
-            });
+            financeChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: labels, datasets: [{ data: chartData, backgroundColor: colors, borderWidth: 0, hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'right', labels: { color: document.body.classList.contains('dark-mode') ? '#fff' : '#000', font: { family: '"Plus Jakarta Sans", sans-serif', weight: 'bold' } } } } } });
         }
     }
     
@@ -395,8 +368,9 @@ window.renderFinances = () => {
     db.expenses.forEach(e => { const cat = e.cat || 'Other'; if(!categories[cat]) categories[cat] = { total: 0, items: [] }; categories[cat].total += parseFloat(e.amt); categories[cat].items.push(e); });
     
     let statementHtml = ''; 
-    if (Object.keys(categories).length === 0) { statementHtml = '<div class="ADM-card"><p style="text-align:center; opacity:0.5; font-weight:800; margin:0;">No expenses logged.</p></div>'; } 
-    else { 
+    if (Object.keys(categories).length === 0) { 
+        statementHtml = `<div class="empty-state"><span class="empty-icon">🧾</span><div class="empty-text">No Expenses Yet</div><div class="empty-sub">Your ledger is completely clean.</div></div>`; 
+    } else { 
         for (const [cat, data] of Object.entries(categories)) { 
             let catIcon = "🏢"; if(cat === 'Fuel') catIcon = "⛽"; if(cat === 'Equipment') catIcon = "🧽"; if(cat === 'Food') catIcon = "🍔"; if(cat === 'Marketing') catIcon = "📣"; 
             let itemsHtml = ''; data.items.slice().reverse().forEach(item => { itemsHtml += `<div class="FIN-exp-row"><span>${escapeHTML(item.desc)} <small style="opacity:0.5; font-size:12px;">(${escapeHTML(item.date)})</small></span><span style="color:var(--danger);">-£${parseFloat(item.amt).toFixed(2)}</span></div>`; }); 
@@ -406,7 +380,6 @@ window.renderFinances = () => {
     ledger.innerHTML = statementHtml;
 };
 
-/* --- 🌦️ WEATHER --- */
 async function initWeather() { 
     const cachedW = localStorage.getItem('HP_Weather_Cache'); const wText = document.getElementById('w-text'); if(cachedW && wText) wText.innerText = cachedW;
     if (navigator.geolocation) {
