@@ -3,27 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v58.1</title>
+    <title>Hydro Pro v59.0</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#007aff">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="styles.css?v=581">
+    <link rel="apple-touch-icon" href="Logo.png">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    
+    <link rel="stylesheet" href="styles.css?v=590">
 </head>
 <body class="light-mode">
 
     <header id="G-HEADER">
-        <div class="G-LOGO-STRETCH-WRAP">
-            <img src="Logo.png" id="mainLogo" alt="HydroPro">
-        </div>
+        <div class="G-LOGO-STRETCH-WRAP"><img src="Logo.png" id="mainLogo" alt="HydroPro"></div>
         <div class="CENTRAL-STATUS-POD">
-            <div id="weather-pill" class="G-WEATHER-PILL-PASSIVE">
-                <span id="w-icon">🌤️</span><small id="w-text">SYNC...</small>
-            </div>
+            <div id="weather-pill" class="G-WEATHER-PILL-PASSIVE"><span id="w-icon">🌤️</span><small id="w-text">SYNC...</small></div>
             <div class="G-SWITCH-WRAP">
                 <span class="MODE-LABEL">LIT</span>
-                <label class="ios-switch">
-                    <input type="checkbox" id="themeCheckbox">
-                    <span class="ios-slider"></span>
-                </label>
+                <label class="ios-switch"><input type="checkbox" id="themeCheckbox"><span class="ios-slider"></span></label>
                 <span class="MODE-LABEL">DRK</span>
             </div>
         </div>
@@ -38,14 +38,11 @@
                 <button class="HUB-btn" onclick="openTab('finances-root')"><span class="HUB-icon">💰</span><small class="HUB-label">Finances</small></button>
                 <button class="HUB-btn" onclick="openTab('weeks-root')"><span class="HUB-icon">📅</span><small class="HUB-label">Weeks</small></button>
             </div>
-            <div class="HUB-sync-area">
-                <button class="HUB-sync-btn" onclick="location.reload(true)">🔄 SYNC UPDATES</button>
-            </div>
+            <div class="HUB-sync-area"><button class="HUB-sync-btn" onclick="location.reload(true)">🔄 SYNC UPDATES</button></div>
         </section>
 
         <section id="admin-root" class="tab-content">
             <button class="ADM-nav-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
-            
             <div class="ADM-card">
                 <h3 class="ADM-hdr">Quick Add Customer</h3>
                 <div class="ADM-row"><span>👤</span><input type="text" id="cName" placeholder="Full Name"></div>
@@ -56,14 +53,12 @@
                 <div class="ADM-row"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
                 <button class="ADM-save-btn" onclick="saveCustomer()">✨ SAVE CUSTOMER</button>
             </div>
-
             <div class="ADM-card">
                 <h3 class="ADM-hdr">Bank Vault</h3>
                 <div class="ADM-row"><span>🏦</span><input type="text" id="bName" placeholder="Account Name"></div>
                 <div class="ADM-row"><span>💳</span><input type="text" id="bAcc" placeholder="Account No."></div>
                 <button class="ADM-save-btn" style="background:var(--accent);" onclick="saveBank()">🔒 SECURE BANK</button>
             </div>
-
             <div class="ADM-util-vault">
                 <button class="ADM-util-btn blue" onclick="exportToQuickBooks()">📊 QUICKBOOKS EXPORT</button>
                 <div class="ADM-util-row">
@@ -78,15 +73,17 @@
 
         <section id="master-root" class="tab-content">
             <button class="CST-nav-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="CST-search-vault">
-                <input type="text" id="mainSearch" placeholder="🔍 Search Name or Street..." oninput="renderMaster()">
-            </div>
+            <div class="CST-search-vault"><input type="text" id="mainSearch" placeholder="🔍 Search Name or Street..." oninput="renderMaster()"></div>
             <div id="CST-list-container"></div>
         </section>
 
         <section id="finances-root" class="tab-content">
             <button class="FIN-nav-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
             <div id="FIN-dashboard"></div>
+            
+            <div class="ADM-card" style="height: 300px; padding: 15px;">
+                <canvas id="financeChartCanvas"></canvas>
+            </div>
             
             <div class="ADM-card">
                 <h3 class="ADM-hdr">Log Expense</h3>
@@ -135,6 +132,9 @@
                 <button class="WEE-day-btn" onclick="setWorkingDay('Sat', this)">S</button>
                 <button class="WEE-day-btn" onclick="setWorkingDay('Sun', this)">S</button>
             </div>
+            
+            <button class="ADM-save-btn" style="width: calc(100% - 40px); margin: 0 20px 20px; background: var(--text); color: var(--bg);" onclick="routeMyDay()">📍 ROUTE MY DAY</button>
+            
             <div id="WEE-list-container"></div>
         </section>
     </main>
@@ -146,8 +146,7 @@
         </div>
     </div>
 
-    <footer id="G-FOOTER">HYDRO PRO // v58.1 THE UNBREAKABLE ENGINE</footer>
-    
-    <script src="app.js?v=581" defer></script>
+    <footer id="G-FOOTER">HYDRO PRO // v59.0 ENTERPRISE PWA</footer>
+    <script src="app.js?v=590" defer></script>
 </body>
 </html>
