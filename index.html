@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v59.2</title>
+    <title>Hydro Pro v60.0</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#007aff">
@@ -11,8 +11,12 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="Logo.png">
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-    <link rel="stylesheet" href="styles.css?v=592">
+    <link rel="stylesheet" href="styles.css?v=600">
 </head>
 <body class="light-mode">
 
@@ -30,54 +34,45 @@
     </header>
 
     <main id="G-VIEWPORT">
-        <section id="home-root" class="tab-content active">
-            <div class="HUB-grid-matrix">
-                <button class="HUB-btn" onclick="openTab('admin-root')"><span class="HUB-icon">⚙️</span><small class="HUB-label">Admin</small></button>
-                <button class="HUB-btn" onclick="openTab('master-root')"><span class="HUB-icon">👥</span><small class="HUB-label">Custs</small></button>
-                <button class="HUB-btn" onclick="openTab('finances-root')"><span class="HUB-icon">💰</span><small class="HUB-label">Finances</small></button>
-                <button class="HUB-btn" onclick="openTab('weeks-root')"><span class="HUB-icon">📅</span><small class="HUB-label">Weeks</small></button>
-            </div>
-            <div class="HUB-sync-area"><button class="HUB-sync-btn" onclick="location.reload(true)">🔄 SYNC UPDATES</button></div>
-        </section>
-
-        <section id="admin-root" class="tab-content">
-            <button class="ADM-nav-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="ADM-card">
-                <h3 class="ADM-hdr">Quick Add Customer</h3>
-                <div class="ADM-row"><span>👤</span><input type="text" id="cName" placeholder="Full Name"></div>
-                <div class="ADM-row"><span>🏠</span><input type="text" id="cHouseNum" placeholder="House No."></div>
-                <div class="ADM-row"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street Name"></div>
-                <div class="ADM-row"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
-                <div class="ADM-row"><span>📞</span><input type="tel" id="cPhone" placeholder="Phone Number"></div>
-                <div class="ADM-row"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
-                <button class="ADM-save-btn" onclick="saveCustomer()">✨ SAVE CUSTOMER</button>
-            </div>
-            <div class="ADM-card">
-                <h3 class="ADM-hdr">Bank Vault</h3>
-                <div class="ADM-row"><span>🏦</span><input type="text" id="bName" placeholder="Account Name"></div>
-                <div class="ADM-row"><span>💳</span><input type="text" id="bAcc" placeholder="Account No."></div>
-                <button class="ADM-save-btn" style="background:var(--accent);" onclick="saveBank()">🔒 SECURE BANK</button>
-            </div>
-            <div class="ADM-util-vault">
-                <button class="ADM-util-btn blue" onclick="exportToQuickBooks()">📊 QUICKBOOKS EXPORT</button>
-                <div class="ADM-util-row">
-                    <button class="ADM-util-btn grey" onclick="exportData()">📤 Backup</button>
-                    <button class="ADM-util-btn grey" onclick="document.getElementById('importFile').click()">📥 Restore</button>
-                    <input type="file" id="importFile" hidden onchange="importData(event)" accept=".json">
+        
+        <section id="weeks-root" class="tab-content active">
+            <div class="WEE-selection-grid">
+                <div class="WEE-grid-row">
+                    <button class="WEE-btn week-1" onclick="viewWeek(1)">WEEK 1</button>
+                    <button class="WEE-btn week-2" onclick="viewWeek(2)">WEEK 2</button>
                 </div>
-                <button class="ADM-util-btn green" onclick="completeCycle()">🚀 START NEW MONTH</button>
-                <button class="ADM-util-btn red" onclick="nuclearReset()">☢️ FACTORY RESET</button>
+                <div class="WEE-grid-row">
+                    <button class="WEE-btn week-3" onclick="viewWeek(3)">WEEK 3</button>
+                    <button class="WEE-btn week-4" onclick="viewWeek(4)">WEEK 4</button>
+                </div>
+                <div class="WEE-grid-row">
+                    <button class="WEE-btn week-5 full" onclick="viewWeek(5)">WEEK 5</button>
+                </div>
             </div>
+            
+            <div class="WEE-day-selector" style="margin-top: 20px;">
+                <button class="WEE-day-btn active" onclick="setWorkingDay('Mon', this)">M</button>
+                <button class="WEE-day-btn" onclick="setWorkingDay('Tue', this)">T</button>
+                <button class="WEE-day-btn" onclick="setWorkingDay('Wed', this)">W</button>
+                <button class="WEE-day-btn" onclick="setWorkingDay('Thu', this)">T</button>
+                <button class="WEE-day-btn" onclick="setWorkingDay('Fri', this)">F</button>
+                <button class="WEE-day-btn" onclick="setWorkingDay('Sat', this)">S</button>
+                <button class="WEE-day-btn" onclick="setWorkingDay('Sun', this)">S</button>
+            </div>
+            
+            <button class="ADM-save-btn" style="width: calc(100% - 40px); margin: 0 20px 20px; background: var(--text); color: var(--bg);" onclick="routeMyDay()">📍 ROUTE MY DAY</button>
+            
+            <div id="WEE-list-container"></div>
+            
+            <button class="ADM-save-btn" style="width: calc(100% - 40px); margin: 20px 20px; background: transparent; border: 3px solid var(--accent); color: var(--accent); box-shadow: none;" onclick="location.reload(true)">🔄 SYNC UPDATES</button>
         </section>
 
         <section id="master-root" class="tab-content">
-            <button class="CST-nav-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
             <div class="CST-search-vault"><input type="text" id="mainSearch" placeholder="🔍 Search Name or Street..." oninput="renderMaster()"></div>
             <div id="CST-list-container"></div>
         </section>
 
         <section id="finances-root" class="tab-content">
-            <button class="FIN-nav-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
             <div id="FIN-dashboard"></div>
             
             <div class="ADM-card" style="height: 300px; padding: 15px;">
@@ -103,40 +98,44 @@
             <div id="FIN-ledger"></div>
         </section>
 
-        <section id="weeks-root" class="tab-content">
-            <button class="WEE-nav-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="WEE-selection-grid">
-                <div class="WEE-grid-row">
-                    <button class="WEE-btn week-1" onclick="viewWeek(1)">WEEK 1</button>
-                    <button class="WEE-btn week-2" onclick="viewWeek(2)">WEEK 2</button>
+        <section id="admin-root" class="tab-content">
+            <div class="ADM-card">
+                <h3 class="ADM-hdr">Quick Add Customer</h3>
+                <div class="ADM-row"><span>👤</span><input type="text" id="cName" placeholder="Full Name"></div>
+                <div class="ADM-row"><span>🏠</span><input type="text" id="cHouseNum" placeholder="House No."></div>
+                <div class="ADM-row"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street Name"></div>
+                <div class="ADM-row"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
+                <div class="ADM-row"><span>📞</span><input type="tel" id="cPhone" placeholder="Phone Number"></div>
+                <div class="ADM-row"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
+                <button class="ADM-save-btn" onclick="saveCustomer()">✨ SAVE CUSTOMER</button>
+            </div>
+            <div class="ADM-card">
+                <h3 class="ADM-hdr">Bank Vault</h3>
+                <div class="ADM-row"><span>🏦</span><input type="text" id="bName" placeholder="Account Name"></div>
+                <div class="ADM-row"><span>💳</span><input type="text" id="bAcc" placeholder="Account No."></div>
+                <button class="ADM-save-btn" style="background:var(--accent);" onclick="saveBank()">🔒 SECURE BANK</button>
+            </div>
+            <div class="ADM-util-vault">
+                <button class="ADM-util-btn blue" onclick="exportToQuickBooks()">📊 QUICKBOOKS EXPORT</button>
+                <div class="ADM-util-row">
+                    <button class="ADM-util-btn grey" onclick="exportData()">📤 Backup</button>
+                    <button class="ADM-util-btn grey" onclick="document.getElementById('importFile').click()">📥 Restore</button>
+                    <input type="file" id="importFile" hidden onchange="importData(event)" accept=".json">
                 </div>
-                <div class="WEE-grid-row">
-                    <button class="WEE-btn week-3" onclick="viewWeek(3)">WEEK 3</button>
-                    <button class="WEE-btn week-4" onclick="viewWeek(4)">WEEK 4</button>
-                </div>
-                <div class="WEE-grid-row">
-                    <button class="WEE-btn week-5 full" onclick="viewWeek(5)">WEEK 5</button>
-                </div>
+                <button class="ADM-util-btn green" onclick="completeCycle()">🚀 START NEW MONTH</button>
+                <button class="ADM-util-btn red" onclick="nuclearReset()">☢️ FACTORY RESET</button>
+                <footer id="G-FOOTER">HYDRO PRO // v60.0 ENTERPRISE PWA</footer>
             </div>
         </section>
 
-        <section id="week-view-root" class="tab-content">
-            <div class="WEE-sub-nav"><button onclick="openTab('weeks-root')">⬅️ BACK</button><button onclick="openTab('home-root')">🏠 HUB</button></div>
-            <div class="WEE-day-selector">
-                <button class="WEE-day-btn active" onclick="setWorkingDay('Mon', this)">M</button>
-                <button class="WEE-day-btn" onclick="setWorkingDay('Tue', this)">T</button>
-                <button class="WEE-day-btn" onclick="setWorkingDay('Wed', this)">W</button>
-                <button class="WEE-day-btn" onclick="setWorkingDay('Thu', this)">T</button>
-                <button class="WEE-day-btn" onclick="setWorkingDay('Fri', this)">F</button>
-                <button class="WEE-day-btn" onclick="setWorkingDay('Sat', this)">S</button>
-                <button class="WEE-day-btn" onclick="setWorkingDay('Sun', this)">S</button>
-            </div>
-            
-            <button class="ADM-save-btn" style="width: calc(100% - 40px); margin: 0 20px 20px; background: var(--text); color: var(--bg);" onclick="routeMyDay()">📍 ROUTE MY DAY</button>
-            
-            <div id="WEE-list-container"></div>
-        </section>
     </main>
+
+    <nav id="BOTTOM-NAV">
+        <button class="nav-item active" onclick="openTab('weeks-root', this)"><span class="nav-icon">📅</span><small>Weeks</small></button>
+        <button class="nav-item" onclick="openTab('master-root', this)"><span class="nav-icon">👥</span><small>Custs</small></button>
+        <button class="nav-item" onclick="openTab('finances-root', this)"><span class="nav-icon">💰</span><small>Finances</small></button>
+        <button class="nav-item" onclick="openTab('admin-root', this)"><span class="nav-icon">⚙️</span><small>Admin</small></button>
+    </nav>
 
     <div id="briefingModal" class="modal-overlay hidden" onclick="closeBriefing()">
         <div class="modal-content" onclick="event.stopPropagation()">
@@ -145,7 +144,6 @@
         </div>
     </div>
 
-    <footer id="G-FOOTER">HYDRO PRO // v59.2 ENTERPRISE PWA</footer>
-    <script src="app.js?v=592" defer></script>
+    <script src="app.js?v=600" defer></script>
 </body>
 </html>
