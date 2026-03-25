@@ -1,34 +1,58 @@
-/* --- v45.0 INTELLIGENCE STYLES --- */
+/* --- v45.1 HARD-ANCHOR STYLES --- */
 :root { --accent: #007aff; --bg: #f2f2f7; --card: #ffffff; --text: #000; --success: #34C759; --danger: #ff453a; --ios-grey: #e9e9eb; --grad: linear-gradient(135deg, #007aff 0%, #0051a8 100%); }
 body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; --ios-grey: #39393d; }
 
+/* 🛡️ THE GLOBAL ANTI-SHRINK LOCK */
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; flex-shrink: 0 !important; }
-body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; font-family: -apple-system, sans-serif; }
+
+body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; width: 100vw; font-family: -apple-system, sans-serif; }
 
 .tab-content { display: none !important; width: 100%; }
 .tab-content.active { display: flex !important; flex-direction: column; padding-top: 240px; }
 
-/* HEADER */
-#G-HEADER { position: fixed; top: 0; left: 0; width: 100%; height: 230px !important; z-index: 1000; background: var(--bg); text-align: center; border-bottom: 1px solid rgba(0,0,0,0.05); }
+/* ⚓ HEADER - ABSOLUTELY BOLTED */
+#G-HEADER { 
+    position: fixed; top: 0; left: 0; width: 100%; 
+    height: 230px !important; min-height: 230px !important;
+    z-index: 1000; background: var(--bg); text-align: center; 
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
 .G-LOGO-WRAP img { width: 220px !important; height: auto; display: block; margin: 0 auto 10px; }
 
-/* HUB BUTTONS - FONT INCREASE */
+/* PODS */
+.CENTRAL-STATUS-POD { display: flex; justify-content: center; align-items: center; gap: 20px; height: 60px; width: 380px; margin: 0 auto; }
+.G-WEATHER-PILL { background: var(--ios-grey); width: 120px !important; height: 48px !important; border-radius: 24px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
+
+/* 🌓 JUMBO TOGGLE */
+.G-SWITCH-WRAP { display: flex; align-items: center; gap: 10px; width: 180px; justify-content: center; }
+.MODE-LABEL { font-size: 11px; font-weight: 950; opacity: 0.6; width: 35px; }
+.ios-switch { position: relative; width: 80px !important; height: 40px !important; }
+.ios-switch input { opacity: 0; width: 0; height: 0; }
+.ios-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--ios-grey); transition: .3s; border-radius: 40px; }
+.ios-slider:before { position: absolute; content: ""; height: 32px; width: 32px; left: 4px; bottom: 4px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 3px 8px rgba(0,0,0,0.15); }
+input:checked + .ios-slider { background-color: var(--success); }
+input:checked + .ios-slider:before { transform: translateX(40px); }
+
+#dateText { font-size: 24px !important; font-weight: 950; color: var(--accent); display: block; margin-top: 12px; }
+
+/* 🧱 HUB - FONT SCALED */
 .IRON-HUB-CONTAINER { width: 380px !important; margin: 0 auto; display: block; }
 .IRON-ROW { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; height: 160px !important; }
 .IRON-BTN { width: 175px !important; height: 160px !important; border-radius: 40px; background: var(--card); border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
-.I-LOCKED { font-size: 60px !important; display: block; }
+.I-LOCKED { font-size: 60px !important; display: block; height: 65px; line-height: 65px; }
 .T-LOCKED { font-size: 22px !important; font-weight: 950; text-transform: uppercase; margin-top: 5px; }
 
-/* MODAL BRIEFING */
+/* 🔄 SYNC BOLTED */
+.SYNC-AREA { width: 100%; display: flex; justify-content: center; margin-top: 20px; height: 80px; }
+.SYNC-BTN-IRON { width: 340px; height: 75px !important; min-height: 75px !important; border-radius: 35px; border: 3px solid var(--accent); background: transparent; color: var(--accent); font-weight: 950; font-size: 20px; }
+
+/* BRIEFING MODAL */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-.modal-content { background: var(--card); padding: 30px; border-radius: 45px; width: 92%; max-height: 85vh; overflow-y: auto; }
+.modal-content { background: var(--card); padding: 30px; border-radius: 45px; width: 92%; max-height: 85vh; overflow-y: auto; color: var(--text); }
 .brief-section { border-bottom: 2px solid var(--ios-grey); padding: 15px 0; }
 .brief-arrears { background: var(--danger); color: white; padding: 15px; border-radius: 20px; text-align: center; font-weight: 900; margin: 10px 0; }
-.brief-history-row { display: flex; justify-content: space-between; padding: 10px 0; font-size: 14px; font-weight: 700; }
+.brief-history-row { display: flex; justify-content: space-between; padding: 10px 0; font-size: 15px; font-weight: 700; }
 
-/* SHARED */
-.CUST-BLOCK { background: var(--card); margin: 0 25px 12px; padding: 20px; border-radius: 30px; height: 110px !important; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
-.VAULT-CARD { background: var(--card); margin: 0 20px 25px; padding: 25px; border-radius: 40px; }
-.VAULT-ROW { display: flex; align-items: center; height: 75px !important; border-bottom: 2px solid var(--ios-grey); gap: 15px; }
-.FIXED-BACK-BTN { width: 340px; height: 80px !important; border-radius: 40px; background: var(--card); color: var(--accent); font-weight: 950; font-size: 22px; margin: 0 auto 20px; border: none; display: flex; align-items: center; justify-content: center; }
+.FIXED-BACK-BTN { width: 340px; height: 80px !important; min-height: 80px !important; border-radius: 40px; background: var(--card); color: var(--accent); font-weight: 950; font-size: 22px; margin: 0 auto 20px; border: none; display: flex; align-items: center; justify-content: center; }
+#G-FOOTER { width: 100%; text-align: center; padding: 60px 0; font-size: 11px; font-weight: 950; opacity: 0.3; letter-spacing: 2px; }
 .hidden { display: none !important; }
