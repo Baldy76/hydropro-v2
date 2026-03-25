@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v45.3</title>
+    <title>Hydro Pro v46.0</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="styles.css?v=453">
+    <link rel="stylesheet" href="styles.css?v=460">
 </head>
 <body class="light-mode">
 
@@ -30,59 +30,58 @@
 
     <main id="G-VIEWPORT">
         <section id="home-root" class="tab-content active">
-            <div class="IRON-HUB-CONTAINER">
-                <div class="IRON-ROW">
-                    <button class="IRON-BTN" onclick="openTab('admin-root')"><span class="I-LOCKED">⚙️</span><small class="T-LOCKED">Admin</small></button>
-                    <button class="IRON-BTN" onclick="openTab('master-root')"><span class="I-LOCKED">👥</span><small class="T-LOCKED">Custs</small></button>
+            <div class="HUB-grid-container">
+                <div class="HUB-row">
+                    <button class="HUB-btn" onclick="openTab('admin-root')"><span class="HUB-icon">⚙️</span><small class="HUB-label">Admin</small></button>
+                    <button class="HUB-btn" onclick="openTab('master-root')"><span class="HUB-icon">👥</span><small class="HUB-label">Custs</small></button>
                 </div>
-                <div class="IRON-ROW">
-                    <button class="IRON-BTN" onclick="openTab('finances-root')"><span class="I-LOCKED">💰</span><small class="T-LOCKED">Finances</small></button>
-                    <button class="IRON-BTN" onclick="openTab('weeks-root')"><span class="I-LOCKED">📅</span><small class="T-LOCKED">Weeks</small></button>
+                <div class="HUB-row">
+                    <button class="HUB-btn" onclick="openTab('finances-root')"><span class="HUB-icon">💰</span><small class="HUB-label">Finances</small></button>
+                    <button class="HUB-btn" onclick="openTab('weeks-root')"><span class="HUB-icon">📅</span><small class="HUB-label">Weeks</small></button>
                 </div>
             </div>
-            <div class="SYNC-AREA"><button class="SYNC-BTN-IRON" onclick="location.reload(true)">🔄 SYNC UPDATES</button></div>
+            <div class="HUB-sync-area">
+                <button class="HUB-sync-btn" onclick="location.reload(true)">🔄 SYNC UPDATES</button>
+            </div>
         </section>
 
         <section id="admin-root" class="tab-content">
-            <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            
-            <div class="VAULT-CARD">
-                <h3 class="VAULT-HDR">Quick Add Customer</h3>
-                <div class="VAULT-ROW-IRON"><span>👤</span><input type="text" id="cName" placeholder="Full Name"></div>
-                <div class="VAULT-ROW-IRON"><span>🏠</span><input type="text" id="cHouseNum" placeholder="House No."></div>
-                <div class="VAULT-ROW-IRON"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street Name"></div>
-                <div class="VAULT-ROW-IRON"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
-                <button class="VAULT-SAVE-BTN-IRON" onclick="saveCustomer()">✨ SAVE CUSTOMER</button>
+            <button class="ADM-back-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
+            <div class="ADM-vault">
+                <h3 class="ADM-title">Quick Add Customer</h3>
+                <div class="ADM-input-row"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
+                <div class="ADM-input-row"><span>🏠</span><input type="text" id="cHouseNum" placeholder="No."></div>
+                <div class="ADM-input-row"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
+                <div class="ADM-input-row"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
+                <button class="ADM-save-btn" onclick="saveCustomer()">✨ SAVE CUSTOMER</button>
             </div>
-
-            <div class="VAULT-CARD">
-                <h3 class="VAULT-HDR">Business Bank Details</h3>
-                <div class="VAULT-ROW-IRON"><span>🏦</span><input type="text" id="bName" placeholder="Account Name"></div>
-                <div class="VAULT-ROW-IRON"><span>💳</span><input type="text" id="bAcc" placeholder="Account Number"></div>
-                <button class="VAULT-SAVE-BTN-IRON" style="background:var(--accent);" onclick="saveBank()">🔒 SECURE BANK INFO</button>
+            <div class="ADM-vault">
+                <h3 class="ADM-title">Bank Details</h3>
+                <div class="ADM-input-row"><span>🏦</span><input type="text" id="bName" placeholder="Name"></div>
+                <div class="ADM-input-row"><span>💳</span><input type="text" id="bAcc" placeholder="Acc No."></div>
+                <button class="ADM-save-btn" style="background:var(--accent);" onclick="saveBank()">🔒 SECURE BANK</button>
             </div>
-
-            <div class="ADMIN-VAULT-IRON">
-                <h3 class="VAULT-HDR" style="color:var(--text); opacity:1;">System Controls</h3>
-                <button class="ADMIN-BTN-IRON BLUE" onclick="exportToQuickBooks()">📊 QUICKBOOKS EXPORT</button>
-                <div class="ADMIN-ROW-IRON">
-                    <button class="ADMIN-BTN-IRON GREY" onclick="exportData()">📤 Backup</button>
-                    <button class="ADMIN-BTN-IRON GREY" onclick="document.getElementById('importFile').click()">📥 Restore</button>
-                    <input type="file" id="importFile" hidden onchange="importData(event)" accept=".json">
+            <div class="ADM-utility-vault">
+                <button class="ADM-util-btn blue" onclick="exportToQuickBooks()">📊 QUICKBOOKS EXPORT</button>
+                <div class="ADM-util-row">
+                    <button class="ADM-util-btn grey" onclick="exportData()">📤 Backup</button>
+                    <button class="ADM-util-btn grey" onclick="document.getElementById('importFile').click()">📥 Restore</button>
                 </div>
-                <button class="ADMIN-BTN-IRON GREEN" onclick="completeCycle()">🚀 START NEW MONTH</button>
-                <button class="ADMIN-BTN-IRON RED" onclick="nuclearReset()">☢️ FACTORY RESET</button>
+                <button class="ADM-util-btn green" onclick="completeCycle()">🚀 START NEW MONTH</button>
+                <button class="ADM-util-btn red" onclick="nuclearReset()">☢️ FACTORY RESET</button>
             </div>
         </section>
 
         <section id="master-root" class="tab-content">
-            <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="SEARCH-VAULT-IRON"><input type="text" id="mainSearch" placeholder="🔍 Search Customers..." oninput="renderMaster()"></div>
+            <button class="CST-back-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
+            <div class="CST-search-vault">
+                <input type="text" id="mainSearch" placeholder="🔍 Search Customers..." oninput="renderMaster()">
+            </div>
             <div id="master-list-container"></div>
         </section>
 
         <section id="finances-root" class="tab-content">
-            <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
+            <button class="FIN-back-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
             <div id="finances-dashboard-container"></div>
             <div id="finances-statement-container"></div>
         </section>
@@ -91,11 +90,11 @@
     <div id="briefingModal" class="modal-overlay hidden" onclick="closeBriefing()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div id="briefingData"></div>
-            <button class="VAULT-SAVE-BTN-IRON" style="margin-top:20px;" onclick="closeBriefing()">CLOSE</button>
+            <button class="ADM-save-btn" style="margin-top:20px;" onclick="closeBriefing()">CLOSE</button>
         </div>
     </div>
 
-    <footer id="G-FOOTER">v45.3 HARD-LOCKED</footer>
-    <script src="app.js?v=453"></script>
+    <footer id="G-FOOTER">v46.0 VAULTED FRAMEWORK</footer>
+    <script src="app.js?v=460"></script>
 </body>
 </html>
