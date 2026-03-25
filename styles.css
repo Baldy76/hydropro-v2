@@ -24,10 +24,8 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-hei
 #G-HEADER { position: fixed; top: 0; left: 0; width: 100%; height: var(--h-header) !important; z-index: 1000; background: var(--bg); border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; padding-bottom: 15px; }
 .G-LOGO-STRETCH-WRAP { width: 100%; padding: 15px 0 5px; display: flex; justify-content: center; }
 .G-LOGO-STRETCH-WRAP img { width: 275px !important; height: auto; display: block; }
-
 .CENTRAL-STATUS-POD { display: flex; justify-content: space-evenly; align-items: center; height: 60px; width: 100%; max-width: 400px; margin: 0 auto; }
 .G-WEATHER-PILL-PASSIVE { background: var(--ios-grey); width: 110px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 950; }
-
 .G-SWITCH-WRAP { display: flex; align-items: center; gap: 8px; }
 .MODE-LABEL { font-size: 11px; font-weight: 950; opacity: 0.6; }
 .ios-switch { position: relative; width: 70px; height: 36px; }
@@ -36,6 +34,7 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-hei
 .ios-slider:before { position: absolute; content: ""; height: 28px; width: 28px; left: 4px; bottom: 4px; background-color: white; border-radius: 50%; transition: .3s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 input:checked + .ios-slider { background-color: var(--success); }
 input:checked + .ios-slider:before { transform: translateX(34px); }
+.DATE-CONTAINER { width: 100%; text-align: center; height: 35px; display: flex; justify-content: center; align-items: center; margin-top: 5px; }
 #dateText { font-size: 24px !important; font-weight: 950; color: var(--accent); }
 
 /* 🏠 HUB GRID */
@@ -65,7 +64,13 @@ input:checked + .ios-slider:before { transform: translateX(34px); }
 /* 👥 CUSTOMERS LIST & SEARCH */
 .CST-search-vault { padding: 0 25px 15px; width: 100%; max-width: 400px; margin: 0 auto; }
 #mainSearch { width: 100%; height: 60px !important; border-radius: 20px; border: 3px solid var(--accent); background: var(--card); padding: 0 20px; font-size: 20px; font-weight: 700; color: var(--text); outline: none; }
-.CST-card-item { background: var(--card); margin: 0 25px 12px; padding: 20px; border-radius: 30px; height: 110px !important; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+.CST-card-item { background: var(--card); margin: 0 25px 12px; padding: 20px; border-radius: 30px; display: flex; flex-direction: column; justify-content: center; gap: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); min-height: 110px; }
+.CST-card-top { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; }
+.CST-card-badges { display: flex; gap: 8px; margin-top: 5px; }
+.CST-badge { padding: 5px 12px; border-radius: 12px; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
+.badge-clean { background: rgba(52, 199, 89, 0.15); color: var(--success); }
+.badge-unpaid { background: rgba(255, 69, 58, 0.15); color: var(--danger); }
+.badge-paid { background: rgba(52, 199, 89, 0.15); color: var(--success); }
 
 /* 💰 FINANCES VAULT */
 .FIN-hero-iron { background: var(--card); border: 4px solid var(--accent); padding: 30px; border-radius: 40px; text-align: center; margin: 0 20px 20px; box-shadow: 0 10px 25px rgba(0,122,255,0.1); }
@@ -79,28 +84,33 @@ input:checked + .ios-slider:before { transform: translateX(34px); }
 .FIN-cat-hdr { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--ios-grey); padding-bottom: 15px; margin-bottom: 15px; font-weight: 950; font-size: 20px; color: var(--accent); }
 .FIN-exp-row { display: flex; justify-content: space-between; padding: 10px 0; font-weight: 800; font-size: 16px; opacity: 0.85; }
 
-/* 📅 WEEKS GRID (VIBRANT APP STYLE) */
+/* 📅 WEEKS GRID & SUB-NAV */
 .WEE-selection-grid { width: 380px; margin: 0 auto; display: block; }
 .WEE-grid-row { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
 .WEE-btn { width: 175px !important; height: 120px !important; border-radius: 35px; border: none; font-size: 24px !important; font-weight: 950; color: white; box-shadow: 0 8px 20px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; }
+.week-1 { background: linear-gradient(135deg, #007aff, #0051a8); }
+.week-2 { background: linear-gradient(135deg, #af52de, #5e14a7); }
+.week-3 { background: linear-gradient(135deg, #ff9500, #b94b00); }
+.week-4 { background: linear-gradient(135deg, #ff2d55, #a3001f); }
+.week-5.full { width: 365px !important; background: linear-gradient(135deg, #34c759, #1b7e28); }
 
-/* Vibrant iOS-Style Gradients */
-.week-1 { background: linear-gradient(135deg, #007aff, #0051a8); } /* Blue */
-.week-2 { background: linear-gradient(135deg, #af52de, #5e14a7); } /* Purple */
-.week-3 { background: linear-gradient(135deg, #ff9500, #b94b00); } /* Orange */
-.week-4 { background: linear-gradient(135deg, #ff2d55, #a3001f); } /* Pink */
-.week-5.full { width: 365px !important; background: linear-gradient(135deg, #34c759, #1b7e28); } /* Green Finisher */
-
+.WEE-sub-nav { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; width: 100%; max-width: 380px; margin-left: auto; margin-right: auto; }
+.WEE-sub-nav button { width: 165px; height: var(--h-nav-btn); border-radius: 30px; border: none; background: var(--card); color: var(--accent); font-weight: 950; font-size: 18px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
 .WEE-day-selector { display: flex; justify-content: center; gap: 5px; padding-bottom: 25px; }
 .WEE-day-btn { width: 45px; height: 55px; border-radius: 12px; border: none; background: var(--card); color: var(--text); font-weight: 950; }
 .WEE-day-btn.active { background: var(--accent); color: white; }
-.WEE-action-btn { background: var(--ios-grey); border: none; padding: 12px 18px; border-radius: 15px; font-size: 22px; margin-left: 8px; font-weight: 950; }
 
-/* 💡 MODAL VAULT */
+/* 💡 COMMAND MODAL VAULT */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; align-items: center; justify-content: center; }
 .modal-content { background: var(--card); padding: 30px; border-radius: 45px; width: 92%; max-height: 85vh; overflow-y: auto; color: var(--text); }
 .CST-brief-item { display: flex; align-items: center; gap: 15px; background: var(--ios-grey); padding: 18px; border-radius: 20px; height: 70px !important; margin-bottom: 10px; }
 .CST-brief-icon { font-size: 24px; width: 35px; text-align: center; }
+.CMD-action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px; }
+.CMD-action-btn { height: 80px; border-radius: 25px; border: none; font-size: 16px; font-weight: 950; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
+.CMD-action-btn.clean { background: var(--accent); }
+.CMD-action-btn.pay { background: var(--success); }
+.CMD-action-btn.route { background: #ff9500; }
+.CMD-action-btn.call { background: #af52de; }
 .hidden { display: none !important; }
 
 #G-FOOTER { width: 100%; text-align: center; padding: 40px 0; font-size: 9px; font-weight: 950; opacity: 0.3; letter-spacing: 2px; }
