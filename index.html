@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v52.0</title>
+    <title>Hydro Pro v54.0</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="styles.css?v=520">
+    <link rel="stylesheet" href="styles.css?v=540">
 </head>
 <body class="light-mode">
 
@@ -45,6 +45,7 @@
 
         <section id="admin-root" class="tab-content">
             <button class="ADM-nav-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
+            
             <div class="ADM-card">
                 <h3 class="ADM-hdr">Quick Add Customer</h3>
                 <div class="ADM-row"><span>👤</span><input type="text" id="cName" placeholder="Full Name"></div>
@@ -55,6 +56,14 @@
                 <div class="ADM-row"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
                 <button class="ADM-save-btn" onclick="saveCustomer()">✨ SAVE CUSTOMER</button>
             </div>
+
+            <div class="ADM-card">
+                <h3 class="ADM-hdr">Bank Vault</h3>
+                <div class="ADM-row"><span>🏦</span><input type="text" id="bName" placeholder="Account Name"></div>
+                <div class="ADM-row"><span>💳</span><input type="text" id="bAcc" placeholder="Account No."></div>
+                <button class="ADM-save-btn" style="background:var(--accent);" onclick="saveBank()">🔒 SECURE BANK</button>
+            </div>
+
             <div class="ADM-util-vault">
                 <button class="ADM-util-btn blue" onclick="exportToQuickBooks()">📊 QUICKBOOKS EXPORT</button>
                 <div class="ADM-util-row">
@@ -69,20 +78,33 @@
 
         <section id="master-root" class="tab-content">
             <button class="CST-nav-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="CST-search-bar"><input type="text" id="mainSearch" placeholder="🔍 Search..." oninput="renderMaster()"></div>
+            <div class="CST-search-vault">
+                <input type="text" id="mainSearch" placeholder="🔍 Search Name or Street..." oninput="renderMaster()">
+            </div>
             <div id="CST-list-container"></div>
         </section>
 
         <section id="finances-root" class="tab-content">
             <button class="FIN-nav-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
+            
             <div id="FIN-dashboard"></div>
+            
             <div class="ADM-card">
                 <h3 class="ADM-hdr">Log Expense</h3>
                 <div class="ADM-row"><span>🛒</span><input type="text" id="fExpDesc" placeholder="Description..."></div>
-                <div class="ADM-row"><span>🏷️</span><select id="fExpCat"><option value="Fuel">⛽ Fuel</option><option value="Equipment">🧽 Equipment</option><option value="Marketing">📣 Marketing</option><option value="Other">🏢 Other</option></select></div>
+                <div class="ADM-row">
+                    <span>🏷️</span>
+                    <select id="fExpCat">
+                        <option value="Fuel">⛽ Fuel</option>
+                        <option value="Equipment">🧽 Equipment</option>
+                        <option value="Marketing">📣 Marketing</option>
+                        <option value="Other">🏢 Other</option>
+                    </select>
+                </div>
                 <div class="ADM-row"><span>💸</span><input type="number" id="fExpAmt" placeholder="Amount £"></div>
                 <button class="ADM-save-btn" onclick="addFinanceExpense()">ADD TRANSACTION</button>
             </div>
+
             <div id="FIN-ledger"></div>
         </section>
 
@@ -121,11 +143,11 @@
     <div id="briefingModal" class="modal-overlay hidden" onclick="closeBriefing()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div id="briefingData"></div>
-            <button class="ADM-save-btn" onclick="closeBriefing()">CLOSE BRIEFING</button>
+            <button class="ADM-save-btn" style="margin-top:25px;" onclick="closeBriefing()">CLOSE BRIEFING</button>
         </div>
     </div>
 
-    <footer id="G-FOOTER">v52.0</footer>
-    <script src="app.js?v=520"></script>
+    <footer id="G-FOOTER">v54.0 FULL RESTORATION</footer>
+    <script src="app.js?v=540"></script>
 </body>
 </html>
