@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v55.0</title>
+    <title>Hydro Pro v56.0</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="styles.css?v=550">
+    <link rel="stylesheet" href="styles.css?v=560">
 </head>
 <body class="light-mode">
 
@@ -127,7 +127,10 @@
         </section>
 
         <section id="week-view-root" class="tab-content">
-            <div class="WEE-sub-nav"><button onclick="openTab('weeks-root')">⬅️ BACK</button><button onclick="openTab('home-root')">🏠 HUB</button></div>
+            <div class="WEE-sub-nav">
+                <button onclick="openTab('weeks-root')">⬅️ BACK</button>
+                <button onclick="openTab('home-root')">🏠 HUB</button>
+            </div>
             <div class="WEE-day-selector">
                 <button class="WEE-day-btn active" onclick="setWorkingDay('Mon', this)">M</button>
                 <button class="WEE-day-btn" onclick="setWorkingDay('Tue', this)">T</button>
@@ -144,11 +147,11 @@
     <div id="briefingModal" class="modal-overlay hidden" onclick="closeBriefing()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div id="briefingData"></div>
-            <button class="ADM-save-btn" style="margin-top:25px;" onclick="closeBriefing()">CLOSE BRIEFING</button>
+            <button class="ADM-save-btn" style="margin-top:25px;" onclick="closeBriefing()">CLOSE VAULT</button>
         </div>
     </div>
 
-    <footer id="G-FOOTER">v55.0 VIBRANT DATA</footer>
-    <script src="app.js?v=550"></script>
+    <footer id="G-FOOTER">v56.0 COMMAND CENTER</footer>
+    <script src="app.js?v=560"></script>
 </body>
 </html>
