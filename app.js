@@ -199,54 +199,34 @@ window.renderWeek = () => {
     });
 };
 
+/* --- ✨ FIX: OFFICIAL GOOGLE MAPS UNIVERSAL LINKS --- */
 window.routeMyDay = () => {
     let todaysJobs = db.customers.filter(c => c.week == curWeek && c.day == workingDay);
     if(todaysJobs.length === 0) return alert("No jobs to route today!");
     if(todaysJobs.length > 10) alert("Google Maps limits multi-stop routes to 10 stops. Routing your first 10 properties.");
     let stops = todaysJobs.slice(0, 10).map(c => encodeURIComponent(`${c.houseNum} ${c.street}, ${c.postcode || ''}`));
     let destination = stops.pop(); let waypoints = stops.join('|'); 
-    let url = `http://googleusercontent.com/maps.google.com/dir/?api=1&destination=${destination}`;
+    
+    // Official API 1 Direction Link
+    let url = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
     if(waypoints) url += `&waypoints=${waypoints}`;
     window.open(url, '_blank');
 };
 
-/* --- ✨ NEW: FRIENDLY & LESS FORMAL MESSAGING TEMPLATES ✨ --- */
 window.cmdWhatsApp = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c.phone) return alert("No phone number saved.");
     let phone = c.phone.replace(/\D/g, ''); if(phone.startsWith('0')) phone = '44' + phone.substring(1); 
     const arrData = window.getArrearsData(c);
-    
     let msg = `Hi ${c.name}! Just letting you know your windows are all sparkling clean again. ✨ `;
-    if(arrData.isOwed) { 
-        msg += `Your total is £${arrData.total.toFixed(2)}. `; 
-        if (db.bank.name && db.bank.acc) { 
-            msg += `Whenever you get a sec, you can ping that over via bank transfer to ${db.bank.name} (Acc: ${db.bank.acc}). Thanks a million! 💧`; 
-        } else { 
-            msg += `Let me know what payment method works best for you. Thanks a million! 💧`; 
-        } 
-    } else { 
-        msg += `You're all paid up, so nothing owed today. Have a brilliant rest of your week! ☀️`; 
-    }
-    
+    if(arrData.isOwed) { msg += `Your total is £${arrData.total.toFixed(2)}. `; if (db.bank.name && db.bank.acc) { msg += `Whenever you get a sec, you can ping that over via bank transfer to ${db.bank.name} (Acc: ${db.bank.acc}). Thanks a million! 💧`; } else { msg += `Let me know what payment method works best for you. Thanks a million! 💧`; } } else { msg += `You're all paid up, so nothing owed today. Have a brilliant rest of your week! ☀️`; }
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
 };
 
 window.cmdSMS = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c.phone) return alert("No phone number saved.");
     let phone = c.phone.replace(/\D/g, ''); const arrData = window.getArrearsData(c);
-    
     let msg = `Hi ${c.name}! Just letting you know your windows are all sparkling clean again. ✨ `;
-    if(arrData.isOwed) { 
-        msg += `Your total is £${arrData.total.toFixed(2)}. `; 
-        if (db.bank.name && db.bank.acc) { 
-            msg += `Whenever you get a sec, you can ping that over via bank transfer to ${db.bank.name} (Acc: ${db.bank.acc}). Thanks a million! 💧`; 
-        } else { 
-            msg += `Let me know what payment method works best for you. Thanks a million! 💧`; 
-        } 
-    } else { 
-        msg += `You're all paid up, so nothing owed today. Have a brilliant rest of your week! ☀️`; 
-    }
-    
+    if(arrData.isOwed) { msg += `Your total is £${arrData.total.toFixed(2)}. `; if (db.bank.name && db.bank.acc) { msg += `Whenever you get a sec, you can ping that over via bank transfer to ${db.bank.name} (Acc: ${db.bank.acc}). Thanks a million! 💧`; } else { msg += `Let me know what payment method works best for you. Thanks a million! 💧`; } } else { msg += `You're all paid up, so nothing owed today. Have a brilliant rest of your week! ☀️`; }
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     const separator = isIOS ? '&' : '?';
     window.open(`sms:${phone}${separator}body=${encodeURIComponent(msg)}`, '_blank');
@@ -274,7 +254,9 @@ window.showJobBriefing = (id) => {
     const container = document.getElementById('briefingData');
     const arrData = window.getArrearsData(c);
     const mapQuery = encodeURIComponent(`${c.houseNum} ${c.street}, ${c.postcode || ''}`);
-    const navUrl = `http://googleusercontent.com/maps.google.com/dir/?api=1&destination=${mapQuery}`;
+    
+    // Official API 1 Destination Link
+    const navUrl = `https://www.google.com/maps/dir/?api=1&destination=${mapQuery}`;
     
     const notesHtml = c.notes ? `<div class="CMD-notes-box">📝 ${escapeHTML(c.notes)}</div>` : '';
 
