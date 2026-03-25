@@ -5,7 +5,36 @@ let db = { customers: [], expenses: [], history: [], bank: { name: '', acc: '' }
 let curWeek = 1; 
 let workingDay = 'Mon';
 
+/* --- 📊 CORE ARREARS CALCULATION ENGINE --- */
+// CRITICAL: Must be defined globally so all functions can access it without crashing
+window.getArrearsData = (c) => {
+    const currentMonthStr = new Date().toLocaleString('en-GB', { month: 'short' });
+    let pastLog = c.pastArrears || [];
+    let currentOwed = (parseFloat(c.price) || 0) - (parseFloat(c.paidThisMonth) || 0);
+    
+    let totalOwed = 0;
+    let months = [];
+    
+    pastLog.forEach(a => {
+        totalOwed += parseFloat(a.amt);
+        if(!months.includes(a.month)) months.push(a.month);
+    });
+    
+    // Safely handle floating point math to prevent 0.000001 errors
+    if (currentOwed > 0.01) {
+        totalOwed += currentOwed;
+        if(!months.includes(currentMonthStr)) months.push(currentMonthStr);
+    }
+    
+    return {
+        isOwed: totalOwed > 0.01,
+        total: totalOwed,
+        monthsString: months.length > 0 ? `(${months.join(', ')})` : ''
+    };
+};
+
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. FAULT-TOLERANT DATA HYDRATION
     try {
         const saved = localStorage.getItem(DB_KEY);
         if (saved) {
@@ -17,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     } catch(err) { console.error("Database Boot Error."); }
 
+    // 2. Theme Boot
     applyTheme(localStorage.getItem('HP_Theme') === 'true');
     const cb = document.getElementById('themeCheckbox');
     if(cb) {
@@ -27,11 +57,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // 3. Admin Bank Pre-fill
     const bNameEl = document.getElementById('bName');
     const bAccEl = document.getElementById('bAcc');
     if(bNameEl) bNameEl.value = db.bank.name;
     if(bAccEl) bAccEl.value = db.bank.acc;
 
+    // 4. Init Systems
     updateHeaderDate(); 
     renderAllSafe(); 
     initWeather();
@@ -45,6 +77,7 @@ function applyTheme(isDark) {
 
 window.saveData = () => localStorage.setItem(DB_KEY, JSON.stringify(db));
 
+/* --- ⚓ ENGINE NAVIGATION --- */
 window.openTab = (id) => {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     const target = document.getElementById(id);
@@ -65,33 +98,6 @@ window.renderAllSafe = () => {
         if(document.getElementById('week-view-root').classList.contains('active')) renderWeek();
     } catch (err) { console.error("Render Error:", err); }
 };
-
-/* --- 📊 ARREARS CALCULATION ENGINE --- */
-// Centralized function to calculate exact debt and format month strings
-function getArrearsData(c) {
-    const currentMonthStr = new Date().toLocaleString('en-GB', { month: 'short' });
-    let pastLog = c.pastArrears || [];
-    let currentOwed = (parseFloat(c.price) || 0) - (parseFloat(c.paidThisMonth) || 0);
-    
-    let totalOwed = 0;
-    let months = [];
-    
-    pastLog.forEach(a => {
-        totalOwed += parseFloat(a.amt);
-        if(!months.includes(a.month)) months.push(a.month);
-    });
-    
-    if (currentOwed > 0) {
-        totalOwed += currentOwed;
-        if(!months.includes(currentMonthStr)) months.push(currentMonthStr);
-    }
-    
-    return {
-        isOwed: totalOwed > 0,
-        total: totalOwed,
-        monthsString: months.length > 0 ? `(${months.join(', ')})` : ''
-    };
-}
 
 /* --- ⚙️ ADMIN --- */
 window.saveCustomer = () => {
@@ -150,7 +156,7 @@ window.renderMaster = () => {
     const search = (document.getElementById('mainSearch')?.value || "").toLowerCase();
     db.customers.forEach(c => {
         if(c.name.toLowerCase().includes(search) || (c.street||"").toLowerCase().includes(search)) {
-            const arrData = getArrearsData(c);
+            const arrData = window.getArrearsData(c);
             const arrearsBadge = arrData.isOwed ? `<span class="CST-badge badge-unpaid">OWES £${arrData.total.toFixed(2)} ${arrData.monthsString}</span>` : `<span class="CST-badge badge-paid">PAID</span>`;
             
             const div = document.createElement('div');
@@ -182,7 +188,7 @@ window.renderWeek = () => {
     }
 
     customersToday.forEach(c => {
-        const arrData = getArrearsData(c);
+        const arrData = window.getArrearsData(c);
         const cleanBadge = c.cleaned ? `<span class="CST-badge badge-clean">✅ CLEANED</span>` : '';
         const arrearsBadge = arrData.isOwed ? `<span class="CST-badge badge-unpaid">❌ OWES £${arrData.total.toFixed(2)} ${arrData.monthsString}</span>` : `<span class="CST-badge badge-paid">✅ PAID</span>`;
 
@@ -206,12 +212,14 @@ window.showBriefing = (id) => {
     const container = document.getElementById('briefingData');
     
     const isCleaned = c.cleaned;
-    const arrData = getArrearsData(c);
+    const arrData = window.getArrearsData(c);
     
     const arrearsHtml = arrData.isOwed ? `<div style="background:var(--danger); color:white; padding:15px; border-radius:20px; text-align:center; font-weight:950; margin:15px 0; font-size:18px;">⚠️ TOTAL OUTSTANDING: £${arrData.total.toFixed(2)} <br><small>${arrData.monthsString}</small></div>` : `<div style="color:var(--success); text-align:center; font-weight:950; margin:15px 0; font-size:18px;">✅ FULLY PAID UP</div>`;
 
     const history = db.history.filter(h => h.custId === id).slice(-3).reverse();
     let historyHtml = history.map(h => `<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(0,0,0,0.05); font-weight:800;"><span>${h.date}</span><span>£${parseFloat(h.amt).toFixed(2)}</span></div>`).join('') || '<p style="text-align:center; opacity:0.4; margin:0;">No history</p>';
+    
+    // Fixed: Google Maps URL Encoding
     const mapQuery = encodeURIComponent(`${c.houseNum} ${c.street}, ${c.postcode || ''}`);
 
     container.innerHTML = `
@@ -229,7 +237,7 @@ window.showBriefing = (id) => {
             <button class="CMD-action-btn pay" onclick="cmdSettlePaid('${c.id}')">
                 <span style="font-size:24px;">💰</span> COLLECT £
             </button>
-            <button class="CMD-action-btn route" onclick="window.open('http://maps.google.com/?q=${mapQuery}', '_blank')">
+            <button class="CMD-action-btn route" onclick="window.open('https://maps.google.com/?q=${mapQuery}', '_blank')">
                 <span style="font-size:24px;">📍</span> NAVIGATE
             </button>
             <button class="CMD-action-btn call" onclick="window.location.href='tel:${c.phone}'">
@@ -250,21 +258,22 @@ window.closeBriefing = () => document.getElementById('briefingModal').classList.
 window.cmdToggleClean = (id) => { 
     const c = db.customers.find(x => x.id === id); 
     c.cleaned = !c.cleaned; 
-    saveData(); renderAllSafe(); showBriefing(id); 
+    window.saveData(); 
+    window.renderAllSafe(); 
+    window.showBriefing(id); 
 };
 
 window.cmdSettlePaid = (id) => { 
     const c = db.customers.find(x => x.id === id); 
-    const arrData = getArrearsData(c);
+    const arrData = window.getArrearsData(c);
     
-    const amtStr = prompt(`Process payment for ${c.name}?\nTotal Owed: £${arrData.total.toFixed(2)}`, arrData.total); 
+    const amtStr = prompt(`Process payment for ${c.name}?\nTotal Owed: £${arrData.total.toFixed(2)}`, arrData.total.toFixed(2)); 
     if(amtStr !== null && amtStr !== "") { 
         let amtPaid = parseFloat(amtStr); 
         c.paidThisMonth = (parseFloat(c.paidThisMonth) || 0) + amtPaid; 
         
-        // Intelligent Debt Wiping
         let overpay = c.paidThisMonth - parseFloat(c.price);
-        if(overpay > 0 && c.pastArrears && c.pastArrears.length > 0) {
+        if(overpay > 0.01 && c.pastArrears && c.pastArrears.length > 0) {
             let remaining = overpay;
             for(let i=0; i<c.pastArrears.length; i++) {
                 if(remaining >= c.pastArrears[i].amt) {
@@ -272,7 +281,8 @@ window.cmdSettlePaid = (id) => {
                     c.pastArrears[i].amt = 0;
                 } else {
                     c.pastArrears[i].amt -= remaining;
-                    remaining = 0; break;
+                    remaining = 0; 
+                    break;
                 }
             }
             c.pastArrears = c.pastArrears.filter(a => a.amt > 0.01);
@@ -280,7 +290,9 @@ window.cmdSettlePaid = (id) => {
 
         if(!db.history) db.history = [];
         db.history.push({ custId: id, amt: amtPaid, date: new Date().toLocaleDateString('en-GB') }); 
-        saveData(); renderAllSafe(); showBriefing(id); 
+        window.saveData(); 
+        window.renderAllSafe(); 
+        window.showBriefing(id); 
     } 
 };
 
@@ -301,7 +313,7 @@ window.renderFinances = () => {
     db.customers.forEach(c => {
         income += (parseFloat(c.paidThisMonth) || 0);
         expected += (parseFloat(c.price) || 0);
-        const arrData = getArrearsData(c);
+        const arrData = window.getArrearsData(c);
         if(arrData.isOwed) {
             totalArrears += arrData.total;
             arrearsListHtml += `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.2); font-size:16px; font-weight:800;"><span>${c.name} <small style="opacity:0.7;">${arrData.monthsString}</small></span><span>£${arrData.total.toFixed(2)}</span></div>`;
@@ -316,7 +328,13 @@ window.renderFinances = () => {
         arrearsSection = `<div class="FIN-arrears-card"><div style="font-size:20px; margin-bottom:15px;">⚠️ OUTSTANDING: £${totalArrears.toFixed(2)}</div><div style="text-align:left; background:rgba(0,0,0,0.15); padding:15px; border-radius:20px; max-height:150px; overflow-y:auto;">${arrearsListHtml}</div></div>`; 
     }
     
-    dash.innerHTML = `<div class="FIN-hero-iron"><small style="opacity:0.5; font-weight:900;">NET PROFIT</small><div>£${(income - spend).toFixed(2)}</div></div>${arrearsSection}<div style="padding: 0 25px; margin-bottom: 5px; font-weight: 950; font-size: 14px; color: var(--accent); display: flex; justify-content: space-between;"><span>COLLECTION PROGRESS</span><span>${Math.round(progressPct)}%</span></div><div class="FIN-progress-wrap"><div class="FIN-progress-fill" style="width: ${progressPct}%;"></div></div><div class="FIN-bubble-row"><div class="FIN-bubble"><small style="font-weight:800;">INCOME</small><br><strong style="font-size:22px;">£${income.toFixed(2)}</strong></div><div class="FIN-bubble"><small style="font-weight:800;">SPENT</small><br><strong style="font-size:22px; color:var(--danger);">£${spend.toFixed(2)}</strong></div></div>`;
+    let htmlBuilder = `<div class="FIN-hero-iron"><small style="opacity:0.5; font-weight:900;">NET PROFIT</small><div>£${(income - spend).toFixed(2)}</div></div>`;
+    htmlBuilder += arrearsSection;
+    htmlBuilder += `<div style="padding: 0 25px; margin-bottom: 5px; font-weight: 950; font-size: 14px; color: var(--accent); display: flex; justify-content: space-between;"><span>COLLECTION PROGRESS</span><span>${Math.round(progressPct)}%</span></div>`;
+    htmlBuilder += `<div class="FIN-progress-wrap"><div class="FIN-progress-fill" style="width: ${progressPct}%;"></div></div>`;
+    htmlBuilder += `<div class="FIN-bubble-row"><div class="FIN-bubble"><small style="font-weight:800;">INCOME</small><br><strong style="font-size:22px;">£${income.toFixed(2)}</strong></div><div class="FIN-bubble"><small style="font-weight:800;">SPENT</small><br><strong style="font-size:22px; color:var(--danger);">£${spend.toFixed(2)}</strong></div></div>`;
+    
+    dash.innerHTML = htmlBuilder;
     
     const categories = {}; 
     db.expenses.forEach(e => { const cat = e.cat || 'Other'; if(!categories[cat]) categories[cat] = { total: 0, items: [] }; categories[cat].total += parseFloat(e.amt); categories[cat].items.push(e); });
@@ -329,4 +347,14 @@ window.renderFinances = () => {
             let catIcon = "🏢"; if(cat === 'Fuel') catIcon = "⛽"; if(cat === 'Equipment') catIcon = "🧽"; if(cat === 'Food') catIcon = "🍔"; if(cat === 'Marketing') catIcon = "📣"; 
             let itemsHtml = ''; 
             data.items.slice().reverse().forEach(item => { itemsHtml += `<div class="FIN-exp-row"><span>${item.desc} <small style="opacity:0.5; font-size:12px;">(${item.date})</small></span><span style="color:var(--danger);">-£${parseFloat(item.amt).toFixed(2)}</span></div>`; }); 
-            statementHtml += `<div class="FIN-
+            statementHtml += `<div class="FIN-cat-card"><div class="FIN-cat-hdr"><span>${catIcon} ${cat.toUpperCase()}</span><span style="color:var(--danger);">£${data.total.toFixed(2)}</span></div>${itemsHtml}</div>`; 
+        } 
+    }
+    ledger.innerHTML = statementHtml;
+};
+
+/* --- 🌦️ WEATHER --- */
+async function initWeather() {
+    const cachedW = localStorage.getItem('HP_Weather_Cache'); const wText = document.getElementById('w-text'); if(cachedW && wText) wText.innerText = cachedW;
+    navigator.geolocation.getCurrentPosition(async (pos) => { try { const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&appid=${W_API_KEY}&units=metric`); const data = await res.json(); const temp = `${Math.round(data.main.temp)}°C`; if (wText) wText.innerText = temp; localStorage.setItem('HP_Weather_Cache', temp); } catch (e) { if(!cachedW && wText) wText.innerText = "OFFLINE"; } });
+}
