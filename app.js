@@ -1,18 +1,12 @@
 const DB_KEY = 'HydroPro_Gold_V36';
 const W_API_KEY = "4c00e61833ea94d3c4a1bff9d2c32969"; 
 
-// SAFE SCHEMA DEFINITION
-let db = { 
-    customers: [], 
-    expenses: [], 
-    history: [], 
-    bank: { name: '', acc: '' } 
-};
+let db = { customers: [], expenses: [], history: [], bank: { name: '', acc: '' } };
 let curWeek = 1; 
 let workingDay = 'Mon';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. FAULT-TOLERANT DATA HYDRATION (Prevents JS Crashing on Load)
+    // 1. FAULT-TOLERANT DATA HYDRATION
     try {
         const saved = localStorage.getItem(DB_KEY);
         if (saved) {
@@ -22,9 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
             db.history = parsed.history || [];
             db.bank = parsed.bank || { name: '', acc: '' };
         }
-    } catch(err) {
-        console.error("Database Boot Error - Resetting to safe defaults.");
-    }
+    } catch(err) { console.error("Database Boot Error."); }
 
     // 2. Theme Boot
     applyTheme(localStorage.getItem('HP_Theme') === 'true');
@@ -57,7 +49,7 @@ function applyTheme(isDark) {
 
 window.saveData = () => localStorage.setItem(DB_KEY, JSON.stringify(db));
 
-/* --- ⚓ FAULT-TOLERANT NAVIGATION --- */
+/* --- ⚓ ENGINE NAVIGATION --- */
 window.openTab = (id) => {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     const target = document.getElementById(id);
@@ -66,12 +58,9 @@ window.openTab = (id) => {
     renderAllSafe();
 };
 
-// Separated Date Function so UI errors don't kill the clock
 window.updateHeaderDate = () => {
     const el = document.getElementById('dateText');
-    if(el) {
-        el.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' });
-    }
+    if(el) el.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' });
 };
 
 window.renderAllSafe = () => {
@@ -79,9 +68,7 @@ window.renderAllSafe = () => {
         if(document.getElementById('master-root').classList.contains('active')) renderMaster();
         if(document.getElementById('finances-root').classList.contains('active')) renderFinances();
         if(document.getElementById('week-view-root').classList.contains('active')) renderWeek();
-    } catch (err) {
-        console.error("Render Engine Error:", err);
-    }
+    } catch (err) { console.error("Render Error:", err); }
 };
 
 /* --- ⚙️ ADMIN LOGIC --- */
@@ -102,32 +89,20 @@ window.saveCustomer = () => {
         week: "1",
         day: "Mon"
     });
-    
-    saveData();
-    alert("Customer Added Successfully! ✨");
-    location.reload();
+    saveData(); alert("Customer Added Successfully! ✨"); location.reload();
 };
 
 window.saveBank = () => {
     db.bank.name = document.getElementById('bName').value;
     db.bank.acc = document.getElementById('bAcc').value;
-    saveData();
-    alert("Bank Details Secured! 🔒");
+    saveData(); alert("Bank Details Secured! 🔒");
 };
 
 window.exportToQuickBooks = () => {
-    let csv = "Date,Description,Amount,Type\n";
+    let csv = "Date,Description,Amount,Type,Category\n";
     const today = new Date().toLocaleDateString('en-GB');
-    
-    db.customers.forEach(c => {
-        if(parseFloat(c.paidThisMonth) > 0) {
-            csv += `${today},Income: ${c.name},${c.paidThisMonth},Income\n`;
-        }
-    });
-    db.expenses.forEach(e => {
-        csv += `${e.date},${e.desc},${e.amt},Expense\n`;
-    });
-    
+    db.customers.forEach(c => { if(parseFloat(c.paidThisMonth) > 0) csv += `${today},Income: ${c.name},${c.paidThisMonth},Income,Service\n`; });
+    db.expenses.forEach(e => { csv += `${e.date},${e.desc},${e.amt},Expense,${e.cat || 'Other'}\n`; });
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -150,9 +125,7 @@ window.importData = (event) => {
             db.expenses = imported.expenses || [];
             db.history = imported.history || [];
             db.bank = imported.bank || { name: '', acc: '' };
-            saveData();
-            alert("Backup Restored! 📥");
-            location.reload();
+            saveData(); alert("Backup Restored! 📥"); location.reload();
         } catch (err) { alert("Invalid File Format."); }
     };
     reader.readAsText(event.target.files[0]);
@@ -162,24 +135,19 @@ window.completeCycle = () => {
     if(confirm("Start a new month? This resets all 'Cleaned' and 'Paid' statuses.")) {
         db.customers.forEach(c => { c.cleaned = false; c.paidThisMonth = 0; });
         db.expenses = [];
-        saveData();
-        location.reload();
+        saveData(); location.reload();
     }
 };
 
 window.nuclearReset = () => {
     if(confirm("☢️ DANGER: Delete ALL data? This cannot be undone.")) {
-        localStorage.removeItem(DB_KEY);
-        location.reload();
+        localStorage.removeItem(DB_KEY); location.reload();
     }
 };
 
 /* --- 👥 CUSTOMERS & BRIEFING LOGIC --- */
 window.renderMaster = () => {
-    const list = document.getElementById('CST-list-container'); 
-    if(!list) return; 
-    list.innerHTML = '';
-    
+    const list = document.getElementById('CST-list-container'); if(!list) return; list.innerHTML = '';
     const search = (document.getElementById('mainSearch')?.value || "").toLowerCase();
     
     db.customers.forEach(c => {
@@ -187,77 +155,51 @@ window.renderMaster = () => {
             const div = document.createElement('div');
             div.className = 'CST-card-item';
             div.onclick = () => showBriefing(c.id);
-            div.innerHTML = `
-                <div>
-                    <strong style="font-size:20px;">${c.name}</strong><br>
-                    <small style="color:var(--accent); font-weight:800;">${c.houseNum} ${c.street}</small>
-                </div>
-                <div style="font-weight:950; color:var(--success); font-size:22px;">£${parseFloat(c.price).toFixed(2)}</div>
-            `;
+            div.innerHTML = `<div><strong style="font-size:20px;">${c.name}</strong><br><small style="color:var(--accent); font-weight:800;">${c.houseNum} ${c.street}</small></div><div style="font-weight:950; color:var(--success); font-size:22px;">£${parseFloat(c.price).toFixed(2)}</div>`;
             list.appendChild(div);
         }
     });
 };
 
 window.showBriefing = (id) => {
-    const c = db.customers.find(x => x.id === id);
-    if(!c) return;
+    const c = db.customers.find(x => x.id === id); if(!c) return;
     const container = document.getElementById('briefingData');
     
-    const paid = (parseFloat(c.paidThisMonth) || 0);
-    const price = (parseFloat(c.price) || 0);
-    
-    const arrearsHtml = paid < price ? 
-        `<div style="background:var(--danger); color:white; padding:15px; border-radius:20px; text-align:center; font-weight:950; margin:15px 0; font-size:18px;">⚠️ PAYMENT MISSED (£${(price-paid).toFixed(2)})</div>` : 
-        `<div style="color:var(--success); text-align:center; font-weight:950; margin:15px 0; font-size:18px;">✅ PAID THIS MONTH</div>`;
+    const paid = parseFloat(c.paidThisMonth) || 0;
+    const price = parseFloat(c.price) || 0;
+    const arrearsHtml = paid < price ? `<div style="background:var(--danger); color:white; padding:15px; border-radius:20px; text-align:center; font-weight:950; margin:15px 0; font-size:18px;">⚠️ PAYMENT MISSED (£${(price-paid).toFixed(2)})</div>` : `<div style="color:var(--success); text-align:center; font-weight:950; margin:15px 0; font-size:18px;">✅ PAID THIS MONTH</div>`;
 
     const history = db.history.filter(h => h.custId === id).slice(-3).reverse();
-    let historyHtml = history.map(h => `
-        <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(0,0,0,0.05); font-weight:800;">
-            <span>${h.date}</span><span>£${parseFloat(h.amt).toFixed(2)}</span>
-        </div>
-    `).join('') || '<p style="text-align:center; opacity:0.4;">No history found</p>';
+    let historyHtml = history.map(h => `<div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(0,0,0,0.05); font-weight:800;"><span>${h.date}</span><span>£${parseFloat(h.amt).toFixed(2)}</span></div>`).join('') || '<p style="text-align:center; opacity:0.4;">No history found</p>';
 
     container.innerHTML = `
         <div style="border-bottom:3px solid var(--accent); padding-bottom:15px; margin-bottom:20px;">
             <h2 style="margin:0; font-size:32px; font-weight:950;">${c.name}</h2>
             <div style="font-size:18px; opacity:0.6; font-weight:800; margin-top:5px;">${c.houseNum} ${c.street}</div>
         </div>
-        
         <div class="CST-brief-item"><span class="CST-brief-icon">📍</span><span style="flex:1; font-weight:800;">Postcode</span><span style="font-weight:950; color:var(--accent);">${c.postcode || 'N/A'}</span></div>
         <div class="CST-brief-item" onclick="window.location.href='tel:${c.phone}'"><span class="CST-brief-icon">📞</span><span style="flex:1; font-weight:800;">Contact</span><span style="font-weight:950; color:var(--accent); text-decoration:underline;">${c.phone || 'N/A'}</span></div>
         <div class="CST-brief-item"><span class="CST-brief-icon">💰</span><span style="flex:1; font-weight:800;">Service Price</span><span style="font-weight:950; color:var(--accent);">£${price.toFixed(2)}</span></div>
-        
         ${arrearsHtml}
-        
-        <div style="margin-top:25px;">
-            <h3 style="font-size:12px; opacity:0.5; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">Rolling 3-Month History</h3>
-            <div style="background:var(--ios-grey); padding:15px; border-radius:20px;">${historyHtml}</div>
-        </div>
+        <div style="margin-top:25px;"><h3 style="font-size:12px; opacity:0.5; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">Rolling 3-Month History</h3>
+        <div style="background:var(--ios-grey); padding:15px; border-radius:20px;">${historyHtml}</div></div>
     `;
-    
     document.getElementById('briefingModal').classList.remove('hidden');
 };
 
 window.closeBriefing = () => document.getElementById('briefingModal').classList.add('hidden');
 
-/* --- 💰 FINANCES LOGIC --- */
+/* --- 💰 FINANCES VAULT LOGIC --- */
 window.addFinanceExpense = () => {
     const desc = document.getElementById('fExpDesc').value;
     const amt = parseFloat(document.getElementById('fExpAmt').value);
+    const cat = document.getElementById('fExpCat').value;
     
     if(!desc || !amt || amt <= 0) return alert("Valid Description and Amount required.");
     
-    db.expenses.push({
-        id: Date.now(),
-        desc: desc,
-        amt: amt,
-        date: new Date().toLocaleDateString('en-GB')
-    });
-    
+    db.expenses.push({ id: Date.now(), desc: desc, amt: amt, cat: cat, date: new Date().toLocaleDateString('en-GB') });
     saveData();
-    document.getElementById('fExpDesc').value = '';
-    document.getElementById('fExpAmt').value = '';
+    document.getElementById('fExpDesc').value = ''; document.getElementById('fExpAmt').value = '';
     renderFinances();
 };
 
@@ -266,58 +208,89 @@ window.renderFinances = () => {
     const ledger = document.getElementById('FIN-ledger');
     if(!dash || !ledger) return;
 
-    let income = 0;
-    let spend = 0;
+    let income = 0, spend = 0, expected = 0, arrears = 0;
 
-    db.customers.forEach(c => income += (parseFloat(c.paidThisMonth) || 0));
+    db.customers.forEach(c => {
+        const paid = parseFloat(c.paidThisMonth) || 0;
+        const price = parseFloat(c.price) || 0;
+        income += paid;
+        expected += price;
+        if(paid < price) arrears += (price - paid);
+    });
+
     db.expenses.forEach(e => spend += (parseFloat(e.amt) || 0));
+
+    const progressPct = expected > 0 ? Math.min((income / expected) * 100, 100) : 0;
 
     dash.innerHTML = `
         <div class="FIN-hero-iron">
             <small style="opacity:0.5; font-weight:900;">NET PROFIT</small>
             <div>£${(income - spend).toFixed(2)}</div>
         </div>
+        ${arrears > 0 ? `<div class="FIN-arrears-card">⚠️ OUTSTANDING ARREARS: £${arrears.toFixed(2)}</div>` : ''}
+        
+        <div style="padding: 0 25px; margin-bottom: 5px; font-weight: 950; font-size: 14px; color: var(--accent); display: flex; justify-content: space-between;">
+            <span>COLLECTION PROGRESS</span><span>${Math.round(progressPct)}%</span>
+        </div>
+        <div class="FIN-progress-wrap">
+            <div class="FIN-progress-fill" style="width: ${progressPct}%;"></div>
+        </div>
+
         <div class="FIN-bubble-row">
             <div class="FIN-bubble"><small style="font-weight:800;">INCOME</small><br><strong style="font-size:22px;">£${income.toFixed(2)}</strong></div>
             <div class="FIN-bubble"><small style="font-weight:800;">SPENT</small><br><strong style="font-size:22px; color:var(--danger);">£${spend.toFixed(2)}</strong></div>
         </div>
     `;
 
-    let statementHtml = '<div class="ADM-card"><h3 class="ADM-hdr">Transaction Ledger</h3>';
-    if (db.expenses.length === 0) {
-        statementHtml += '<p style="text-align:center; opacity:0.5; font-weight:800;">No expenses logged this month.</p>';
+    // Categorize Expenses Engine
+    const categories = {};
+    db.expenses.forEach(e => {
+        const cat = e.cat || 'Other';
+        if(!categories[cat]) categories[cat] = { total: 0, items: [] };
+        categories[cat].total += parseFloat(e.amt);
+        categories[cat].items.push(e);
+    });
+
+    let statementHtml = '';
+    if (Object.keys(categories).length === 0) {
+        statementHtml = '<div class="ADM-card"><p style="text-align:center; opacity:0.5; font-weight:800; margin:0;">No expenses logged this month.</p></div>';
     } else {
-        db.expenses.slice().reverse().forEach(e => {
+        for (const [cat, data] of Object.entries(categories)) {
+            let catIcon = "🏢";
+            if(cat === 'Fuel') catIcon = "⛽";
+            if(cat === 'Equipment') catIcon = "🧽";
+            if(cat === 'Marketing') catIcon = "📣";
+
+            let itemsHtml = '';
+            data.items.slice().reverse().forEach(item => {
+                itemsHtml += `
+                    <div class="FIN-exp-row">
+                        <span>${item.desc} <small style="opacity:0.5; font-size:12px;">(${item.date})</small></span>
+                        <span style="color:var(--danger);">-£${parseFloat(item.amt).toFixed(2)}</span>
+                    </div>
+                `;
+            });
+
             statementHtml += `
-                <div style="display:flex; justify-content:space-between; padding:15px 0; border-bottom:1px solid rgba(0,0,0,0.05); font-weight:800; font-size:18px;">
-                    <span>${e.desc}</span>
-                    <span style="color:var(--danger);">-£${parseFloat(e.amt).toFixed(2)}</span>
+                <div class="FIN-cat-card">
+                    <div class="FIN-cat-hdr">
+                        <span>${catIcon} ${cat.toUpperCase()}</span>
+                        <span style="color:var(--danger);">£${data.total.toFixed(2)}</span>
+                    </div>
+                    ${itemsHtml}
                 </div>
             `;
-        });
+        }
     }
-    statementHtml += '</div>';
     ledger.innerHTML = statementHtml;
 };
 
 /* --- 📅 WEEKS LOGIC --- */
-window.viewWeek = (num) => { 
-    curWeek = num; 
-    openTab('week-view-root'); 
-};
-
-window.setWorkingDay = (day, btn) => { 
-    workingDay = day; 
-    document.querySelectorAll('.WEE-day-btn').forEach(b => b.classList.remove('active')); 
-    btn.classList.add('active'); 
-    renderWeek(); 
-};
+window.viewWeek = (num) => { curWeek = num; openTab('week-view-root'); renderWeek(); };
+window.setWorkingDay = (day, btn) => { workingDay = day; document.querySelectorAll('.WEE-day-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderWeek(); };
 
 window.renderWeek = () => {
-    const list = document.getElementById('WEE-list-container'); 
-    if(!list) return; 
-    list.innerHTML = '';
-    
+    const list = document.getElementById('WEE-list-container'); if(!list) return; list.innerHTML = '';
     let customersToday = db.customers.filter(c => c.week == curWeek && c.day == workingDay);
     
     if(customersToday.length === 0) {
@@ -326,47 +299,25 @@ window.renderWeek = () => {
     }
 
     customersToday.forEach(c => {
-        const div = document.createElement('div'); 
-        div.className = 'CST-card-item';
-        div.innerHTML = `
-            <div>
-                <strong style="font-size:20px;">${c.name} ${c.cleaned ? '✅' : ''}</strong><br>
-                <small style="color:var(--accent); font-weight:800;">${c.houseNum} ${c.street}</small>
-            </div>
-            <div style="display:flex;">
-                <button class="WEE-action-btn" onclick="toggleClean('${c.id}')">🧼</button>
-                <button class="WEE-action-btn" style="color:var(--success);" onclick="settlePaid('${c.id}')">£</button>
-            </div>
-        `;
+        const div = document.createElement('div'); div.className = 'CST-card-item';
+        div.innerHTML = `<div><strong style="font-size:20px;">${c.name} ${c.cleaned ? '✅' : ''}</strong><br><small style="color:var(--accent); font-weight:800;">${c.houseNum} ${c.street}</small></div><div style="display:flex;"><button class="WEE-action-btn" onclick="toggleClean('${c.id}')">🧼</button><button class="WEE-action-btn" style="color:var(--success);" onclick="settlePaid('${c.id}')">£</button></div>`;
         list.appendChild(div);
     });
 };
 
-window.toggleClean = (id) => { 
-    const c = db.customers.find(x => x.id === id); 
-    c.cleaned = !c.cleaned; 
-    saveData(); 
-    renderWeek(); 
-};
-
+window.toggleClean = (id) => { const c = db.customers.find(x => x.id === id); c.cleaned = !c.cleaned; saveData(); renderWeek(); };
 window.settlePaid = (id) => { 
     const c = db.customers.find(x => x.id === id); 
     const amtStr = prompt(`Process payment for ${c.name}?\nPrice is £${c.price}`, c.price); 
-    
     if(amtStr !== null && amtStr !== "") { 
-        const amt = parseFloat(amtStr);
-        c.paidThisMonth = amt; 
-        db.history.push({
-            custId: id, 
-            amt: amt, 
-            date: new Date().toLocaleDateString('en-GB')
-        }); 
-        saveData(); 
-        renderWeek(); 
+        const amt = parseFloat(amtStr); c.paidThisMonth = amt; 
+        if(!db.history) db.history = [];
+        db.history.push({ custId: id, amt: amt, date: new Date().toLocaleDateString('en-GB') }); 
+        saveData(); renderWeek(); 
     } 
 };
 
-/* --- 🌦️ WEATHER CACHE ENGINE --- */
+/* --- 🌦️ WEATHER ENGINE --- */
 async function initWeather() {
     const cachedW = localStorage.getItem('HP_Weather_Cache');
     const wText = document.getElementById('w-text');
@@ -379,8 +330,6 @@ async function initWeather() {
             const temp = `${Math.round(data.main.temp)}°C`;
             if (wText) wText.innerText = temp;
             localStorage.setItem('HP_Weather_Cache', temp);
-        } catch (e) { 
-            if(!cachedW && wText) wText.innerText = "OFFLINE"; 
-        }
+        } catch (e) { if(!cachedW && wText) wText.innerText = "OFFLINE"; }
     });
 }
