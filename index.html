@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v43.6</title>
+    <title>Hydro Pro v44.0</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="styles.css?v=436">
+    <link rel="stylesheet" href="styles.css?v=440">
 </head>
 <body class="light-mode">
 
@@ -30,47 +30,56 @@
 
     <main id="G-VIEWPORT">
         <section id="home-root" class="tab-content active">
-            <div class="HUB-LOCK-CONTAINER">
-                <div class="GRID-ROW">
-                    <button class="BLOCK-BTN" onclick="openTab('admin-root')"><span class="I-LOCK">⚙️</span><small class="T-LOCK">Admin</small></button>
-                    <button class="BLOCK-BTN" onclick="openTab('master-root')"><span class="I-LOCK">👥</span><small class="T-LOCK">Custs</small></button>
+            <div class="IRON-HUB-CONTAINER">
+                <div class="IRON-ROW">
+                    <button class="IRON-BTN" onclick="openTab('admin-root')"><span class="I-LOCKED">⚙️</span><small class="T-LOCKED">Admin</small></button>
+                    <button class="IRON-BTN" onclick="openTab('master-root')"><span class="I-LOCKED">👥</span><small class="T-LOCKED">Custs</small></button>
                 </div>
-                <div class="GRID-ROW">
-                    <button class="BLOCK-BTN" onclick="openTab('finances-root')"><span class="I-LOCK">💰</span><small class="T-LOCK">Finances</small></button>
-                    <button class="BLOCK-BTN" onclick="openTab('weeks-root')"><span class="I-LOCK">📅</span><small class="T-LOCK">Weeks</small></button>
+                <div class="IRON-ROW">
+                    <button class="IRON-BTN" onclick="openTab('finances-root')"><span class="I-LOCKED">💰</span><small class="T-LOCKED">Finances</small></button>
+                    <button class="IRON-BTN" onclick="openTab('weeks-root')"><span class="I-LOCKED">📅</span><small class="T-LOCKED">Weeks</small></button>
                 </div>
             </div>
             <div class="SYNC-AREA">
-                <button class="SYNC-BTN-LOCKED" onclick="location.reload(true)">🔄 SYNC UPDATES</button>
+                <button class="SYNC-BTN-IRON" onclick="location.reload(true)">🔄 SYNC UPDATES</button>
             </div>
-        </section>
-
-        <section id="master-root" class="tab-content">
-            <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="CONCRETE-SEARCH-VAULT">
-                <input type="text" id="mainSearch" placeholder="🔍 Search Name or Street..." oninput="renderMaster()">
-            </div>
-            <div id="master-list-container"></div>
         </section>
 
         <section id="admin-root" class="tab-content">
             <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
             <div class="VAULT-CARD">
-                <h3 class="VAULT-HDR">Quick Add Customer</h3>
+                <h3 class="VAULT-HDR">Add New Customer</h3>
                 <div class="VAULT-ROW"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
                 <div class="VAULT-ROW"><span>🏠</span><input type="text" id="cHouseNum" placeholder="No."></div>
                 <div class="VAULT-ROW"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
                 <div class="VAULT-ROW"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
-                <textarea id="cNotes" class="VAULT-NOTES-XL" placeholder="Notes..."></textarea>
+                <textarea id="cNotes" class="VAULT-NOTES-IRON" placeholder="Job notes..."></textarea>
                 <button class="VAULT-SAVE-BTN" onclick="saveCustomer()">✨ SAVE CUSTOMER</button>
             </div>
             <div class="VAULT-CARD">
                 <h3 class="VAULT-HDR">Business Bank Details</h3>
                 <div class="VAULT-ROW"><span>🏦</span><input type="text" id="bName" placeholder="Account Name"></div>
-                <div class="VAULT-ROW"><span>🔢</span><input type="text" id="bSort" placeholder="Sort Code"></div>
-                <div class="VAULT-ROW"><span>💳</span><input type="text" id="bAcc" placeholder="Account Number"></div>
-                <button class="VAULT-SAVE-BTN" style="background:var(--accent); margin-top:20px;" onclick="saveBank()">🔒 SECURE BANK INFO</button>
+                <div class="VAULT-ROW"><span>💳</span><input type="text" id="bAcc" placeholder="Acc Number"></div>
+                <button class="VAULT-SAVE-BTN" style="background:var(--accent);" onclick="saveBank()">🔒 SECURE BANK INFO</button>
             </div>
+            <div class="ADMIN-VAULT">
+                <button class="ADMIN-BTN-BLUE" onclick="exportToQuickBooks()">📊 QUICKBOOKS EXPORT</button>
+                <div class="ADMIN-ROW">
+                    <button class="ADMIN-BTN-GREY" onclick="exportData()">📤 Backup</button>
+                    <button class="ADMIN-BTN-GREY" onclick="document.getElementById('importFile').click()">📥 Restore</button>
+                    <input type="file" id="importFile" hidden onchange="importData(event)" accept=".csv">
+                </div>
+                <button class="ADMIN-BTN-BLUE" style="background:var(--success); margin-top:15px;" onclick="completeCycle()">🚀 START NEW MONTH</button>
+                <button class="ADMIN-BTN-RED" onclick="nuclearReset()">☢️ FACTORY RESET</button>
+            </div>
+        </section>
+
+        <section id="master-root" class="tab-content">
+            <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
+            <div class="SEARCH-VAULT-IRON">
+                <input type="text" id="mainSearch" placeholder="🔍 Search Name or Street..." oninput="renderMaster()">
+            </div>
+            <div id="master-list-container"></div>
         </section>
 
         <section id="finances-root" class="tab-content">
@@ -78,9 +87,34 @@
             <div id="finances-dashboard-container"></div>
             <div id="finances-statement-container"></div>
         </section>
+
+        <section id="weeks-root" class="tab-content">
+            <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
+            <div class="HUB-LOCK-CONTAINER">
+                <div class="GRID-ROW"><button class="BLOCK-BTN" onclick="viewWeek(1)">1</button><button class="BLOCK-BTN" onclick="viewWeek(2)">2</button></div>
+                <div class="GRID-ROW"><button class="BLOCK-BTN" onclick="viewWeek(3)">3</button><button class="BLOCK-BTN" onclick="viewWeek(4)">4</button></div>
+                <div class="GRID-ROW"><button class="BLOCK-BTN FULL-W" onclick="viewWeek(5)">5</button></div>
+            </div>
+        </section>
+
+        <section id="week-view-root" class="tab-content">
+            <div class="NAV-VAULT"><button onclick="openTab('weeks-root')">⬅️ Back</button><button onclick="openTab('home-root')">🏠 Hub</button></div>
+            <div class="DAY-LOCKED-BAR">
+                <button class="D-BTN-LOCKED active" onclick="setWorkingDay('Mon', this)">M</button>
+                <button class="D-BTN-LOCKED" onclick="setWorkingDay('Tue', this)">T</button>
+                <button class="D-BTN-LOCKED" onclick="setWorkingDay('Wed', this)">W</button>
+                <button class="D-BTN-LOCKED" onclick="setWorkingDay('Thu', this)">T</button>
+                <button class="D-BTN-LOCKED" onclick="setWorkingDay('Fri', this)">F</button>
+                <button class="D-BTN-LOCKED" onclick="setWorkingDay('Sat', this)">S</button>
+                <button class="D-BTN-LOCKED" onclick="setWorkingDay('Sun', this)">S</button>
+            </div>
+            <div id="week-list-container"></div>
+        </section>
     </main>
 
-    <footer id="G-FOOTER">v43.6 REINFORCED VAULT</footer>
-    <script src="app.js?v=436"></script>
+    <div id="briefingModal" class="modal-overlay hidden" onclick="closeBriefing()"><div class="modal-content" onclick="event.stopPropagation()"><div id="briefingData"></div><div id="briefHistoryZone"></div><div id="quickSettleContainer"></div><button class="MD-EDIT" id="briefEditBtn">⚙️ Edit Profile</button><button class="MD-CLOSE" onclick="closeBriefing()">CLOSE</button></div></div>
+
+    <footer id="G-FOOTER">v44.0 MASTER BLUEPRINT</footer>
+    <script src="app.js?v=440"></script>
 </body>
 </html>
