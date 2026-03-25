@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hydro-pro-v62-0';
+const CACHE_NAME = 'hydro-pro-v62-1';
 const ASSETS = [
     './index.html',
     './styles.css',
