@@ -14,11 +14,10 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// FIX: Safely escaped quotes without crashing the JavaScript parser!
 const escapeHTML = (str) => {
     if (!str) return '';
     return String(str).replace(/[&<>'"]/g, tag => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+        '&': '&', '<': '<', '>': '>', "'": '&#39;', '"': '&quot;'
     }[tag] || tag));
 };
 
@@ -180,7 +179,6 @@ window.renderWeek = () => {
     });
 };
 
-/* FIX: PERFECT UNIVERSAL GOOGLE MAPS ROUTING */
 window.routeMyDay = () => {
     let todaysJobs = db.customers.filter(c => c.week == curWeek && c.day == workingDay);
     if(todaysJobs.length === 0) return alert("No jobs to route today!");
