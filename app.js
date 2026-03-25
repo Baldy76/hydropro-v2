@@ -89,13 +89,14 @@ window.renderAllSafe = () => {
     } catch (err) { console.error("Render Error:", err); }
 };
 
-/* --- NEW MODAL LOGIC FOR ADDING CUSTOMERS --- */
 window.openAddCustomerModal = () => document.getElementById('addCustomerModal').classList.remove('hidden');
 window.closeAddCustomerModal = () => document.getElementById('addCustomerModal').classList.add('hidden');
 
+/* UPDATED TO CAPTURE NOTES */
 window.saveCustomer = () => {
     const name = document.getElementById('cName').value.trim();
     if(!name) return alert("Name required!");
+    
     db.customers.push({ 
         id: Date.now().toString(), 
         name, 
@@ -104,18 +105,20 @@ window.saveCustomer = () => {
         postcode: document.getElementById('cPostcode').value.trim(), 
         phone: document.getElementById('cPhone').value.trim(), 
         price: parseFloat(document.getElementById('cPrice').value) || 0, 
+        notes: document.getElementById('cNotes').value.trim(), /* Added notes */
         cleaned: false, paidThisMonth: 0, pastArrears: [], week: "1", day: "Mon" 
     });
     saveData(); 
     
-    // Clear inputs smoothly
+    // Clear inputs
     document.getElementById('cName').value = '';
     document.getElementById('cHouseNum').value = '';
     document.getElementById('cStreet').value = '';
     document.getElementById('cPostcode').value = '';
     document.getElementById('cPhone').value = '';
     document.getElementById('cPrice').value = '';
-
+    document.getElementById('cNotes').value = '';
+    
     closeAddCustomerModal();
     renderAllSafe(); 
 };
@@ -226,9 +229,13 @@ window.showJobBriefing = (id) => {
     const arrData = window.getArrearsData(c);
     const mapQuery = encodeURIComponent(`${c.houseNum} ${c.street}, ${c.postcode || ''}`);
     const navUrl = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
+    
+    // NEW: Inject Notes Box if it exists
+    const notesHtml = c.notes ? `<div class="CMD-notes-box">📝 ${escapeHTML(c.notes)}</div>` : '';
 
     container.innerHTML = `
         <div class="CMD-header"><h2>${escapeHTML(c.name)}</h2><div class="CMD-header-sub">${escapeHTML(c.houseNum)} ${escapeHTML(c.street)}</div></div>
+        ${notesHtml}
         ${generateArrearsHtml(arrData)}
         <div class="CMD-action-grid">
             <button class="CMD-action-btn clean" onclick="cmdToggleClean('${c.id}')"><span style="font-size:24px;">🧼</span> <br>${c.cleaned ? 'UNDO CLEAN' : 'MARK CLEAN'}</button>
@@ -247,6 +254,9 @@ window.showCustomerBriefing = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c) return;
     const container = document.getElementById('briefingData');
     const arrData = window.getArrearsData(c);
+    
+    // NEW: Inject Notes Box if it exists
+    const notesHtml = c.notes ? `<div class="CMD-notes-box">📝 ${escapeHTML(c.notes)}</div>` : '';
 
     container.innerHTML = `
         <div class="CMD-header"><h2>${escapeHTML(c.name)}</h2><div class="CMD-header-sub">${escapeHTML(c.houseNum)} ${escapeHTML(c.street)} <br>${escapeHTML(c.postcode || '')}</div></div>
@@ -256,6 +266,7 @@ window.showCustomerBriefing = (id) => {
             <div class="CMD-detail-row"><span>📅 Week</span><span>Week ${escapeHTML(c.week)}</span></div>
             <div class="CMD-detail-row"><span>📆 Day</span><span>${escapeHTML(c.day)}</span></div>
         </div>
+        ${notesHtml}
         ${generateArrearsHtml(arrData)}
         <h3 class="CMD-history-hdr">Rolling History</h3><div class="CMD-history-box">${generateHistoryHtml(c.id)}</div>
     `;
