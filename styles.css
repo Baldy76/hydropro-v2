@@ -125,13 +125,4 @@ input:checked + .ios-slider:before { transform: translateX(34px); }
 }
 .modal-overlay.hidden .modal-content { transform: scale(0.9); }
 
-.CST-brief-item { display: flex; align-items: center; gap: 15px; background: var(--ios-grey); padding: 18px; border-radius: 20px; height: 70px !important; margin-bottom: 10px; }
-.CST-brief-icon { font-size: 24px; width: 35px; text-align: center; }
-.CMD-action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px; }
-.CMD-action-btn { height: 80px; border-radius: 25px; border: none; font-size: 16px; font-weight: 950; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
-.CMD-action-btn.clean { background: var(--accent); }
-.CMD-action-btn.pay { background: var(--success); }
-.CMD-action-btn.route { background: #ff9500; }
-.CMD-action-btn.call { background: #af52de; }
-
-#G-FOOTER { width: 100%; text-align: center; padding: 40px 0; font-size: 9px; font-weight: 950; opacity: 0.3; letter-spacing: 2px; }
+.CST-brief-item { display: flex; align-items: center; gap: 15px; background: var(--ios-grey); padding: 18px; border-radius: 20px; height: 70px !important; margin-
