@@ -3,18 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v43.4</title>
+    <title>Hydro Pro v43.6</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="styles.css?v=434">
+    <link rel="stylesheet" href="styles.css?v=436">
 </head>
 <body class="light-mode">
 
     <header id="G-HEADER">
-        <div class="G-LOGO-WRAP">
-            <img src="Logo.png" id="mainLogo" alt="HydroPro">
-        </div>
-        
+        <div class="G-LOGO-WRAP"><img src="Logo.png" id="mainLogo" alt="HydroPro"></div>
         <div class="CENTRAL-STATUS-POD">
             <div id="weather-pill" class="G-WEATHER-PILL" onclick="launchWeatherApp()">
                 <span id="w-icon">🌤️</span><small id="w-text">SYNC...</small>
@@ -48,19 +45,25 @@
             </div>
         </section>
 
+        <section id="master-root" class="tab-content">
+            <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
+            <div class="CONCRETE-SEARCH-VAULT">
+                <input type="text" id="mainSearch" placeholder="🔍 Search Name or Street..." oninput="renderMaster()">
+            </div>
+            <div id="master-list-container"></div>
+        </section>
+
         <section id="admin-root" class="tab-content">
             <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            
             <div class="VAULT-CARD">
                 <h3 class="VAULT-HDR">Quick Add Customer</h3>
                 <div class="VAULT-ROW"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
                 <div class="VAULT-ROW"><span>🏠</span><input type="text" id="cHouseNum" placeholder="No."></div>
                 <div class="VAULT-ROW"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
                 <div class="VAULT-ROW"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
-                <textarea id="cNotes" class="VAULT-NOTES-XL" placeholder="Detailed job notes..."></textarea>
+                <textarea id="cNotes" class="VAULT-NOTES-XL" placeholder="Notes..."></textarea>
                 <button class="VAULT-SAVE-BTN" onclick="saveCustomer()">✨ SAVE CUSTOMER</button>
             </div>
-
             <div class="VAULT-CARD">
                 <h3 class="VAULT-HDR">Business Bank Details</h3>
                 <div class="VAULT-ROW"><span>🏦</span><input type="text" id="bName" placeholder="Account Name"></div>
@@ -68,24 +71,6 @@
                 <div class="VAULT-ROW"><span>💳</span><input type="text" id="bAcc" placeholder="Account Number"></div>
                 <button class="VAULT-SAVE-BTN" style="background:var(--accent); margin-top:20px;" onclick="saveBank()">🔒 SECURE BANK INFO</button>
             </div>
-            
-            <div class="ADMIN-VAULT">
-                <h3 class="VAULT-HDR">Data & Exports</h3>
-                <button class="ADMIN-BTN-BLUE" onclick="exportToQuickBooks()">📊 QUICKBOOKS EXPORT</button>
-                <div class="ADMIN-ROW">
-                    <button class="ADMIN-BTN-GREY" onclick="exportData()">📤 Backup</button>
-                    <button class="ADMIN-BTN-GREY" onclick="document.getElementById('importFile').click()">📥 Restore</button>
-                    <input type="file" id="importFile" hidden onchange="importData(event)" accept=".csv">
-                </div>
-                <button class="ADMIN-BTN-BLUE" style="background:var(--success); margin-top:15px;" onclick="completeCycle()">🚀 START NEW MONTH</button>
-                <button class="ADMIN-BTN-RED" onclick="nuclearReset()">☢️ FACTORY RESET</button>
-            </div>
-        </section>
-
-        <section id="master-root" class="tab-content">
-            <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="CONCRETE-SEARCH-VAULT"><input type="text" id="mainSearch" placeholder="🔍 Search..." oninput="renderMaster()"></div>
-            <div id="master-list-container"></div>
         </section>
 
         <section id="finances-root" class="tab-content">
@@ -93,18 +78,9 @@
             <div id="finances-dashboard-container"></div>
             <div id="finances-statement-container"></div>
         </section>
-
-        <section id="weeks-root" class="tab-content">
-            <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="HUB-LOCK-CONTAINER">
-                <div class="GRID-ROW"><button class="BLOCK-BTN" onclick="viewWeek(1)">1</button><button class="BLOCK-BTN" onclick="viewWeek(2)">2</button></div>
-                <div class="GRID-ROW"><button class="BLOCK-BTN" onclick="viewWeek(3)">3</button><button class="BLOCK-BTN" onclick="viewWeek(4)">4</button></div>
-                <div class="GRID-ROW"><button class="BLOCK-BTN FULL-W" onclick="viewWeek(5)">5</button></div>
-            </div>
-        </section>
     </main>
 
-    <footer id="G-FOOTER">v43.4 LOGO LOCK</footer>
-    <script src="app.js?v=434"></script>
+    <footer id="G-FOOTER">v43.6 REINFORCED VAULT</footer>
+    <script src="app.js?v=436"></script>
 </body>
 </html>
