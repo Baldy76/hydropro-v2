@@ -8,7 +8,6 @@ let curWeek = 1;
 let workingDay = 'Mon';
 let financeChartInstance = null; 
 
-// Variables to hold state for the new Checkout Modal
 let currentPayId = null;
 let currentPayContext = null;
 let currentPayTotal = 0;
@@ -211,20 +210,43 @@ window.routeMyDay = () => {
     window.open(url, '_blank');
 };
 
+/* --- ✨ NEW: FRIENDLY & LESS FORMAL MESSAGING TEMPLATES ✨ --- */
 window.cmdWhatsApp = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c.phone) return alert("No phone number saved.");
     let phone = c.phone.replace(/\D/g, ''); if(phone.startsWith('0')) phone = '44' + phone.substring(1); 
     const arrData = window.getArrearsData(c);
-    let msg = `Hi ${c.name}, Hydro Pro here! We've just finished cleaning your windows. `;
-    if(arrData.isOwed) { msg += `Your outstanding balance is £${arrData.total.toFixed(2)}. `; if (db.bank.name && db.bank.acc) { msg += `You can pay via bank transfer to ${db.bank.name}, Account: ${db.bank.acc}. Thank you!`; } else { msg += `Please let us know how you'd like to pay. Thank you!`; } } else { msg += `Everything looks great, you have no outstanding balance. Have a wonderful day!`; }
+    
+    let msg = `Hi ${c.name}! Just letting you know your windows are all sparkling clean again. ✨ `;
+    if(arrData.isOwed) { 
+        msg += `Your total is £${arrData.total.toFixed(2)}. `; 
+        if (db.bank.name && db.bank.acc) { 
+            msg += `Whenever you get a sec, you can ping that over via bank transfer to ${db.bank.name} (Acc: ${db.bank.acc}). Thanks a million! 💧`; 
+        } else { 
+            msg += `Let me know what payment method works best for you. Thanks a million! 💧`; 
+        } 
+    } else { 
+        msg += `You're all paid up, so nothing owed today. Have a brilliant rest of your week! ☀️`; 
+    }
+    
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
 };
 
 window.cmdSMS = (id) => {
     const c = db.customers.find(x => x.id === id); if(!c.phone) return alert("No phone number saved.");
     let phone = c.phone.replace(/\D/g, ''); const arrData = window.getArrearsData(c);
-    let msg = `Hi ${c.name}, Hydro Pro here! We've just finished cleaning your windows. `;
-    if(arrData.isOwed) { msg += `Your outstanding balance is £${arrData.total.toFixed(2)}. `; if (db.bank.name && db.bank.acc) { msg += `You can pay via bank transfer to ${db.bank.name}, Account: ${db.bank.acc}. Thank you!`; } else { msg += `Please let us know how you'd like to pay. Thank you!`; } } else { msg += `Everything looks great, you have no outstanding balance. Have a wonderful day!`; }
+    
+    let msg = `Hi ${c.name}! Just letting you know your windows are all sparkling clean again. ✨ `;
+    if(arrData.isOwed) { 
+        msg += `Your total is £${arrData.total.toFixed(2)}. `; 
+        if (db.bank.name && db.bank.acc) { 
+            msg += `Whenever you get a sec, you can ping that over via bank transfer to ${db.bank.name} (Acc: ${db.bank.acc}). Thanks a million! 💧`; 
+        } else { 
+            msg += `Let me know what payment method works best for you. Thanks a million! 💧`; 
+        } 
+    } else { 
+        msg += `You're all paid up, so nothing owed today. Have a brilliant rest of your week! ☀️`; 
+    }
+    
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     const separator = isIOS ? '&' : '?';
     window.open(`sms:${phone}${separator}body=${encodeURIComponent(msg)}`, '_blank');
@@ -236,12 +258,10 @@ const generateHistoryHtml = (id) => {
     return history.map(h => `<div class="CMD-history-row"><span>${escapeHTML(h.date)}</span><span>£${parseFloat(h.amt).toFixed(2)}</span></div>`).join('');
 };
 
-/* --- NEW: INTERACTIVE ARREARS HTML --- */
 const generateArrearsHtml = (arrData, cId, context) => { 
     if (!arrData.isOwed) return `<div class="CMD-alert-success">✅ FULLY PAID UP</div>`;
     let listHtml = arrData.breakdown.map(b => `<li>£${b.amt.toFixed(2)} - ${escapeHTML(b.month)}</li>`).join('');
     
-    // Notice the onclick triggers the new Checkout Modal!
     return `<div class="CMD-alert-danger" onclick="cmdSettlePaid('${cId}', '${context}')" style="cursor:pointer; transition: 0.2s;">
                 <div class="CMD-alert-danger-title">⚠️ TOTAL OUTSTANDING: £${arrData.total.toFixed(2)}</div>
                 <ul class="CMD-arrears-list">${listHtml}</ul>
@@ -301,7 +321,6 @@ window.closeBriefing = () => document.getElementById('briefingModal').classList.
 
 window.cmdToggleClean = (id) => { const c = db.customers.find(x => x.id === id); c.cleaned = !c.cleaned; window.saveData(); window.renderAllSafe(); window.showJobBriefing(id); };
 
-/* --- ✨ NEW SMART CHECKOUT ENGINE ✨ --- */
 window.cmdSettlePaid = (id, context) => { 
     const c = db.customers.find(x => x.id === id); 
     const arrData = window.getArrearsData(c);
@@ -324,7 +343,6 @@ window.cmdSettlePaid = (id, context) => {
     document.getElementById('pay-full-btn').innerText = `PAY IN FULL (£${arrData.total.toFixed(2)})`;
     document.getElementById('pay-custom-amt').value = '';
 
-    // Hide briefing, show checkout!
     document.getElementById('briefingModal').classList.add('hidden');
     document.getElementById('paymentModal').classList.remove('hidden');
 };
@@ -347,7 +365,6 @@ window.processPayment = (type) => {
 
     if (isNaN(amtPaid) || amtPaid <= 0) return alert("Please enter a valid amount.");
 
-    // The FIFO Accounting Logic (Unchanged, it's perfect)
     c.paidThisMonth = (parseFloat(c.paidThisMonth) || 0) + amtPaid; 
     let thisMonthCharge = c.cleaned ? (parseFloat(c.price) || 0) : 0;
     let overpay = c.paidThisMonth - thisMonthCharge;
@@ -369,7 +386,6 @@ window.processPayment = (type) => {
     
     if (currentPayContext === 'job') window.showJobBriefing(currentPayId); else window.showCustomerBriefing(currentPayId);
 };
-/* ------------------------------------------- */
 
 
 window.addFinanceExpense = () => { 
