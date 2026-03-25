@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v61.0</title>
+    <title>Hydro Pro v61.1</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#007aff">
@@ -16,7 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-    <link rel="stylesheet" href="styles.css?v=610">
+    <link rel="stylesheet" href="styles.css?v=611">
 </head>
 <body class="light-mode">
 
@@ -106,7 +106,6 @@
         </section>
 
         <section id="admin-root" class="tab-content">
-            
             <div class="ADM-card">
                 <h3 class="ADM-hdr">App Preferences</h3>
                 <div class="ADM-row" style="justify-content: space-between; border-bottom: 2px solid var(--ios-grey); padding-bottom: 15px; margin-bottom: 15px;">
@@ -117,6 +116,11 @@
                     </label>
                 </div>
                 <button class="ADM-save-btn" style="margin-top: 0; background: transparent; border: 3px solid var(--accent); color: var(--accent); box-shadow: none;" onclick="location.reload(true)">🔄 SYNC APP UPDATES</button>
+            </div>
+
+            <div class="ADM-card">
+                <h3 class="ADM-hdr">Customer Database</h3>
+                <button class="ADM-save-btn" style="margin-top: 0; box-shadow: 0 10px 25px rgba(0,122,255,0.2);" onclick="openAddCustomerModal()">➕ OPEN CUSTOMER FORM</button>
             </div>
 
             <div class="ADM-card">
@@ -135,7 +139,7 @@
                 </div>
                 <button class="ADM-util-btn green" onclick="completeCycle()">🚀 START NEW MONTH</button>
                 <button class="ADM-util-btn red" onclick="nuclearReset()">☢️ FACTORY RESET</button>
-                <footer id="G-FOOTER">HYDRO PRO // v61.0 ENTERPRISE PWA</footer>
+                <footer id="G-FOOTER">HYDRO PRO // v61.1 ENTERPRISE PWA</footer>
             </div>
         </section>
 
@@ -160,7 +164,8 @@
             <div class="ADM-row"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street Name"></div>
             <div class="ADM-row"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
             <div class="ADM-row"><span>📞</span><input type="tel" id="cPhone" placeholder="Phone Number"></div>
-            <div class="ADM-row" style="border-bottom:none;"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
+            <div class="ADM-row"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
+            <div class="ADM-row" style="border-bottom:none;"><span>📝</span><input type="text" id="cNotes" placeholder="Notes (e.g. Beware of dog)"></div>
             
             <div class="CMD-action-grid" style="grid-template-columns: 1fr 1fr; margin-top: 20px;">
                 <button class="ADM-save-btn" style="margin-top:0; background: var(--ios-grey); color: var(--text); box-shadow: none;" onclick="closeAddCustomerModal()">CANCEL</button>
@@ -176,6 +181,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=610" defer></script>
+    <script src="app.js?v=611" defer></script>
 </body>
 </html>
