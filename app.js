@@ -14,7 +14,7 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// THE FIX: Completely rebuilt string escape to guarantee no javascript parser crashing!
+// 100% BULLETPROOF STRING ESCAPER
 const escapeHTML = (str) => {
     if (!str) return '';
     return String(str)
@@ -22,7 +22,7 @@ const escapeHTML = (str) => {
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+        .replace(/'/g, '&#39;'); 
 };
 
 window.getArrearsData = (c) => {
@@ -51,12 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     } catch(err) { console.error("Database Boot Error."); }
 
+    // Init Theme based on saved storage
     applyTheme(localStorage.getItem('HP_Theme') === 'true');
-    const cb = document.getElementById('themeCheckbox');
-    if(cb) {
-        cb.checked = localStorage.getItem('HP_Theme') === 'true';
-        cb.addEventListener('change', (e) => { applyTheme(e.target.checked); localStorage.setItem('HP_Theme', e.target.checked); });
-    }
 
     const bNameEl = document.getElementById('bName'); const bAccEl = document.getElementById('bAcc');
     if(bNameEl) bNameEl.value = db.bank.name; if(bAccEl) bAccEl.value = db.bank.acc;
@@ -64,11 +60,31 @@ document.addEventListener('DOMContentLoaded', () => {
     renderAllSafe(); initWeather();
 });
 
+// --- NEW SEGMENTED CONTROL LOGIC ---
 function applyTheme(isDark) {
     document.body.classList.toggle('dark-mode', isDark);
     const logo = document.getElementById('mainLogo');
     if(logo) logo.src = isDark ? "Logo-Dark.png" : "Logo.png";
+
+    const btnLight = document.getElementById('btnLight');
+    const btnDark = document.getElementById('btnDark');
+    
+    if (btnLight && btnDark) {
+        if (isDark) {
+            btnLight.classList.remove('active');
+            btnDark.classList.add('active');
+        } else {
+            btnLight.classList.add('active');
+            btnDark.classList.remove('active');
+        }
+    }
 }
+
+window.setThemeMode = (isDark) => {
+    applyTheme(isDark);
+    localStorage.setItem('HP_Theme', isDark);
+};
+// ------------------------------------
 
 window.saveData = () => localStorage.setItem(DB_KEY, JSON.stringify(db));
 
