@@ -14,7 +14,6 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// 100% BULLETPROOF STRING ESCAPER
 const escapeHTML = (str) => {
     if (!str) return '';
     return String(str)
@@ -51,16 +50,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     } catch(err) { console.error("Database Boot Error."); }
 
-    // Init Theme based on saved storage
     applyTheme(localStorage.getItem('HP_Theme') === 'true');
-
     const bNameEl = document.getElementById('bName'); const bAccEl = document.getElementById('bAcc');
     if(bNameEl) bNameEl.value = db.bank.name; if(bAccEl) bAccEl.value = db.bank.acc;
 
     renderAllSafe(); initWeather();
 });
 
-// --- NEW SEGMENTED CONTROL LOGIC ---
 function applyTheme(isDark) {
     document.body.classList.toggle('dark-mode', isDark);
     const logo = document.getElementById('mainLogo');
@@ -83,8 +79,9 @@ function applyTheme(isDark) {
 window.setThemeMode = (isDark) => {
     applyTheme(isDark);
     localStorage.setItem('HP_Theme', isDark);
+    // Refresh the chart to update font and border colors instantly
+    if(document.getElementById('finances-root').classList.contains('active')) renderFinances();
 };
-// ------------------------------------
 
 window.saveData = () => localStorage.setItem(DB_KEY, JSON.stringify(db));
 
@@ -372,19 +369,63 @@ window.renderFinances = () => {
     
     dash.innerHTML = htmlBuilder;
     
+    /* --- ✨ UPGRADED, BEAUTIFUL CHART.JS RENDERING ✨ --- */
     const ctx = document.getElementById('financeChartCanvas');
     if (ctx && typeof Chart !== 'undefined') {
         if (financeChartInstance) financeChartInstance.destroy(); 
         
-        let labels = ['Collected £', 'Customer Debt £', 'Forecasted To Clean £']; 
+        let labels = ['Collected', 'Customer Debt', 'Forecasted']; 
         let chartData = [income, totalArrears, forecasted]; 
         let colors = ['#34C759', '#ff453a', '#007aff'];
+        
+        let isDarkMode = document.body.classList.contains('dark-mode');
         
         if (income > 0 || totalArrears > 0 || forecasted > 0) {
             financeChartInstance = new Chart(ctx, { 
                 type: 'doughnut', 
-                data: { labels: labels, datasets: [{ data: chartData, backgroundColor: colors, borderWidth: 2, borderColor: document.body.classList.contains('dark-mode') ? '#1c1c1e' : '#ffffff', hoverOffset: 4 }] }, 
-                options: { responsive: true, maintainAspectRatio: false, cutout: '80%', plugins: { legend: { position: 'bottom', labels: { padding: 15, color: document.body.classList.contains('dark-mode') ? '#fff' : '#000', font: { family: '"Plus Jakarta Sans", sans-serif', weight: 'bold' } } } } } 
+                data: { 
+                    labels: labels, 
+                    datasets: [{ 
+                        data: chartData, 
+                        backgroundColor: colors, 
+                        borderWidth: 4, // Thicker, cleaner border gap
+                        borderColor: isDarkMode ? '#1c1c1e' : '#ffffff', 
+                        borderRadius: 12, // Floating Pill Segments!
+                        hoverOffset: 6,
+                        spacing: 4 // Creates physical gap between arcs
+                    }] 
+                }, 
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    cutout: '78%', 
+                    layout: { padding: 10 },
+                    plugins: { 
+                        legend: { 
+                            position: 'bottom', 
+                            labels: { 
+                                padding: 20, 
+                                usePointStyle: true, // Perfect Circles in legend
+                                pointStyle: 'circle',
+                                color: isDarkMode ? '#fff' : '#000', 
+                                font: { family: '"Plus Jakarta Sans", sans-serif', weight: 'bold', size: 13 } 
+                            } 
+                        },
+                        tooltip: {
+                            backgroundColor: isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.8)',
+                            titleColor: isDarkMode ? '#000' : '#fff',
+                            bodyColor: isDarkMode ? '#000' : '#fff',
+                            padding: 12,
+                            cornerRadius: 12,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return ' £' + context.parsed.toFixed(2);
+                                }
+                            }
+                        }
+                    } 
+                } 
             });
         }
     }
