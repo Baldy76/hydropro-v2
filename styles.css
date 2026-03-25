@@ -1,4 +1,4 @@
-/* --- v45.2 IRON-CLAD ARCHITECTURE --- */
+/* --- v45.3 HARD-LOCKED ARCHITECTURE --- */
 :root { --accent: #007aff; --bg: #f2f2f7; --card: #ffffff; --text: #000; --success: #34C759; --danger: #ff453a; --ios-grey: #e9e9eb; --grad: linear-gradient(135deg, #007aff 0%, #0051a8 100%); }
 body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; --ios-grey: #39393d; }
 
@@ -12,45 +12,55 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-hei
 #G-HEADER { position: fixed; top: 0; left: 0; width: 100%; height: 230px !important; z-index: 1000; background: var(--bg); text-align: center; border-bottom: 1px solid rgba(0,0,0,0.05); }
 .G-LOGO-WRAP img { width: 220px !important; height: auto; margin: 0 auto 10px; display: block; }
 .CENTRAL-STATUS-POD { display: flex; justify-content: center; align-items: center; gap: 20px; height: 60px; width: 380px; margin: 0 auto; }
-.G-WEATHER-PILL { background: var(--ios-grey); width: 120px !important; height: 48px !important; border-radius: 24px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
+.G-WEATHER-PILL { background: var(--ios-grey); width: 120px !important; height: 48px !important; border-radius: 24px; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
-/* 🌓 TOGGLE BOLT */
-.G-SWITCH-WRAP { display: flex; align-items: center; gap: 10px; width: 180px; justify-content: center; }
-.MODE-LABEL { font-size: 11px; font-weight: 950; opacity: 0.6; }
+/* 🌓 JUMBO TOGGLE */
 .ios-switch { position: relative; width: 80px; height: 40px; }
-.ios-switch input { opacity: 0; width: 0; height: 0; }
-.ios-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--ios-grey); transition: .3s; border-radius: 40px; }
-.ios-slider:before { position: absolute; content: ""; height: 32px; width: 32px; left: 4px; bottom: 4px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 3px 8px rgba(0,0,0,0.15); }
-input:checked + .ios-slider { background-color: var(--success); }
+.ios-slider:before { position: absolute; content: ""; height: 32px; width: 32px; left: 4px; bottom: 4px; background-color: white; border-radius: 50%; }
 input:checked + .ios-slider:before { transform: translateX(40px); }
 
-/* 🧱 HUB LOCK */
+/* 🧱 IRON HUB */
 .IRON-HUB-CONTAINER { width: 380px !important; margin: 0 auto; display: block; }
 .IRON-ROW { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; height: 160px !important; }
 .IRON-BTN { width: 175px !important; height: 160px !important; border-radius: 40px; background: var(--card); border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
 .I-LOCKED { font-size: 60px !important; }
 .T-LOCKED { font-size: 22px !important; font-weight: 950; text-transform: uppercase; }
 
-/* ⚙️ ADMIN UTILS */
-.ADMIN-VAULT { background: var(--card); margin: 0 20px 100px; padding: 30px; border-radius: 45px; border: 4px solid var(--ios-grey); display: flex; flex-direction: column; gap: 15px; }
-.ADMIN-BTN-IRON { width: 100% !important; height: 75px !important; min-height: 75px !important; border-radius: 25px; border: none; font-size: 18px !important; font-weight: 950; text-transform: uppercase; }
+/* ⚙️ ADMIN VAULT REINFORCEMENT */
+.VAULT-CARD { background: var(--card); margin: 0 20px 25px; padding: 25px; border-radius: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+.VAULT-HDR { margin: 0 0 15px; opacity: 0.5; font-size: 11px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; text-align: center; }
+
+.VAULT-ROW-IRON { 
+    display: flex; align-items: center; 
+    height: 80px !important; min-height: 80px !important; 
+    border-bottom: 2px solid var(--ios-grey); gap: 15px;
+}
+.VAULT-ROW-IRON span { font-size: 28px !important; width: 40px; text-align: center; }
+.VAULT-ROW-IRON input { 
+    flex: 1; border: none; background: transparent; 
+    font-size: 20px !important; font-weight: 700; 
+    height: 100%; outline: none; color: var(--text); 
+}
+
+.VAULT-SAVE-BTN-IRON { 
+    width: 100%; height: 80px !important; min-height: 80px !important; 
+    border-radius: 30px; border: none; background: var(--grad); 
+    color: white; font-weight: 950; font-size: 20px; 
+    text-transform: uppercase; margin-top: 20px;
+}
+
+.ADMIN-VAULT-IRON { background: var(--card); margin: 0 20px 100px; padding: 30px; border-radius: 45px; border: 4px solid var(--ios-grey); display: flex; flex-direction: column; gap: 15px; }
+.ADMIN-BTN-IRON { width: 100% !important; height: 75px !important; min-height: 75px !important; border-radius: 25px; border: none; font-size: 18px !important; font-weight: 950; text-transform: uppercase; display: flex; align-items: center; justify-content: center; }
 .ADMIN-BTN-IRON.BLUE { background: var(--accent); color: white; }
 .ADMIN-BTN-IRON.GREEN { background: var(--success); color: white; }
 .ADMIN-BTN-IRON.GREY { background: var(--ios-grey); color: var(--text); flex: 1; }
 .ADMIN-BTN-IRON.RED { background: transparent; border: 3px dashed var(--danger); color: var(--danger); }
 .ADMIN-ROW-IRON { display: flex; gap: 15px; height: 75px !important; }
 
-/* 🔄 SYNC BOLT */
-.SYNC-AREA { width: 100%; display: flex; justify-content: center; margin-top: 20px; height: 80px; }
-.SYNC-BTN-IRON { width: 340px; height: 75px !important; min-height: 75px !important; border-radius: 35px; border: 3px solid var(--accent); background: transparent; color: var(--accent); font-weight: 950; font-size: 20px; }
-
-.SEARCH-VAULT-IRON { width: 100%; height: 90px !important; padding: 0 25px 15px; flex-shrink: 0 !important; }
+/* 🔍 SEARCH & SYNC */
+.SEARCH-VAULT-IRON { width: 100%; height: 90px !important; padding: 0 25px 15px; }
 #mainSearch { width: 100%; height: 65px !important; border-radius: 20px; border: 3px solid var(--accent); background: var(--card); padding: 0 20px; font-size: 20px !important; font-weight: 700; color: var(--text); }
-.VAULT-CARD { background: var(--card); margin: 0 20px 25px; padding: 25px; border-radius: 40px; }
-.VAULT-ROW { display: flex; align-items: center; height: 75px !important; border-bottom: 2px solid var(--ios-grey); gap: 15px; }
-.VAULT-SAVE-BTN { width: 100%; height: 80px !important; border-radius: 30px; border: none; background: var(--grad); color: white; font-weight: 950; font-size: 20px; text-transform: uppercase; }
+.SYNC-BTN-IRON { width: 340px; height: 75px !important; min-height: 75px !important; border-radius: 35px; border: 3px solid var(--accent); background: transparent; color: var(--accent); font-weight: 950; font-size: 20px; }
 .FIXED-BACK-BTN { width: 340px; height: 80px !important; border-radius: 40px; background: var(--card); color: var(--accent); font-weight: 950; font-size: 22px; margin: 0 auto 20px; border: none; display: flex; align-items: center; justify-content: center; }
 #G-FOOTER { width: 100%; text-align: center; padding: 60px 0; font-size: 11px; font-weight: 950; opacity: 0.3; letter-spacing: 2px; }
 .hidden { display: none !important; }
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-.modal-content { background: var(--card); padding: 30px; border-radius: 45px; width: 92%; max-height: 85vh; overflow-y: auto; color: var(--text); }
