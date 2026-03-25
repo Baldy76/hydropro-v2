@@ -17,7 +17,7 @@ if ('serviceWorker' in navigator) {
 const escapeHTML = (str) => {
     if (!str) return '';
     return String(str).replace(/[&<>'"]/g, tag => ({
-        '&': '&', '<': '<', '>': '>', "'": '&#39;', '"': '&quot;'
+        '&': '&', '<': '<', '>': '>', "'": ''', '"': '"'
     }[tag] || tag));
 };
 
@@ -92,7 +92,6 @@ window.renderAllSafe = () => {
 window.openAddCustomerModal = () => document.getElementById('addCustomerModal').classList.remove('hidden');
 window.closeAddCustomerModal = () => document.getElementById('addCustomerModal').classList.add('hidden');
 
-/* UPDATED TO CAPTURE NOTES */
 window.saveCustomer = () => {
     const name = document.getElementById('cName').value.trim();
     if(!name) return alert("Name required!");
@@ -105,12 +104,11 @@ window.saveCustomer = () => {
         postcode: document.getElementById('cPostcode').value.trim(), 
         phone: document.getElementById('cPhone').value.trim(), 
         price: parseFloat(document.getElementById('cPrice').value) || 0, 
-        notes: document.getElementById('cNotes').value.trim(), /* Added notes */
+        notes: document.getElementById('cNotes').value.trim(), 
         cleaned: false, paidThisMonth: 0, pastArrears: [], week: "1", day: "Mon" 
     });
     saveData(); 
     
-    // Clear inputs
     document.getElementById('cName').value = '';
     document.getElementById('cHouseNum').value = '';
     document.getElementById('cStreet').value = '';
@@ -230,7 +228,6 @@ window.showJobBriefing = (id) => {
     const mapQuery = encodeURIComponent(`${c.houseNum} ${c.street}, ${c.postcode || ''}`);
     const navUrl = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
     
-    // NEW: Inject Notes Box if it exists
     const notesHtml = c.notes ? `<div class="CMD-notes-box">📝 ${escapeHTML(c.notes)}</div>` : '';
 
     container.innerHTML = `
@@ -255,7 +252,6 @@ window.showCustomerBriefing = (id) => {
     const container = document.getElementById('briefingData');
     const arrData = window.getArrearsData(c);
     
-    // NEW: Inject Notes Box if it exists
     const notesHtml = c.notes ? `<div class="CMD-notes-box">📝 ${escapeHTML(c.notes)}</div>` : '';
 
     container.innerHTML = `
@@ -309,17 +305,24 @@ window.addFinanceExpense = () => {
 window.renderFinances = () => {
     const dash = document.getElementById('FIN-dashboard'); const ledger = document.getElementById('FIN-ledger'); if(!dash || !ledger) return;
     
-    let income = 0, spend = 0, expected = 0, totalArrears = 0; let arrearsListHtml = '';
+    let income = 0, spend = 0, expected = 0, totalArrears = 0, forecasted = 0; 
+    let arrearsListHtml = '';
 
     db.customers.forEach(c => {
-        income += (parseFloat(c.paidThisMonth) || 0); expected += (parseFloat(c.price) || 0);
+        income += (parseFloat(c.paidThisMonth) || 0); 
+        expected += (parseFloat(c.price) || 0);
+        
+        if (!c.cleaned) forecasted += (parseFloat(c.price) || 0);
+
         const arrData = window.getArrearsData(c);
-        if(arrData.isOwed) { totalArrears += arrData.total; arrearsListHtml += `<div class="CMD-detail-row"><span>${escapeHTML(c.name)} <small style="opacity:0.7;">${escapeHTML(arrData.monthsString)}</small></span><span>£${arrData.total.toFixed(2)}</span></div>`; }
+        if(arrData.isOwed) { 
+            totalArrears += arrData.total; 
+            arrearsListHtml += `<div class="CMD-detail-row"><span>${escapeHTML(c.name)} <small style="opacity:0.7;">${escapeHTML(arrData.monthsString)}</small></span><span>£${arrData.total.toFixed(2)}</span></div>`; 
+        }
     });
 
     db.expenses.forEach(e => spend += (parseFloat(e.amt) || 0));
     const progressPct = expected > 0 ? Math.min((income / expected) * 100, 100) : 0;
-    const netProfit = Math.max(0, income - spend);
 
     let arrearsSection = ''; 
     if (totalArrears > 0) { arrearsSection = `<div class="FIN-arrears-card"><div style="font-size:20px; margin-bottom:15px;">⚠️ OUTSTANDING: £${totalArrears.toFixed(2)}</div><div style="text-align:left; background:rgba(0,0,0,0.15); padding:15px; border-radius:20px; max-height:150px; overflow-y:auto;">${arrearsListHtml}</div></div>`; }
@@ -349,33 +352,74 @@ window.renderFinances = () => {
     
     dash.innerHTML = htmlBuilder;
     
+    // EXPLICIT FIX: The Doughnut Chart Logic
     const ctx = document.getElementById('financeChartCanvas');
     if (ctx && typeof Chart !== 'undefined') {
         if (financeChartInstance) financeChartInstance.destroy(); 
-        let expenseTotals = {}; db.expenses.forEach(e => { expenseTotals[e.cat] = (expenseTotals[e.cat] || 0) + parseFloat(e.amt); });
-        let labels = ['Net Profit']; let chartData = [netProfit]; let colors = ['#34C759']; 
-        const catColors = { 'Fuel': '#ff9500', 'Equipment': '#007aff', 'Food': '#ff2d55', 'Marketing': '#af52de', 'Other': '#8e8e93' };
-        for(let cat in expenseTotals) { labels.push(cat); chartData.push(expenseTotals[cat]); colors.push(catColors[cat] || '#8e8e93'); }
         
-        if (income > 0 || spend > 0) {
+        let labels = ['Collected £', 'Customer Debt £', 'Forecasted To Clean £']; 
+        let chartData = [income, totalArrears, forecasted]; 
+        let colors = ['#34C759', '#ff453a', '#007aff'];
+        
+        if (income > 0 || totalArrears > 0 || forecasted > 0) {
             financeChartInstance = new Chart(ctx, { 
-                type: 'doughnut', 
+                type: 'doughnut', // HARD CODED TO DOUGHNUT
                 data: { labels: labels, datasets: [{ data: chartData, backgroundColor: colors, borderWidth: 2, borderColor: document.body.classList.contains('dark-mode') ? '#1c1c1e' : '#ffffff', hoverOffset: 4 }] }, 
-                options: { responsive: true, maintainAspectRatio: false, cutout: '80%', plugins: { legend: { position: 'right', labels: { padding: 15, color: document.body.classList.contains('dark-mode') ? '#fff' : '#000', font: { family: '"Plus Jakarta Sans", sans-serif', weight: 'bold' } } } } } 
+                options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'bottom', labels: { padding: 15, color: document.body.classList.contains('dark-mode') ? '#fff' : '#000', font: { family: '"Plus Jakarta Sans", sans-serif', weight: 'bold' } } } } } 
             });
         }
     }
     
-    const categories = {}; 
-    db.expenses.forEach(e => { const cat = e.cat || 'Other'; if(!categories[cat]) categories[cat] = { total: 0, items: [] }; categories[cat].total += parseFloat(e.amt); categories[cat].items.push(e); });
+    // EXPLICIT FIX: The Unified Expense Table Ledger
     let statementHtml = ''; 
-    if (Object.keys(categories).length === 0) { statementHtml = `<div class="empty-state"><span class="empty-icon">🧾</span><div class="empty-text">No Expenses Yet</div><div class="empty-sub">Your ledger is completely clean.</div></div>`; } 
-    else { 
-        for (const [cat, data] of Object.entries(categories)) { 
-            let catIcon = "🏢"; if(cat === 'Fuel') catIcon = "⛽"; if(cat === 'Equipment') catIcon = "🧽"; if(cat === 'Food') catIcon = "🍔"; if(cat === 'Marketing') catIcon = "📣"; 
-            let itemsHtml = ''; data.items.slice().reverse().forEach(item => { itemsHtml += `<div class="FIN-exp-row"><span>${escapeHTML(item.desc)} <small style="opacity:0.5; font-size:12px;">(${escapeHTML(item.date)})</small></span><span style="color:var(--danger);">-£${parseFloat(item.amt).toFixed(2)}</span></div>`; }); 
-            statementHtml += `<div class="FIN-cat-card"><div class="FIN-cat-hdr"><span>${catIcon} ${escapeHTML(cat).toUpperCase()}</span><span style="color:var(--danger);">£${data.total.toFixed(2)}</span></div>${itemsHtml}</div>`; 
-        } 
+    if (db.expenses.length === 0) { 
+        statementHtml = `<div class="empty-state"><span class="empty-icon">🧾</span><div class="empty-text">No Expenses Yet</div><div class="empty-sub">Your ledger is completely clean.</div></div>`; 
+    } else { 
+        let tableRows = '';
+        let reversedExpenses = [...db.expenses].reverse();
+        
+        reversedExpenses.forEach(item => {
+            let catIcon = "🏢"; 
+            if(item.cat === 'Fuel') catIcon = "⛽"; 
+            if(item.cat === 'Equipment') catIcon = "🧽"; 
+            if(item.cat === 'Food') catIcon = "🍔"; 
+            if(item.cat === 'Marketing') catIcon = "📣"; 
+            
+            tableRows += `
+                <tr>
+                    <td style="width: 40px; font-size: 24px; text-align: center; padding-left: 0;">${catIcon}</td>
+                    <td>
+                        <div style="display:flex; flex-direction:column;">
+                            <span style="color:var(--text);">${escapeHTML(item.desc)}</span>
+                            <small style="opacity:0.5; font-size:11px;">${escapeHTML(item.date)}</small>
+                        </div>
+                    </td>
+                    <td style="text-align: right; color: var(--danger); padding-right: 0;">-£${parseFloat(item.amt).toFixed(2)}</td>
+                </tr>`; 
+        }); 
+        
+        statementHtml = `
+            <div class="FIN-ledger-card">
+                <div class="FIN-ledger-wrapper">
+                    <table class="FIN-ledger-table">
+                        <thead>
+                            <tr>
+                                <th style="padding-left: 0;">Cat</th>
+                                <th>Details</th>
+                                <th style="text-align: right; padding-right: 0;">Amt</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="FIN-ledger-total">
+                    <span>TOTAL EXPENSES</span>
+                    <span>-£${spend.toFixed(2)}</span>
+                </div>
+            </div>
+        `; 
     }
     ledger.innerHTML = statementHtml;
 };
