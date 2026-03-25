@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v47.3</title>
+    <title>Hydro Pro v47.4</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="styles.css?v=473">
+    <link rel="stylesheet" href="styles.css?v=474">
 </head>
 <body class="light-mode">
 
@@ -14,12 +14,10 @@
         <div class="G-LOGO-STRETCH-WRAP">
             <img src="Logo.png" id="mainLogo" alt="HydroPro">
         </div>
-
         <div class="CENTRAL-STATUS-POD">
             <div id="weather-pill" class="G-WEATHER-PILL-PASSIVE">
                 <span id="w-icon">🌤️</span><small id="w-text">SYNC...</small>
             </div>
-            
             <div class="G-SWITCH-WRAP">
                 <span class="MODE-LABEL">LIT</span>
                 <label class="ios-switch">
@@ -29,7 +27,6 @@
                 <span class="MODE-LABEL">DRK</span>
             </div>
         </div>
-        
         <div class="DATE-CONTAINER"><span id="dateText"></span></div>
     </header>
 
@@ -45,19 +42,58 @@
                     <button class="HUB-btn" onclick="openTab('weeks-root')"><span class="HUB-icon">📅</span><small class="HUB-label">Weeks</small></button>
                 </div>
             </div>
-            <div class="HUB-sync-area"><button class="HUB-sync-btn" onclick="location.reload(true)">🔄 SYNC UPDATES</button></div>
+            <div class="HUB-sync-area">
+                <button class="HUB-sync-btn" onclick="location.reload(true)">🔄 SYNC UPDATES</button>
+            </div>
         </section>
 
-        </main>
+        <section id="admin-root" class="tab-content">
+            <button class="ADM-nav-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
+            <div class="ADM-card">
+                <h3 class="ADM-hdr">Quick Add</h3>
+                <div class="ADM-row"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
+                <div class="ADM-row"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
+                <div class="ADM-row"><span>📞</span><input type="tel" id="cPhone" placeholder="Phone"></div>
+                <div class="ADM-row"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
+                <button class="ADM-save-btn" onclick="saveCustomer()">✨ SAVE CUSTOMER</button>
+            </div>
+        </section>
+
+        <section id="master-root" class="tab-content">
+            <button class="CST-nav-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
+            <div class="CST-search-bar"><input type="text" id="mainSearch" placeholder="🔍 Search..." oninput="renderMaster()"></div>
+            <div id="CST-list-container"></div>
+        </section>
+
+        <section id="finances-root" class="tab-content">
+            <button class="FIN-nav-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
+            <div id="FIN-dashboard"></div>
+            <div id="FIN-ledger"></div>
+        </section>
+
+        <section id="weeks-root" class="tab-content">
+            <button class="WEE-nav-btn" onclick="openTab('home-root')">🏠 Home Hub</button>
+            <div class="WEE-selection-grid">
+                <div class="WEE-grid-row"><button class="WEE-btn" onclick="viewWeek(1)">1</button><button class="WEE-btn" onclick="viewWeek(2)">2</button></div>
+                <div class="WEE-grid-row"><button class="WEE-btn" onclick="viewWeek(3)">3</button><button class="WEE-btn" onclick="viewWeek(4)">4</button></div>
+                <div class="WEE-grid-row"><button class="WEE-btn full" onclick="viewWeek(5)">5</button></div>
+            </div>
+        </section>
+
+        <section id="week-view-root" class="tab-content">
+            <div class="WEE-sub-nav"><button onclick="openTab('weeks-root')">⬅️ BACK</button><button onclick="openTab('home-root')">🏠 HUB</button></div>
+            <div id="WEE-list-container"></div>
+        </section>
+    </main>
 
     <div id="briefingModal" class="modal-overlay hidden" onclick="closeBriefing()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div id="briefingData"></div>
-            <button class="ADM-save-btn" style="margin-top:20px;" onclick="closeBriefing()">CLOSE BRIEFING</button>
+            <button class="ADM-save-btn" onclick="closeBriefing()">CLOSE BRIEFING</button>
         </div>
     </div>
 
-    <footer id="G-FOOTER">v47.3 HEADER OVERHAUL</footer>
-    <script src="app.js?v=473"></script>
+    <footer id="G-FOOTER">v47.4</footer>
+    <script src="app.js?v=474"></script>
 </body>
 </html>
