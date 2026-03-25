@@ -36,53 +36,10 @@ body.dark-mode #G-HEADER { background: rgba(0, 0, 0, 0.75); border-bottom: 1px s
 .G-LOGO-STRETCH-WRAP { width: 100%; height: 100%; padding: 0; margin: 0; display: flex; justify-content: center; align-items: center; }
 .G-LOGO-STRETCH-WRAP img { width: 100% !important; height: 100% !important; object-fit: contain; display: block; padding: 10px; margin-top: 15px; }
 
-
-/* --- ✨ PERFECTION: TRUE NATIVE IOS TOGGLE SWITCH ✨ --- */
-.ios-switch { 
-    position: relative; display: inline-block; width: 64px; height: 36px; 
-}
-.ios-switch input { 
-    opacity: 0; width: 0; height: 0; 
-}
-.ios-slider { 
-    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; 
-    background-color: var(--ios-grey); 
-    border-radius: 36px; 
-    border: 2px solid rgba(0,0,0,0.1); /* The subtle border for popping */
-    transition: background-color 0.3s ease, border-color 0.3s ease; 
-}
-body.dark-mode .ios-slider { 
-    border: 2px solid rgba(255,255,255,0.1); 
-}
-.ios-slider:before { 
-    position: absolute; content: ""; 
-    height: 28px; width: 28px; left: 2px; bottom: 2px; 
-    background-color: white; border-radius: 50%; 
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25), 0 1px 2px rgba(0,0,0,0.1); 
-    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
-}
-/* When Checked (Green) */
-input:checked + .ios-slider { 
-    background-color: var(--success); border-color: var(--success); 
-}
-input:checked + .ios-slider:before { 
-    transform: translateX(28px); 
-}
-
-/* LARGE PROMINENT TOGGLE VARIANT (For Admin Tab) */
-.ios-switch.toggle-large { 
-    width: 76px; height: 42px; 
-}
-.ios-switch.toggle-large .ios-slider { 
-    border-radius: 42px; 
-}
-.ios-switch.toggle-large .ios-slider:before { 
-    height: 34px; width: 34px; left: 2px; bottom: 2px; 
-}
-.ios-switch.toggle-large input:checked + .ios-slider:before { 
-    transform: translateX(34px); 
-}
-/* ---------------------------------------------------- */
+/* --- FRESH IDEA: NATIVE SEGMENTED CONTROL --- */
+.theme-segmented-control { display: flex; background: var(--ios-grey); border-radius: 16px; padding: 4px; width: 100%; margin-top: 10px; box-shadow: inset 0 1px 4px rgba(0,0,0,0.05); }
+.segment { flex: 1; padding: 12px; border-radius: 12px; border: none; background: transparent; font-weight: 800; color: var(--text); opacity: 0.5; font-size: 15px; display: flex; justify-content: center; align-items: center; gap: 8px; transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1); }
+.segment.active { background: var(--card); opacity: 1; box-shadow: 0 3px 8px rgba(0,0,0,0.1); color: var(--text); }
 
 
 #BOTTOM-NAV { position: fixed; bottom: 0; left: 0; width: 100%; height: calc(var(--h-nav) + env(safe-area-inset-bottom)); background: rgba(242, 242, 247, 0.85); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-top: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-around; align-items: center; padding-bottom: env(safe-area-inset-bottom); z-index: 1000; }
