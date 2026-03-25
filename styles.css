@@ -8,7 +8,8 @@
     --danger: #ff453a;
     --ios-grey: #e9e9eb;
     --grad: linear-gradient(135deg, #007aff 0%, #0051a8 100%);
-    --h-header: 280px;
+    /* RECALIBRATED HEADER MATRIX */
+    --h-header: 235px;
     --h-hub-btn: 160px;
     --h-nav-btn: 80px;
 }
@@ -18,10 +19,10 @@ body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; --ios-grey: #39393d;
 body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; font-family: -apple-system, sans-serif; }
 
 .tab-content { display: none !important; width: 100%; }
-.tab-content.active { display: flex !important; flex-direction: column; padding-top: var(--h-header); }
+.tab-content.active { display: flex !important; flex-direction: column; padding-top: calc(var(--h-header) + 20px); }
 
-/* ⚓ HEADER BOLT */
-#G-HEADER { position: fixed; top: 0; left: 0; width: 100%; height: var(--h-header) !important; z-index: 1000; background: var(--bg); text-align: center; border-bottom: 1px solid rgba(0,0,0,0.05); }
+/* ⚓ HEADER MATRIX */
+#G-HEADER { position: fixed; top: 0; left: 0; width: 100%; height: var(--h-header) !important; z-index: 1000; background: var(--bg); border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; padding-bottom: 15px; }
 .G-LOGO-STRETCH-WRAP { width: 100%; padding: 15px 0 5px; display: flex; justify-content: center; }
 .G-LOGO-STRETCH-WRAP img { width: 275px !important; height: auto; display: block; }
 
@@ -37,26 +38,20 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-hei
 input:checked + .ios-slider { background-color: var(--success); }
 input:checked + .ios-slider:before { transform: translateX(40px); }
 
-.DATE-CONTAINER { margin-top: 5px; height: 35px; display: block; }
+/* DATE FIX - FORCED CENTERING */
+.DATE-CONTAINER { width: 100%; text-align: center; height: 35px; display: flex; justify-content: center; align-items: center; margin-top: 5px; }
 #dateText { font-size: 24px !important; font-weight: 950; color: var(--accent); }
 
-/* 🏠 HUB ISLAND */
-.HUB-grid-vault { width: 380px !important; margin: 0 auto; }
-.HUB-row { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; height: var(--h-hub-btn); }
-.HUB-btn { width: 175px !important; height: var(--h-hub-btn) !important; border-radius: 40px; background: var(--card); border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text); box-shadow: 0 10px 20px rgba(0,0,0,0.08); font-weight: 950; }
+/* 🏠 UNBREAKABLE CSS GRID HUB */
+.HUB-grid-matrix { display: grid; grid-template-columns: 175px 175px; gap: 15px; justify-content: center; width: 100%; max-width: 400px; margin: 0 auto; }
+.HUB-btn { width: 100% !important; height: var(--h-hub-btn) !important; border-radius: 40px; background: var(--card); border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text); box-shadow: 0 10px 20px rgba(0,0,0,0.08); font-weight: 950; }
 .HUB-icon { font-size: 60px !important; display: block; }
 .HUB-label { font-size: 22px !important; text-transform: uppercase; margin-top: 5px; }
 .HUB-sync-area { width: 100%; display: flex; justify-content: center; margin-top: 20px; }
 .HUB-sync-btn { width: 340px; height: 75px !important; border-radius: 35px; border: 3px solid var(--accent); background: transparent; color: var(--accent); font-weight: 950; font-size: 20px; }
 
-/* ⚙️ ADM / CST / FIN / WEE NAVIGATION */
-.ADM-nav-btn, .CST-nav-btn, .FIN-nav-btn, .WEE-nav-btn { 
-    width: 340px; height: var(--h-nav-btn); border-radius: 40px; background: var(--card); 
-    color: var(--accent); font-weight: 950; font-size: 22px; margin: 0 auto 20px; border: none; 
-    display: flex; align-items: center; justify-content: center; 
-}
-
-/* ⚙️ ADM FORMS */
+/* ⚙️ NAVIGATION & FORMS */
+.ADM-nav-btn, .CST-nav-btn, .FIN-nav-btn, .WEE-nav-btn { width: 340px; height: var(--h-nav-btn); border-radius: 40px; background: var(--card); color: var(--accent); font-weight: 950; font-size: 22px; margin: 0 auto 20px; border: none; display: flex; align-items: center; justify-content: center; }
 .ADM-card { background: var(--card); margin: 0 20px 25px; padding: 25px; border-radius: 40px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
 .ADM-hdr { margin: 0 0 15px; opacity: 0.5; font-size: 11px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; text-align: center; }
 .ADM-row { height: 70px !important; display: flex; align-items: center; border-bottom: 2px solid var(--ios-grey); gap: 15px; }
