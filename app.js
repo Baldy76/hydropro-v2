@@ -136,19 +136,8 @@ window.renderMaster = () => {
     if (renderedCount === 0) list.innerHTML = `<div class="empty-state"><span class="empty-icon">👻</span><div class="empty-text">No Customers Found</div></div>`;
 };
 
-/* WEEKS ENGINE RESTORED TO FULL FOLDERS */
-window.viewWeek = (num) => { 
-    curWeek = num; 
-    openTab('week-view-root'); 
-    renderWeek(); 
-};
-
-window.setWorkingDay = (day, btn) => { 
-    workingDay = day; 
-    document.querySelectorAll('.WEE-day-btn').forEach(b => b.classList.remove('active')); 
-    btn.classList.add('active'); 
-    renderWeek(); 
-};
+window.viewWeek = (num) => { curWeek = num; openTab('week-view-root'); renderWeek(); };
+window.setWorkingDay = (day, btn) => { workingDay = day; document.querySelectorAll('.WEE-day-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderWeek(); };
 
 window.renderWeek = () => { 
     const list = document.getElementById('WEE-list-container'); if(!list) return; list.innerHTML = '';
@@ -282,14 +271,18 @@ window.addFinanceExpense = () => {
     saveData(); document.getElementById('fExpDesc').value = ''; document.getElementById('fExpAmt').value = ''; renderFinances();
 };
 
+/* --- 💰 FINANCES VAULT LOGIC (NEW SLEEK WIDGETS & CHART FIX) --- */
 window.renderFinances = () => {
     const dash = document.getElementById('FIN-dashboard'); const ledger = document.getElementById('FIN-ledger'); if(!dash || !ledger) return;
+    
     let income = 0, spend = 0, expected = 0, totalArrears = 0; let arrearsListHtml = '';
+
     db.customers.forEach(c => {
         income += (parseFloat(c.paidThisMonth) || 0); expected += (parseFloat(c.price) || 0);
         const arrData = window.getArrearsData(c);
         if(arrData.isOwed) { totalArrears += arrData.total; arrearsListHtml += `<div class="CMD-detail-row"><span>${escapeHTML(c.name)} <small style="opacity:0.7;">${escapeHTML(arrData.monthsString)}</small></span><span>£${arrData.total.toFixed(2)}</span></div>`; }
     });
+
     db.expenses.forEach(e => spend += (parseFloat(e.amt) || 0));
     const progressPct = expected > 0 ? Math.min((income / expected) * 100, 100) : 0;
     const netProfit = Math.max(0, income - spend);
@@ -301,7 +294,26 @@ window.renderFinances = () => {
     htmlBuilder += arrearsSection;
     htmlBuilder += `<div style="padding: 0 25px; margin-bottom: 5px; font-weight: 950; font-size: 14px; color: var(--accent); display: flex; justify-content: space-between;"><span>COLLECTION PROGRESS</span><span>${Math.round(progressPct)}%</span></div>`;
     htmlBuilder += `<div class="FIN-progress-wrap"><div class="FIN-progress-fill" style="width: ${progressPct}%;"></div></div>`;
-    htmlBuilder += `<div class="FIN-bubble-row"><div class="FIN-bubble"><small style="font-weight:800;">INCOME</small><br><strong style="font-size:22px;">£${income.toFixed(2)}</strong></div><div class="FIN-bubble"><small style="font-weight:800;">SPENT</small><br><strong style="font-size:22px; color:var(--danger);">£${spend.toFixed(2)}</strong></div></div>`;
+    
+    // NEW: The sleeker, pill-shaped Income/Spent Widgets
+    htmlBuilder += `
+        <div class="FIN-bubble-row">
+            <div class="FIN-bubble income">
+                <div class="bubble-icon">📈</div>
+                <div class="bubble-info">
+                    <small>INCOME</small>
+                    <strong>£${income.toFixed(2)}</strong>
+                </div>
+            </div>
+            <div class="FIN-bubble spent">
+                <div class="bubble-icon">📉</div>
+                <div class="bubble-info">
+                    <small>SPENT</small>
+                    <strong>£${spend.toFixed(2)}</strong>
+                </div>
+            </div>
+        </div>`;
+    
     dash.innerHTML = htmlBuilder;
     
     const ctx = document.getElementById('financeChartCanvas');
@@ -311,8 +323,13 @@ window.renderFinances = () => {
         let labels = ['Net Profit']; let chartData = [netProfit]; let colors = ['#34C759']; 
         const catColors = { 'Fuel': '#ff9500', 'Equipment': '#007aff', 'Food': '#ff2d55', 'Marketing': '#af52de', 'Other': '#8e8e93' };
         for(let cat in expenseTotals) { labels.push(cat); chartData.push(expenseTotals[cat]); colors.push(catColors[cat] || '#8e8e93'); }
+        
         if (income > 0 || spend > 0) {
-            financeChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: labels, datasets: [{ data: chartData, backgroundColor: colors, borderWidth: 0, hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'right', labels: { color: document.body.classList.contains('dark-mode') ? '#fff' : '#000', font: { family: '"Plus Jakarta Sans", sans-serif', weight: 'bold' } } } } } });
+            financeChartInstance = new Chart(ctx, { 
+                type: 'doughnut', 
+                data: { labels: labels, datasets: [{ data: chartData, backgroundColor: colors, borderWidth: 2, borderColor: document.body.classList.contains('dark-mode') ? '#1c1c1e' : '#ffffff', hoverOffset: 4 }] }, 
+                options: { responsive: true, maintainAspectRatio: false, cutout: '80%', plugins: { legend: { position: 'right', labels: { padding: 15, color: document.body.classList.contains('dark-mode') ? '#fff' : '#000', font: { family: '"Plus Jakarta Sans", sans-serif', weight: 'bold' } } } } } 
+            });
         }
     }
     
@@ -335,10 +352,12 @@ const getIcon = (code) => {
     return map[code] || '🌤️';
 };
 
+/* --- 🌦️ WEATHER API (UPDATED WITH LOCATION) --- */
 async function initWeather() { 
-    const wText = document.getElementById('w-text'); const wIcon = document.getElementById('w-icon');
     const wDash = document.getElementById('WTH-dashboard');
     
+    // Note: If you are testing this locally on your desktop, OpenWeather will find your exact city.
+    // If you test it on your phone, it will do exactly the same as long as location services are enabled!
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (pos) => { 
             try { 
@@ -348,9 +367,6 @@ async function initWeather() {
                 const currentIcon = getIcon(data.weather[0].icon);
                 const currentDesc = data.weather[0].description;
                 
-                if (wText) wText.innerText = temp; 
-                if (wIcon) wIcon.innerText = currentIcon;
-
                 const fRes = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&appid=${W_API_KEY}&units=metric`);
                 const fData = await fRes.json();
                 
@@ -372,6 +388,7 @@ async function initWeather() {
                             <div class="WTH-icon" style="font-size: 50px;">${currentIcon}</div>
                             <div class="WTH-hero-temp">${temp}</div>
                             <div class="WTH-hero-desc">${currentDesc}</div>
+                            <div style="font-size: 14px; font-weight: 900; color: var(--text); opacity: 0.5; margin-top: 15px; letter-spacing: 1px; text-transform: uppercase;">📍 ${escapeHTML(data.name)}</div>
                         </div>
                         <h3 class="ADM-hdr" style="margin: 25px 0 10px;">5-Day Forecast</h3>
                         ${forecastHtml}
@@ -379,7 +396,6 @@ async function initWeather() {
                 }
 
             } catch (e) { 
-                if (wText) wText.innerText = "OFFLINE"; 
                 if (wDash) wDash.innerHTML = `<div class="empty-state"><span class="empty-icon">📡</span><div class="empty-text">Weather Offline</div><div class="empty-sub">Check your connection to pull the radar.</div></div>`;
             } 
         });
