@@ -1,13 +1,30 @@
 const DB_KEY = 'HydroPro_Gold_V36';
 const W_API_KEY = "4c00e61833ea94d3c4a1bff9d2c32969"; 
-let db = { customers: [], expenses: [], history: [], bank: { name: '', acc: '' } };
-let curWeek = 1; let workingDay = 'Mon';
+
+// SAFE SCHEMA DEFINITION
+let db = { 
+    customers: [], 
+    expenses: [], 
+    history: [], 
+    bank: { name: '', acc: '' } 
+};
+let curWeek = 1; 
+let workingDay = 'Mon';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Data Boot
-    const saved = localStorage.getItem(DB_KEY);
-    if (saved) db = JSON.parse(saved);
-    if (!db.bank) db.bank = { name: '', acc: '' };
+    // 1. FAULT-TOLERANT DATA HYDRATION (Prevents JS Crashing on Load)
+    try {
+        const saved = localStorage.getItem(DB_KEY);
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            db.customers = parsed.customers || [];
+            db.expenses = parsed.expenses || [];
+            db.history = parsed.history || [];
+            db.bank = parsed.bank || { name: '', acc: '' };
+        }
+    } catch(err) {
+        console.error("Database Boot Error - Resetting to safe defaults.");
+    }
 
     // 2. Theme Boot
     applyTheme(localStorage.getItem('HP_Theme') === 'true');
@@ -21,12 +38,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 3. Admin Bank Pre-fill
-    if(document.getElementById('bName')) document.getElementById('bName').value = db.bank.name || '';
-    if(document.getElementById('bAcc')) document.getElementById('bAcc').value = db.bank.acc || '';
+    const bNameEl = document.getElementById('bName');
+    const bAccEl = document.getElementById('bAcc');
+    if(bNameEl) bNameEl.value = db.bank.name;
+    if(bAccEl) bAccEl.value = db.bank.acc;
 
     // 4. Init Systems
-    updateHeader(); 
-    renderAll(); 
+    updateHeaderDate(); 
+    renderAllSafe(); 
     initWeather();
 });
 
@@ -38,24 +57,30 @@ function applyTheme(isDark) {
 
 window.saveData = () => localStorage.setItem(DB_KEY, JSON.stringify(db));
 
-/* --- ⚓ ENGINE NAVIGATION --- */
+/* --- ⚓ FAULT-TOLERANT NAVIGATION --- */
 window.openTab = (id) => {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+    const target = document.getElementById(id);
+    if(target) target.classList.add('active');
     window.scrollTo(0,0);
-    renderAll();
+    renderAllSafe();
 };
 
-window.renderAll = () => {
-    if(document.getElementById('master-root').classList.contains('active')) renderMaster();
-    if(document.getElementById('finances-root').classList.contains('active')) renderFinances();
-    if(document.getElementById('week-view-root').classList.contains('active')) renderWeek();
-    updateHeader();
-};
-
-window.updateHeader = () => {
-    if(el = document.getElementById('dateText')) {
+// Separated Date Function so UI errors don't kill the clock
+window.updateHeaderDate = () => {
+    const el = document.getElementById('dateText');
+    if(el) {
         el.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' });
+    }
+};
+
+window.renderAllSafe = () => {
+    try {
+        if(document.getElementById('master-root').classList.contains('active')) renderMaster();
+        if(document.getElementById('finances-root').classList.contains('active')) renderFinances();
+        if(document.getElementById('week-view-root').classList.contains('active')) renderWeek();
+    } catch (err) {
+        console.error("Render Engine Error:", err);
     }
 };
 
@@ -120,11 +145,15 @@ window.importData = (event) => {
     const reader = new FileReader();
     reader.onload = (e) => {
         try {
-            db = JSON.parse(e.target.result);
+            const imported = JSON.parse(e.target.result);
+            db.customers = imported.customers || [];
+            db.expenses = imported.expenses || [];
+            db.history = imported.history || [];
+            db.bank = imported.bank || { name: '', acc: '' };
             saveData();
             alert("Backup Restored! 📥");
             location.reload();
-        } catch (err) { alert("Invalid File."); }
+        } catch (err) { alert("Invalid File Format."); }
     };
     reader.readAsText(event.target.files[0]);
 };
@@ -172,6 +201,7 @@ window.renderMaster = () => {
 
 window.showBriefing = (id) => {
     const c = db.customers.find(x => x.id === id);
+    if(!c) return;
     const container = document.getElementById('briefingData');
     
     const paid = (parseFloat(c.paidThisMonth) || 0);
@@ -181,7 +211,7 @@ window.showBriefing = (id) => {
         `<div style="background:var(--danger); color:white; padding:15px; border-radius:20px; text-align:center; font-weight:950; margin:15px 0; font-size:18px;">⚠️ PAYMENT MISSED (£${(price-paid).toFixed(2)})</div>` : 
         `<div style="color:var(--success); text-align:center; font-weight:950; margin:15px 0; font-size:18px;">✅ PAID THIS MONTH</div>`;
 
-    const history = (db.history || []).filter(h => h.custId === id).slice(-3).reverse();
+    const history = db.history.filter(h => h.custId === id).slice(-3).reverse();
     let historyHtml = history.map(h => `
         <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(0,0,0,0.05); font-weight:800;">
             <span>${h.date}</span><span>£${parseFloat(h.amt).toFixed(2)}</span>
@@ -274,7 +304,6 @@ window.renderFinances = () => {
 window.viewWeek = (num) => { 
     curWeek = num; 
     openTab('week-view-root'); 
-    renderWeek(); 
 };
 
 window.setWorkingDay = (day, btn) => { 
@@ -291,4 +320,67 @@ window.renderWeek = () => {
     
     let customersToday = db.customers.filter(c => c.week == curWeek && c.day == workingDay);
     
-    if(customersToday.length === 0)
+    if(customersToday.length === 0) {
+        list.innerHTML = `<div style="text-align:center; padding:40px; opacity:0.4; font-weight:950; font-size:20px;">No jobs booked for ${workingDay} Week ${curWeek}.</div>`;
+        return;
+    }
+
+    customersToday.forEach(c => {
+        const div = document.createElement('div'); 
+        div.className = 'CST-card-item';
+        div.innerHTML = `
+            <div>
+                <strong style="font-size:20px;">${c.name} ${c.cleaned ? '✅' : ''}</strong><br>
+                <small style="color:var(--accent); font-weight:800;">${c.houseNum} ${c.street}</small>
+            </div>
+            <div style="display:flex;">
+                <button class="WEE-action-btn" onclick="toggleClean('${c.id}')">🧼</button>
+                <button class="WEE-action-btn" style="color:var(--success);" onclick="settlePaid('${c.id}')">£</button>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+};
+
+window.toggleClean = (id) => { 
+    const c = db.customers.find(x => x.id === id); 
+    c.cleaned = !c.cleaned; 
+    saveData(); 
+    renderWeek(); 
+};
+
+window.settlePaid = (id) => { 
+    const c = db.customers.find(x => x.id === id); 
+    const amtStr = prompt(`Process payment for ${c.name}?\nPrice is £${c.price}`, c.price); 
+    
+    if(amtStr !== null && amtStr !== "") { 
+        const amt = parseFloat(amtStr);
+        c.paidThisMonth = amt; 
+        db.history.push({
+            custId: id, 
+            amt: amt, 
+            date: new Date().toLocaleDateString('en-GB')
+        }); 
+        saveData(); 
+        renderWeek(); 
+    } 
+};
+
+/* --- 🌦️ WEATHER CACHE ENGINE --- */
+async function initWeather() {
+    const cachedW = localStorage.getItem('HP_Weather_Cache');
+    const wText = document.getElementById('w-text');
+    if(cachedW && wText) wText.innerText = cachedW;
+
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+        try {
+            const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&appid=${W_API_KEY}&units=metric`);
+            const data = await res.json();
+            const temp = `${Math.round(data.main.temp)}°C`;
+            if (wText) wText.innerText = temp;
+            localStorage.setItem('HP_Weather_Cache', temp);
+        } catch (e) { 
+            if(!cachedW && wText) wText.innerText = "OFFLINE"; 
+        }
+    });
+}
