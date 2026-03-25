@@ -5,7 +5,18 @@ let db = { customers: [], expenses: [], history: [] };
 document.addEventListener('DOMContentLoaded', () => {
     const saved = localStorage.getItem(DB_KEY);
     if (saved) db = JSON.parse(saved);
-    applyTheme(localStorage.getItem('HP_Theme') === 'true');
+    
+    // Theme Switch Engine
+    const isDark = localStorage.getItem('HP_Theme') === 'true';
+    applyTheme(isDark);
+    const cb = document.getElementById('themeCheckbox');
+    if(cb) {
+        cb.checked = isDark;
+        cb.addEventListener('change', (e) => {
+            applyTheme(e.target.checked);
+            localStorage.setItem('HP_Theme', e.target.checked);
+        });
+    }
     updateHeader(); renderAll(); initWeather();
 });
 
@@ -39,7 +50,18 @@ window.renderMaster = () => {
 window.showBriefing = (id) => {
     const c = db.customers.find(x => x.id === id);
     const container = document.getElementById('briefingData');
-    container.innerHTML = `<h2 style="color:var(--accent); font-size:28px;">${c.name}</h2><p>${c.houseNum} ${c.street}</p><div style="background:var(--ios-grey); padding:15px; border-radius:20px;">📍 ${c.postcode || 'N/A'}<br>📞 ${c.phone || 'N/A'}<br>💰 £${c.price}</div>`;
+    const paid = (parseFloat(c.paidThisMonth) || 0);
+    const price = (parseFloat(c.price) || 0);
+    
+    const arrearsHtml = paid < price ? `<div style="background:var(--danger); color:white; padding:15px; border-radius:20px; text-align:center; font-weight:950; margin:10px 0;">⚠️ PAYMENT MISSED (£${(price-paid).toFixed(2)})</div>` : `<div style="color:var(--success); text-align:center; font-weight:950; margin:15px 0;">✅ PAID THIS MONTH</div>`;
+
+    container.innerHTML = `
+        <div class="CST-brief-header"><h2 style="margin:0; font-size:32px; font-weight:950;">${c.name}</h2></div>
+        <div class="CST-brief-item"><span class="CST-brief-icon">📍</span><strong>Postcode:</strong> ${c.postcode || 'N/A'}</div>
+        <div class="CST-brief-item" onclick="window.location.href='tel:${c.phone}'"><span class="CST-brief-icon">📞</span><strong>Call:</strong> <span style="text-decoration:underline;">${c.phone || 'N/A'}</span></div>
+        <div class="CST-brief-item"><span class="CST-brief-icon">💰</span><strong>Price:</strong> £${c.price}</div>
+        ${arrearsHtml}
+        <div style="margin-top:20px; opacity:0.5; font-size:12px; text-transform:uppercase;">Recent History Logic Active</div>`;
     document.getElementById('briefingModal').classList.remove('hidden');
 };
 
