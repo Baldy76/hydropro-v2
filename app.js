@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const bNameEl = document.getElementById('bName'); const bAccEl = document.getElementById('bAcc');
     if(bNameEl) bNameEl.value = db.bank.name; if(bAccEl) bAccEl.value = db.bank.acc;
 
-    updateHeaderDate(); renderAllSafe(); initWeather();
+    renderAllSafe(); initWeather();
 });
 
 function applyTheme(isDark) {
@@ -81,13 +81,11 @@ window.openTab = (id, btnEl = null) => {
     renderAllSafe();
 };
 
-window.updateHeaderDate = () => { const el = document.getElementById('dateText'); if(el) el.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }); };
-
 window.renderAllSafe = () => {
     try {
         if(document.getElementById('master-root').classList.contains('active')) renderMaster();
         if(document.getElementById('finances-root').classList.contains('active')) renderFinances();
-        if(document.getElementById('weeks-root').classList.contains('active')) renderWeek();
+        if(document.getElementById('week-view-root').classList.contains('active')) renderWeek();
     } catch (err) { console.error("Render Error:", err); }
 };
 
@@ -138,8 +136,19 @@ window.renderMaster = () => {
     if (renderedCount === 0) list.innerHTML = `<div class="empty-state"><span class="empty-icon">👻</span><div class="empty-text">No Customers Found</div></div>`;
 };
 
-window.viewWeek = (num) => { curWeek = num; renderWeek(); };
-window.setWorkingDay = (day, btn) => { workingDay = day; document.querySelectorAll('.WEE-day-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderWeek(); };
+/* WEEKS ENGINE RESTORED TO FULL FOLDERS */
+window.viewWeek = (num) => { 
+    curWeek = num; 
+    openTab('week-view-root'); 
+    renderWeek(); 
+};
+
+window.setWorkingDay = (day, btn) => { 
+    workingDay = day; 
+    document.querySelectorAll('.WEE-day-btn').forEach(b => b.classList.remove('active')); 
+    btn.classList.add('active'); 
+    renderWeek(); 
+};
 
 window.renderWeek = () => { 
     const list = document.getElementById('WEE-list-container'); if(!list) return; list.innerHTML = '';
@@ -321,7 +330,6 @@ window.renderFinances = () => {
     ledger.innerHTML = statementHtml;
 };
 
-/* --- 🌦️ WEATHER API (UPGRADED TO INCLUDE 5-DAY FORECAST) --- */
 const getIcon = (code) => {
     const map = { '01d':'☀️','01n':'🌙','02d':'⛅','02n':'☁️','03d':'☁️','03n':'☁️','04d':'☁️','04n':'☁️','09d':'🌧️','09n':'🌧️','10d':'🌧️','10n':'🌧️','11d':'🌦️','11n':'🌧️','13d':'🌨️','13n':'🌨️','50d':'💨','50n':'💨' };
     return map[code] || '🌤️';
@@ -334,7 +342,6 @@ async function initWeather() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (pos) => { 
             try { 
-                // 1. Fetch Current Weather for the Header Pill
                 const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&appid=${W_API_KEY}&units=metric`); 
                 const data = await res.json(); 
                 const temp = `${Math.round(data.main.temp)}°C`; 
@@ -344,11 +351,9 @@ async function initWeather() {
                 if (wText) wText.innerText = temp; 
                 if (wIcon) wIcon.innerText = currentIcon;
 
-                // 2. Fetch 5-Day Forecast for the Weather Tab
                 const fRes = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&appid=${W_API_KEY}&units=metric`);
                 const fData = await fRes.json();
                 
-                // Grab one forecast point per day (around noon)
                 const dailyData = fData.list.filter(item => item.dt_txt.includes('12:00:00')).slice(0, 5);
                 
                 let forecastHtml = dailyData.map(day => {
