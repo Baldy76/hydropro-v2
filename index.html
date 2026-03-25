@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v62.1</title>
+    <title>Hydro Pro v62.2</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#007aff">
@@ -16,7 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-    <link rel="stylesheet" href="styles.css?v=621">
+    <link rel="stylesheet" href="styles.css?v=622">
 </head>
 <body class="light-mode">
 
@@ -104,7 +104,6 @@
             </div>
             
             <div id="FIN-ledger"></div>
-            
         </section>
 
         <section id="admin-root" class="tab-content">
@@ -141,7 +140,7 @@
                 </div>
                 <button class="ADM-util-btn green" onclick="completeCycle()">🚀 START NEW MONTH</button>
                 <button class="ADM-util-btn red" onclick="nuclearReset()">☢️ FACTORY RESET</button>
-                <footer id="G-FOOTER">HYDRO PRO // v62.1 ENTERPRISE PWA</footer>
+                <footer id="G-FOOTER">HYDRO PRO // v62.2 ENTERPRISE PWA</footer>
             </div>
         </section>
 
@@ -167,12 +166,10 @@
             <div class="ADM-row"><span>📍</span><input type="text" id="cPostcode" placeholder="Postcode"></div>
             <div class="ADM-row"><span>📞</span><input type="tel" id="cPhone" placeholder="Phone Number"></div>
             <div class="ADM-row"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
-            
             <div class="ADM-row" style="border-bottom:none; height: auto!important; align-items: flex-start; padding-top: 15px;">
                 <span style="margin-top: 2px;">📝</span>
                 <textarea id="cNotes" placeholder="Additional Notes (e.g. Beware of dog, side gate code...)" rows="3"></textarea>
             </div>
-            
             <div class="CMD-action-grid" style="grid-template-columns: 1fr 1fr; margin-top: 20px;">
                 <button class="ADM-save-btn" style="margin-top:0; background: var(--ios-grey); color: var(--text); box-shadow: none;" onclick="closeAddCustomerModal()">CANCEL</button>
                 <button class="ADM-save-btn" style="margin-top:0;" onclick="saveCustomer()">SAVE</button>
@@ -187,6 +184,30 @@
         </div>
     </div>
 
-    <script src="app.js?v=621" defer></script>
+    <div id="paymentModal" class="modal-overlay hidden" onclick="closePaymentModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="CMD-header" style="border-bottom: none; text-align: center;">
+                <div class="CMD-header-sub" style="margin-bottom: 5px; color: var(--success);">SECURE CHECKOUT</div>
+                <h2 id="pay-name" style="font-size: 26px;">Customer Name</h2>
+            </div>
+
+            <div id="pay-arrears-box" class="CMD-alert-danger" style="margin-top: 0;"></div>
+
+            <button id="pay-full-btn" class="ADM-save-btn" style="background: var(--success); margin-top: 5px; margin-bottom: 25px;" onclick="processPayment('full')">PAY IN FULL</button>
+
+            <div class="ADM-card" style="margin: 0; padding: 20px; border-radius: 25px; box-shadow: none!important; border: 2px solid var(--ios-grey);">
+                <div style="font-size: 11px; font-weight: 900; opacity: 0.5; text-transform: uppercase; margin-bottom: 10px; text-align: center;">Or Enter Custom Amount</div>
+                <div class="ADM-row" style="border: none; height: 60px!important; margin-bottom: 15px; justify-content: center;">
+                    <span style="font-size: 26px; font-weight: 900; color: var(--text); width: auto;">£</span>
+                    <input type="number" id="pay-custom-amt" placeholder="0.00" style="font-size: 32px; font-weight: 950; text-align: center; color: var(--text); width: 120px; flex: none;">
+                </div>
+                <button class="ADM-save-btn" style="height: 60px!important; font-size: 16px; margin-top: 0; background: var(--text); color: var(--bg);" onclick="processPayment('custom')">APPLY PARTIAL PAYMENT</button>
+            </div>
+
+            <button class="ADM-save-btn" style="margin-top:20px; background: transparent; border: 3px solid var(--ios-grey); color: var(--text); box-shadow: none;" onclick="closePaymentModal()">CANCEL</button>
+        </div>
+    </div>
+
+    <script src="app.js?v=622" defer></script>
 </body>
 </html>
