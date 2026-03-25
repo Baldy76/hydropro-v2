@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v60.2</title>
+    <title>Hydro Pro v60.4</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#007aff">
@@ -16,15 +16,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-    <link rel="stylesheet" href="styles.css?v=602">
+    <link rel="stylesheet" href="styles.css?v=604">
 </head>
 <body class="light-mode">
 
     <header id="G-HEADER">
         <div class="G-LOGO-STRETCH-WRAP"><img src="Logo.png" id="mainLogo" alt="HydroPro"></div>
-        <div class="CENTRAL-STATUS-POD">
-            <div id="weather-pill" class="G-WEATHER-PILL-PASSIVE"><span id="w-icon">🌤️</span><small id="w-text">SYNC...</small></div>
-        </div>
     </header>
 
     <main id="G-VIEWPORT">
@@ -81,8 +78,11 @@
         <section id="finances-root" class="tab-content">
             <div id="FIN-dashboard"></div>
             
-            <div class="ADM-card" style="height: 300px; padding: 15px;">
-                <canvas id="financeChartCanvas"></canvas>
+            <div class="ADM-card" style="padding: 25px 15px;">
+                <h3 class="ADM-hdr" style="margin-bottom: 20px;">Profit vs. Expense Breakdown</h3>
+                <div style="height: 250px;">
+                    <canvas id="financeChartCanvas"></canvas>
+                </div>
             </div>
             
             <div class="ADM-card">
@@ -142,7 +142,7 @@
                 </div>
                 <button class="ADM-util-btn green" onclick="completeCycle()">🚀 START NEW MONTH</button>
                 <button class="ADM-util-btn red" onclick="nuclearReset()">☢️ FACTORY RESET</button>
-                <footer id="G-FOOTER">HYDRO PRO // v60.2 ENTERPRISE PWA</footer>
+                <footer id="G-FOOTER">HYDRO PRO // v60.4 ENTERPRISE PWA</footer>
             </div>
         </section>
 
@@ -163,6 +163,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=602" defer></script>
+    <script src="app.js?v=604" defer></script>
 </body>
 </html>
