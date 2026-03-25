@@ -89,11 +89,35 @@ window.renderAllSafe = () => {
     } catch (err) { console.error("Render Error:", err); }
 };
 
+/* --- NEW MODAL LOGIC FOR ADDING CUSTOMERS --- */
+window.openAddCustomerModal = () => document.getElementById('addCustomerModal').classList.remove('hidden');
+window.closeAddCustomerModal = () => document.getElementById('addCustomerModal').classList.add('hidden');
+
 window.saveCustomer = () => {
     const name = document.getElementById('cName').value.trim();
     if(!name) return alert("Name required!");
-    db.customers.push({ id: Date.now().toString(), name, houseNum: document.getElementById('cHouseNum').value.trim(), street: document.getElementById('cStreet').value.trim(), postcode: document.getElementById('cPostcode').value.trim(), phone: document.getElementById('cPhone').value.trim(), price: parseFloat(document.getElementById('cPrice').value) || 0, cleaned: false, paidThisMonth: 0, pastArrears: [], week: "1", day: "Mon" });
-    saveData(); alert("Saved!"); location.reload();
+    db.customers.push({ 
+        id: Date.now().toString(), 
+        name, 
+        houseNum: document.getElementById('cHouseNum').value.trim(), 
+        street: document.getElementById('cStreet').value.trim(), 
+        postcode: document.getElementById('cPostcode').value.trim(), 
+        phone: document.getElementById('cPhone').value.trim(), 
+        price: parseFloat(document.getElementById('cPrice').value) || 0, 
+        cleaned: false, paidThisMonth: 0, pastArrears: [], week: "1", day: "Mon" 
+    });
+    saveData(); 
+    
+    // Clear inputs smoothly
+    document.getElementById('cName').value = '';
+    document.getElementById('cHouseNum').value = '';
+    document.getElementById('cStreet').value = '';
+    document.getElementById('cPostcode').value = '';
+    document.getElementById('cPhone').value = '';
+    document.getElementById('cPrice').value = '';
+
+    closeAddCustomerModal();
+    renderAllSafe(); 
 };
 
 window.saveBank = () => { db.bank.name = document.getElementById('bName').value; db.bank.acc = document.getElementById('bAcc').value; saveData(); alert("Secured!"); };
@@ -271,7 +295,6 @@ window.addFinanceExpense = () => {
     saveData(); document.getElementById('fExpDesc').value = ''; document.getElementById('fExpAmt').value = ''; renderFinances();
 };
 
-/* --- 💰 FINANCES VAULT LOGIC (NEW SLEEK WIDGETS & CHART FIX) --- */
 window.renderFinances = () => {
     const dash = document.getElementById('FIN-dashboard'); const ledger = document.getElementById('FIN-ledger'); if(!dash || !ledger) return;
     
@@ -295,7 +318,6 @@ window.renderFinances = () => {
     htmlBuilder += `<div style="padding: 0 25px; margin-bottom: 5px; font-weight: 950; font-size: 14px; color: var(--accent); display: flex; justify-content: space-between;"><span>COLLECTION PROGRESS</span><span>${Math.round(progressPct)}%</span></div>`;
     htmlBuilder += `<div class="FIN-progress-wrap"><div class="FIN-progress-fill" style="width: ${progressPct}%;"></div></div>`;
     
-    // NEW: The sleeker, pill-shaped Income/Spent Widgets
     htmlBuilder += `
         <div class="FIN-bubble-row">
             <div class="FIN-bubble income">
@@ -352,12 +374,9 @@ const getIcon = (code) => {
     return map[code] || '🌤️';
 };
 
-/* --- 🌦️ WEATHER API (UPDATED WITH LOCATION) --- */
 async function initWeather() { 
     const wDash = document.getElementById('WTH-dashboard');
     
-    // Note: If you are testing this locally on your desktop, OpenWeather will find your exact city.
-    // If you test it on your phone, it will do exactly the same as long as location services are enabled!
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (pos) => { 
             try { 
