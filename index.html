@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v60.0</title>
+    <title>Hydro Pro v60.1</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#007aff">
@@ -16,7 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-    <link rel="stylesheet" href="styles.css?v=600">
+    <link rel="stylesheet" href="styles.css?v=601">
 </head>
 <body class="light-mode">
 
@@ -24,11 +24,6 @@
         <div class="G-LOGO-STRETCH-WRAP"><img src="Logo.png" id="mainLogo" alt="HydroPro"></div>
         <div class="CENTRAL-STATUS-POD">
             <div id="weather-pill" class="G-WEATHER-PILL-PASSIVE"><span id="w-icon">🌤️</span><small id="w-text">SYNC...</small></div>
-            <div class="G-SWITCH-WRAP">
-                <span class="MODE-LABEL">LIT</span>
-                <label class="ios-switch"><input type="checkbox" id="themeCheckbox"><span class="ios-slider"></span></label>
-                <span class="MODE-LABEL">DRK</span>
-            </div>
         </div>
         <div class="DATE-CONTAINER"><span id="dateText"></span></div>
     </header>
@@ -72,6 +67,12 @@
             <div id="CST-list-container"></div>
         </section>
 
+        <section id="weather-root" class="tab-content">
+            <div id="WTH-dashboard">
+                <div class="empty-state"><span class="empty-icon">📡</span><div class="empty-text">Syncing Radar...</div></div>
+            </div>
+        </section>
+
         <section id="finances-root" class="tab-content">
             <div id="FIN-dashboard"></div>
             
@@ -99,6 +100,18 @@
         </section>
 
         <section id="admin-root" class="tab-content">
+            
+            <div class="ADM-card">
+                <h3 class="ADM-hdr">App Preferences</h3>
+                <div class="ADM-row" style="justify-content: space-between; border: none;">
+                    <span style="font-size: 18px; width: auto; font-weight: 800; color: var(--text);">Dark Mode</span>
+                    <label class="ios-switch">
+                        <input type="checkbox" id="themeCheckbox">
+                        <span class="ios-slider"></span>
+                    </label>
+                </div>
+            </div>
+
             <div class="ADM-card">
                 <h3 class="ADM-hdr">Quick Add Customer</h3>
                 <div class="ADM-row"><span>👤</span><input type="text" id="cName" placeholder="Full Name"></div>
@@ -124,7 +137,7 @@
                 </div>
                 <button class="ADM-util-btn green" onclick="completeCycle()">🚀 START NEW MONTH</button>
                 <button class="ADM-util-btn red" onclick="nuclearReset()">☢️ FACTORY RESET</button>
-                <footer id="G-FOOTER">HYDRO PRO // v60.0 ENTERPRISE PWA</footer>
+                <footer id="G-FOOTER">HYDRO PRO // v60.1 ENTERPRISE PWA</footer>
             </div>
         </section>
 
@@ -133,6 +146,7 @@
     <nav id="BOTTOM-NAV">
         <button class="nav-item active" onclick="openTab('weeks-root', this)"><span class="nav-icon">📅</span><small>Weeks</small></button>
         <button class="nav-item" onclick="openTab('master-root', this)"><span class="nav-icon">👥</span><small>Custs</small></button>
+        <button class="nav-item" onclick="openTab('weather-root', this)"><span class="nav-icon">🌤️</span><small>Weather</small></button>
         <button class="nav-item" onclick="openTab('finances-root', this)"><span class="nav-icon">💰</span><small>Finances</small></button>
         <button class="nav-item" onclick="openTab('admin-root', this)"><span class="nav-icon">⚙️</span><small>Admin</small></button>
     </nav>
@@ -144,6 +158,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=600" defer></script>
+    <script src="app.js?v=601" defer></script>
 </body>
 </html>
