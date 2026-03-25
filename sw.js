@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hydro-pro-v59';
+const CACHE_NAME = 'hydro-pro-v59-1';
 const ASSETS = [
     './index.html',
     './styles.css',
@@ -12,10 +12,10 @@ self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
     );
-    self.skipWaiting(); // Forces the browser to activate the new version immediately
+    self.skipWaiting(); 
 });
 
-// 2. ACTIVATE: The "Trash Can" - Delete old versions of the app when a new one is downloaded
+// 2. ACTIVATE: Delete old versions of the app when a new one is downloaded
 self.addEventListener('activate', event => {
     event.waitUntil(
         caches.keys().then(cacheNames => {
@@ -29,14 +29,13 @@ self.addEventListener('activate', event => {
             );
         })
     );
-    self.clients.claim(); // Take control of all open app windows immediately
+    self.clients.claim(); 
 });
 
-// 3. FETCH: How the app runs offline
+// 3. FETCH: Run the app offline
 self.addEventListener('fetch', event => {
     event.respondWith(
         caches.match(event.request).then(response => {
-            // Return the cached version if we have it, otherwise fetch from the internet
             return response || fetch(event.request);
         })
     );
