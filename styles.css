@@ -1,4 +1,4 @@
-/* --- 🎛️ MASTER CONTROL PANEL --- */
+/* --- 🎛️ MASTER DESIGN TOKENS --- */
 :root {
     --accent: #007aff;
     --bg: #f2f2f7;
@@ -7,50 +7,64 @@
     --success: #34C759;
     --danger: #ff453a;
     --ios-grey: #e9e9eb;
-    /* BOLTS */
-    --h-header: 280px; /* Increased to accommodate jumbo logo */
+    --grad: linear-gradient(135deg, #007aff 0%, #0051a8 100%);
+    --h-header: 280px;
     --h-hub-btn: 160px;
     --h-nav-btn: 80px;
 }
 body.dark-mode { --bg: #000; --card: #1c1c1e; --text: #fff; --ios-grey: #39393d; }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; flex-shrink: 0 !important; }
-body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; }
+body { background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; font-family: -apple-system, sans-serif; }
 
 .tab-content { display: none !important; width: 100%; }
 .tab-content.active { display: flex !important; flex-direction: column; padding-top: var(--h-header); }
 
 /* ⚓ HEADER BOLT */
-#G-HEADER { position: fixed; top: 0; left: 0; width: 100%; height: var(--h-header) !important; z-index: 1000; background: var(--bg); border-bottom: 1px solid rgba(0,0,0,0.05); }
+#G-HEADER { position: fixed; top: 0; left: 0; width: 100%; height: var(--h-header) !important; z-index: 1000; background: var(--bg); text-align: center; border-bottom: 1px solid rgba(0,0,0,0.05); }
 .G-LOGO-STRETCH-WRAP { width: 100%; padding: 15px 0 5px; display: flex; justify-content: center; }
-.G-LOGO-STRETCH-WRAP img { width: 275px !important; height: auto; }
+.G-LOGO-STRETCH-WRAP img { width: 275px !important; height: auto; display: block; }
 
 .CENTRAL-STATUS-POD { display: flex; justify-content: space-evenly; align-items: center; height: 60px; width: 100%; max-width: 400px; margin: 0 auto; }
-.G-WEATHER-PILL-PASSIVE { background: var(--ios-grey); width: 120px; height: 48px; border-radius: 24px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.G-WEATHER-PILL-PASSIVE { background: var(--ios-grey); width: 120px; height: 48px; border-radius: 24px; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 950; }
+
+.G-SWITCH-WRAP { display: flex; align-items: center; gap: 10px; }
+.MODE-LABEL { font-size: 11px; font-weight: 950; opacity: 0.6; }
+.ios-switch { position: relative; width: 80px; height: 40px; }
+.ios-switch input { opacity: 0; width: 0; height: 0; }
+.ios-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--ios-grey); border-radius: 40px; transition: .3s; }
+.ios-slider:before { position: absolute; content: ""; height: 32px; width: 32px; left: 4px; bottom: 4px; background-color: white; border-radius: 50%; transition: .3s; }
+input:checked + .ios-slider { background-color: var(--success); }
+input:checked + .ios-slider:before { transform: translateX(40px); }
+
+.DATE-CONTAINER { margin-top: 5px; height: 35px; display: block; }
+#dateText { font-size: 24px !important; font-weight: 950; color: var(--accent); }
 
 /* 🏠 HUB ISLAND */
 .HUB-grid-vault { width: 380px !important; margin: 0 auto; }
 .HUB-row { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; height: var(--h-hub-btn); }
-.HUB-btn { width: 175px !important; height: var(--h-hub-btn) !important; border-radius: 40px; background: var(--card); border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text); font-weight: 950; box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
-.HUB-icon { font-size: 60px !important; }
+.HUB-btn { width: 175px !important; height: var(--h-hub-btn) !important; border-radius: 40px; background: var(--card); border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text); box-shadow: 0 10px 20px rgba(0,0,0,0.08); font-weight: 950; }
+.HUB-icon { font-size: 60px !important; display: block; }
 .HUB-label { font-size: 22px !important; text-transform: uppercase; margin-top: 5px; }
-
 .HUB-sync-area { width: 100%; display: flex; justify-content: center; margin-top: 20px; }
 .HUB-sync-btn { width: 340px; height: 75px !important; border-radius: 35px; border: 3px solid var(--accent); background: transparent; color: var(--accent); font-weight: 950; font-size: 20px; }
 
-/* ⚙️ ADM / CST NAV BUTTONS */
+/* ⚙️ ADM / CST / FIN / WEE NAVIGATION */
 .ADM-nav-btn, .CST-nav-btn, .FIN-nav-btn, .WEE-nav-btn { 
     width: 340px; height: var(--h-nav-btn); border-radius: 40px; background: var(--card); 
     color: var(--accent); font-weight: 950; font-size: 22px; margin: 0 auto 20px; border: none; 
     display: flex; align-items: center; justify-content: center; 
 }
 
-/* 👥 CST LIST */
-.CST-card-item { background: var(--card); margin: 0 25px 12px; padding: 20px; border-radius: 30px; height: 110px !important; display: flex; justify-content: space-between; align-items: center; }
+/* 👥 CST LIST & MODAL IDENTITY */
+.CST-card-item { background: var(--card); margin: 0 25px 12px; padding: 20px; border-radius: 30px; height: 110px !important; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+.CST-brief-header { border-bottom: 3px solid var(--accent); padding-bottom: 15px; margin-bottom: 20px; }
+.CST-brief-item { display: flex; align-items: center; gap: 15px; background: var(--ios-grey); padding: 18px; border-radius: 20px; height: 70px !important; margin-bottom: 10px; }
+.CST-brief-icon { font-size: 24px; width: 35px; text-align: center; }
 
-/* 💡 MODAL */
+/* 💡 MODAL VAULT */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-.modal-content { background: var(--card); padding: 30px; border-radius: 45px; width: 92%; max-height: 85vh; overflow-y: auto; }
+.modal-content { background: var(--card); padding: 30px; border-radius: 45px; width: 92%; max-height: 85vh; overflow-y: auto; color: var(--text); }
 .hidden { display: none !important; }
 
 #G-FOOTER { width: 100%; text-align: center; padding: 40px 0; font-size: 9px; font-weight: 950; opacity: 0.3; letter-spacing: 2px; }
