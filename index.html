@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hydro Pro v44.0</title>
+    <title>Hydro Pro v44.1</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="styles.css?v=440">
+    <link rel="stylesheet" href="styles.css?v=441">
 </head>
 <body class="light-mode">
 
@@ -16,6 +16,7 @@
             <div id="weather-pill" class="G-WEATHER-PILL" onclick="launchWeatherApp()">
                 <span id="w-icon">🌤️</span><small id="w-text">SYNC...</small>
             </div>
+            
             <div class="G-SWITCH-WRAP">
                 <span class="MODE-LABEL">LIT</span>
                 <label class="ios-switch">
@@ -44,77 +45,10 @@
                 <button class="SYNC-BTN-IRON" onclick="location.reload(true)">🔄 SYNC UPDATES</button>
             </div>
         </section>
+        
+        </main>
 
-        <section id="admin-root" class="tab-content">
-            <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="VAULT-CARD">
-                <h3 class="VAULT-HDR">Add New Customer</h3>
-                <div class="VAULT-ROW"><span>👤</span><input type="text" id="cName" placeholder="Name"></div>
-                <div class="VAULT-ROW"><span>🏠</span><input type="text" id="cHouseNum" placeholder="No."></div>
-                <div class="VAULT-ROW"><span>🛣️</span><input type="text" id="cStreet" placeholder="Street"></div>
-                <div class="VAULT-ROW"><span>💰</span><input type="number" id="cPrice" placeholder="Price £"></div>
-                <textarea id="cNotes" class="VAULT-NOTES-IRON" placeholder="Job notes..."></textarea>
-                <button class="VAULT-SAVE-BTN" onclick="saveCustomer()">✨ SAVE CUSTOMER</button>
-            </div>
-            <div class="VAULT-CARD">
-                <h3 class="VAULT-HDR">Business Bank Details</h3>
-                <div class="VAULT-ROW"><span>🏦</span><input type="text" id="bName" placeholder="Account Name"></div>
-                <div class="VAULT-ROW"><span>💳</span><input type="text" id="bAcc" placeholder="Acc Number"></div>
-                <button class="VAULT-SAVE-BTN" style="background:var(--accent);" onclick="saveBank()">🔒 SECURE BANK INFO</button>
-            </div>
-            <div class="ADMIN-VAULT">
-                <button class="ADMIN-BTN-BLUE" onclick="exportToQuickBooks()">📊 QUICKBOOKS EXPORT</button>
-                <div class="ADMIN-ROW">
-                    <button class="ADMIN-BTN-GREY" onclick="exportData()">📤 Backup</button>
-                    <button class="ADMIN-BTN-GREY" onclick="document.getElementById('importFile').click()">📥 Restore</button>
-                    <input type="file" id="importFile" hidden onchange="importData(event)" accept=".csv">
-                </div>
-                <button class="ADMIN-BTN-BLUE" style="background:var(--success); margin-top:15px;" onclick="completeCycle()">🚀 START NEW MONTH</button>
-                <button class="ADMIN-BTN-RED" onclick="nuclearReset()">☢️ FACTORY RESET</button>
-            </div>
-        </section>
-
-        <section id="master-root" class="tab-content">
-            <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="SEARCH-VAULT-IRON">
-                <input type="text" id="mainSearch" placeholder="🔍 Search Name or Street..." oninput="renderMaster()">
-            </div>
-            <div id="master-list-container"></div>
-        </section>
-
-        <section id="finances-root" class="tab-content">
-            <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div id="finances-dashboard-container"></div>
-            <div id="finances-statement-container"></div>
-        </section>
-
-        <section id="weeks-root" class="tab-content">
-            <button class="FIXED-BACK-BTN" onclick="openTab('home-root')">🏠 Home Hub</button>
-            <div class="HUB-LOCK-CONTAINER">
-                <div class="GRID-ROW"><button class="BLOCK-BTN" onclick="viewWeek(1)">1</button><button class="BLOCK-BTN" onclick="viewWeek(2)">2</button></div>
-                <div class="GRID-ROW"><button class="BLOCK-BTN" onclick="viewWeek(3)">3</button><button class="BLOCK-BTN" onclick="viewWeek(4)">4</button></div>
-                <div class="GRID-ROW"><button class="BLOCK-BTN FULL-W" onclick="viewWeek(5)">5</button></div>
-            </div>
-        </section>
-
-        <section id="week-view-root" class="tab-content">
-            <div class="NAV-VAULT"><button onclick="openTab('weeks-root')">⬅️ Back</button><button onclick="openTab('home-root')">🏠 Hub</button></div>
-            <div class="DAY-LOCKED-BAR">
-                <button class="D-BTN-LOCKED active" onclick="setWorkingDay('Mon', this)">M</button>
-                <button class="D-BTN-LOCKED" onclick="setWorkingDay('Tue', this)">T</button>
-                <button class="D-BTN-LOCKED" onclick="setWorkingDay('Wed', this)">W</button>
-                <button class="D-BTN-LOCKED" onclick="setWorkingDay('Thu', this)">T</button>
-                <button class="D-BTN-LOCKED" onclick="setWorkingDay('Fri', this)">F</button>
-                <button class="D-BTN-LOCKED" onclick="setWorkingDay('Sat', this)">S</button>
-                <button class="D-BTN-LOCKED" onclick="setWorkingDay('Sun', this)">S</button>
-            </div>
-            <div id="week-list-container"></div>
-        </section>
-    </main>
-
-    <div id="briefingModal" class="modal-overlay hidden" onclick="closeBriefing()"><div class="modal-content" onclick="event.stopPropagation()"><div id="briefingData"></div><div id="briefHistoryZone"></div><div id="quickSettleContainer"></div><button class="MD-EDIT" id="briefEditBtn">⚙️ Edit Profile</button><button class="MD-CLOSE" onclick="closeBriefing()">CLOSE</button></div></div>
-
-    <footer id="G-FOOTER">v44.0 MASTER BLUEPRINT</footer>
-    <script src="app.js?v=440"></script>
+    <footer id="G-FOOTER">v44.1 LARGE TOGGLE</footer>
+    <script src="app.js?v=441"></script>
 </body>
 </html>
